@@ -29,9 +29,11 @@ sudo update-alternatives  --set python /usr/bin/python3.6
 
 ## Geo
 
+geopandas https://geopandas.org/
+https://geopandas.org/install.html
+
 shapely https://pypi.org/project/Shapely/
 fiona
-geopandas https://geopandas.org/
 PyWPS https://pywps.org/
 GDAL https://pypi.org/project/GDAL/
 pyproj
@@ -51,3 +53,8 @@ healthcare-gisco
 https://pypi.org/project/eurostat/
 
 
+
+Other
+https://mapscaping.com/blogs/the-mapscaping-podcast/geospatial-python
+https://anitagraser.com/pyqgis-101-introduction-to-qgis-python-programming-for-non-programmers/
+Spyder and PyCharm
