@@ -58,3 +58,6 @@ Other
 https://mapscaping.com/blogs/the-mapscaping-podcast/geospatial-python
 https://anitagraser.com/pyqgis-101-introduction-to-qgis-python-programming-for-non-programmers/
 Spyder and PyCharm
+
+https://twitter.com/EdwardTufte/status/1561698107951292417?s=20&t=yLAGXf8depBTo2ipea8LnA
+
