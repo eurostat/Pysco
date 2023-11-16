@@ -58,7 +58,7 @@ def tiling(a):
             "-m",
             "delete c.SPATIAL",
             "-a",
-            str(1),
+            str(a),
             "-o",
             rep+"tiled/"
             + str(a * 1000)
