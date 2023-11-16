@@ -9,6 +9,7 @@ for cc in ccs:
     df = pd.read_csv(file_path, sep=';')
 
     df = df[["STAT","SPATIAL","OBS_VALUE"]]
+    df['SPATIAL'] = df['SPATIAL'].str[3:]
 
     #print(df['STAT'].unique())
     # ['CHG_IN' 'CHG_OUT' 'EMP' 'EU_OTH' 'F' 'M' 'NAT' 'OTH' 'SAME' 'T' 'Y_GE65' 'Y_LT15' 'Y15-64']
