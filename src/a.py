@@ -1,4 +1,5 @@
 import pandas as pd
+import subprocess
 
 
 def prepare(rep, cc):
@@ -34,4 +35,43 @@ ccs = ['NL','AT']
 
 #for cc in ccs: prepare(rep, cc)
 #merge(rep, ccs)
+
+
+
+# tiling, via gridtiler
+def tiling(a):
+    subprocess.run(
+        [
+            "gridtiler",
+            "-i",
+            rep+"EU.csv",
+            "-r",
+            "1000",
+            "-c",
+            "3035",
+            "-x",
+            "3800000",
+            "-y",
+            "2500000",
+            "-p",
+            "const a = c.SPATIAL.split('N')[1].split('E'); return { x:a[1],y:a[0] };",
+            "-m",
+            "delete c.SPATIAL",
+            "-a",
+            str(1),
+            "-o",
+            rep+"tiled/"
+            + str(a * 1000)
+            + "m/",
+            "-e",
+            "csv",
+        ]
+    )
+
+tiling(1)
+tiling(2)
+tiling(5)
+tiling(10)
+tiling(20)
+tiling(50)
 
