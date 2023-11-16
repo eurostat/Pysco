@@ -1,10 +1,14 @@
 import pandas as pd
 
-# Replace 'your_file.csv' with the actual path to your CSV file
 file_path = '/home/juju/Bureau/gisco/grid_pop_c2021/NL_2021_0000_V0002.csv'
-
-# Use read_csv with sep=';' to specify the semicolon as the separator
 df = pd.read_csv(file_path, sep=';')
 
-# Display the DataFrame
+
+
+# DATAFLOW;FREQ;STAT;SPATIAL;TIME_PERIOD;OBS_VALUE;
+# NOT_COUNTED_PROPORTION;GENERAL_STATUS;OBS_STATUS;STATUS;LAND_SURFACE;SPECIAL_VALUE;APPROXIMATELY_LOCATED_POPULATION_PROPORTION;OBS_NOTE;MEASURE;MEASUREMENT_METHOD;UNIT_MEASURE;CONVENTIONALLY_LOCATED_PROPORTION;UNIVERSE;POPULATED;AREA_OF_DISSEMINATION;INSPIREID
+
+#df = df.drop(columns=['DATAFLOW', 'FREQ', 'TIME_PERIOD'])
+df = df[["STAT","SPATIAL","OBS_VALUE"]]
+
 print(df)
