@@ -14,6 +14,8 @@ for cc in ['NL','AT']:
 
     df = df.pivot(index='SPATIAL', columns='STAT', values='OBS_VALUE')
 
+    df['c'] = cc
+
     #print(df)
 
     df.to_csv(rep+cc+".csv", index=True)
