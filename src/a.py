@@ -1,8 +1,9 @@
 import pandas as pd
 
 rep="/home/juju/Bureau/gisco/grid_pop_c2021/"
+ccs = ['NL','AT']
 
-for cc in ['NL','AT']:
+for cc in ccs:
     print(cc)
     file_path = rep + cc+'_in.csv'
     df = pd.read_csv(file_path, sep=';')
@@ -14,8 +15,14 @@ for cc in ['NL','AT']:
 
     df = df.pivot(index='SPATIAL', columns='STAT', values='OBS_VALUE')
 
-    df['c'] = cc
+    df['cc'] = cc
 
     #print(df)
 
     df.to_csv(rep+cc+".csv", index=True)
+
+
+#merge
+dfs = [pd.read_csv(rep+cc+".csv") for cc in ccs]
+merged_df = pd.concat(dfs, axis=0, ignore_index=True)
+merged_df.to_csv(rep+"EU.csv", index=False)
