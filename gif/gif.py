@@ -44,6 +44,6 @@ def create_gif(input_path, input_images, output_gif_path, gif_size=(300, 300), d
 
 # Example usage:
 input_path = "/home/juju/orienteering/omap_thionville_fameck/exports/"
-input_images = ["2.png", "3.png", "4.png", "5.png", "6.png", "7.png", "8.png", "9.png", "10.png", "11.png"]
+input_images = [f"{i}.png" for i in range(2, 22)]
 output_gif_path = "/home/juju/Bureau/output.gif"
 create_gif(input_path, input_images, output_gif_path, gif_size=(992, 702), duration=2000)
