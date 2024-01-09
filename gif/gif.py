@@ -25,7 +25,7 @@ def create_gif(input_path, input_images, output_gif_path, gif_size=(300, 300), d
         image = Image.open(input_path + image_path)
 
         # Resize the image to the specified GIF size
-        image = image.resize(gif_size, Image.NEAREST)
+        image = image.resize(gif_size, resample=Image.LANCZOS)
 
         # Convert RGBA images to RGB
         if image.mode == 'RGBA':
@@ -46,4 +46,4 @@ def create_gif(input_path, input_images, output_gif_path, gif_size=(300, 300), d
 input_path = "/home/juju/orienteering/omap_thionville_fameck/exports/"
 input_images = [f"{i}.png" for i in range(2, 22)]
 output_gif_path = "/home/juju/Bureau/output.gif"
-create_gif(input_path, input_images, output_gif_path, gif_size=(992, 702), duration=2000)
+create_gif(input_path, input_images, output_gif_path, gif_size=(992, 702), duration=800)
