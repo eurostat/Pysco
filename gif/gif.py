@@ -6,7 +6,7 @@
 
 from PIL import Image, ImageSequence, Image
 
-def create_gif(input_path, input_images, output_gif_path, gif_size=(300, 300), duration=200, loop=0):
+def create_gif(input_path, input_images, output_gif_path, gif_size=(300, 300), duration=200, loop=0, optimize=True):
     """
     Create a GIF animation from a list of input images.
 
@@ -31,6 +31,9 @@ def create_gif(input_path, input_images, output_gif_path, gif_size=(300, 300), d
         if image.mode == 'RGBA':
             image = image.convert('RGB')
 
+        #
+        #image = image.convert('P', palette=Image.ADAPTIVE, colors=256)
+
         frames.append(image)
 
     # Save the frames as a GIF
@@ -40,7 +43,7 @@ def create_gif(input_path, input_images, output_gif_path, gif_size=(300, 300), d
         append_images=frames[1:],
         duration=duration,
         loop=loop,  # 0 means an infinite loop
-        optimize=True
+        optimize=optimize  # compression
     )
 
 # Example usage:
