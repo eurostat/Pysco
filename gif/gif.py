@@ -39,7 +39,8 @@ def create_gif(input_path, input_images, output_gif_path, gif_size=(300, 300), d
         save_all=True,
         append_images=frames[1:],
         duration=duration,
-        loop=loop  # 0 means an infinite loop
+        loop=loop,  # 0 means an infinite loop
+        optimize=True
     )
 
 # Example usage:
