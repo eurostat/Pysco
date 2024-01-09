@@ -1,4 +1,10 @@
+# python -m venv venv
+# source venv/bin/activate
 # pip install Pillow
+# python -m PIL
+# deactivate
+
+from PIL import Image, ImageSequence
 
 def create_gif(input_images, output_gif_path, gif_size=(300, 300), duration=200):
     """
