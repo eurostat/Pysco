@@ -4,7 +4,7 @@
 # python -m PIL
 # deactivate
 
-from PIL import Image, ImageSequence
+from PIL import Image, ImageSequence, Image
 
 def create_gif(input_path, input_images, output_gif_path, gif_size=(300, 300), duration=200, loop=0):
     """
@@ -25,7 +25,7 @@ def create_gif(input_path, input_images, output_gif_path, gif_size=(300, 300), d
         image = Image.open(input_path + image_path)
 
         # Resize the image to the specified GIF size
-        image = image.resize(gif_size, Image.ANTIALIAS)
+        image = image.resize(gif_size, Image.NEAREST)
 
         # Convert RGBA images to RGB
         if image.mode == 'RGBA':
@@ -44,6 +44,6 @@ def create_gif(input_path, input_images, output_gif_path, gif_size=(300, 300), d
 
 # Example usage:
 input_path = "/home/juju/orienteering/omap_thionville_fameck/exports/"
-input_images = ["image1.png", "image2.png", "image3.png"]
+input_images = ["2.png", "3.png", "4.png", "5.png", "6.png", "7.png", "8.png", "9.png", "10.png", "11.png"]
 output_gif_path = "/home/juju/Bureau/output.gif"
-create_gif(input_path, input_images, output_gif_path, gif_size=(992, 202), duration=2000)
+create_gif(input_path, input_images, output_gif_path, gif_size=(992, 702), duration=2000)
