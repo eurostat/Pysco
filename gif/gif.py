@@ -1,4 +1,4 @@
-# python -m venv venv
+# python3 -m venv venv
 # source venv/bin/activate
 # pip install Pillow
 # python -m PIL
@@ -6,7 +6,7 @@
 
 from PIL import Image, ImageSequence
 
-def create_gif(input_images, output_gif_path, gif_size=(300, 300), duration=200):
+def create_gif(input_path, input_images, output_gif_path, gif_size=(300, 300), duration=200, loop=0):
     """
     Create a GIF animation from a list of input images.
 
@@ -22,7 +22,7 @@ def create_gif(input_images, output_gif_path, gif_size=(300, 300), duration=200)
     frames = []
 
     for image_path in input_images:
-        image = Image.open(image_path)
+        image = Image.open(input_path + image_path)
 
         # Resize the image to the specified GIF size
         image = image.resize(gif_size, Image.ANTIALIAS)
@@ -39,10 +39,11 @@ def create_gif(input_images, output_gif_path, gif_size=(300, 300), duration=200)
         save_all=True,
         append_images=frames[1:],
         duration=duration,
-        loop=0  # 0 means an infinite loop
+        loop=loop  # 0 means an infinite loop
     )
 
 # Example usage:
+input_path = "/home/juju/orienteering/omap_thionville_fameck/exports/"
 input_images = ["image1.png", "image2.png", "image3.png"]
-output_gif_path = "output.gif"
-create_gif(input_images, output_gif_path, gif_size=(400, 300), duration=200)
+output_gif_path = "/home/juju/Bureau/output.gif"
+create_gif(input_path, input_images, output_gif_path, gif_size=(992, 202), duration=2000)
