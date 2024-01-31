@@ -5,7 +5,7 @@ import subprocess
 def prepare(rep, cc):
     print(cc)
     file_path = rep + cc+'_in.csv'
-    df = pd.read_csv(file_path, sep=';')
+    df = pd.read_csv(file_path, sep=',' if (cc=="LV") else ';')
 
     df = df[["STAT","SPATIAL","OBS_VALUE"]]
     df['SPATIAL'] = df['SPATIAL'].str[3:]
@@ -31,14 +31,15 @@ def merge(rep, ccs):
 
 
 rep="/home/juju/Bureau/gisco/grid_pop_c2021/"
-ccs = ['NL','AT']
+ccs = ['LV','NL','AT']
+#ccs = ['LV']
 
 #for cc in ccs: prepare(rep, cc)
 #merge(rep, ccs)
 
 
 
-# tiling, via gridtiler
+# tiling function, via gridtiler
 def tiling(a):
     subprocess.run(
         [
@@ -68,11 +69,5 @@ def tiling(a):
         ]
     )
 
-tiling(1)
-tiling(2)
-tiling(5)
-tiling(10)
-tiling(20)
-tiling(50)
-tiling(100)
-
+# launch tiling
+for a in [1,2,5,10,20,50,100]: tiling(a)
