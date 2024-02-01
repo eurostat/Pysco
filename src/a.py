@@ -30,6 +30,7 @@ def merge(rep, ccs):
 
 
 
+
 rep="/home/juju/Bureau/gisco/grid_pop_c2021/"
 ccs = ['LV','NL','AT']
 #ccs = ['LV']
