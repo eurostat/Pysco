@@ -32,6 +32,8 @@ def prepare(cc, nb=0):
     df = df.pivot(index='SPATIAL', columns='STAT', values='OBS_VALUE')
 
     df['cc'] = cc
+ 
+    #TODO remove the ones with SPATIAL="unlocated"
 
     #print(df)
 
@@ -57,7 +59,7 @@ def merge(ccs):
 
 
 # merge
-#merge(['LV','NL','AT', 'SK', 'DK'])
+merge(['LV','NL','AT', 'SK', 'DK'])
 
 
 
