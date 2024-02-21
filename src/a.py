@@ -19,9 +19,9 @@ def load(cc, nb=0):
 
 
 
-def prepare(cc):
+def prepare(cc, nb=0):
     print(cc)
-    df = load(cc)
+    df = load(cc, nb)
 
     df = df[["STAT","SPATIAL","OBS_VALUE"]]
     df['SPATIAL'] = df['SPATIAL'].str[3:]
@@ -52,7 +52,7 @@ def merge(ccs):
 #prepare("AT")
 #prepare("NL")
 #prepare("LV")
-prepare("DK",5)
+prepare("DK", 5)
 #prepare("SK",5)
 
 
