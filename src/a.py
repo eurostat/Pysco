@@ -7,10 +7,13 @@ rep="/home/juju/Bureau/gisco/grid_pop_c2021/"
 
 
 def load(cc, nb=0):
+    if (nb==0):
+        return pd.read_csv(rep + cc+"_in.csv", sep=',' if (cc=="LV") else ';')
+
     # load each file
     dfs = []
     for i in range(1, nb + 1):
-        file_path = rep + cc+'_in' + ("" if (nb==0) else "_"+i ) + ".csv"
+        file_path = rep + cc+"_in_"+i  + ".csv"
         dfs.append(pd.read_csv(file_path, sep=',' if (cc=="LV") else ';'))
     return pd.concat(dfs, ignore_index=True)
 
