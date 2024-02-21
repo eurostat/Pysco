@@ -3,7 +3,10 @@ import subprocess
 
 
 
-def load(rep, cc, nb=0):
+rep="/home/juju/Bureau/gisco/grid_pop_c2021/"
+
+
+def load(cc, nb=0):
     # load each file
     dfs = []
     for i in range(1, nb + 1):
@@ -13,7 +16,7 @@ def load(rep, cc, nb=0):
 
 
 
-def prepare(rep, cc):
+def prepare(cc):
     print(cc)
     df = load(rep, cc)
 
@@ -33,7 +36,7 @@ def prepare(rep, cc):
 
 
 
-def merge(rep, ccs):
+def merge(ccs):
     print('merge '+str(ccs))
     dfs = [pd.read_csv(rep+cc+".csv") for cc in ccs]
     merged_df = pd.concat(dfs, axis=0, ignore_index=True)
@@ -41,20 +44,17 @@ def merge(rep, ccs):
    
 
 
-rep="/home/juju/Bureau/gisco/grid_pop_c2021/"
-
-
 
 # prepare
-prepare(rep, "AT")
-#prepare(rep, "NL")
-#prepare(rep, "LV")
-#prepare(rep, "DK",5)
-#prepare(rep, "SK",5)
+prepare("AT")
+#prepare("NL")
+#prepare("LV")
+#prepare("DK",5)
+#prepare("SK",5)
 
 
 # merge
-#merge(rep, ['LV','NL','AT'])
+#merge(['LV','NL','AT'])
 
 
 
