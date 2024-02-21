@@ -2,10 +2,10 @@ import pandas as pd
 import subprocess
 
 
-
+# the folder where to put the input files. Naming convention: DK_in_3.csv of NL_in.csv
 rep="/home/juju/Bureau/gisco/grid_pop_c2021/"
 
-
+# load all country files into a single data frame
 def load(cc, nb=0):
     if (nb==0):
         return pd.read_csv(rep + cc+"_in.csv", sep=',' if (cc=="LV") else ';')
@@ -18,7 +18,7 @@ def load(cc, nb=0):
     return pd.concat(dfs, ignore_index=True)
 
 
-
+# prepare country output csv file
 def prepare(cc, nb=0):
     print(cc)
     df = load(cc, nb)
@@ -38,7 +38,7 @@ def prepare(cc, nb=0):
     df.to_csv(rep+cc+".csv", index=True)
 
 
-
+# merge country files NL.csv into a single EU.csv file
 def merge(ccs):
     print('merge '+str(ccs))
     dfs = [pd.read_csv(rep+cc+".csv") for cc in ccs]
@@ -52,12 +52,12 @@ def merge(ccs):
 #prepare("AT")
 #prepare("NL")
 #prepare("LV")
-prepare("DK", 5)
+#prepare("DK", 5)
 #prepare("SK",5)
 
 
 # merge
-#merge(['LV','NL','AT'])
+merge(['LV','NL','AT', 'SK', 'DK'])
 
 
 
