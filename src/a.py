@@ -18,7 +18,7 @@ def load(cc, nb=0):
 
 def prepare(cc):
     print(cc)
-    df = load(rep, cc)
+    df = load(cc)
 
     df = df[["STAT","SPATIAL","OBS_VALUE"]]
     df['SPATIAL'] = df['SPATIAL'].str[3:]
