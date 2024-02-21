@@ -2,10 +2,20 @@ import pandas as pd
 import subprocess
 
 
+
+def load(rep, cc, nb=0):
+    # load each file
+    dfs = []
+    for i in range(1, nb + 1):
+        file_path = rep + cc+'_in' + ("" if (nb==0) else "_"+i ) + ".csv"
+        dfs.append(pd.read_csv(file_path, sep=',' if (cc=="LV") else ';'))
+    return pd.concat(dfs, ignore_index=True)
+
+
+
 def prepare(rep, cc):
     print(cc)
-    file_path = rep + cc+'_in.csv'
-    df = pd.read_csv(file_path, sep=',' if (cc=="LV") else ';')
+    df = load(rep, cc)
 
     df = df[["STAT","SPATIAL","OBS_VALUE"]]
     df['SPATIAL'] = df['SPATIAL'].str[3:]
@@ -21,6 +31,8 @@ def prepare(rep, cc):
 
     df.to_csv(rep+cc+".csv", index=True)
 
+
+
 def merge(rep, ccs):
     print('merge '+str(ccs))
     dfs = [pd.read_csv(rep+cc+".csv") for cc in ccs]
@@ -30,11 +42,19 @@ def merge(rep, ccs):
 
 
 rep="/home/juju/Bureau/gisco/grid_pop_c2021/"
-ccs = ['LV','NL','AT']
-#ccs = ['LV']
 
-#for cc in ccs: prepare(rep, cc)
-#merge(rep, ccs)
+
+
+# prepare
+prepare(rep, "AT")
+#prepare(rep, "NL")
+#prepare(rep, "LV")
+#prepare(rep, "DK",5)
+#prepare(rep, "SK",5)
+
+
+# merge
+#merge(rep, ['LV','NL','AT'])
 
 
 
@@ -69,4 +89,4 @@ def tiling(a):
     )
 
 # launch tiling
-for a in [1,2,5,10,20,50,100]: tiling(a)
+#for a in [1,2,5,10,20,50,100]: tiling(a)
