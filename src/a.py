@@ -13,7 +13,7 @@ def load(cc, nb=0):
     # load each file
     dfs = []
     for i in range(1, nb + 1):
-        file_path = rep + cc+"_in_"+i  + ".csv"
+        file_path = rep + cc + "_in_" + str(i) + ".csv"
         dfs.append(pd.read_csv(file_path, sep=',' if (cc=="LV") else ';'))
     return pd.concat(dfs, ignore_index=True)
 
