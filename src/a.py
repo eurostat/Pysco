@@ -49,10 +49,10 @@ def merge(ccs):
 
 
 # prepare
-prepare("AT")
+#prepare("AT")
 #prepare("NL")
 #prepare("LV")
-#prepare("DK",5)
+prepare("DK",5)
 #prepare("SK",5)
 
 
