@@ -4,6 +4,7 @@ from shapely.geometry import LineString
 
 # transform xls segments into GPKG file
 def xlsToGPKG(inXLSfile, lon1, lat1, lon2, lat2, id, outGPKGFile):
+
     print("Load data from "+inXLSfile)
     df = pd.read_excel(inXLSfile)
     print(str(len(df)) + " segments loaded")
