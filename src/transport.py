@@ -22,8 +22,9 @@ def xlsToGPKG(inXLSfile, lon1, lat1, lon2, lat2, id, outGPKGFile):
     gdf = gpd.GeoDataFrame(df, geometry=geometries)
     gdf.to_file(outGPKGFile, driver='GPKG', crs="EPSG:4258")
 
-# transform annex G
-xlsToGPKG("/home/juju/Bureau/gisco/rail_rinf/NET_SEGMENTS_EU_EFTA.xlsx", 'Fromlongitude', 'Fromlatitude', 'Tolongitude', 'Tolatitude', "Network segment identifier", '/home/juju/Bureau/gisco/rail_rinf/out.gpkg')
-# transform RINF
-xlsToGPKG("/home/juju/Bureau/gisco/rail_rinf/RINF_EU_EFTA.xlsx", 'Point Start Longitude', 'Point Start Latitude', 'Point End Longitude', 'Point End Latitude', "ID", '/home/juju/Bureau/gisco/rail_rinf/out_rinf.gpkg')
 
+folder = "/home/juju/Bureau/gisco/rail_rinf/"
+# transform annex G
+xlsToGPKG(folder+"NET_SEGMENTS_EU_EFTA.xlsx", 'Fromlongitude', 'Fromlatitude', 'Tolongitude', 'Tolatitude', "Network segment identifier", folder+'out.gpkg')
+# transform RINF
+xlsToGPKG(folder+"RINF_EU_EFTA.xlsx", 'Point Start Longitude', 'Point Start Latitude', 'Point End Longitude', 'Point End Latitude', "ID", folder+'out_rinf.gpkg')
