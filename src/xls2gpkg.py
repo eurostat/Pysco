@@ -24,6 +24,8 @@ def xlsToGPKG(inXLSfile, lon1, lat1, lon2, lat2, id, outGPKGFile):
 
 
 folder = "/home/juju/Bureau/gisco/rail_rinf/"
+# folder = ".\\"
+
 # transform annex G
 xlsToGPKG(folder+"NET_SEGMENTS_EU_EFTA.xlsx", 'Fromlongitude', 'Fromlatitude', 'Tolongitude', 'Tolatitude', "Network segment identifier", folder+'out.gpkg')
 # transform RINF
