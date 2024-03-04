@@ -2,8 +2,8 @@ import geopandas as gpd
 import pandas as pd
 from shapely.geometry import LineString
 
-# transform xls segments into GPKG file
-def xlsToGPKG(inXLSfile, lon1, lat1, lon2, lat2, id, outGPKGFile):
+# function to transform xls segments into GPKG file
+def xls2GPKG(inXLSfile, lon1, lat1, lon2, lat2, id, outGPKGFile, crsEPSG="4258"):
 
     print("Load data from "+inXLSfile)
     df = pd.read_excel(inXLSfile)
@@ -20,13 +20,13 @@ def xlsToGPKG(inXLSfile, lon1, lat1, lon2, lat2, id, outGPKGFile):
 
     print("Save as GPKG file")
     gdf = gpd.GeoDataFrame(df, geometry=geometries)
-    gdf.to_file(outGPKGFile, driver='GPKG', crs="EPSG:4258")
+    gdf.to_file(outGPKGFile, driver='GPKG', crs="EPSG:"+crsEPSG)
 
 
 folder = "/home/juju/Bureau/gisco/rail_rinf/"
 # folder = ".\\"
 
 # transform annex G
-xlsToGPKG(folder+"NET_SEGMENTS_EU_EFTA.xlsx", 'Fromlongitude', 'Fromlatitude', 'Tolongitude', 'Tolatitude', "Network segment identifier", folder+'out.gpkg')
+xls2GPKG(folder+"NET_SEGMENTS_EU_EFTA.xlsx", 'Fromlongitude', 'Fromlatitude', 'Tolongitude', 'Tolatitude', "Network segment identifier", folder+'out.gpkg')
 # transform RINF
-xlsToGPKG(folder+"RINF_EU_EFTA.xlsx", 'Point Start Longitude', 'Point Start Latitude', 'Point End Longitude', 'Point End Latitude', "ID", folder+'out_rinf.gpkg')
+xls2GPKG(folder+"RINF_EU_EFTA.xlsx", 'Point Start Longitude', 'Point Start Latitude', 'Point End Longitude', 'Point End Latitude', "ID", folder+'out_rinf.gpkg')
