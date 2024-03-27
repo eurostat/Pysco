@@ -45,7 +45,9 @@ wt = nx.shortest_path_length(graph, "3931227_3026428", "3936658_3029248", weight
 
 #export as geopackage
 line = getShortestPathGeometry(sp)
-data = {'geometry': [line], 'duration': [wt]}
-gdf = gpd.GeoDataFrame(data)
+f = {'geometry': [line], 'duration': [wt]}
+gdf = gpd.GeoDataFrame(f)
+gdf = gdf.set_crs(3035)
+print(gdf.crs)
 gdf.to_file(out_folder+"sp.gpkg", driver="GPKG")
 
