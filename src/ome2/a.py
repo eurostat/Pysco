@@ -24,5 +24,5 @@ print(sp)
 
 #go through links. initial and final point. build node id with rounded x/y coordinates. add edge.
 #comput weight
-#link edge to feature/geometry
+#link edge to feature/geometry in case of need for the output
 
