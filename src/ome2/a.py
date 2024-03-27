@@ -1,6 +1,7 @@
 import geopandas as gpd
-from shapely.geometry import LineString
+from shapely.geometry import LineString,Point
 import networkx as nx
+from rtree import index
 
 out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 
@@ -37,6 +38,19 @@ for i, f in gdf.iterrows():
 #clear memory
 del gdf
 
+#index points
+#spatial_index = index.Index()
+#eps = 0.1
+for i in range(graph.number_of_nodes()):
+    node = graph.nodes.get(i)
+    print(node)
+    c = node.split('_'); x=float(c[0]); y=float(c[1])
+    #bbox = Point(x, y).bounds
+    #print(i, Point(x, y).bounds)
+    #spatial_index.insert(0, (x,y,x,y))
+
+
+
 #compute shortest path
 sp = nx.shortest_path(graph, "3931227_3026428", "3936658_3029248", weight="weight")
 wt = nx.shortest_path_length(graph, "3931227_3026428", "3936658_3029248", weight="weight")
@@ -47,7 +61,6 @@ wt = nx.shortest_path_length(graph, "3931227_3026428", "3936658_3029248", weight
 line = getShortestPathGeometry(sp)
 f = {'geometry': [line], 'duration': [wt]}
 gdf = gpd.GeoDataFrame(f)
-gdf = gdf.set_crs(3035)
-print(gdf.crs)
+gdf.crs = 'EPSG:3035'
 gdf.to_file(out_folder+"sp.gpkg", driver="GPKG")
 
