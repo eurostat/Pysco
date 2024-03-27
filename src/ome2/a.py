@@ -1,4 +1,5 @@
 import geopandas as gpd
+from shapely.geometry import LineString
 import networkx as nx
 
 out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
@@ -9,20 +10,42 @@ out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 #Graph-tool: implemented in C++ with a Python interface. https://graph-tool.skewed.de/static/doc/topology.html
 
 
+def getShortestPathGeometry(sp):
+    coordinates_tuples = [tuple(map(float, coord.split('_'))) for coord in sp]
+    return LineString(coordinates_tuples)
+
+
 #print("loading...")
-#gdf = gpd.read_file(out_folder+"test.gpkg")
-#print(len(gdf))
+gdf = gpd.read_file(out_folder+"test.gpkg")
+print(len(gdf))
+#print(gdf.dtypes)
 
-
+#create graph
 graph = nx.Graph()
-graph.add_edge("A", "B", weight=4)
-graph.add_edge("B", "D", weight=2)
-graph.add_edge("A", "C", weight=3)
-graph.add_edge("C", "D", weight=4)
-sp = nx.shortest_path(graph, "A", "D", weight="weight")
-print(sp)
 
-#go through links. initial and final point. build node id with rounded x/y coordinates. add edge.
-#comput weight
-#link edge to feature/geometry in case of need for the output
+for i, f in gdf.iterrows():
+    g = f.geometry
+    pi = g.coords[0]
+    pi = str(round(pi[0])) +'_'+ str(round(pi[1]))
+    pf = g.coords[-1]
+    pf = str(round(pf[0])) +'_'+ str(round(pf[1]))
+    speedKmH = 50
+    w = round(g.length / speedKmH*3.6)
+    #print(pi, pf, w)
+    graph.add_edge(pi, pf, weight=w)
+
+#clear memory
+del gdf
+
+#compute shortest path
+sp = nx.shortest_path(graph, "3931227_3026428", "3936658_3029248", weight="weight")
+wt = nx.shortest_path_length(graph, "3931227_3026428", "3936658_3029248", weight="weight")
+#print(sp)
+#print(wt)
+
+#export as geopackage
+line = getShortestPathGeometry(sp)
+data = {'geometry': [line], 'duration': [wt]}
+gdf = gpd.GeoDataFrame(data)
+gdf.to_file(out_folder+"sp.gpkg", driver="GPKG")
 
