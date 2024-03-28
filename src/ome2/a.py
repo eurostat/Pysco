@@ -59,14 +59,14 @@ for i in range(graph.number_of_nodes()):
 print("compute shortest paths")
 
 #center - origin point
-xC = 3935000
-yC = 3025000 
+xC = 3930000
+yC = 3030000 
 #origin node
 node1 = nodes[next(idx.nearest((xC, yC, xC, yC), 1))]
 
 #radius
-rad = 15000
-nb = 20
+rad = 30000
+nb = 500
 geometries = []; durations = []
 for i in range(nb):
     angle = 2*math.pi*i/nb
