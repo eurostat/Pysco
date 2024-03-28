@@ -1,6 +1,6 @@
 import math
 import geopandas as gpd
-from shapely.geometry import LineString,Point
+from shapely.geometry import LineString
 import networkx as nx
 from rtree import index
 
@@ -22,9 +22,8 @@ gdf = gpd.read_file(out_folder+"test.gpkg")
 print(len(gdf))
 #print(gdf.dtypes)
 
-#create graph
+#make graph
 graph = nx.Graph()
-
 for i, f in gdf.iterrows():
     g = f.geometry
     pi = g.coords[0]
@@ -39,17 +38,16 @@ for i, f in gdf.iterrows():
 #clear memory
 del gdf
 
-
 #make list of nodes
 nodes = []
 for node in graph.nodes(): nodes.append(node)
 
-#index nodes
-spatial_index = index.Index()
+#make spatial index
+idx = index.Index()
 for i in range(graph.number_of_nodes()):
     node = nodes[i]
     c = node.split('_'); x=float(c[0]); y=float(c[1])
-    spatial_index.insert(i, (x,y,x,y))
+    idx.insert(i, (x,y,x,y))
 
 
 #idx = index.Index()
@@ -57,34 +55,37 @@ for i in range(graph.number_of_nodes()):
 #hits = idx.nearest((0, 0, 10, 10), 3)
 #print(next(hits))
 
-#center
-xC = 3025000 
-yC = 3935000
+#center - origin point
+xC = 3935000
+yC = 3025000 
+#origin node
+node1 = nodes[next(idx.nearest((xC, yC, xC, yC), 1))]
+
 #radius
 rad = 5000
-
 nb = 20
 for i in range(nb):
     angle = 2*math.pi*i/nb
-    x = xC+rad*math.cos(angle)
-    y = xC+rad*math.sin(angle)
-    node = index.nearest((x, y, x, y), 1)
+    x = round(xC+rad*math.cos(angle))
+    y = round(yC+rad*math.sin(angle))
+    node = idx.nearest((x, y, x, y), 1)
     node = next(node)
-    print(x,y,node)
+    node = nodes[node]
 
-    
-
-
-
-#compute shortest path
-sp = nx.shortest_path(graph, "3931227_3026428", "3936658_3029248", weight="weight")
-wt = nx.shortest_path_length(graph, "3931227_3026428", "3936658_3029248", weight="weight")
-#print(sp)
-#print(wt)
+    #compute shortest path
+    try:
+        sp = nx.shortest_path(graph, node1, node, weight="weight")
+        print(sp)
+        #wt = nx.shortest_path_length(graph, "3931227_3026428", "3936658_3029248", weight="weight")
+        #print(sp)
+        #print(wt)
+        #line = getShortestPathGeometry(sp)
+        #print(line)
+    except nx.NetworkXNoPath as e:
+        print("Exception:", e)
 
 #export as geopackage
-line = getShortestPathGeometry(sp)
-f = {'geometry': [line], 'duration': [wt]}
-gdf = gpd.GeoDataFrame(f)
-gdf.crs = 'EPSG:3035'
-gdf.to_file(out_folder+"sp.gpkg", driver="GPKG")
+#f = {'geometry': [line], 'duration': [wt]}
+#gdf = gpd.GeoDataFrame(f)
+#gdf.crs = 'EPSG:3035'
+#gdf.to_file(out_folder+"sp.gpkg", driver="GPKG")
