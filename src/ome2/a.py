@@ -63,8 +63,8 @@ node1 = nodes[next(idx.nearest((xC, yC, xC, yC), 1))]
 size = 60000
 nb = 50
 geometries = []; durations = []
-for i in range(nb):
-    for j in range(nb):
+for i in range(nb+1):
+    for j in range(nb+1):
         try:
             #compute shortest path
             #angle = 2*math.pi*i/nb
@@ -76,7 +76,6 @@ for i in range(nb):
             node = next(node)
             node = nodes[node]
             sp = nx.shortest_path(graph, node1, node, weight="weight")
-            print(sp)
             line = get_shortest_path_geometry(sp)
             geometries.append(line)
             #wt = nx.shortest_path_length(graph, node1, node, weight="weight")
@@ -84,7 +83,8 @@ for i in range(nb):
             durations.append(wt)
         except nx.NetworkXNoPath as e:
             print("Exception:", e)
-
+        except Exception as e:
+            print("Exception:", e)
 
 print("export as geopackage", datetime.now())
 fs = {'geometry': geometries, 'duration': durations}
