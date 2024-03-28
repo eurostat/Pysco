@@ -75,6 +75,7 @@ for i in range(nb+1):
             node = idx.nearest((x, y, x, y), 1)
             node = next(node)
             node = nodes[node]
+            #TODO test A*
             sp = nx.shortest_path(graph, node1, node, weight="weight")
             line = get_shortest_path_geometry(sp)
             geometries.append(line)
