@@ -54,13 +54,13 @@ for i in range(graph.number_of_nodes()):
 print("compute shortest paths", datetime.now())
 
 #origin point
-xC = 3900000
-yC = 3000000 
+xC = 3930000
+yC = 3030000 
 #origin node
 node1 = nodes[next(idx.nearest((xC, yC, xC, yC), 1))]
 
 #radius
-rad = 30000
+size = 60000
 nb = 50
 geometries = []; durations = []
 for i in range(nb):
@@ -68,8 +68,8 @@ for i in range(nb):
         #angle = 2*math.pi*i/nb
         #x = round(xC+rad*math.cos(angle))
         #y = round(yC+rad*math.sin(angle))
-        x = xC + i*60000/nb
-        y = yC + j*60000/nb
+        x = xC -size/2 + i*60000/nb
+        y = yC -size/2 + j*60000/nb
         node = idx.nearest((x, y, x, y), 1)
         node = next(node)
         node = nodes[node]
@@ -77,10 +77,11 @@ for i in range(nb):
         #compute shortest path
         try:
             sp = nx.shortest_path(graph, node1, node, weight="weight")
-            #wt = nx.shortest_path_length(graph, node1, node, weight="weight")
-            wt = nx.path_weight(graph, sp, weight='weight')
+            print(sp)
             line = get_shortest_path_geometry(sp)
             geometries.append(line)
+            #wt = nx.shortest_path_length(graph, node1, node, weight="weight")
+            wt = nx.path_weight(graph, sp, weight='weight')
             durations.append(wt)
         except nx.NetworkXNoPath as e:
             print("Exception:", e)
