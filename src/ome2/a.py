@@ -1,3 +1,4 @@
+import math
 import geopandas as gpd
 from shapely.geometry import LineString,Point
 import networkx as nx
@@ -38,16 +39,40 @@ for i, f in gdf.iterrows():
 #clear memory
 del gdf
 
-#index points
-#spatial_index = index.Index()
-#eps = 0.1
+
+#make list of nodes
+nodes = []
+for node in graph.nodes(): nodes.append(node)
+
+#index nodes
+spatial_index = index.Index()
 for i in range(graph.number_of_nodes()):
-    node = graph.nodes.get(i)
-    print(node)
+    node = nodes[i]
     c = node.split('_'); x=float(c[0]); y=float(c[1])
-    #bbox = Point(x, y).bounds
-    #print(i, Point(x, y).bounds)
-    #spatial_index.insert(0, (x,y,x,y))
+    spatial_index.insert(i, (x,y,x,y))
+
+
+#idx = index.Index()
+#idx.insert(4321, (34.37, 26.73, 49.37, 41.73), obj=42)
+#hits = idx.nearest((0, 0, 10, 10), 3)
+#print(next(hits))
+
+#center
+xC = 3025000 
+yC = 3935000
+#radius
+rad = 5000
+
+nb = 20
+for i in range(nb):
+    angle = 2*math.pi*i/nb
+    x = xC+rad*math.cos(angle)
+    y = xC+rad*math.sin(angle)
+    node = index.nearest((x, y, x, y), 1)
+    node = next(node)
+    print(x,y,node)
+
+    
 
 
 
@@ -63,4 +88,3 @@ f = {'geometry': [line], 'duration': [wt]}
 gdf = gpd.GeoDataFrame(f)
 gdf.crs = 'EPSG:3035'
 gdf.to_file(out_folder+"sp.gpkg", driver="GPKG")
-
