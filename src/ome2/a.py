@@ -65,17 +65,16 @@ nb = 50
 geometries = []; durations = []
 for i in range(nb):
     for j in range(nb):
-        #angle = 2*math.pi*i/nb
-        #x = round(xC+rad*math.cos(angle))
-        #y = round(yC+rad*math.sin(angle))
-        x = xC -size/2 + i*60000/nb
-        y = yC -size/2 + j*60000/nb
-        node = idx.nearest((x, y, x, y), 1)
-        node = next(node)
-        node = nodes[node]
-
-        #compute shortest path
         try:
+            #compute shortest path
+            #angle = 2*math.pi*i/nb
+            #x = round(xC+rad*math.cos(angle))
+            #y = round(yC+rad*math.sin(angle))
+            x = xC -size/2 + i*60000/nb
+            y = yC -size/2 + j*60000/nb
+            node = idx.nearest((x, y, x, y), 1)
+            node = next(node)
+            node = nodes[node]
             sp = nx.shortest_path(graph, node1, node, weight="weight")
             print(sp)
             line = get_shortest_path_geometry(sp)
