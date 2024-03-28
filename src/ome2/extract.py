@@ -6,10 +6,10 @@ from shapely.geometry import box
 
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
-minx = 3930000
-maxx = 3940000
-miny = 3020000
-maxy = 3030000
+minx = 3920000
+maxx = 3950000
+miny = 3010000
+maxy = 3040000
 bbox = box(minx, miny, maxx, maxy)
 
 print("loading...")

@@ -17,12 +17,12 @@ def getShortestPathGeometry(sp):
     return LineString(coordinates_tuples)
 
 
-#print("loading...")
+print("loading")
 gdf = gpd.read_file(out_folder+"test.gpkg")
-print(len(gdf))
+print(str(len(gdf)) + " links")
 #print(gdf.dtypes)
 
-#make graph
+print("make graph")
 graph = nx.Graph()
 for i, f in gdf.iterrows():
     g = f.geometry
@@ -38,11 +38,12 @@ for i, f in gdf.iterrows():
 #clear memory
 del gdf
 
-#make list of nodes
+
+print("make list of nodes")
 nodes = []
 for node in graph.nodes(): nodes.append(node)
 
-#make spatial index
+print("make spatial index")
 idx = index.Index()
 for i in range(graph.number_of_nodes()):
     node = nodes[i]
@@ -55,6 +56,8 @@ for i in range(graph.number_of_nodes()):
 #hits = idx.nearest((0, 0, 10, 10), 3)
 #print(next(hits))
 
+print("compute shortest paths")
+
 #center - origin point
 xC = 3935000
 yC = 3025000 
@@ -62,8 +65,9 @@ yC = 3025000
 node1 = nodes[next(idx.nearest((xC, yC, xC, yC), 1))]
 
 #radius
-rad = 5000
+rad = 15000
 nb = 20
+geometries = []; durations = []
 for i in range(nb):
     angle = 2*math.pi*i/nb
     x = round(xC+rad*math.cos(angle))
@@ -75,17 +79,17 @@ for i in range(nb):
     #compute shortest path
     try:
         sp = nx.shortest_path(graph, node1, node, weight="weight")
-        print(sp)
-        #wt = nx.shortest_path_length(graph, "3931227_3026428", "3936658_3029248", weight="weight")
-        #print(sp)
-        #print(wt)
-        #line = getShortestPathGeometry(sp)
-        #print(line)
+        #TODO improve
+        wt = nx.shortest_path_length(graph, node1, node, weight="weight")
+        line = getShortestPathGeometry(sp)
+        geometries.append(line)
+        durations.append(wt)
     except nx.NetworkXNoPath as e:
         print("Exception:", e)
 
-#export as geopackage
-#f = {'geometry': [line], 'duration': [wt]}
-#gdf = gpd.GeoDataFrame(f)
-#gdf.crs = 'EPSG:3035'
-#gdf.to_file(out_folder+"sp.gpkg", driver="GPKG")
+
+print("export as geopackage")
+fs = {'geometry': geometries, 'duration': durations}
+gdf = gpd.GeoDataFrame(fs)
+gdf.crs = 'EPSG:3035'
+gdf.to_file(out_folder+"sp.gpkg", driver="GPKG")
