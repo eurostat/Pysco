@@ -3,6 +3,7 @@ import geopandas as gpd
 from shapely.geometry import LineString
 import networkx as nx
 from rtree import index
+from datetime import datetime
 
 out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 
@@ -12,17 +13,17 @@ out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 #Graph-tool: implemented in C++ with a Python interface. https://graph-tool.skewed.de/static/doc/topology.html
 
 
-def getShortestPathGeometry(sp):
+def get_shortest_path_geometry(sp):
     coordinates_tuples = [tuple(map(float, coord.split('_'))) for coord in sp]
     return LineString(coordinates_tuples)
 
 
-print("loading")
+print("loading", datetime.now())
 gdf = gpd.read_file(out_folder+"test.gpkg")
 print(str(len(gdf)) + " links")
 #print(gdf.dtypes)
 
-print("make graph")
+print("make graph", datetime.now())
 graph = nx.Graph()
 for i, f in gdf.iterrows():
     g = f.geometry
@@ -39,56 +40,53 @@ for i, f in gdf.iterrows():
 del gdf
 
 
-print("make list of nodes")
+print("make list of nodes", datetime.now())
 nodes = []
 for node in graph.nodes(): nodes.append(node)
 
-print("make spatial index")
+print("make spatial index", datetime.now())
 idx = index.Index()
 for i in range(graph.number_of_nodes()):
     node = nodes[i]
     c = node.split('_'); x=float(c[0]); y=float(c[1])
     idx.insert(i, (x,y,x,y))
 
+print("compute shortest paths", datetime.now())
 
-#idx = index.Index()
-#idx.insert(4321, (34.37, 26.73, 49.37, 41.73), obj=42)
-#hits = idx.nearest((0, 0, 10, 10), 3)
-#print(next(hits))
-
-print("compute shortest paths")
-
-#center - origin point
-xC = 3930000
-yC = 3030000 
+#origin point
+xC = 3900000
+yC = 3000000 
 #origin node
 node1 = nodes[next(idx.nearest((xC, yC, xC, yC), 1))]
 
 #radius
 rad = 30000
-nb = 500
+nb = 50
 geometries = []; durations = []
 for i in range(nb):
-    angle = 2*math.pi*i/nb
-    x = round(xC+rad*math.cos(angle))
-    y = round(yC+rad*math.sin(angle))
-    node = idx.nearest((x, y, x, y), 1)
-    node = next(node)
-    node = nodes[node]
+    for j in range(nb):
+        #angle = 2*math.pi*i/nb
+        #x = round(xC+rad*math.cos(angle))
+        #y = round(yC+rad*math.sin(angle))
+        x = xC + i*60000/nb
+        y = yC + j*60000/nb
+        node = idx.nearest((x, y, x, y), 1)
+        node = next(node)
+        node = nodes[node]
 
-    #compute shortest path
-    try:
-        sp = nx.shortest_path(graph, node1, node, weight="weight")
-        #TODO improve
-        wt = nx.shortest_path_length(graph, node1, node, weight="weight")
-        line = getShortestPathGeometry(sp)
-        geometries.append(line)
-        durations.append(wt)
-    except nx.NetworkXNoPath as e:
-        print("Exception:", e)
+        #compute shortest path
+        try:
+            sp = nx.shortest_path(graph, node1, node, weight="weight")
+            #wt = nx.shortest_path_length(graph, node1, node, weight="weight")
+            wt = nx.path_weight(graph, sp, weight='weight')
+            line = get_shortest_path_geometry(sp)
+            geometries.append(line)
+            durations.append(wt)
+        except nx.NetworkXNoPath as e:
+            print("Exception:", e)
 
 
-print("export as geopackage")
+print("export as geopackage", datetime.now())
 fs = {'geometry': geometries, 'duration': durations}
 gdf = gpd.GeoDataFrame(fs)
 gdf.crs = 'EPSG:3035'
