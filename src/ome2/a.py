@@ -20,6 +20,7 @@ def get_shortest_path_geometry(sp):
 
 print("loading", datetime.now())
 size = 10000
+resolution = 1000
 gdf = gpd.read_file(out_folder+"test_"+str(size)+".gpkg")
 print(str(len(gdf)) + " links")
 #print(gdf.dtypes)
@@ -66,11 +67,10 @@ def dist(a, b):
     (x2, y2) = b.split('_')
     return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
-#radius
-nb = 50
-resolution = size/nb
+nb = math.ceil(size/resolution)
 sp_geometries = []; sp_durations = []
 pt_geometries = []; pt_durations = []; pt_resolutions = []
+seg_geometries = []; seg_lengths = []
 for i in range(nb+1):
     for j in range(nb+1):
         #compute shortest path
@@ -82,9 +82,20 @@ for i in range(nb+1):
         node = idx.nearest((x, y, x, y), 1)
         node = next(node)
         node = nodes[node]
+
+        #compute distance to network node
+        cN = node.split('_'); xN=float(cN[0]); yN=float(cN[1])
+        segg = LineString([(x, y), (xN, yN)])
+        distNetw = segg.length
+
+        #point information
         pt_geometries.append(Point(x,y))
         pt_resolutions.append(resolution)
         ptdur = math.inf
+
+        #network segment information
+        seg_geometries.append(segg)
+        seg_lengths.append(distNetw)
         try:
             #TODO test A*
             sp = nx.shortest_path(graph, node1, node, weight="weight")
@@ -108,7 +119,13 @@ gdf.crs = 'EPSG:3035'
 gdf.to_file(out_folder+"sp.gpkg", driver="GPKG")
 
 print("export points as geopackage", len(pt_geometries), datetime.now())
-fs = {'geometry': pt_geometries, 'duration': pt_durations, 'resolution': pt_resolutions}
+fs = {'geometry': pt_geometries, 'duration': pt_durations, 'resolution': pt_resolutions, 'netdist': seg_lengths}
 gdf = gpd.GeoDataFrame(fs)
 gdf.crs = 'EPSG:3035'
 gdf.to_file(out_folder+"pt.gpkg", driver="GPKG")
+
+print("export network segments as geopackage", len(seg_geometries), datetime.now())
+fs = {'geometry': seg_geometries, 'dist': seg_lengths}
+gdf = gpd.GeoDataFrame(fs)
+gdf.crs = 'EPSG:3035'
+gdf.to_file(out_folder+"seg.gpkg", driver="GPKG")
