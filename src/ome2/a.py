@@ -18,7 +18,14 @@ def get_shortest_path_geometry(sp):
     coordinates_tuples = [tuple(map(float, coord.split('_'))) for coord in sp]
     return LineString(coordinates_tuples)
 
+def getNodeCoordinate(node):
+    c = node.split('_')
+    x=float(c[0]); y=float(c[1])
+    return [x,y]
+
 print("loading", datetime.now())
+xMin = 3900000
+yMin = 3000000 
 size = 10000
 resolution = 1000
 gdf = gpd.read_file(out_folder+"test_"+str(size)+".gpkg")
@@ -50,21 +57,17 @@ print("make spatial index", datetime.now())
 idx = index.Index()
 for i in range(graph.number_of_nodes()):
     node = nodes[i]
-    c = node.split('_'); x=float(c[0]); y=float(c[1])
+    [x,y] = getNodeCoordinate(node)
     idx.insert(i, (x,y,x,y))
 
 print("compute shortest paths", datetime.now())
 
-#bottom left point
-xMin = 3900000
-yMin = 3000000 
 #origin node: center
 node1 = nodes[next(idx.nearest((xMin+size/2, yMin+size/2, xMin+size/2, yMin+size/2), 1))]
 
 #used for A* heuristic
 def dist(a, b):
-    (x1, y1) = a.split('_')
-    (x2, y2) = b.split('_')
+    [x1, y1] = getNodeCoordinate(a); [x2, y2] = getNodeCoordinate(b)
     return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
 nb = math.ceil(size/resolution)
@@ -84,7 +87,7 @@ for i in range(nb+1):
         node = nodes[node]
 
         #compute distance to network node
-        cN = node.split('_'); xN=float(cN[0]); yN=float(cN[1])
+        [xN,yN]=getNodeCoordinate(node)
         segg = LineString([(x, y), (xN, yN)])
         distNetw = segg.length
 
@@ -98,8 +101,8 @@ for i in range(nb+1):
         seg_lengths.append(distNetw)
         try:
             #TODO test A*
-            sp = nx.shortest_path(graph, node1, node, weight="weight")
-            #sp = nx.astar_path(graph, node1, node, heuristic=dist, weight="weight")
+            #sp = nx.shortest_path(graph, node1, node, weight="weight")
+            sp = nx.astar_path(graph, node1, node, heuristic=dist, weight="weight")
             line = get_shortest_path_geometry(sp)
             sp_geometries.append(line)
             #wt = nx.shortest_path_length(graph, node1, node, weight="weight")
