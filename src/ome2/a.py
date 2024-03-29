@@ -5,6 +5,7 @@ from shapely.errors import GEOSException
 import networkx as nx
 from rtree import index
 from datetime import datetime
+from netutils import shortest_path_geometry,node_coordinate
 
 out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 
@@ -13,15 +14,6 @@ out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 #igraph: C with interfaces for Python. https://python.igraph.org/en/stable/api/igraph.GraphBase.html#get_shortest_path
 #Graph-tool: implemented in C++ with a Python interface. https://graph-tool.skewed.de/static/doc/topology.html
 
-
-def get_shortest_path_geometry(sp):
-    coordinates_tuples = [tuple(map(float, coord.split('_'))) for coord in sp]
-    return LineString(coordinates_tuples)
-
-def getNodeCoordinate(node):
-    c = node.split('_')
-    x=float(c[0]); y=float(c[1])
-    return [x,y]
 
 print("loading", datetime.now())
 xMin = 3900000
@@ -57,7 +49,7 @@ print("make spatial index", datetime.now())
 idx = index.Index()
 for i in range(graph.number_of_nodes()):
     node = nodes[i]
-    [x,y] = getNodeCoordinate(node)
+    [x,y] = node_coordinate(node)
     idx.insert(i, (x,y,x,y))
 
 print("compute shortest paths", datetime.now())
@@ -67,7 +59,7 @@ node1 = nodes[next(idx.nearest((xMin+size/2, yMin+size/2, xMin+size/2, yMin+size
 
 #used for A* heuristic
 def dist(a, b):
-    [x1, y1] = getNodeCoordinate(a); [x2, y2] = getNodeCoordinate(b)
+    [x1, y1] = node_coordinate(a); [x2, y2] = node_coordinate(b)
     #return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
     return math.abs(x1-x2)+math.abs(y1-y2)
 
@@ -88,7 +80,7 @@ for i in range(nb+1):
         node = nodes[node]
 
         #compute distance to network node
-        [xN,yN]=getNodeCoordinate(node)
+        [xN,yN]=node_coordinate(node)
         segg = LineString([(x, y), (xN, yN)])
         distNetw = segg.length
 
@@ -106,7 +98,7 @@ for i in range(nb+1):
             #A*
             #sp = nx.astar_path(graph, node1, node, heuristic=dist, weight="weight")
 
-            line = get_shortest_path_geometry(sp)
+            line = shortest_path_geometry(sp)
             sp_geometries.append(line)
             #wt = nx.shortest_path_length(graph, node1, node, weight="weight")
             wt = nx.path_weight(graph, sp, weight='weight')
