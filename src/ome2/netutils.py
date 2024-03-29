@@ -1,5 +1,6 @@
 import networkx as nx
 from shapely.geometry import LineString
+import math
 
 def shortest_path_geometry(sp):
     coordinates_tuples = [tuple(map(float, coord.split('_'))) for coord in sp]
@@ -21,3 +22,15 @@ def graph_from_geodataframe(gdf, weight = lambda f:f.geometry.length, coord_simp
         w = weight(f)
         graph.add_edge(pi, pf, weight=w)
     return graph
+
+
+
+
+
+def a_star_euclidian_dist(n1, n2):
+    [x1, y1] = node_coordinate(n1); [x2, y2] = node_coordinate(n2)
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+
+def a_star_manhattan_dist(n1, n2):
+    [x1, y1] = node_coordinate(n1); [x2, y2] = node_coordinate(n2)
+    return math.abs(x1-x2)+math.abs(y1-y2)

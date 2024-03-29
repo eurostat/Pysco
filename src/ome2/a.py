@@ -5,7 +5,7 @@ from shapely.errors import GEOSException
 import networkx as nx
 from rtree import index
 from datetime import datetime
-from netutils import shortest_path_geometry,node_coordinate,graph_from_geodataframe
+from netutils import shortest_path_geometry,node_coordinate,graph_from_geodataframe,a_star_euclidian_dist
 
 out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 
@@ -13,7 +13,7 @@ out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 print("loading", datetime.now())
 xMin = 3900000
 yMin = 3000000 
-size = 10000
+size = 60000
 resolution = 1000
 gdf = gpd.read_file(out_folder+"test_"+str(size)+".gpkg")
 print(str(len(gdf)) + " links")
@@ -26,7 +26,6 @@ graph = graph_from_geodataframe(gdf, weightFunction)
 
 #clear memory
 del gdf
-
 
 print("make list of nodes", datetime.now())
 nodes = []
@@ -44,22 +43,12 @@ print("compute shortest paths", datetime.now())
 #origin node: center
 node1 = nodes[next(idx.nearest((xMin+size/2, yMin+size/2, xMin+size/2, yMin+size/2), 1))]
 
-#used for A* heuristic
-def dist(a, b):
-    [x1, y1] = node_coordinate(a); [x2, y2] = node_coordinate(b)
-    #return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
-    return math.abs(x1-x2)+math.abs(y1-y2)
-
 nb = math.ceil(size/resolution)
 sp_geometries = []; sp_durations = []
 pt_geometries = []; pt_durations = []; pt_resolutions = []
 seg_geometries = []; seg_lengths = []
 for i in range(nb+1):
     for j in range(nb+1):
-        #compute shortest path
-        #angle = 2*math.pi*i/nb
-        #x = round(xC+rad*math.cos(angle))
-        #y = round(yC+rad*math.sin(angle))
         x = xMin + i*resolution
         y = yMin + j*resolution
         node = idx.nearest((x, y, x, y), 1)
@@ -83,7 +72,7 @@ for i in range(nb+1):
             #default
             sp = nx.shortest_path(graph, node1, node, weight="weight")
             #A*
-            #sp = nx.astar_path(graph, node1, node, heuristic=dist, weight="weight")
+            #sp = nx.astar_path(graph, node1, node, heuristic=a_star_euclidian_dist, weight="weight")
 
             line = shortest_path_geometry(sp)
             sp_geometries.append(line)
