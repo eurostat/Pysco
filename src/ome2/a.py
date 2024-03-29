@@ -68,7 +68,8 @@ node1 = nodes[next(idx.nearest((xMin+size/2, yMin+size/2, xMin+size/2, yMin+size
 #used for A* heuristic
 def dist(a, b):
     [x1, y1] = getNodeCoordinate(a); [x2, y2] = getNodeCoordinate(b)
-    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+    #return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
+    return math.abs(x1-x2)+math.abs(y1-y2)
 
 nb = math.ceil(size/resolution)
 sp_geometries = []; sp_durations = []
@@ -100,9 +101,11 @@ for i in range(nb+1):
         seg_geometries.append(segg)
         seg_lengths.append(distNetw)
         try:
-            #TODO test A*
-            #sp = nx.shortest_path(graph, node1, node, weight="weight")
-            sp = nx.astar_path(graph, node1, node, heuristic=dist, weight="weight")
+            #default
+            sp = nx.shortest_path(graph, node1, node, weight="weight")
+            #A*
+            #sp = nx.astar_path(graph, node1, node, heuristic=dist, weight="weight")
+
             line = get_shortest_path_geometry(sp)
             sp_geometries.append(line)
             #wt = nx.shortest_path_length(graph, node1, node, weight="weight")
