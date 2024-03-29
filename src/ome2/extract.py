@@ -7,9 +7,9 @@ from shapely.geometry import box
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 minx = 3900000
-maxx = 3960000
+maxx = 3910000
 miny = 3000000
-maxy = 3060000
+maxy = 3010000
 bbox = box(minx, miny, maxx, maxy)
 
 print("loading")
@@ -21,4 +21,4 @@ print(len(gdf))
 #print(gdf.shape)
 
 print("save")
-gdf.to_file(out_folder+"test.gpkg", driver="GPKG")
+gdf.to_file(out_folder+"test_small.gpkg", driver="GPKG")

@@ -1,6 +1,7 @@
 import math
 import geopandas as gpd
-from shapely.geometry import LineString
+from shapely.geometry import Point,LineString
+from shapely.errors import GEOSException
 import networkx as nx
 from rtree import index
 from datetime import datetime
@@ -17,9 +18,9 @@ def get_shortest_path_geometry(sp):
     coordinates_tuples = [tuple(map(float, coord.split('_'))) for coord in sp]
     return LineString(coordinates_tuples)
 
-
 print("loading", datetime.now())
-gdf = gpd.read_file(out_folder+"test.gpkg")
+size = 10000
+gdf = gpd.read_file(out_folder+"test_"+str(size)+".gpkg")
 print(str(len(gdf)) + " links")
 #print(gdf.dtypes)
 
@@ -53,42 +54,61 @@ for i in range(graph.number_of_nodes()):
 
 print("compute shortest paths", datetime.now())
 
-#origin point
-xC = 3930000
-yC = 3030000 
-#origin node
-node1 = nodes[next(idx.nearest((xC, yC, xC, yC), 1))]
+#bottom left point
+xMin = 3900000
+yMin = 3000000 
+#origin node: center
+node1 = nodes[next(idx.nearest((xMin+size/2, yMin+size/2, xMin+size/2, yMin+size/2), 1))]
+
+#used for A* heuristic
+def dist(a, b):
+    (x1, y1) = a.split('_')
+    (x2, y2) = b.split('_')
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5
 
 #radius
-size = 60000
 nb = 50
-geometries = []; durations = []
+resolution = size/nb
+sp_geometries = []; sp_durations = []
+pt_geometries = []; pt_durations = []; pt_resolutions = []
 for i in range(nb+1):
     for j in range(nb+1):
+        #compute shortest path
+        #angle = 2*math.pi*i/nb
+        #x = round(xC+rad*math.cos(angle))
+        #y = round(yC+rad*math.sin(angle))
+        x = xMin + i*resolution
+        y = yMin + j*resolution
+        node = idx.nearest((x, y, x, y), 1)
+        node = next(node)
+        node = nodes[node]
+        pt_geometries.append(Point(x,y))
+        pt_resolutions.append(resolution)
+        ptdur = math.inf
         try:
-            #compute shortest path
-            #angle = 2*math.pi*i/nb
-            #x = round(xC+rad*math.cos(angle))
-            #y = round(yC+rad*math.sin(angle))
-            x = xC -size/2 + i*60000/nb
-            y = yC -size/2 + j*60000/nb
-            node = idx.nearest((x, y, x, y), 1)
-            node = next(node)
-            node = nodes[node]
             #TODO test A*
             sp = nx.shortest_path(graph, node1, node, weight="weight")
+            #sp = nx.astar_path(graph, node1, node, heuristic=dist, weight="weight")
             line = get_shortest_path_geometry(sp)
-            geometries.append(line)
+            sp_geometries.append(line)
             #wt = nx.shortest_path_length(graph, node1, node, weight="weight")
             wt = nx.path_weight(graph, sp, weight='weight')
-            durations.append(wt)
+            sp_durations.append(wt)
+            ptdur = wt
         except nx.NetworkXNoPath as e:
-            print("Exception:", e)
-        except Exception as e:
-            print("Exception:", e)
+            print("Exception NetworkXNoPath:", e)
+        except GEOSException as e:
+            print("Exception GEOSException:", e)
+        pt_durations.append(ptdur)
 
-print("export as geopackage", datetime.now())
-fs = {'geometry': geometries, 'duration': durations}
+print("export paths as geopackage", len(sp_geometries), datetime.now())
+fs = {'geometry': sp_geometries, 'duration': sp_durations}
 gdf = gpd.GeoDataFrame(fs)
 gdf.crs = 'EPSG:3035'
 gdf.to_file(out_folder+"sp.gpkg", driver="GPKG")
+
+print("export points as geopackage", len(pt_geometries), datetime.now())
+fs = {'geometry': pt_geometries, 'duration': pt_durations, 'resolution': pt_resolutions}
+gdf = gpd.GeoDataFrame(fs)
+gdf.crs = 'EPSG:3035'
+gdf.to_file(out_folder+"pt.gpkg", driver="GPKG")
