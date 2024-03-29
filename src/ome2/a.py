@@ -5,14 +5,9 @@ from shapely.errors import GEOSException
 import networkx as nx
 from rtree import index
 from datetime import datetime
-from netutils import shortest_path_geometry,node_coordinate
+from netutils import shortest_path_geometry,node_coordinate,graph_from_geodataframe
 
 out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
-
-#network analysis libs:
-#NetworkX: https://networkx.org/documentation/stable/reference/algorithms/shortest_paths.html
-#igraph: C with interfaces for Python. https://python.igraph.org/en/stable/api/igraph.GraphBase.html#get_shortest_path
-#Graph-tool: implemented in C++ with a Python interface. https://graph-tool.skewed.de/static/doc/topology.html
 
 
 print("loading", datetime.now())
@@ -25,17 +20,9 @@ print(str(len(gdf)) + " links")
 #print(gdf.dtypes)
 
 print("make graph", datetime.now())
-graph = nx.Graph()
-for i, f in gdf.iterrows():
-    g = f.geometry
-    pi = g.coords[0]
-    pi = str(round(pi[0])) +'_'+ str(round(pi[1]))
-    pf = g.coords[-1]
-    pf = str(round(pf[0])) +'_'+ str(round(pf[1]))
-    speedKmH = 50
-    w = round(g.length / speedKmH*3.6)
-    #print(pi, pf, w)
-    graph.add_edge(pi, pf, weight=w)
+speedKmH = 50
+weightFunction = lambda f: round(f.geometry.length / speedKmH*3.6)
+graph = graph_from_geodataframe(gdf, weightFunction)
 
 #clear memory
 del gdf
