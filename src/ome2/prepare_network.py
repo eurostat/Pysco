@@ -5,7 +5,7 @@ from datetime import datetime
 out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 
 print(datetime.now(), "loading")
-size = 10000
+size = 60000
 gdf = gpd.read_file(out_folder+"test_"+str(size)+".gpkg")
 gdf = gdf[gdf['road_surface_category'] != 'unpaved']
 gdf = gdf[gdf['road_surface_category'] != 'paved#unpaved']
@@ -60,7 +60,5 @@ def make_segment(geom):
     return LineString([c0, cn])
 gdf['geometry'] = gdf['geometry'].apply(make_segment)
 
-
-
-print(datetime.now(), "save filtered road network")
-gdf.to_file(out_folder+"test_"+str(size)+"_filtered.gpkg", driver="GPKG")
+print(datetime.now(), "save prepared road network")
+gdf.to_file(out_folder+"test_"+str(size)+"_prepared.gpkg", driver="GPKG")
