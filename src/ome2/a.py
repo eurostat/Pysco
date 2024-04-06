@@ -14,7 +14,8 @@ xMin = 3900000
 yMin = 3000000 
 size = 60000
 resolution = 1000
-gdf = gpd.read_file(out_folder+"test_"+str(size)+".gpkg")
+gdf = gpd.read_file(out_folder+"test_"+str(size)+".gpkg") #, query="form_of_way != 'tractor_road'")
+gdf = gdf[gdf['form_of_way'] != 'tractor_road']
 print(str(len(gdf)) + " links")
 #print(gdf.dtypes)
 
@@ -50,7 +51,7 @@ seg_geometries = []; seg_lengths = []
 #A* stuff
 astar_heuristic_speed_kmh = 50
 astar_heuristic = a_star_speed(a_star_euclidian_dist, astar_heuristic_speed_kmh)
-astar_cutoff_function = lambda node1, node: 2 * a_star_euclidian_dist(node1, node)
+astar_cutoff_function = lambda node1, node: 1.5 * a_star_euclidian_dist(node1, node)
 
 for i in range(nb+1):
     for j in range(nb+1):
@@ -81,9 +82,10 @@ for i in range(nb+1):
 
             #A*
             #https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.astar.astar_path.html
-            sp = nx.astar_path(graph, node1, node, heuristic=astar_heuristic, weight="weight") #, cutoff=astar_cutoff_function(node1, node))
-            #without cutoff: X mins
-            #with cutoff 2: X mins
+            sp = nx.astar_path(graph, node1, node, heuristic=astar_heuristic, weight="weight", cutoff=astar_cutoff_function(node1, node))
+            #without cutoff: 1.7 mins
+            #with cutoff 2: 1.8 mins
+            #with cutoff 1.5: 1.8 mins
 
             line = shortest_path_geometry(sp)
             sp_geometries.append(line)
