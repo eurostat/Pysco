@@ -9,7 +9,6 @@ from netutils import shortest_path_geometry,node_coordinate,graph_from_geodatafr
 
 out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 
-
 print(datetime.now(), "loading")
 xMin = 3900000
 yMin = 3000000 
@@ -77,7 +76,7 @@ for i in range(nb+1):
             #A*
             #https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.astar.astar_path.html
             cutoff = 2 * a_star_euclidian_dist(node1, node)
-            sp = nx.astar_path(graph, node1, node, a_star_euclidian_dist, "weight", 0, cutoff)
+            sp = nx.astar_path(graph, node1, node, heuristic=a_star_euclidian_dist, weight="weight", cutoff=cutoff)
             #without cutoff: 8.5 mins
             #with cutoff 2: X mins
 
