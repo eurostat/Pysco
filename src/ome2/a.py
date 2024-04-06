@@ -44,6 +44,7 @@ def weight_function(f):
     elif(frc == 'third_class'): speed_kmh = 50
     elif(frc == 'fourth_class'): speed_kmh = 40
     elif(frc == 'fifth_class'): speed_kmh = 30
+    elif(frc == 'void_unk'): speed_kmh = 30
     else: print(fow,frc)
     return round(f.geometry.length / speed_kmh * 3.6)
 graph = graph_from_geodataframe(gdf, weight_function)
