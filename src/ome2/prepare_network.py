@@ -7,9 +7,9 @@ out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 print(datetime.now(), "loading")
 size = 60000
 gdf = gpd.read_file(out_folder+"test_"+str(size)+".gpkg")
-gdf = gdf[gdf['road_surface_category'] != 'unpaved']
-gdf = gdf[gdf['road_surface_category'] != 'paved#unpaved']
-gdf = gdf[gdf['road_surface_category'] != 'unpaved#paved']
+#gdf = gdf[gdf['road_surface_category'] != 'unpaved']
+#gdf = gdf[gdf['road_surface_category'] != 'paved#unpaved']
+#gdf = gdf[gdf['road_surface_category'] != 'unpaved#paved']
 gdf = gdf[gdf['form_of_way'] != 'tractor_road']
 gdf = gdf[gdf['form_of_way'] != 'tractor_road#single_carriage_way']
 gdf = gdf[gdf['form_of_way'] != 'single_carriage_way#tractor_road']
@@ -23,10 +23,12 @@ print(str(len(gdf)) + " links")
 
 #define speed
 def speed_function(f):
+    rsc = f["road_surface_category"]
     fow = f["form_of_way"]
     frc = f["functional_road_class"]
     speed_kmh = 30
-    if(fow == 'motorway'): speed_kmh = 120
+    if(rsc != 'paved'): speed_kmh = 20
+    elif(fow == 'motorway'): speed_kmh = 120
     elif(fow == 'dual_carriage_way'): speed_kmh = 100
     elif(fow == 'slip_road'): speed_kmh = 80
     #elif(fow == 'single_carriage_way'): speed_kmh = 80
@@ -37,7 +39,7 @@ def speed_function(f):
     elif(frc == 'fourth_class'): speed_kmh = 40
     elif(frc == 'fifth_class'): speed_kmh = 30
     elif(frc == 'void_unk'): speed_kmh = 30
-    else: print(fow,frc)
+    else: print(rsc,fow,frc)
     return speed_kmh
 
 #compute speed

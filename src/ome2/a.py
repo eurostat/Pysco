@@ -13,7 +13,7 @@ print(datetime.now(), "loading")
 xMin = 3900000
 yMin = 3000000 
 size = 60000
-resolution = 1000
+resolution = 500
 gdf = gpd.read_file(out_folder+"test_"+str(size)+"_prepared.gpkg")
 print(str(len(gdf)) + " links")
 #print(gdf.dtypes)
