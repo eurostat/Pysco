@@ -15,13 +15,29 @@ yMin = 3000000
 size = 60000
 resolution = 1000
 gdf = gpd.read_file(out_folder+"test_"+str(size)+".gpkg") #, query="form_of_way != 'tractor_road'")
+gdf = gdf[gdf['road_surface_category'] != 'unpaved']
+gdf = gdf[gdf['road_surface_category'] != 'paved#unpaved']
+gdf = gdf[gdf['road_surface_category'] != 'unpaved#paved']
 gdf = gdf[gdf['form_of_way'] != 'tractor_road']
+gdf = gdf[gdf['form_of_way'] != 'tractor_road#single_carriage_way']
+gdf = gdf[gdf['form_of_way'] != 'single_carriage_way#tractor_road']
+gdf = gdf[gdf['access_restriction'] != 'physically_impossible']
+gdf = gdf[gdf['access_restriction'] != 'private']
+gdf = gdf[gdf['access_restriction'] != 'void_restricted#private']
+gdf = gdf[gdf['condition_of_facility'] != 'disused']
+gdf = gdf[gdf['condition_of_facility'] != 'under_construction']
 print(str(len(gdf)) + " links")
 #print(gdf.dtypes)
 
 print(datetime.now(), "make graph")
-speedKmH = 50
-weightFunction = lambda f: round(f.geometry.length / speedKmH * 3.6)
+def weightFunction(f):
+    fow = f["form_of_way"]
+    speedKmH = 50
+    if(fow == 'motorway'): speedKmH = 120
+    elif(fow == 'dual_carriage_way'): speedKmH = 100
+    elif(fow == 'single_carriage_way'): speedKmH = 100
+
+    return round(f.geometry.length / speedKmH * 3.6)
 graph = graph_from_geodataframe(gdf, weightFunction)
 
 #clear memory
@@ -82,7 +98,7 @@ for i in range(nb+1):
 
             #A*
             #https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.astar.astar_path.html
-            sp = nx.astar_path(graph, node1, node, heuristic=astar_heuristic, weight="weight", cutoff=astar_cutoff_function(node1, node))
+            sp = nx.astar_path(graph, node1, node, heuristic=astar_heuristic, weight="weight") #, cutoff=astar_cutoff_function(node1, node))
             #without cutoff: 1.7 mins
             #with cutoff 2: 1.8 mins
             #with cutoff 1.5: 1.8 mins
