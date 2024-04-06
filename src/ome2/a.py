@@ -30,15 +30,23 @@ print(str(len(gdf)) + " links")
 #print(gdf.dtypes)
 
 print(datetime.now(), "make graph")
-def weightFunction(f):
+def weight_function(f):
     fow = f["form_of_way"]
-    speedKmH = 50
-    if(fow == 'motorway'): speedKmH = 120
-    elif(fow == 'dual_carriage_way'): speedKmH = 100
-    elif(fow == 'single_carriage_way'): speedKmH = 100
-
-    return round(f.geometry.length / speedKmH * 3.6)
-graph = graph_from_geodataframe(gdf, weightFunction)
+    frc = f["functional_road_class"]
+    speed_kmh = 30
+    if(fow == 'motorway'): speed_kmh = 120
+    elif(fow == 'dual_carriage_way'): speed_kmh = 100
+    elif(fow == 'slip_road'): speed_kmh = 80
+    #elif(fow == 'single_carriage_way'): speed_kmh = 80
+    elif(frc == 'main_road'): speed_kmh = 80
+    elif(frc == 'first_class'): speed_kmh = 80
+    elif(frc == 'second_class'): speed_kmh = 70
+    elif(frc == 'third_class'): speed_kmh = 50
+    elif(frc == 'fourth_class'): speed_kmh = 40
+    elif(frc == 'fifth_class'): speed_kmh = 30
+    else: print(fow,frc)
+    return round(f.geometry.length / speed_kmh * 3.6)
+graph = graph_from_geodataframe(gdf, weight_function)
 
 #clear memory
 del gdf
