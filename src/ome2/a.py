@@ -13,7 +13,7 @@ out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 print(datetime.now(), "loading")
 xMin = 3900000
 yMin = 3000000 
-size = 10000
+size = 60000
 resolution = 1000
 gdf = gpd.read_file(out_folder+"test_"+str(size)+".gpkg")
 print(str(len(gdf)) + " links")
@@ -69,10 +69,17 @@ for i in range(nb+1):
         seg_geometries.append(segg)
         seg_lengths.append(distNetw)
         try:
+
             #default
             sp = nx.shortest_path(graph, node1, node, weight="weight")
+            #8 min
+
             #A*
-            #sp = nx.astar_path(graph, node1, node, heuristic=a_star_euclidian_dist, weight="weight")
+            #https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.astar.astar_path.html
+            cutoff = 2.5*a_star_euclidian_dist(node1, node)
+            sp = nx.astar_path(graph, node1, node, heuristic=a_star_euclidian_dist, weight="weight")#, cutoff=cutoff)
+            #without cutoff: X mins
+            #with cutoff: X mins
 
             line = shortest_path_geometry(sp)
             sp_geometries.append(line)
