@@ -50,11 +50,14 @@ gdf = gpd.GeoDataFrame(geometry=geometry, data=selected_column)
 gdf.crs = 'EPSG:3035'
 
 
+#compute duration
+gdf['duration'] = gdf.apply(lambda f:(f.geometry.length/f.speed_kmh*3.6), axis=1)
+
 #simplify geometry
 def make_segment(geom):
     c0 = geom.coords[0]
-    cN = geom.coords[-1]
-    return LineString([c0, cN])
+    cn = geom.coords[-1]
+    return LineString([c0, cn])
 gdf['geometry'] = gdf['geometry'].apply(make_segment)
 
 
