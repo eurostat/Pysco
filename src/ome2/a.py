@@ -76,7 +76,7 @@ for i in range(nb+1):
         try:
 
             #default
-            sp = nx.shortest_path(graph, node1, node, weight="weight")
+            #sp = nx.shortest_path(graph, node1, node, weight="weight")
             #8 min
 
             #A*
