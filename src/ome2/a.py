@@ -29,7 +29,7 @@ gdf = gdf[gdf['condition_of_facility'] != 'under_construction']
 print(str(len(gdf)) + " links")
 #print(gdf.dtypes)
 
-print(datetime.now(), "make graph")
+#define weight function
 def weight_function(f):
     fow = f["form_of_way"]
     frc = f["functional_road_class"]
@@ -47,6 +47,8 @@ def weight_function(f):
     elif(frc == 'void_unk'): speed_kmh = 30
     else: print(fow,frc)
     return round(f.geometry.length / speed_kmh * 3.6)
+
+print(datetime.now(), "make graph")
 graph = graph_from_geodataframe(gdf, weight_function)
 
 #clear memory
