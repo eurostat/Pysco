@@ -10,16 +10,16 @@ from netutils import shortest_path_geometry,node_coordinate,graph_from_geodatafr
 out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 
 
-print("loading", datetime.now())
+print(datetime.now(), "loading")
 xMin = 3900000
 yMin = 3000000 
-size = 60000
+size = 10000
 resolution = 1000
 gdf = gpd.read_file(out_folder+"test_"+str(size)+".gpkg")
 print(str(len(gdf)) + " links")
 #print(gdf.dtypes)
 
-print("make graph", datetime.now())
+print(datetime.now(), "make graph")
 speedKmH = 50
 weightFunction = lambda f: round(f.geometry.length / speedKmH*3.6)
 graph = graph_from_geodataframe(gdf, weightFunction)
@@ -27,18 +27,18 @@ graph = graph_from_geodataframe(gdf, weightFunction)
 #clear memory
 del gdf
 
-print("make list of nodes", datetime.now())
+print(datetime.now(), "make list of nodes")
 nodes = []
 for node in graph.nodes(): nodes.append(node)
 
-print("make spatial index", datetime.now())
+print(datetime.now(), "make spatial index")
 idx = index.Index()
 for i in range(graph.number_of_nodes()):
     node = nodes[i]
     [x,y] = node_coordinate(node)
     idx.insert(i, (x,y,x,y))
 
-print("compute shortest paths", datetime.now())
+print(datetime.now(), "compute shortest paths")
 
 #origin node: center
 node1 = nodes[next(idx.nearest((xMin+size/2, yMin+size/2, xMin+size/2, yMin+size/2), 1))]
@@ -86,19 +86,19 @@ for i in range(nb+1):
             print("Exception GEOSException:", e)
         pt_durations.append(ptdur)
 
-print("export paths as geopackage", len(sp_geometries), datetime.now())
+print(datetime.now(), "export paths as geopackage", len(sp_geometries))
 fs = {'geometry': sp_geometries, 'duration': sp_durations}
 gdf = gpd.GeoDataFrame(fs)
 gdf.crs = 'EPSG:3035'
 gdf.to_file(out_folder+"sp.gpkg", driver="GPKG")
 
-print("export points as geopackage", len(pt_geometries), datetime.now())
+print(datetime.now(), "export points as geopackage", len(pt_geometries))
 fs = {'geometry': pt_geometries, 'duration': pt_durations, 'resolution': pt_resolutions, 'netdist': seg_lengths}
 gdf = gpd.GeoDataFrame(fs)
 gdf.crs = 'EPSG:3035'
 gdf.to_file(out_folder+"pt.gpkg", driver="GPKG")
 
-print("export network segments as geopackage", len(seg_geometries), datetime.now())
+print(datetime.now(), "export network segments as geopackage", len(seg_geometries))
 fs = {'geometry': seg_geometries, 'dist': seg_lengths}
 gdf = gpd.GeoDataFrame(fs)
 gdf.crs = 'EPSG:3035'
