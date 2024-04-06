@@ -76,10 +76,10 @@ for i in range(nb+1):
 
             #A*
             #https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.astar.astar_path.html
-            cutoff = 2.5*a_star_euclidian_dist(node1, node)
-            sp = nx.astar_path(graph, node1, node, heuristic=a_star_euclidian_dist, weight="weight")#, cutoff=cutoff)
-            #without cutoff: X mins
-            #with cutoff: X mins
+            cutoff = 2 * a_star_euclidian_dist(node1, node)
+            sp = nx.astar_path(graph, node1, node, a_star_euclidian_dist, "weight", 0, cutoff)
+            #without cutoff: 8.5 mins
+            #with cutoff 2: X mins
 
             line = shortest_path_geometry(sp)
             sp_geometries.append(line)
