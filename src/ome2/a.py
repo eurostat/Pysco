@@ -5,7 +5,7 @@ from shapely.errors import GEOSException
 import networkx as nx
 from rtree import index
 from datetime import datetime
-from netutils import shortest_path_geometry,node_coordinate,graph_from_geodataframe,a_star_euclidian_dist
+from netutils import shortest_path_geometry,node_coordinate,graph_from_geodataframe,a_star_euclidian_dist,a_star_speed
 
 out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 
@@ -20,7 +20,7 @@ print(str(len(gdf)) + " links")
 
 print(datetime.now(), "make graph")
 speedKmH = 50
-weightFunction = lambda f: round(f.geometry.length / speedKmH*3.6)
+weightFunction = lambda f: round(f.geometry.length / speedKmH * 3.6)
 graph = graph_from_geodataframe(gdf, weightFunction)
 
 #clear memory
@@ -46,6 +46,12 @@ nb = math.ceil(size/resolution)
 sp_geometries = []; sp_durations = []
 pt_geometries = []; pt_durations = []; pt_resolutions = []
 seg_geometries = []; seg_lengths = []
+
+#A* stuff
+astar_heuristic_speed_kmh = 50
+astar_heuristic = a_star_speed(a_star_euclidian_dist, astar_heuristic_speed_kmh)
+astar_cutoff_function = lambda node1, node: 2 * a_star_euclidian_dist(node1, node)
+
 for i in range(nb+1):
     for j in range(nb+1):
         x = xMin + i*resolution
@@ -75,9 +81,8 @@ for i in range(nb+1):
 
             #A*
             #https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.astar.astar_path.html
-            cutoff = 2 * a_star_euclidian_dist(node1, node)
-            sp = nx.astar_path(graph, node1, node, heuristic=a_star_euclidian_dist, weight="weight", cutoff=cutoff)
-            #without cutoff: 8.5 mins
+            sp = nx.astar_path(graph, node1, node, heuristic=astar_heuristic, weight="weight") #, cutoff=astar_cutoff_function(node1, node))
+            #without cutoff: X mins
             #with cutoff 2: X mins
 
             line = shortest_path_geometry(sp)

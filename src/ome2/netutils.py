@@ -36,3 +36,7 @@ def a_star_manhattan_dist(n1, n2):
     [x1, y1] = node_coordinate(n1)
     [x2, y2] = node_coordinate(n2)
     return math.abs(x1-x2)+math.abs(y1-y2)
+
+
+def a_star_speed(distance_function, speed_kmh):
+    return lambda n1,n2: distance_function(n1,n2) / speed_kmh * 3.6
