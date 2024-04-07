@@ -4,6 +4,8 @@ from datetime import datetime
 from geomutils import decompose_line
 import math
 from netutils import shortest_path_geometry,node_coordinate,graph_from_geodataframe,a_star_euclidian_dist,a_star_speed
+from ome2utils import ome2_duration
+from ome2utils import ome2_filter_road_links
 
 folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
@@ -49,6 +51,12 @@ for i in range(nbx):
         print(datetime.now(), "load network links")
         rn = gpd.read_file(file_path, layer='tn_road_link', bbox=bbox)
         print(len(rn))
+        if(len(rn)==0): continue
+
+        print(datetime.now(), "filter network links")
+        rn = ome2_filter_road_links(rn)
+        print(len(rn))
+        if(len(rn)==0): continue
 
         print(datetime.now(), "make graph")
         graph = graph_from_geodataframe(rn, lambda f:ome2_duration(f))
