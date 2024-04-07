@@ -65,22 +65,22 @@ for i in range(nbx):
         del rn
 
         print(datetime.now(), "make list of nodes")
-        nodes = []
-        for node in graph.nodes(): nodes.append(node)
+        nodes_ = []
+        for node in graph.nodes(): nodes_.append(node)
 
         print(datetime.now(), "make nodes spatial index")
         idx = nodes_spatial_index(graph)
 
         print(datetime.now(), "compute paths")
         for n1 in nodes1:
-            node1 = nodes[next(idx.nearest((n1.geometry.x, n1.geometry.y, n1.geometry.x, n1.geometry.y), 1))]
+            n1_ = nodes_[next(idx.nearest((n1.geometry.x, n1.geometry.y, n1.geometry.x, n1.geometry.y), 1))]
             for n2 in nodes2:
                 d = n1.geometry.distance(n2.geometry)
                 if(d > distance_threshold): continue
-                node2 = nodes[next(idx.nearest((n2.geometry.x, n2.geometry.y, n2.geometry.x, n2.geometry.y), 1))]
+                n2_ = nodes_[next(idx.nearest((n2.geometry.x, n2.geometry.y, n2.geometry.x, n2.geometry.y), 1))]
 
                 try:
-                    sp = nx.astar_path(graph, node1, node, heuristic=a_star_euclidian_dist, weight="weight")
+                    sp = nx.astar_path(graph, n1_, n2_, heuristic=a_star_euclidian_dist, weight="weight")
                     line = shortest_path_geometry(sp)
                     sp_geometries.append(line)
                 except nx.NetworkXNoPath as e:
