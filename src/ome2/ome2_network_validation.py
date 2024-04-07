@@ -89,3 +89,8 @@ for i in range(nbx):
                     print("Exception GEOSException:", e)
 
 
+print(datetime.now(), "export paths as geopackage", len(sp_geometries))
+fs = {'geometry': sp_geometries}
+gdf = gpd.GeoDataFrame(fs)
+gdf.crs = 'EPSG:3035'
+gdf.to_file(folder+"ome2_validation_paths.gpkg", driver="GPKG")
