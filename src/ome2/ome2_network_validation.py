@@ -7,9 +7,18 @@ import math
 folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 
+cnt1 = "fr"
+cnt2 = "be"
+
 print(datetime.now(), "load nodes to get boundaries")
 nodes = gpd.read_file(folder+"xborder_nodes_stamped.gpkg")
 print(str(len(nodes)) + " nodes")
+
+print(datetime.now(), "select for "+cnt1+" and "+cnt2+" only")
+condition = (nodes['country_id'] == cnt1) | (nodes['country_id'] == cnt2)
+nodes = nodes[condition]
+print(str(len(nodes)) + " selected nodes")
+
 
 window = 30000
 bbox = nodes.total_bounds
