@@ -3,7 +3,7 @@ from shapely.geometry import LineString,MultiPoint,Point
 from datetime import datetime
 from geomutils import decompose_line
 import math
-from netutils import shortest_path_geometry,node_coordinate,graph_from_geodataframe,a_star_euclidian_dist,a_star_speed
+from netutils import shortest_path_geometry,graph_from_geodataframe,nodes_spatial_index
 from ome2utils import ome2_duration
 from ome2utils import ome2_filter_road_links
 
@@ -61,3 +61,7 @@ for i in range(nbx):
         print(datetime.now(), "make graph")
         graph = graph_from_geodataframe(rn, lambda f:f.geometry.length)
         del rn
+
+        print(datetime.now(), "make nodes spatial index")
+        index = nodes_spatial_index(graph)
+

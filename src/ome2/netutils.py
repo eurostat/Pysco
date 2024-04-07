@@ -1,6 +1,7 @@
 import networkx as nx
 from shapely.geometry import LineString
 import math
+from rtree import index
 
 def shortest_path_geometry(sp):
     coordinates_tuples = [tuple(map(float, coord.split('_'))) for coord in sp]
@@ -25,6 +26,16 @@ def graph_from_geodataframe(gdf, weight = lambda f:f.geometry.length, coord_simp
 
 
 
+def nodes_spatial_index(graph):
+    nodes = []
+    for node in graph.nodes(): nodes.append(node)
+
+    idx = index.Index()
+    for i in range(graph.number_of_nodes()):
+        node = nodes[i]
+        [x,y] = node_coordinate(node)
+        idx.insert(i, (x,y,x,y))
+
 
 
 def a_star_euclidian_dist(n1, n2):
@@ -40,3 +51,6 @@ def a_star_manhattan_dist(n1, n2):
 
 def a_star_speed(distance_function, speed_kmh):
     return lambda n1,n2: distance_function(n1,n2) / speed_kmh * 3.6
+
+
+
