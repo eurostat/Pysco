@@ -37,7 +37,5 @@ def road_link_speed_kmh(f):
     else: print(rsc,fow,frc)
     return speed_kmh
 
-
-
 def ome2_duration(f):
-    return 1
+    return f.geometry.length/road_link_speed_kmh(f)*3.6

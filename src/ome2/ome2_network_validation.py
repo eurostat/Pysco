@@ -59,5 +59,5 @@ for i in range(nbx):
         if(len(rn)==0): continue
 
         print(datetime.now(), "make graph")
-        graph = graph_from_geodataframe(rn, lambda f:ome2_duration(f))
+        graph = graph_from_geodataframe(rn, lambda f:f.geometry.length)
         del rn
