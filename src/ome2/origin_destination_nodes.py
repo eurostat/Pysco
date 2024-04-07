@@ -1,5 +1,5 @@
 import geopandas as gpd
-from shapely.geometry import LineString
+from shapely.geometry import LineString,MultiPoint,Point
 from datetime import datetime
 from geomutils import decompose_line
 
@@ -27,6 +27,7 @@ print(datetime.now(), "compute buffers")
 gdf = gdf['geometry'].buffer(buffer_distance, resolution=2)
 #gdf.to_file(folder+"buffers.gpkg", driver="GPKG")
 
+intersection_points = []
 for buffer in gdf:
     buffer = buffer.exterior
     print(datetime.now(),"***", buffer.bounds)
@@ -36,4 +37,20 @@ for buffer in gdf:
     rn = rn['geometry']
     print(datetime.now(), " get intersecting road sections")
     rni = rn[rn.geometry.intersects(buffer)]
+    rn = rni
     print(str(len(rni)) + " road sections intersecting")
+
+    print(datetime.now(), " get intersection points")
+    for line in rn.geometry:
+        intersection = line.intersection(buffer)
+        if intersection.geom_type == 'Point':
+            intersection_points.append(intersection)
+        elif intersection.geom_type == 'MultiPoint':
+            intersection_points.extend(list(intersection.geoms))
+
+    print(len(intersection_points))
+
+print(datetime.now(), "save")
+gdf = gpd.GeoDataFrame(geometry=intersection_points)
+gdf.crs = 'EPSG:3035'
+gdf.to_file(folder+"xborder_nodes.gpkg", driver="GPKG")
