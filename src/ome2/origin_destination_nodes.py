@@ -1,29 +1,24 @@
 import geopandas as gpd
 from shapely.geometry import LineString
 from datetime import datetime
-
+import matplotlib.pyplot as plt
 
 folder = '/home/juju/Bureau/gisco/OME2_analysis/'
+buffer_distance = 5000
 
 print(datetime.now(), "load boundaries")
-gdf = gpd.read_file(folder+"bnd_5km.gpkg")
+gdf = gpd.read_file(folder+"bnd_3km.gpkg")
 print(str(len(gdf)) + " boundaries")
 
-#function to get segments of a linestring, as 2 vertices linestrings
-def extract_segments(line):
-    segments = []
-    coords = line.coords
-    for i in range(len(coords) - 1):
-        segment = LineString([coords[i], coords[i + 1]])
-        segments.append(segment)
-    return segments
 
-print(datetime.now(), "make segments")
-segments = sum(gdf['geometry'].apply(extract_segments), [])
-gdf = gpd.GeoDataFrame(geometry=segments)
-gdf.crs = 'EPSG:3035'
-print(str(len(gdf)) + " segments")
+fig, ax = plt.subplots()
+gdf.plot(ax=ax, color='blue', edgecolor='black')
 
-print(datetime.now(), "save segments")
-gdf.to_file(folder+"bnd_segments.gpkg", driver="GPKG")
+for i, f in gdf.iterrows():
+    buffered_geometry = f.geometry.buffer(buffer_distance)
 
+    for polygon in buffered_geometry:
+        ax.add_patch(plt.Polygon(polygon.exterior, color='green', alpha=0.5))
+
+ax.set_title('Buffer Visualization')
+plt.show()
