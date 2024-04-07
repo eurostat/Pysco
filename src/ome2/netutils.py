@@ -35,7 +35,7 @@ def nodes_spatial_index(graph):
         node = nodes[i]
         [x,y] = node_coordinate(node)
         idx.insert(i, (x,y,x,y))
-
+    return idx
 
 
 def a_star_euclidian_dist(n1, n2):
