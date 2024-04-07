@@ -1,7 +1,7 @@
 import geopandas as gpd
 from shapely.geometry import LineString
 from datetime import datetime
-from ome2utils import ome2_filter_road_links
+from ome2utils import ome2_filter_road_links, road_link_speed_kmh
 
 out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 
@@ -13,29 +13,8 @@ gdf = ome2_filter_road_links(gdf)
 print(str(len(gdf)) + " links")
 #print(gdf.dtypes)
 
-#define speed
-def speed_function(f):
-    rsc = f["road_surface_category"]
-    fow = f["form_of_way"]
-    frc = f["functional_road_class"]
-    speed_kmh = 30
-    if(rsc != 'paved'): speed_kmh = 20
-    elif(fow == 'motorway'): speed_kmh = 120
-    elif(fow == 'dual_carriage_way'): speed_kmh = 100
-    elif(fow == 'slip_road'): speed_kmh = 80
-    #elif(fow == 'single_carriage_way'): speed_kmh = 80
-    elif(frc == 'main_road'): speed_kmh = 80
-    elif(frc == 'first_class'): speed_kmh = 80
-    elif(frc == 'second_class'): speed_kmh = 70
-    elif(frc == 'third_class'): speed_kmh = 50
-    elif(frc == 'fourth_class'): speed_kmh = 40
-    elif(frc == 'fifth_class'): speed_kmh = 30
-    elif(frc == 'void_unk'): speed_kmh = 30
-    else: print(rsc,fow,frc)
-    return speed_kmh
-
 #compute speed
-gdf['speed_kmh'] = gdf.apply(speed_function, axis=1)
+gdf['speed_kmh'] = gdf.apply(road_link_speed_kmh, axis=1)
 
 #keep only speed column
 geometry = gdf.geometry
