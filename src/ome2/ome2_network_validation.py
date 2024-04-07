@@ -72,9 +72,9 @@ for i in range(nbx):
         idx = nodes_spatial_index(graph)
 
         print(datetime.now(), "compute paths")
-        for n1 in nodes1:
+        for i,n1 in nodes1.iterrows():
             n1_ = nodes_[next(idx.nearest((n1.geometry.x, n1.geometry.y, n1.geometry.x, n1.geometry.y), 1))]
-            for n2 in nodes2:
+            for j,n2 in nodes2.iterrows():
                 d = n1.geometry.distance(n2.geometry)
                 if(d > distance_threshold): continue
                 n2_ = nodes_[next(idx.nearest((n2.geometry.x, n2.geometry.y, n2.geometry.x, n2.geometry.y), 1))]
