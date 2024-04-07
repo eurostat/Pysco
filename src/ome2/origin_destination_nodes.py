@@ -1,5 +1,4 @@
 import geopandas as gpd
-from shapely.geometry import LineString,MultiPoint,Point
 from datetime import datetime
 from geomutils import decompose_line
 
