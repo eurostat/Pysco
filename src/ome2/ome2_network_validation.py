@@ -1,14 +1,15 @@
 import geopandas as gpd
-from shapely.geometry import LineString,MultiPoint,Point
+from shapely.errors import GEOSException
 from datetime import datetime
 from geomutils import decompose_line
 import math
-from netutils import shortest_path_geometry,graph_from_geodataframe,nodes_spatial_index
-from ome2utils import ome2_duration
+from netutils import shortest_path_geometry,graph_from_geodataframe,nodes_spatial_index,a_star_euclidian_dist
 from ome2utils import ome2_filter_road_links
+import networkx as nx
 
 folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
+distance_threshold = 3000
 
 cnt1 = "fr"
 cnt2 = "be"
@@ -32,6 +33,7 @@ nbx = int((xmax-xmin)/window)
 nby = int((ymax-ymin)/window)
 print(nbx,nby, bbox)
 
+sp_geometries = []
 for i in range(nbx):
     for j in range(nby):
         bbox = [xmin+i*window,ymin+j*window,xmin+(i+1)*window,ymin+(j+1)*window]
@@ -62,6 +64,28 @@ for i in range(nbx):
         graph = graph_from_geodataframe(rn, lambda f:f.geometry.length)
         del rn
 
+        print(datetime.now(), "make list of nodes")
+        nodes = []
+        for node in graph.nodes(): nodes.append(node)
+
         print(datetime.now(), "make nodes spatial index")
-        index = nodes_spatial_index(graph)
+        idx = nodes_spatial_index(graph)
+
+        print(datetime.now(), "compute paths")
+        for n1 in nodes1:
+            node1 = nodes[next(idx.nearest((n1.geometry.x, n1.geometry.y, n1.geometry.x, n1.geometry.y), 1))]
+            for n2 in nodes2:
+                d = n1.geometry.distance(n2.geometry)
+                if(d > distance_threshold): continue
+                node2 = nodes[next(idx.nearest((n2.geometry.x, n2.geometry.y, n2.geometry.x, n2.geometry.y), 1))]
+
+                try:
+                    sp = nx.astar_path(graph, node1, node, heuristic=a_star_euclidian_dist, weight="weight")
+                    line = shortest_path_geometry(sp)
+                    sp_geometries.append(line)
+                except nx.NetworkXNoPath as e:
+                    print("Exception NetworkXNoPath:", e)
+                except GEOSException as e:
+                    print("Exception GEOSException:", e)
+
 
