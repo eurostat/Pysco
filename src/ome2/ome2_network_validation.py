@@ -3,6 +3,7 @@ from shapely.geometry import LineString,MultiPoint,Point
 from datetime import datetime
 from geomutils import decompose_line
 import math
+from netutils import shortest_path_geometry,node_coordinate,graph_from_geodataframe,a_star_euclidian_dist,a_star_speed
 
 folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
@@ -49,4 +50,6 @@ for i in range(nbx):
         rn = gpd.read_file(file_path, layer='tn_road_link', bbox=bbox)
         print(len(rn))
 
-        
+        print(datetime.now(), "make graph")
+        graph = graph_from_geodataframe(rn, lambda f:ome2_duration(f))
+        del rn
