@@ -117,6 +117,7 @@ def validation(cnt1,cnt2):
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         sp_geometries = executor.map(pfun, cartesian_product(nbx,nby))
 
+        sp_geometries = list(sp_geometries)
         if(len(sp_geometries)==0): exit()
 
         print(datetime.now(), "export paths as geopackage", len(sp_geometries))
