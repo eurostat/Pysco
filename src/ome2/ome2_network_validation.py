@@ -20,7 +20,7 @@ print(str(len(nodes)) + " nodes")
 print(datetime.now(), "select for "+cnt1+" and "+cnt2+" only")
 condition = (nodes['country_id'] == cnt1) | (nodes['country_id'] == cnt2)
 nodes = nodes[condition]
-print(str(len(nodes)) + " selected nodes")
+print(len(nodes), " selected nodes")
 
 #get bbox and partition information
 window = 30000
@@ -100,7 +100,7 @@ for i in range(nbx):
                 except nx.NetworkXNoPath as e: pass#print("Exception NetworkXNoPath:", e)
                 except GEOSException as e: print("Exception GEOSException:", e)
 
-                print(len(sp_geometries))
+                print(datetime.now(), len(sp_geometries), "paths")
 
 
 if(len(sp_geometries)==0): exit()
