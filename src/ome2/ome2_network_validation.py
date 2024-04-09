@@ -109,5 +109,5 @@ def validation(cnt1,cnt2):
     gdf.crs = 'EPSG:3035'
     gdf.to_file(folder+"ome2_validation_paths"+cnt1+"_"+cnt2+".gpkg", driver="GPKG")
 
-validation("be", "nl")
 validation("be", "fr")
+validation("be", "nl")
