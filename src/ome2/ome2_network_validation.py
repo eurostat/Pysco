@@ -90,6 +90,9 @@ for i in range(nbx):
                 #get country 2 node
                 n2_ = nodes_[next(idx.nearest((n2.geometry.x, n2.geometry.y, n2.geometry.x, n2.geometry.y), 1))]
 
+                #may happen (?)
+                if(n1_==n2_): continue
+
                 try:
                     #compute shortest path
                     sp = nx.astar_path(graph, n1_, n2_, heuristic=a_star_euclidian_dist, weight="weight")
