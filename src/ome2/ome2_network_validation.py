@@ -11,7 +11,7 @@ from utils import cartesian_product
 folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 distance_threshold = 3000
-num_processors_to_use = 1
+num_processors_to_use = 2
 
 
 
@@ -59,12 +59,10 @@ def validation(cnt1,cnt2):
         if(len(nodes1)==0): return
         if(len(nodes2)==0): return
 
-        print(datetime.now(),i,j, "load network links")
+        print(datetime.now(),i,j, "load and filter network links")
         rn = gpd.read_file(file_path, layer='tn_road_link', bbox=bbox)
         #print(len(rn))
         if(len(rn)==0): return
-
-        print(datetime.now(),i,j, "filter network links")
         rn = ome2_filter_road_links(rn)
         #print(len(rn))
         if(len(rn)==0): return
@@ -73,14 +71,14 @@ def validation(cnt1,cnt2):
         graph = graph_from_geodataframe(rn)
         del rn
 
-        print(datetime.now(),i,j, "make list of nodes")
+        #make list of nodes
         nodes_ = []
         for node in graph.nodes(): nodes_.append(node)
 
-        print(datetime.now(),i,j, "make nodes spatial index")
+        #make nodes spatial index
         idx = nodes_spatial_index(graph)
 
-        print(datetime.now(),i,j, "compute paths")
+        #compute paths
         for iii,n1 in nodes1.iterrows():
             #get country 1 node
             n1_ = nodes_[next(idx.nearest((n1.geometry.x, n1.geometry.y, n1.geometry.x, n1.geometry.y), 1))]
@@ -96,17 +94,18 @@ def validation(cnt1,cnt2):
                 #may happen (?)
                 if(n1_==n2_): continue
 
-                print(n1_, n2_)
-
                 try:
                     #compute shortest path
-                    sp = nx.astar_path(graph, n1_, n2_, heuristic=a_star_euclidian_dist, weight="weight")
+                    sp = nx.shortest_path(graph, n1_, n2_, weight="weight")
+                    #sp = nx.astar_path(graph, n1_, n2_, heuristic=a_star_euclidian_dist, weight="weight") #, cutoff=lambda n1, n2: 2 * a_star_euclidian_dist(n1, n2))
                     line = shortest_path_geometry(sp)
                     sp_geometries.append(line)
                 except nx.NetworkXNoPath as e: pass#print("Exception NetworkXNoPath:", e)
                 except GEOSException as e: print("Exception GEOSException:", e)
 
         print(datetime.now(),i,j, len(sp_geometries), "paths")
+
+
 
     #launch parallel computation   
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
