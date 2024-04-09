@@ -117,12 +117,12 @@ def validation(cnt1,cnt2):
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         sp_geometries = executor.map(pfun, cartesian_product(nbx,nby))
 
-    if(len(sp_geometries)==0): exit()
+        if(len(sp_geometries)==0): exit()
 
-    print(datetime.now(), "export paths as geopackage", len(sp_geometries))
-    gdf = gpd.GeoDataFrame({'geometry': sp_geometries})
-    gdf.crs = 'EPSG:3035'
-    gdf.to_file(folder+"ome2_validation_paths"+cnt1+"_"+cnt2+".gpkg", driver="GPKG")
+        print(datetime.now(), "export paths as geopackage", len(sp_geometries))
+        gdf = gpd.GeoDataFrame({'geometry': sp_geometries})
+        gdf.crs = 'EPSG:3035'
+        gdf.to_file(folder+"ome2_validation_paths"+cnt1+"_"+cnt2+".gpkg", driver="GPKG")
 
 validation("be", "fr")
 validation("be", "nl")
