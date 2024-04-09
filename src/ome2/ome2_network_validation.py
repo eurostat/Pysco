@@ -23,7 +23,7 @@ condition = (nodes['country_id'] == cnt1) | (nodes['country_id'] == cnt2)
 nodes = nodes[condition]
 print(str(len(nodes)) + " selected nodes")
 
-
+#get bbox and partition information
 window = 30000
 bbox = nodes.total_bounds
 rndFunction = lambda x: int(window*math.ceil(x/window))
@@ -32,11 +32,15 @@ bbox = [rndFunction(x) for x in bbox]
 nbx = int((xmax-xmin)/window)
 nby = int((ymax-ymin)/window)
 print(nbx, nby, bbox)
+window_margin = window * 0.1
 
+#output paths
 sp_geometries = []
+
+#iterate through partition
 for i in range(nbx):
     for j in range(nby):
-        bbox = [xmin+i*window,ymin+j*window,xmin+(i+1)*window,ymin+(j+1)*window]
+        bbox = [xmin+i*window-window_margin, ymin+j*window-window_margin, xmin+(i+1)*window+window_margin, ymin+(j+1)*window+ window_margin]
         print("******" ,bbox)
 
         print(datetime.now(), "load nodes")
@@ -44,8 +48,10 @@ for i in range(nbx):
         print(len(nodes))
         if(len(nodes)==0): continue
 
+        #filter nodes per country
         nodes1 = nodes[nodes['country_id'] == cnt1]
         nodes2 = nodes[nodes['country_id'] == cnt2]
+        del nodes
         print(len(nodes1), len(nodes2))
         if(len(nodes1)==0): continue
         if(len(nodes2)==0): continue
@@ -72,16 +78,20 @@ for i in range(nbx):
         idx = nodes_spatial_index(graph)
 
         print(datetime.now(), "compute paths")
-        for i,n1 in nodes1.iterrows():
+        for iii,n1 in nodes1.iterrows():
+            #get country 1 node
             n1_ = nodes_[next(idx.nearest((n1.geometry.x, n1.geometry.y, n1.geometry.x, n1.geometry.y), 1))]
-            for j,n2 in nodes2.iterrows():
+            for jjj,n2 in nodes2.iterrows():
 
+                #skip node pairs too far away
                 d = n1.geometry.distance(n2.geometry)
                 if(d > distance_threshold): continue
 
+                #get country 2 node
                 n2_ = nodes_[next(idx.nearest((n2.geometry.x, n2.geometry.y, n2.geometry.x, n2.geometry.y), 1))]
 
                 try:
+                    #compute shortest path
                     sp = nx.astar_path(graph, n1_, n2_, heuristic=a_star_euclidian_dist, weight="weight")
                     line = shortest_path_geometry(sp)
                     sp_geometries.append(line)
@@ -92,7 +102,6 @@ for i in range(nbx):
 
 
 print(datetime.now(), "export paths as geopackage", len(sp_geometries))
-fs = {'geometry': sp_geometries}
-gdf = gpd.GeoDataFrame(fs)
+gdf = gpd.GeoDataFrame({'geometry': sp_geometries})
 gdf.crs = 'EPSG:3035'
 gdf.to_file(folder+"ome2_validation_paths.gpkg", driver="GPKG")
