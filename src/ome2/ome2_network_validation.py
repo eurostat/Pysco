@@ -48,9 +48,9 @@ def validation(cnt1,cnt2):
     def pfun(p):
         [i,j] = p
         bbox = [xmin+i*window-window_margin, ymin+j*window-window_margin, xmin+(i+1)*window+window_margin, ymin+(j+1)*window+ window_margin]
-        print("******" ,bbox)
+        print("******", i,j ,bbox)
 
-        print(datetime.now(), "load nodes")
+        print(datetime.now(),i,j, "load nodes")
         nodes = gpd.read_file(folder+"xborder_nodes_stamped.gpkg", bbox=bbox)
         #print(len(nodes))
         if(len(nodes)==0): return
@@ -63,28 +63,28 @@ def validation(cnt1,cnt2):
         if(len(nodes1)==0): return
         if(len(nodes2)==0): return
 
-        print(datetime.now(), "load network links")
+        print(datetime.now(),i,j, "load network links")
         rn = gpd.read_file(file_path, layer='tn_road_link', bbox=bbox)
         #print(len(rn))
         if(len(rn)==0): return
 
-        print(datetime.now(), "filter network links")
+        print(datetime.now(),i,j, "filter network links")
         rn = ome2_filter_road_links(rn)
         #print(len(rn))
         if(len(rn)==0): return
 
-        print(datetime.now(), "make graph")
+        print(datetime.now(),i,j, "make graph")
         graph = graph_from_geodataframe(rn)
         del rn
 
-        print(datetime.now(), "make list of nodes")
+        print(datetime.now(),i,j, "make list of nodes")
         nodes_ = []
         for node in graph.nodes(): nodes_.append(node)
 
-        print(datetime.now(), "make nodes spatial index")
+        print(datetime.now(),i,j, "make nodes spatial index")
         idx = nodes_spatial_index(graph)
 
-        print(datetime.now(), "compute paths")
+        print(datetime.now(),i,j, "compute paths")
         for iii,n1 in nodes1.iterrows():
             #get country 1 node
             n1_ = nodes_[next(idx.nearest((n1.geometry.x, n1.geometry.y, n1.geometry.x, n1.geometry.y), 1))]
@@ -100,6 +100,8 @@ def validation(cnt1,cnt2):
                 #may happen (?)
                 if(n1_==n2_): continue
 
+                print(n1_, n2_)
+
                 try:
                     #compute shortest path
                     sp = nx.astar_path(graph, n1_, n2_, heuristic=a_star_euclidian_dist, weight="weight")
@@ -108,7 +110,7 @@ def validation(cnt1,cnt2):
                 except nx.NetworkXNoPath as e: pass#print("Exception NetworkXNoPath:", e)
                 except GEOSException as e: print("Exception GEOSException:", e)
 
-        print(datetime.now(), len(sp_geometries), "paths")
+        print(datetime.now(),i,j, len(sp_geometries), "paths")
 
     #launch parallel computation   
     with concurrent.futures.ThreadPoolExecutor() as executor:
