@@ -98,7 +98,7 @@ for i in range(nbx):
                     sp = nx.astar_path(graph, n1_, n2_, heuristic=a_star_euclidian_dist, weight="weight")
                     line = shortest_path_geometry(sp)
                     sp_geometries.append(line)
-                #except nx.NetworkXNoPath as e: print("Exception NetworkXNoPath:", e)
+                except nx.NetworkXNoPath as e: pass#print("Exception NetworkXNoPath:", e)
                 except GEOSException as e: print("Exception GEOSException:", e)
 
 
