@@ -11,7 +11,6 @@ import concurrent.futures
 folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 distance_threshold = 3000
-max_workers = 3
 
 
 def cartesian_product(nb1, nb2):
@@ -111,17 +110,16 @@ def validation(cnt1,cnt2):
 
         print(datetime.now(), len(sp_geometries), "paths")
 
-
     #launch parallel computation   
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+    with concurrent.futures.ThreadPoolExecutor() as executor:
         executor.map(pfun, cartesian_product(nbx,nby))
 
-        if(len(sp_geometries)==0): exit()
+    if(len(sp_geometries)==0): exit()
 
-        print(datetime.now(), "export paths as geopackage", len(sp_geometries))
-        gdf = gpd.GeoDataFrame({'geometry': sp_geometries})
-        gdf.crs = 'EPSG:3035'
-        gdf.to_file(folder+"ome2_validation_paths"+cnt1+"_"+cnt2+".gpkg", driver="GPKG")
+    print(datetime.now(), "export paths as geopackage", len(sp_geometries))
+    gdf = gpd.GeoDataFrame({'geometry': sp_geometries})
+    gdf.crs = 'EPSG:3035'
+    gdf.to_file(folder+"ome2_validation_paths"+cnt1+"_"+cnt2+".gpkg", driver="GPKG")
 
 validation("be", "fr")
 validation("be", "nl")
