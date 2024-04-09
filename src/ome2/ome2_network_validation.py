@@ -10,8 +10,8 @@ folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 distance_threshold = 3000
 
-cnt1 = "fr"
-cnt2 = "be"
+cnt1 = "be"
+cnt2 = "nl"
 
 print(datetime.now(), "load nodes to get boundaries")
 nodes = gpd.read_file(folder+"xborder_nodes_stamped.gpkg")
@@ -100,6 +100,10 @@ for i in range(nbx):
                 except nx.NetworkXNoPath as e: pass#print("Exception NetworkXNoPath:", e)
                 except GEOSException as e: print("Exception GEOSException:", e)
 
+                print(len(sp_geometries))
+
+
+if(len(sp_geometries)==0): exit()
 
 print(datetime.now(), "export paths as geopackage", len(sp_geometries))
 gdf = gpd.GeoDataFrame({'geometry': sp_geometries})
