@@ -8,15 +8,17 @@ import networkx as nx
 import concurrent.futures
 
 
+folder = '/home/juju/Bureau/gisco/OME2_analysis/'
+file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
+distance_threshold = 3000
+max_workers = 3
+
+
 def cartesian_product(nb1, nb2):
     pairs = []
     for i in range(nb1 + 1):
         for j in range(nb2 + 1): pairs.append([i, j])
     return pairs
-
-folder = '/home/juju/Bureau/gisco/OME2_analysis/'
-file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
-distance_threshold = 3000
 
 def validation(cnt1,cnt2):
 
@@ -39,9 +41,6 @@ def validation(cnt1,cnt2):
     nby = int((ymax-ymin)/window)
     #print(nbx, nby, bbox)
     window_margin = window * 0.1
-
-    #output paths
-    sp_geometries = []
 
     #parallel function
     def pfun(p):
@@ -83,6 +82,9 @@ def validation(cnt1,cnt2):
         print(datetime.now(), "make nodes spatial index")
         idx = nodes_spatial_index(graph)
 
+        #output paths
+        sp_geometries = []
+
         print(datetime.now(), "compute paths")
         for iii,n1 in nodes1.iterrows():
             #get country 1 node
@@ -108,11 +110,12 @@ def validation(cnt1,cnt2):
                 except GEOSException as e: print("Exception GEOSException:", e)
 
         print(datetime.now(), len(sp_geometries), "paths")
+        return sp_geometries
+
 
     #launch parallel computation   
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        executor.map(pfun, cartesian_product(nbx,nby))
-
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        sp_geometries = executor.map(pfun, cartesian_product(nbx,nby))
 
     if(len(sp_geometries)==0): exit()
 
