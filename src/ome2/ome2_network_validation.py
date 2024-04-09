@@ -26,12 +26,12 @@ print(str(len(nodes)) + " selected nodes")
 
 window = 30000
 bbox = nodes.total_bounds
-rnd = lambda x: int(window*math.ceil(x/window))
-bbox = [rnd(x) for x in bbox]
+rndFunction = lambda x: int(window*math.ceil(x/window))
+bbox = [rndFunction(x) for x in bbox]
 [xmin, ymin, xmax, ymax] = bbox
 nbx = int((xmax-xmin)/window)
 nby = int((ymax-ymin)/window)
-print(nbx,nby, bbox)
+print(nbx, nby, bbox)
 
 sp_geometries = []
 for i in range(nbx):
