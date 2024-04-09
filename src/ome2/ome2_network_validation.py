@@ -6,18 +6,14 @@ from netutils import shortest_path_geometry,graph_from_geodataframe,nodes_spatia
 from ome2utils import ome2_filter_road_links
 import networkx as nx
 import concurrent.futures
-
+from utils import cartesian_product
 
 folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 distance_threshold = 3000
+num_processors_to_use = 1
 
 
-def cartesian_product(nb1, nb2):
-    pairs = []
-    for i in range(nb1 + 1):
-        for j in range(nb2 + 1): pairs.append([i, j])
-    return pairs
 
 def validation(cnt1,cnt2):
 
@@ -113,7 +109,7 @@ def validation(cnt1,cnt2):
         print(datetime.now(),i,j, len(sp_geometries), "paths")
 
     #launch parallel computation   
-    with concurrent.futures.ThreadPoolExecutor() as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
         executor.map(pfun, cartesian_product(nbx,nby))
 
     if(len(sp_geometries)==0): exit()
@@ -122,6 +118,9 @@ def validation(cnt1,cnt2):
     gdf = gpd.GeoDataFrame({'geometry': sp_geometries})
     gdf.crs = 'EPSG:3035'
     gdf.to_file(folder+"ome2_validation_paths"+cnt1+"_"+cnt2+".gpkg", driver="GPKG")
+
+
+
 
 validation("be", "fr")
 validation("be", "nl")
