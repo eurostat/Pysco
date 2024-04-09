@@ -74,7 +74,7 @@ def validation(cnt1,cnt2):
         if(len(rn)==0): return
 
         print(datetime.now(), "make graph")
-        graph = graph_from_geodataframe(rn, lambda f:f.geometry.length)
+        graph = graph_from_geodataframe(rn)
         del rn
 
         print(datetime.now(), "make list of nodes")

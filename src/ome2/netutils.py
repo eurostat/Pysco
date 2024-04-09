@@ -9,8 +9,7 @@ def shortest_path_geometry(sp):
 
 def node_coordinate(node):
     c = node.split('_')
-    x=float(c[0]); y=float(c[1])
-    return [x,y]
+    return [float(c[0]), float(c[1])]
 
 def graph_from_geodataframe(gdf, weight = lambda f:f.geometry.length, coord_simp=round):
     graph = nx.Graph()
