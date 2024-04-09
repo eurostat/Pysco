@@ -15,12 +15,12 @@ cnt2 = "nl"
 
 print(datetime.now(), "load nodes to get boundaries")
 nodes = gpd.read_file(folder+"xborder_nodes_stamped.gpkg")
-print(str(len(nodes)) + " nodes")
+#print(str(len(nodes)) + " nodes")
 
 print(datetime.now(), "select for "+cnt1+" and "+cnt2+" only")
 condition = (nodes['country_id'] == cnt1) | (nodes['country_id'] == cnt2)
 nodes = nodes[condition]
-print(len(nodes), " selected nodes")
+#print(len(nodes), " selected nodes")
 
 #get bbox and partition information
 window = 30000
@@ -30,7 +30,7 @@ bbox = [rndFunction(x) for x in bbox]
 [xmin, ymin, xmax, ymax] = bbox
 nbx = int((xmax-xmin)/window)
 nby = int((ymax-ymin)/window)
-print(nbx, nby, bbox)
+#print(nbx, nby, bbox)
 window_margin = window * 0.1
 
 #output paths
@@ -44,25 +44,25 @@ for i in range(nbx):
 
         print(datetime.now(), "load nodes")
         nodes = gpd.read_file(folder+"xborder_nodes_stamped.gpkg", bbox=bbox)
-        print(len(nodes))
+        #print(len(nodes))
         if(len(nodes)==0): continue
 
         #filter nodes per country
         nodes1 = nodes[nodes['country_id'] == cnt1]
         nodes2 = nodes[nodes['country_id'] == cnt2]
         del nodes
-        print(len(nodes1), len(nodes2))
+        #print(len(nodes1), len(nodes2))
         if(len(nodes1)==0): continue
         if(len(nodes2)==0): continue
 
         print(datetime.now(), "load network links")
         rn = gpd.read_file(file_path, layer='tn_road_link', bbox=bbox)
-        print(len(rn))
+        #print(len(rn))
         if(len(rn)==0): continue
 
         print(datetime.now(), "filter network links")
         rn = ome2_filter_road_links(rn)
-        print(len(rn))
+        #print(len(rn))
         if(len(rn)==0): continue
 
         print(datetime.now(), "make graph")
@@ -100,7 +100,7 @@ for i in range(nbx):
                 except nx.NetworkXNoPath as e: pass#print("Exception NetworkXNoPath:", e)
                 except GEOSException as e: print("Exception GEOSException:", e)
 
-                print(datetime.now(), len(sp_geometries), "paths")
+        print(datetime.now(), len(sp_geometries), "paths")
 
 
 if(len(sp_geometries)==0): exit()
