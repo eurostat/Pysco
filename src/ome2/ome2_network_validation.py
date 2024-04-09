@@ -42,6 +42,9 @@ def validation(cnt1,cnt2):
     #print(nbx, nby, bbox)
     window_margin = window * 0.1
 
+    #output paths
+    sp_geometries = []
+
     #parallel function
     def pfun(p):
         [i,j] = p
@@ -82,9 +85,6 @@ def validation(cnt1,cnt2):
         print(datetime.now(), "make nodes spatial index")
         idx = nodes_spatial_index(graph)
 
-        #output paths
-        sp_geometries = []
-
         print(datetime.now(), "compute paths")
         for iii,n1 in nodes1.iterrows():
             #get country 1 node
@@ -110,14 +110,12 @@ def validation(cnt1,cnt2):
                 except GEOSException as e: print("Exception GEOSException:", e)
 
         print(datetime.now(), len(sp_geometries), "paths")
-        return sp_geometries
 
 
     #launch parallel computation   
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        sp_geometries = executor.map(pfun, cartesian_product(nbx,nby))
+        executor.map(pfun, cartesian_product(nbx,nby))
 
-        sp_geometries = list(sp_geometries)
         if(len(sp_geometries)==0): exit()
 
         print(datetime.now(), "export paths as geopackage", len(sp_geometries))
