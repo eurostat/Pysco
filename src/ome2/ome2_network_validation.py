@@ -63,9 +63,9 @@ def validation(cnt1,cnt2):
         rn = gpd.read_file(file_path, layer='tn_road_link', bbox=bbox)
         #print(len(rn))
         if(len(rn)==0): return
-        rn = ome2_filter_road_links(rn)
+        #rn = ome2_filter_road_links(rn)
         #print(len(rn))
-        if(len(rn)==0): return
+        #if(len(rn)==0): return
 
         print(datetime.now(),i,j, "make graph")
         graph = graph_from_geodataframe(rn)
@@ -96,8 +96,8 @@ def validation(cnt1,cnt2):
 
                 try:
                     #compute shortest path
-                    sp = nx.shortest_path(graph, n1_, n2_, weight="weight")
-                    #sp = nx.astar_path(graph, n1_, n2_, heuristic=a_star_euclidian_dist, weight="weight") #, cutoff=lambda n1, n2: 2 * a_star_euclidian_dist(n1, n2))
+                    #sp = nx.shortest_path(graph, n1_, n2_, weight="weight")
+                    sp = nx.astar_path(graph, n1_, n2_, heuristic=a_star_euclidian_dist, weight="weight") #, cutoff=lambda n1, n2: 2 * a_star_euclidian_dist(n1, n2))
                     line = shortest_path_geometry(sp)
                     sp_geometries.append(line)
                 except nx.NetworkXNoPath as e: pass#print("Exception NetworkXNoPath:", e)
