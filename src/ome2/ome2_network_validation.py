@@ -10,7 +10,7 @@ from utils import cartesian_product
 
 folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
-distance_threshold = 3000
+distance_threshold = 5000
 num_processors_to_use = 2
 
 
