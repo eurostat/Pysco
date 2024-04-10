@@ -29,11 +29,11 @@ def validation(cnt1,cnt2):
     #get bbox and partition information
     window = 30000
     bbox = nodes.total_bounds
-    rnd_function = lambda x: int(window*math.ceil(x/window))
+    rnd_function = lambda x: int(window*math.floor(x/window))
     bbox = [rnd_function(x) for x in bbox]
     [xmin, ymin, xmax, ymax] = bbox
-    nbx = int((xmax-xmin)/window)
-    nby = int((ymax-ymin)/window)
+    nbx = math.floor((xmax-xmin)/window)
+    nby = math.floor((ymax-ymin)/window)
     #print(nbx, nby, bbox)
     window_margin = window * 0.1
 
