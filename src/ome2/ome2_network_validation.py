@@ -116,7 +116,7 @@ def validation(cnt1,cnt2):
     print(datetime.now(), "export paths as geopackage", len(sp_geometries))
     gdf = gpd.GeoDataFrame({'geometry': sp_geometries})
     gdf.crs = 'EPSG:3035'
-    gdf.to_file(folder+"ome2_validation_paths"+cnt1+"_"+cnt2+".gpkg", driver="GPKG")
+    gdf.to_file(folder+"ome2_validation_paths_"+cnt1+"_"+cnt2+".gpkg", driver="GPKG")
 
 
 
