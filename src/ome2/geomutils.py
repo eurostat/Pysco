@@ -23,7 +23,7 @@ def decompose_line(line, nb_vertices):
 # Decompose MultiPoint into individual Points
 def decompose_multipoints(row):
     if isinstance(row.geometry, MultiPoint):
-        points = [Point(xy) for xy in row.geometry]
+        points = [Point(xy) for xy in row.geometry.coords]
         return gpd.GeoSeries(points)
     else:
         return row.geometry
