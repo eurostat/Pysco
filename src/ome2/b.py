@@ -31,8 +31,3 @@ print(str(len(intersection)), "intersections")
 
 print(datetime.now(), "save intersections")
 intersection.to_file(folder+"intersections.gpkg", driver="GPKG")
-
-
-from shapely.geometry import Point, MultiPoint
-
-# Assuming you have a GeoDataFrame named 'gdf' with mixed Point and MultiPoint geometries
