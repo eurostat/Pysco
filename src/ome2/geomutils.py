@@ -1,4 +1,5 @@
-from shapely.geometry import LineString
+import geopandas as gpd
+from shapely.geometry import LineString, Point, MultiPoint
 
 #function to get segments of a linestring, as 2 vertices linestrings
 def extract_segments(line):
@@ -18,3 +19,11 @@ def decompose_line(line, nb_vertices):
             segment = LineString(segment_coords)
             segments.append(segment)
     return segments
+
+# Decompose MultiPoint into individual Points
+def decompose_multipoints(row):
+    if isinstance(row.geometry, MultiPoint):
+        points = [Point(xy) for xy in row.geometry]
+        return gpd.GeoSeries(points)
+    else:
+        return row.geometry

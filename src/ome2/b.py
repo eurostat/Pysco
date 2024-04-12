@@ -1,6 +1,7 @@
 import geopandas as gpd
 from geopandas.tools import overlay
 from datetime import datetime
+from geomutils import decompose_multipoints
 
 folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
@@ -17,11 +18,21 @@ print(datetime.now(), "compute intersections")
 intersection = overlay(borders, paths, how='intersection', keep_geom_type=False)
 print(str(len(intersection)), "intersections")
 
-print(datetime.now(), "remove duplicates")
+#keep only geometrie
 intersection = intersection[['geometry']]
-intersection = intersection.dissolve(by='geometry')
-intersection = intersection.reset_index(drop=True)
+
+print(datetime.now(), "decompose multipoints")
+intersection['geometry'] = intersection.apply(decompose_multipoints, axis=1)
+
+print(datetime.now(), "remove duplicates")
+intersection = intersection.drop_duplicates(subset='geometry')
+intersection.reset_index(drop=True, inplace=True)
 print(str(len(intersection)), "intersections")
 
 print(datetime.now(), "save intersections")
 intersection.to_file(folder+"intersections.gpkg", driver="GPKG")
+
+
+from shapely.geometry import Point, MultiPoint
+
+# Assuming you have a GeoDataFrame named 'gdf' with mixed Point and MultiPoint geometries
