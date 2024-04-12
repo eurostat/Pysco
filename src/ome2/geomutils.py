@@ -20,10 +20,14 @@ def decompose_line(line, nb_vertices):
             segments.append(segment)
     return segments
 
-# Decompose MultiPoint into individual Points
-def decompose_multipoints(row):
-    if isinstance(row.geometry, MultiPoint):
-        points = [Point(xy) for xy in row.geometry.coords]
-        return gpd.GeoSeries(points)
+# Define a function to decompose MultiPoints into individual Points
+def decompose_multipoints(multipoint):
+    if isinstance(multipoint, MultiPoint):
+        return list(multipoint)
     else:
-        return row.geometry
+        return [multipoint]
+
+# Define a function to decompose MultiPoints into individual Points
+def decompose_point_array(geometries_array):
+    individual_points = [point for multipoint in geometries_array for point in decompose_multipoints(multipoint)]
+    return individual_points
