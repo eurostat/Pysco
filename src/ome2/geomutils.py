@@ -21,13 +21,11 @@ def decompose_line(line, nb_vertices):
     return segments
 
 # Define a function to decompose MultiPoints into individual Points
-def decompose_multipoints(multipoint):
-    if isinstance(multipoint, MultiPoint):
-        return [Point(xy) for xy in multipoint.coords]
-    else:
-        return [multipoint]
-
-# Define a function to decompose MultiPoints into individual Points
-def decompose_point_array(geometries_array):
-    individual_points = [point for geometry in geometries_array for point in decompose_multipoints(geometry)]
-    return individual_points
+def decompose_point_array(geom_array):
+    out = []
+    for g in geom_array:
+        if isinstance(g, MultiPoint):
+            out.extend(g.geoms)
+        else:
+            out.append(g)
+    return out

@@ -17,23 +17,17 @@ print(str(len(borders)), "boundaries")
 print(datetime.now(), "compute intersections")
 intersection = overlay(borders, paths, how='intersection', keep_geom_type=False)
 print(str(len(intersection)), "intersections")
+del paths, borders
 
-#keep only geometry
+#keep only geometries
 intersection = intersection.geometry.values
-
-
-#intersection = intersection[['geometry']]
-
-#intersection['geometry'] = intersection.apply(decompose_multipoints, axis=1)
-
-#print(datetime.now(), "remove duplicates")
-#unique_points = list(set(points_array))
-
-#intersection = intersection.drop_duplicates(subset='geometry')
-#intersection.reset_index(drop=True, inplace=True)
 
 print(datetime.now(), "decompose multipoints")
 intersection = decompose_point_array(intersection)
+print(str(len(intersection)), "intersections")
+
+print(datetime.now(), "remove duplicates")
+intersection = list(set(intersection))
 print(str(len(intersection)), "intersections")
 
 print(datetime.now(), "save intersections")
