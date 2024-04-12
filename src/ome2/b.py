@@ -18,7 +18,7 @@ print(datetime.now(), "compute intersections")
 intersection = overlay(borders, paths, how='intersection', keep_geom_type=False)
 print(str(len(intersection)), "intersections")
 
-#keep only geometrie
+#keep only geometry
 intersection = intersection[['geometry']]
 
 print(datetime.now(), "decompose multipoints")
