@@ -13,8 +13,14 @@ print(datetime.now(), "load boundaries")
 borders = gpd.read_file(folder+"bnd.gpkg")
 print(str(len(borders)), "boundaries")
 
-print(datetime.now(), "intersection")
+print(datetime.now(), "compute intersections")
 intersection = overlay(borders, paths, how='intersection', keep_geom_type=False)
+print(str(len(intersection)), "intersections")
+
+print(datetime.now(), "remove duplicates")
+intersection = intersection[['geometry']]
+intersection = intersection.dissolve(by='geometry')
+intersection = intersection.reset_index(drop=True)
 print(str(len(intersection)), "intersections")
 
 print(datetime.now(), "save intersections")
