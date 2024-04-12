@@ -27,6 +27,8 @@ intersection = intersection.geometry.values
 #intersection['geometry'] = intersection.apply(decompose_multipoints, axis=1)
 
 #print(datetime.now(), "remove duplicates")
+#unique_points = list(set(points_array))
+
 #intersection = intersection.drop_duplicates(subset='geometry')
 #intersection.reset_index(drop=True, inplace=True)
 
