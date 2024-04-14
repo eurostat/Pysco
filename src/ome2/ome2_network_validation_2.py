@@ -14,7 +14,12 @@ distance_threshold = 5000
 num_processors_to_use = 4
 
 
+
+
+
 #go through partitions
+
+
 
 #load border geometry
 
