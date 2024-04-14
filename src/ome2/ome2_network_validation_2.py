@@ -32,6 +32,7 @@ def is_close(node, bnd, distance_threshold):
     distance = point.distance(bnd)
     return distance < distance_threshold
 
+out_points = []
 for bnd in lines:
     bbox = bnd.bounds
     bbox = (bbox[0] - buff_dist, bbox[1] - buff_dist, bbox[2] + buff_dist, bbox[3] + buff_dist)
@@ -56,7 +57,17 @@ for bnd in lines:
     nodes_1 = [n for n in nodes_1 if is_close(n,bnd,distance_threshold)]
     print(len(nodes_1))
 
-#store
+    #store points
+    for n in nodes_1:
+        [x,y] = node_coordinate(n)
+        out_points.append(Point(x,y))
+
+
+print(datetime.now(), "export points as geopackage", len(out_points))
+gdf = gpd.GeoDataFrame({'geometry': out_points})
+gdf.crs = 'EPSG:3035'
+gdf.to_file(folder+"nodes_degree_1.gpkg", driver="GPKG")
+
 
 #detect pairs with different countries
 
