@@ -51,17 +51,16 @@ for bnd in lines:
 
     print(datetime.now(), "get nodes with degree 1")
     nodes_1 = [node for node, degree in dict(graph.degree()).items() if degree == 1]
-    print(len(nodes_1))
+    #print(len(nodes_1))
 
     print(datetime.now(), "filter those near border")
     nodes_1 = [n for n in nodes_1 if is_close(n,bnd,distance_threshold)]
-    print(len(nodes_1))
+    #print(len(nodes_1))
 
-    #store points
+    print(datetime.now(), "store points", len(nodes_1))
     for n in nodes_1:
         [x,y] = node_coordinate(n)
         out_points.append(Point(x,y))
-
 
 print(datetime.now(), "export points as geopackage", len(out_points))
 gdf = gpd.GeoDataFrame({'geometry': out_points})
