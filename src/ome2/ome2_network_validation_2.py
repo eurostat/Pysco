@@ -15,15 +15,27 @@ num_processors_to_use = 4
 
 
 
+print(datetime.now(), "load boundaries to get bounds")
+bnds = gpd.read_file(folder+"bnd.gpkg")
 
+#get bbox and partition information
+window = 30000
+bbox = bnds.total_bounds
+rnd_function = lambda x: int(window*math.floor(x/window))
+bbox = [rnd_function(x) for x in bbox]
+[xmin, ymin, xmax, ymax] = bbox
+nbx = math.floor((xmax-xmin)/window)
+nby = math.floor((ymax-ymin)/window)
+#print(nbx, nby, bbox)
+window_margin = window * 0.1
 
 #go through partitions
+for i in range(nbx):
+    for j in range(nby):
+        bbox = [xmin+i*window-window_margin, ymin+j*window-window_margin, xmin+(i+1)*window+window_margin, ymin+(j+1)*window+ window_margin]
+        print(bbox)
 
-
-
-#load border geometry
-
-#load network
+        #load network
 
 #make network
 

@@ -17,14 +17,14 @@ num_processors_to_use = 4
 
 def validation(cnt1,cnt2):
 
-    print(datetime.now(), "load nodes to get boundaries")
+    print(datetime.now(), "load nodes to get bounds")
     nodes = gpd.read_file(folder+"xborder_nodes_stamped.gpkg")
-    #print(str(len(nodes)) + " nodes")
+    #print(str(len(nodes)), " nodes")
 
     print(datetime.now(), "select for "+cnt1+" and "+cnt2+" only")
     condition = (nodes['country_id'] == cnt1) | (nodes['country_id'] == cnt2)
     nodes = nodes[condition]
-    #print(len(nodes), " selected nodes")
+    #print(len(nodes), "selected nodes")
 
     #get bbox and partition information
     window = 30000
