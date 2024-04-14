@@ -9,21 +9,23 @@ from shapely import Point
 
 folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
-distance_threshold = 10
+distance_threshold = 5
 nb_vertices = 500
 buff_dist = 1000
 
 
-print(datetime.now(), "load boundaries to get bounds")
+print(datetime.now(), "load boundaries")
 bnds = gpd.read_file(folder+"bnd.gpkg")
 print(len(bnds), "boundaries")
 
+print(datetime.now(), "decompose into small pieces")
 lines = []
 for g in bnds.geometry:
     lines_ = decompose_line(g, nb_vertices)
     for l in lines_: lines.append(l)
-del bnds
 print(len(lines), "lines")
+
+del bnds
 
 #function to check if a network node is close to a boundary
 def is_close(node, bnd, distance_threshold):
