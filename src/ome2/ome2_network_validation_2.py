@@ -1,9 +1,7 @@
 import geopandas as gpd
 from datetime import datetime
-import math
-from netutils import node_coordinate,shortest_path_geometry,graph_from_geodataframe,nodes_spatial_index,a_star_euclidian_dist
+from netutils import node_coordinate,graph_from_geodataframe
 from ome2utils import ome2_filter_road_links
-import networkx as nx
 from geomutils import decompose_line
 from shapely import Point
 
