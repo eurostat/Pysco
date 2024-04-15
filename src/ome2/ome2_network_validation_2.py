@@ -13,8 +13,8 @@ buff_dist = 1000
 
 
 print(datetime.now(), "load boundaries")
-#bnds = gpd.read_file(folder+"bnd.gpkg")
-bnds = gpd.read_file(file_path, layer='ib_international_boundary_line')
+bnds = gpd.read_file(folder+"bnd.gpkg")
+#bnds = gpd.read_file(file_path, layer='ib_international_boundary_line')
 print(len(bnds), "boundaries")
 
 print(datetime.now(), "decompose into small pieces")
