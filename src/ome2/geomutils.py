@@ -11,14 +11,14 @@ def extract_segments(line):
     return segments
 
 def decompose_line(line, nb_vertices):
-    segments = []
+    lines = []
     coords = list(line.coords)
     for i in range(0, len(coords), nb_vertices):
         segment_coords = coords[i:i+nb_vertices]
         if len(segment_coords) >= 2:
             segment = LineString(segment_coords)
-            segments.append(segment)
-    return segments
+            lines.append(segment)
+    return lines
 
 # Define a function to decompose MultiPoints into individual Points
 def decompose_point_array(geom_array):
