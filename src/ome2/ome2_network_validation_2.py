@@ -7,13 +7,14 @@ from shapely import Point
 
 folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
-distance_threshold = 5
+distance_threshold = 10
 nb_vertices = 500
 buff_dist = 1000
 
 
 print(datetime.now(), "load boundaries")
-bnds = gpd.read_file(folder+"bnd.gpkg")
+#bnds = gpd.read_file(folder+"bnd.gpkg")
+bnds = gpd.read_file(file_path, layer='ib_international_boundary_line')
 print(len(bnds), "boundaries")
 
 print(datetime.now(), "decompose into small pieces")
@@ -61,6 +62,7 @@ for bnd in lines:
     print(datetime.now(), "filter those near border")
     nodes_1 = [n for n in nodes_1 if is_close(n,bnd,distance_threshold)]
     #print(len(nodes_1))
+    if(len(nodes_1)==0): continue
 
     print(datetime.now(), "store points", len(nodes_1))
     for n in nodes_1:
@@ -75,18 +77,19 @@ for bnd in lines:
         out_cnts.append(cnt)
 
         #detect the network sections nearby that are in another country
-        dist = None
+        distance = None
         near = rn.sindex.intersection(pt.buffer(distance_threshold).bounds)
         for i_ in near:
             rs = rn.iloc[i_]
             #skip the ones within the same country
-            if(cnt!=rs["country"]): continue
+            if(cnt==rs["country"]): continue
             d = pt.distance(rs.geometry)
-            if dist == None or d<dist: dist=d
-        out_dists.append(dist)
+            if d>distance_threshold: continue
+            if distance == None or d<distance: distance=d
+        out_dists.append(distance)
 
 print(datetime.now(), "export points as geopackage", len(out_points))
-gdf = gpd.GeoDataFrame({'geometry': out_points, 'cnt': out_cnts, 'dist': out_dists})
+gdf = gpd.GeoDataFrame({'geometry': out_points, 'country': out_cnts, 'distance': out_dists})
 gdf.crs = 'EPSG:3035'
 gdf.to_file(folder+"nodes_degree_1.gpkg", driver="GPKG")
 
