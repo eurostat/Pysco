@@ -1,6 +1,4 @@
 
-
-
 def cartesian_product(nb1, nb2):
     pairs = []
     for i in range(nb1 + 1):

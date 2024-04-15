@@ -33,6 +33,8 @@ def is_close(node, bnd, distance_threshold):
     return distance < distance_threshold
 
 out_points = []
+out_cnts = []
+out_dists = []
 for bnd in lines:
     bbox = bnd.bounds
     bbox = (bbox[0] - buff_dist, bbox[1] - buff_dist, bbox[2] + buff_dist, bbox[3] + buff_dist)
@@ -44,10 +46,13 @@ for bnd in lines:
     #rn = ome2_filter_road_links(rn)
     #print(len(rn))
     #if(len(rn)==0): return
+    
+    print(datetime.now(), "spatial index network links")
+    rn.sindex
 
     print(datetime.now(), "make graph")
-    graph = graph_from_geodataframe(rn)
-    del rn
+    def edge_fun(edge,feature): edge["country"]=feature["country"]
+    graph = graph_from_geodataframe(rn, edge_fun=edge_fun)
 
     print(datetime.now(), "get nodes with degree 1")
     nodes_1 = [node for node, degree in dict(graph.degree()).items() if degree == 1]
@@ -60,13 +65,30 @@ for bnd in lines:
     print(datetime.now(), "store points", len(nodes_1))
     for n in nodes_1:
         [x,y] = node_coordinate(n)
-        out_points.append(Point(x,y))
+        pt = Point(x,y)
+        out_points.append(pt)
+
+        #get node country
+        #get single edge linked to the node
+        edge = list(graph.edges(n))[0]
+        cnt = graph.get_edge_data(*edge)["country"]
+        out_cnts.append(cnt)
+
+        #detect the network sections nearby that are in another country
+        dist = None
+        near = rn.sindex.intersection(pt.buffer(distance_threshold).bounds)
+        for i_ in near:
+            rs = rn.iloc[i_]
+            #skip the ones within the same country
+            if(cnt!=rs["country"]): continue
+            d = pt.distance(rs.geometry)
+            if dist == None or d<dist: dist=d
+        out_dists.append(dist)
 
 print(datetime.now(), "export points as geopackage", len(out_points))
-gdf = gpd.GeoDataFrame({'geometry': out_points})
+gdf = gpd.GeoDataFrame({'geometry': out_points, 'cnt': out_cnts, 'dist': out_dists})
 gdf.crs = 'EPSG:3035'
 gdf.to_file(folder+"nodes_degree_1.gpkg", driver="GPKG")
 
 
-#detect pairs with different countries
 

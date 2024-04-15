@@ -11,16 +11,28 @@ def node_coordinate(node):
     c = node.split('_')
     return [float(c[0]), float(c[1])]
 
-def graph_from_geodataframe(gdf, weight = lambda f:f.geometry.length, coord_simp=round):
+def graph_from_geodataframe(gdf, weight = lambda f:f.geometry.length, coord_simp=round, edge_fun = None):
     graph = nx.Graph()
     for i, f in gdf.iterrows():
         g = f.geometry
+
+        #create initial node
         pi = g.coords[0]
         pi = str(coord_simp(pi[0])) +'_'+ str(coord_simp(pi[1]))
+
+        #create final node
         pf = g.coords[-1]
         pf = str(coord_simp(pf[0])) +'_'+ str(coord_simp(pf[1]))
+
+        #compute weight
         w = weight(f)
+
+        #add edge
         graph.add_edge(pi, pf, weight=w)
+
+        #in case there is a need to do some stuff on the newly created edge, such as copying feature data, etc.
+        if edge_fun != None: edge_fun(graph[pi][pf],f)
+
     return graph
 
 
