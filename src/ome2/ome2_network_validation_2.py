@@ -5,6 +5,9 @@ from ome2utils import ome2_filter_road_links
 from geomutils import decompose_line
 from shapely import Point
 
+layer = "tn_road_link"
+#layer = "tn_railway_link"
+
 folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 distance_threshold = 10
@@ -41,7 +44,7 @@ for bnd in lines:
     bbox = (bbox[0] - buff_dist, bbox[1] - buff_dist, bbox[2] + buff_dist, bbox[3] + buff_dist)
 
     print(datetime.now(), "load and filter network links")
-    rn = gpd.read_file(file_path, layer='tn_road_link', bbox=bbox)
+    rn = gpd.read_file(file_path, layer=layer, bbox=bbox)
     #print(len(rn))
     if(len(rn)==0): continue
     #rn = ome2_filter_road_links(rn)
@@ -91,7 +94,7 @@ for bnd in lines:
 print(datetime.now(), "export points as geopackage", len(out_points))
 gdf = gpd.GeoDataFrame({'geometry': out_points, 'country': out_cnts, 'distance': out_dists})
 gdf.crs = 'EPSG:3035'
-gdf.to_file(folder+"nodes_degree_1.gpkg", driver="GPKG")
+gdf.to_file(folder+"nodes_degree_1_"+layer+".gpkg", driver="GPKG")
 
 
 
