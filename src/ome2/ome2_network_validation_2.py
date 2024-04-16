@@ -5,8 +5,8 @@ from ome2utils import ome2_filter_road_links
 from geomutils import decompose_line
 from shapely import Point
 
-layer = "tn_road_link"
-#layer = "tn_railway_link"
+#layer = "tn_road_link"
+layer = "tn_railway_link"
 
 folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
