@@ -6,7 +6,8 @@ from geomutils import decompose_line
 from shapely import Point
 
 # A validation process for network edge matching.
-# The procedure 
+# The procedure detects network nodes of degree 1 nearby boundary lines.
+# If these nodes are nearby a network link belonging to a different country, they are flagged by the distance to this nearest network link.
 # inputs:
 # - boundaries lines, to check edge matching along, in ETRS89-LAEA projection
 # - network dataset, as lines, in ETRS89-LAEA projection
