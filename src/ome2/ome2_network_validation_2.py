@@ -9,21 +9,22 @@ from shapely import Point
 # inputs:
 # - boundaries lines, to check edge matching along, in ETRS89-LAEA projection
 # - network dataset, as lines, in ETRS89-LAEA projection
-# output:
+# output: a dataset of points nearby potential edge matching issues
 
 output_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
 OME_dataset = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 #the network layer to validate
-#layer = "tn_road_link"
-layer = "tn_railway_link"
+layer = "tn_road_link"
+#layer = "tn_railway_link"
 
 #the threshold distance for the edge matching precision
-distance_threshold_meter = 10
+distance_threshold_meter = 20
+
+
 
 #parameters used for partionning
 boundary_piece_max_vertice_number = 500
 buffer_distance_meter = 1000
-
 
 print(datetime.now(), "load boundaries")
 #bnds = gpd.read_file(file_path, layer='ib_international_boundary_line')
