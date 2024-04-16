@@ -5,7 +5,8 @@ from ome2utils import ome2_filter_road_links
 from geomutils import decompose_line
 from shapely import Point
 
-#Validation script for network edge matching.
+# A validation process for network edge matching.
+# The procedure 
 # inputs:
 # - boundaries lines, to check edge matching along, in ETRS89-LAEA projection
 # - network dataset, as lines, in ETRS89-LAEA projection
