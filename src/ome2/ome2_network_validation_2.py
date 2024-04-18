@@ -23,7 +23,6 @@ layer = "tn_road_link"
 distance_threshold_meter = 20
 
 
-
 #parameters used for partionning
 boundary_piece_max_vertice_number = 500
 buffer_distance_meter = 1000
