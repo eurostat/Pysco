@@ -25,7 +25,7 @@ distance_threshold_meter = 20
 
 
 #parameters used for partionning
-boundary_piece_max_vertice_number = 500
+boundary_piece_max_vertice_number = 1000
 buffer_distance_meter = 1000
 
 print(datetime.now(), "load boundaries")
