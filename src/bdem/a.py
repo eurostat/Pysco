@@ -11,8 +11,8 @@ from lib.utils import cartesian_product_comp
 
 file_path = '/home/juju/geodata/FR/BDTOPO_3-3_TOUSTHEMES_GPKG_LAMB93_R44_2023-12-15/BDT_3-3_GPKG_3035_R44-ED2023-12-15.gpkg'
 out_folder = '/home/juju/gisco/building_demography/'
-#minx = 3830000; maxx = 4200000; miny = 2700000; maxy = 3025000
-minx = 3900000; maxx = 3950000; miny = 2800000; maxy = 2850000
+minx = 3800000; maxx = 4200000; miny = 2700000; maxy = 3000000
+#minx = 3900000; maxx = 3950000; miny = 2800000; maxy = 2850000
 #bbox = box(minx, miny, maxx, maxy)
 
 num_processors_to_use = 8
