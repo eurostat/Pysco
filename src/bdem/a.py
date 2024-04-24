@@ -7,15 +7,18 @@ from math import ceil,isnan
 file_path = '/home/juju/geodata/FR/BDTOPO_3-3_TOUSTHEMES_GPKG_LAMB93_R44_2023-12-15/BDT_3-3_GPKG_3035_R44-ED2023-12-15.gpkg'
 out_folder = '/home/juju/gisco/building_demography/'
 #minx = 3830000; maxx = 4200000; miny = 2700000; maxy = 3025000
-minx = 3880000; maxx = 3890000; miny = 2750000; maxy = 2790000
+minx = 3900000; maxx = 3920000; miny = 2800000; maxy = 2820000
 #bbox = box(minx, miny, maxx, maxy)
+
+
+  
 
 nb_floors_fun = lambda f: 1 if f.hauteur==None or isnan(f.hauteur) else ceil(f.hauteur/3.7)
 
 cell_geometries = []
-tot_floor_areas = []
 tot_ground_areas = []
-resolution = 200
+tot_floor_areas = []
+resolution = 1000
 for x in range(minx, maxx, resolution):
     for y in range(miny, maxy, resolution):
 
@@ -37,7 +40,7 @@ for x in range(minx, maxx, resolution):
             if not cell_geometry.intersects(bu.geometry): continue
             a = cell_geometry.intersection(bu.geometry).area
             if a == 0: continue
-            tot_ground_area =+ a
+            tot_ground_area += a
             tot_floor_area += a * nb_floors_fun(bu)
 
         tot_ground_area = round(tot_ground_area)
@@ -51,6 +54,6 @@ for x in range(minx, maxx, resolution):
 
 
 print(datetime.now(), "save grid", len(cell_geometries))
-buildings = gpd.GeoDataFrame({'geometry': cell_geometries, 'ground_area': tot_ground_areas, 'floors_area': tot_floor_areas })
+buildings = gpd.GeoDataFrame({'geometry': cell_geometries, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas })
 buildings.crs = 'EPSG:3035'
 buildings.to_file(out_folder+"bu_dem_grid.gpkg", driver="GPKG")
