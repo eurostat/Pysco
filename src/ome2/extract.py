@@ -4,7 +4,7 @@ from shapely.geometry import box
 # reproject
 # ogr2ogr -f GPKG -t_srs EPSG:3035 ome2.gpkg ome2_hvlsp_v1.1.1.gpkg
 
-file_path = '/home/juju/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
+file_path = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 out_folder = '/home/juju/gisco/OME2_analysis/'
 minx = 3900000
 maxx = 3910000

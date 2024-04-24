@@ -3,7 +3,7 @@ from datetime import datetime
 from geomutils import decompose_line
 
 folder = '/home/juju/gisco/OME2_analysis/'
-file_path = '/home/juju/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
+file_path = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 buffer_distance = 1000
 
 print(datetime.now(), "load boundaries")

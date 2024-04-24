@@ -9,7 +9,7 @@ import concurrent.futures
 from utils import cartesian_product
 
 folder = '/home/juju/gisco/OME2_analysis/'
-file_path = '/home/juju/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
+file_path = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 distance_threshold = 5000
 num_processors_to_use = 8
 

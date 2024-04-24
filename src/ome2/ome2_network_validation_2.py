@@ -14,7 +14,7 @@ from shapely import Point
 # output: a dataset of points nearby potential edge matching issues
 
 output_folder = '/home/juju/gisco/OME2_analysis/'
-OME_dataset = '/home/juju/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
+OME_dataset = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 #the network layer to validate
 layer = "tn_road_link"
 #layer = "tn_railway_link"
