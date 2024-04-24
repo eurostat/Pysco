@@ -22,72 +22,88 @@ residential_fr_fun = lambda f: 1 if f.usage_1=="Résidentiel" else 0.3 if f.usag
 cultural_value_fr_fun = lambda f: 1 if f.usage_1=="Religieux" or f.nature=="Tour, donjon" or f.nature=="Monument" or f.nature=="Moulin à vent" or f.nature=="Arc de triomphe" or f.nature=="Fort, blockhaus, casemate" or f.nature=="Eglise" or f.nature=="Château" or f.nature=="Chapelle" or f.nature=="Arène ou théâtre antique" else 0
 
 cell_geometries = []
+tot_nbs = []
 tot_ground_areas = []
 tot_floor_areas = []
 tot_res_floor_areas = []
 tot_cult_ground_areas = []
 tot_cult_floor_areas = []
 resolution = 1000
-partition_size = 100000
+partition_size = 10000
 
-def proceed(xy):
-    [x,y]=xy
 
-    #load buildings within the partition
-    buildings = gpd.read_file(file_path, layer='batiment', bbox=box(x, y, x+partition_size, y+partition_size))
+def proceed_partition(xy):
+    [x_,y_] = xy
+
+    print(datetime.now(), x_,y_, "load buildings")
+    buildings = gpd.read_file(file_path, layer='batiment', bbox=box(x_, y_, x_+partition_size, y_+partition_size))
+    print(datetime.now(), x_,y_, len(buildings))
     if len(buildings)==0: return
-
-    print(datetime.now(), x,y, len(buildings), "buildings")
 
     print(datetime.now(), "spatial index buildings")
     buildings.sindex
 
-    
+    for x in range(x_, x_+partition_size, resolution):
+        for y in range(y_, y_+partition_size, resolution):
+
+            #make grid cell geometry
+            cell_geometry = Polygon([(x, y), (x+resolution, y), (x+resolution, y+resolution), (x, y+resolution)])
+
+            #get buildings intersecting cell, using spatial index
+            buildings_ = buildings.sindex.intersection(cell_geometry.bounds)
+            if len(buildings_)==0: continue
+
+            #initialise totals
+            tot_nb = 0
+            tot_ground_area = 0
+            tot_floor_area = 0
+            tot_res_floor_area = 0
+            tot_cult_ground_area = 0
+            tot_cult_floor_area = 0
+
+            #go through buildings
+            for i_ in buildings_:
+                bu = buildings.iloc[i_]
+                if not cell_geometry.intersects(bu.geometry): continue
+                a = cell_geometry.intersection(bu.geometry).area
+                if a == 0: continue
+
+                #building number
+                nb = a/bu.geometry.area
+                if nb>1: nb=1
+                tot_nb += nb
+
+                #building area
+                tot_ground_area += a
+                floor_area = a * nb_floors_fr_fun(bu)
+                tot_floor_area += floor_area
+
+                #residential buildings
+                tot_res_floor_area += residential_fr_fun(bu) * floor_area
+
+                #cultural buildings
+                cult = cultural_value_fr_fun(bu)
+                tot_cult_ground_area += cult * a
+                tot_cult_floor_area += cult * floor_area
+
+            tot_ground_area = round(tot_ground_area)
+            tot_floor_area = round(tot_floor_area)
+            tot_res_floor_area = round(tot_res_floor_area)
+            tot_cult_ground_area = round(tot_cult_ground_area)
+            tot_cult_floor_area = round(tot_cult_floor_area)
+
+            if(tot_ground_area == 0): return
+
+            cell_geometries.append(cell_geometry)
+            tot_nbs.append(tot_nb)
+            tot_ground_areas.append(tot_ground_area)
+            tot_floor_areas.append(tot_floor_area)
+            tot_res_floor_areas.append(tot_res_floor_area)
+            tot_cult_ground_areas.append(tot_cult_ground_area)
+            tot_cult_floor_areas.append(tot_cult_floor_area)
 
 
-    #make grid cell geometry
-    cell_geometry = Polygon([(x, y), (x+resolution, y), (x+resolution, y+resolution), (x, y+resolution)])
-
-    #initialise totals
-    tot_ground_area = 0
-    tot_floor_area = 0
-    tot_res_floor_area = 0
-    tot_cult_ground_area = 0
-    tot_cult_floor_area = 0
-
-    #go through buildings
-    for iii,bu in buildings.iterrows():
-        if not cell_geometry.intersects(bu.geometry): continue
-        a = cell_geometry.intersection(bu.geometry).area
-        if a == 0: continue
-
-        tot_ground_area += a
-        floor_area = a * nb_floors_fr_fun(bu)
-        tot_floor_area += floor_area
-
-        tot_res_floor_area += residential_fr_fun(bu) * floor_area
-
-        cult = cultural_value_fr_fun(bu)
-        tot_cult_ground_area += cult * a
-        tot_cult_floor_area += cult * floor_area
-
-    tot_ground_area = round(tot_ground_area)
-    tot_floor_area = round(tot_floor_area)
-    tot_res_floor_area = round(tot_res_floor_area)
-    tot_cult_ground_area = round(tot_cult_ground_area)
-    tot_cult_floor_area = round(tot_cult_floor_area)
-
-    if(tot_ground_area == 0): return
-
-    cell_geometries.append(cell_geometry)
-    tot_ground_areas.append(tot_ground_area)
-    tot_floor_areas.append(tot_floor_area)
-    tot_res_floor_areas.append(tot_res_floor_area)
-    tot_cult_ground_areas.append(tot_cult_ground_area)
-    tot_cult_floor_areas.append(tot_cult_floor_area)
-
-
-proceed([3900000, 2800000])
+proceed_partition([3900000, 2800000])
 
 
 #launch parallel computation   
@@ -95,12 +111,8 @@ proceed([3900000, 2800000])
 #    executor.map(proceed, cartesian_product_comp(minx, miny, maxx, maxy, resolution))
 
 
-#for x in range(minx, maxx, resolution):
-#    for y in range(miny, maxy, resolution):
-#        proceed(x,y)
-
 
 print(datetime.now(), "save grid", len(cell_geometries))
-buildings = gpd.GeoDataFrame({'geometry': cell_geometries, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas, 'residential_floor_area': tot_res_floor_areas, 'cultural_ground_area': tot_cult_ground_areas, 'cultural_floor_area': tot_cult_floor_areas })
+buildings = gpd.GeoDataFrame({'geometry': cell_geometries, 'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas, 'residential_floor_area': tot_res_floor_areas, 'cultural_ground_area': tot_cult_ground_areas, 'cultural_floor_area': tot_cult_floor_areas })
 buildings.crs = 'EPSG:3035'
 buildings.to_file(out_folder+"bu_dem_grid.gpkg", driver="GPKG")
