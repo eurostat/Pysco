@@ -28,15 +28,22 @@ tot_res_floor_areas = []
 tot_cult_ground_areas = []
 tot_cult_floor_areas = []
 resolution = 1000
+partition_size = 100000
 
 def proceed(xy):
     [x,y]=xy
 
-    #load buildings intersecting the cell
-    buildings = gpd.read_file(file_path, layer='batiment', bbox=box(x, y, x+resolution, y+resolution))
+    #load buildings within the partition
+    buildings = gpd.read_file(file_path, layer='batiment', bbox=box(x, y, x+partition_size, y+partition_size))
     if len(buildings)==0: return
 
     print(datetime.now(), x,y, len(buildings), "buildings")
+
+    print(datetime.now(), "spatial index buildings")
+    buildings.sindex
+
+    
+
 
     #make grid cell geometry
     cell_geometry = Polygon([(x, y), (x+resolution, y), (x+resolution, y+resolution), (x, y+resolution)])
@@ -80,9 +87,12 @@ def proceed(xy):
     tot_cult_floor_areas.append(tot_cult_floor_area)
 
 
+proceed([3900000, 2800000])
+
+
 #launch parallel computation   
-with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
-    executor.map(proceed, cartesian_product_comp(minx, miny, maxx, maxy, resolution))
+#with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
+#    executor.map(proceed, cartesian_product_comp(minx, miny, maxx, maxy, resolution))
 
 
 #for x in range(minx, maxx, resolution):
