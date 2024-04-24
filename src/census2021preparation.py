@@ -3,7 +3,7 @@ import subprocess
 
 
 # the folder where to put the input files. Naming convention: DK_in_3.csv of NL_in.csv
-rep="/home/juju/Bureau/gisco/grid_pop_c2021/"
+rep="/home/juju/gisco/grid_pop_c2021/"
 
 # load all country files into a single data frame
 def load(cc, nb=0):

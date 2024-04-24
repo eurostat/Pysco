@@ -23,7 +23,7 @@ def xls2GPKG(inXLSfile, lon1, lat1, lon2, lat2, id, outGPKGFile, crsEPSG="4258")
     gdf.to_file(outGPKGFile, driver='GPKG', crs="EPSG:"+crsEPSG)
 
 
-folder = "/home/juju/Bureau/gisco/rail_rinf/"
+folder = "/home/juju/gisco/rail_rinf/"
 # folder = ".\\"
 
 # transform annex G

@@ -3,8 +3,8 @@ from geopandas.tools import overlay
 from datetime import datetime
 from geomutils import decompose_point_array
 
-folder = '/home/juju/Bureau/gisco/OME2_analysis/'
-file_path = '/home/juju/Bureau/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
+folder = '/home/juju/gisco/OME2_analysis/'
+file_path = '/home/juju/gisco/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 
 print(datetime.now(), "load paths")
 paths = gpd.read_file(folder+"ome2_validation_paths_be_fr.gpkg")

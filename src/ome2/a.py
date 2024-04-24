@@ -7,7 +7,7 @@ from rtree import index
 from datetime import datetime
 from netutils import shortest_path_geometry,node_coordinate,graph_from_geodataframe,a_star_euclidian_dist,a_star_speed
 
-out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
+out_folder = '/home/juju/gisco/OME2_analysis/'
 
 print(datetime.now(), "loading")
 xMin = 3900000

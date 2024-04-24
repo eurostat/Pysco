@@ -3,7 +3,7 @@ from shapely.geometry import LineString
 from datetime import datetime
 from ome2utils import ome2_filter_road_links, road_link_speed_kmh
 
-out_folder = '/home/juju/Bureau/gisco/OME2_analysis/'
+out_folder = '/home/juju/gisco/OME2_analysis/'
 
 print(datetime.now(), "loading")
 size = 60000
