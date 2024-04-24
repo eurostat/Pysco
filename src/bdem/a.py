@@ -16,6 +16,9 @@ minx = 3800000; maxx = 4200000; miny = 2700000; maxy = 3000000
 #bbox = box(minx, miny, maxx, maxy)
 
 num_processors_to_use = 8
+resolution = 1000
+partition_size = 50000
+
 
 nb_floors_fr_fun = lambda f: 1 if f.hauteur==None or isnan(f.hauteur) else ceil(f.hauteur/3.7)
 residential_fr_fun = lambda f: 1 if f.usage_1=="Résidentiel" else 0.3 if f.usage_2=="Résidentiel" else 0.1 if f.usage_1=="Indifférencié" else 0
@@ -28,8 +31,6 @@ tot_floor_areas = []
 tot_res_floor_areas = []
 tot_cult_ground_areas = []
 tot_cult_floor_areas = []
-resolution = 1000
-partition_size = 50000
 
 
 def proceed_partition(xy):
