@@ -12,34 +12,45 @@ minx = 3880000; maxx = 3890000; miny = 2750000; maxy = 2790000
 
 nb_floors_fun = lambda f: 1 if f.hauteur==None or isnan(f.hauteur) else ceil(f.hauteur/3.7)
 
-cell_geoms = []
-cell_tot_area = []
-resolution = 1000
+cell_geometries = []
+tot_floor_areas = []
+tot_ground_areas = []
+resolution = 200
 for x in range(minx, maxx, resolution):
     for y in range(miny, maxy, resolution):
 
-        #load buildings
-        gdf = gpd.read_file(file_path, layer='batiment', bbox=box(x, y, x+resolution, y+resolution))
-        nb = len(gdf)
-        if nb==0: continue
+        #load buildings intersecting the cell
+        buildings = gpd.read_file(file_path, layer='batiment', bbox=box(x, y, x+resolution, y+resolution))
+        if len(buildings)==0: continue
 
-        print(datetime.now(), x,y, nb, "buildings")
+        print(datetime.now(), x,y, len(buildings), "buildings")
 
         #make grid cell geometry
-        cell_geom = Polygon([(x, y), (x+resolution, y), (x+resolution, y+resolution), (x, y+resolution)])
+        cell_geometry = Polygon([(x, y), (x+resolution, y), (x+resolution, y+resolution), (x, y+resolution)])
 
-        tot_area = 0
-        for iii,bu in gdf.iterrows():
-            if not cell_geom.intersects(bu.geometry): continue
-            inter = cell_geom.intersection(bu.geometry)
-            if inter.area == 0: continue
-            nb_floors = nb_floors_fun(bu)
-            #ratio = inter.area/bu.geometry.area
-            #if(ratio>1): ratio=1
-            tot_area += inter.area * nb_floors
-        tot_area = round(tot_area)
+        #initialise totals
+        tot_floor_area = 0
+        tot_ground_area = 0
 
-        cell_geoms.append(cell_geom)
-        cell_tot_area.append(tot_area)
+        #go through buildings
+        for iii,bu in buildings.iterrows():
+            if not cell_geometry.intersects(bu.geometry): continue
+            a = cell_geometry.intersection(bu.geometry).area
+            if a == 0: continue
+            tot_ground_area =+ a
+            tot_floor_area += a * nb_floors_fun(bu)
+
+        tot_ground_area = round(tot_ground_area)
+        tot_floor_area = round(tot_floor_area)
+
+        if(tot_ground_area == 0): continue
+
+        cell_geometries.append(cell_geometry)
+        tot_ground_areas.append(tot_ground_area)
+        tot_floor_areas.append(tot_floor_area)
 
 
+print(datetime.now(), "save grid", len(cell_geometries))
+buildings = gpd.GeoDataFrame({'geometry': cell_geometries, 'ground_area': tot_ground_areas, 'floors_area': tot_floor_areas })
+buildings.crs = 'EPSG:3035'
+buildings.to_file(out_folder+"bu_dem_grid.gpkg", driver="GPKG")
