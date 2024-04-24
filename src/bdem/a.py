@@ -17,7 +17,7 @@ minx = 3800000; maxx = 4200000; miny = 2700000; maxy = 3000000
 
 num_processors_to_use = 8
 resolution = 1000
-partition_size = 50000
+partition_size = 100000
 
 
 nb_floors_fr_fun = lambda f: 1 if f.hauteur==None or isnan(f.hauteur) else ceil(f.hauteur/3.7)
