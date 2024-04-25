@@ -19,10 +19,11 @@ num_processors_to_use = 8
 resolution = 1000
 partition_size = 10000
 
-
-nb_floors_fr_fun = lambda f: 1 if f.hauteur==None or isnan(f.hauteur) else ceil(f.hauteur/3.7)
-residential_fr_fun = lambda f: 1 if f.usage_1=="Résidentiel" else 0.3 if f.usage_2=="Résidentiel" else 0.1 if f.usage_1=="Indifférencié" else 0
-cultural_value_fr_fun = lambda f: 1 if f.usage_1=="Religieux" or f.nature=="Tour, donjon" or f.nature=="Monument" or f.nature=="Moulin à vent" or f.nature=="Arc de triomphe" or f.nature=="Fort, blockhaus, casemate" or f.nature=="Eglise" or f.nature=="Château" or f.nature=="Chapelle" or f.nature=="Arène ou théâtre antique" else 0
+buildings_loader = lambda bbox: gpd.read_file(file_path, layer='batiment', bbox=bbox)
+nb_floors_fun = lambda f: 1 if f.hauteur==None or isnan(f.hauteur) else ceil(f.hauteur/3.7)
+residential_fun = lambda f: 1 if f.usage_1=="Résidentiel" else 0.3 if f.usage_2=="Résidentiel" else 0.1 if f.usage_1=="Indifférencié" else 0
+cultural_value_fun = lambda f: 1 if f.usage_1=="Religieux" or f.nature=="Tour, donjon" or f.nature=="Monument" or f.nature=="Moulin à vent" or f.nature=="Arc de triomphe" or f.nature=="Fort, blockhaus, casemate" or f.nature=="Eglise" or f.nature=="Château" or f.nature=="Chapelle" or f.nature=="Arène ou théâtre antique" else 0
+out_file = "bu_dem_fr_bdtopo_grid"
 
 cell_geometries = []
 tot_nbs = []
@@ -38,7 +39,7 @@ def proceed_partition(xy):
     [x_,y_] = xy
 
     print(datetime.now(), x_, y_, "load buildings")
-    buildings = gpd.read_file(file_path, layer='batiment', bbox=box(x_, y_, x_+partition_size, y_+partition_size))
+    buildings = buildings_loader(box(x_, y_, x_+partition_size, y_+partition_size))
     print(datetime.now(), x_, y_, len(buildings))
     if len(buildings)==0: return
 
@@ -77,14 +78,14 @@ def proceed_partition(xy):
 
                 #building area
                 tot_ground_area += a
-                floor_area = a * nb_floors_fr_fun(bu)
+                floor_area = a * nb_floors_fun(bu)
                 tot_floor_area += floor_area
 
                 #residential buildings
-                tot_res_floor_area += residential_fr_fun(bu) * floor_area
+                tot_res_floor_area += residential_fun(bu) * floor_area
 
                 #cultural buildings
-                cult = cultural_value_fr_fun(bu)
+                cult = cultural_value_fun(bu)
                 tot_cult_ground_area += cult * a
                 tot_cult_floor_area += cult * floor_area
 
@@ -118,8 +119,8 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as
 print(datetime.now(), "save grid as GPKG", len(cell_geometries))
 buildings = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids, 'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas, 'residential_floor_area': tot_res_floor_areas, 'cultural_ground_area': tot_cult_ground_areas, 'cultural_floor_area': tot_cult_floor_areas })
 buildings.crs = 'EPSG:3035'
-buildings.to_file(out_folder+"bu_dem_grid.gpkg", driver="GPKG")
+buildings.to_file(out_folder+out_file+".gpkg", driver="GPKG")
 
 print(datetime.now(), "save grid as CSV", len(cell_geometries))
 buildings = buildings.drop(columns=['geometry'])
-buildings.to_csv(out_folder+"bu_dem_grid.csv", index=False)
+buildings.to_csv(out_folder+out_file+".csv", index=False)
