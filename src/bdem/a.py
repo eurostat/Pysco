@@ -118,7 +118,11 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as
 
 
 
-print(datetime.now(), "save grid", len(cell_geometries))
+print(datetime.now(), "save grid GPKG", len(cell_geometries))
 buildings = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids, 'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas, 'residential_floor_area': tot_res_floor_areas, 'cultural_ground_area': tot_cult_ground_areas, 'cultural_floor_area': tot_cult_floor_areas })
 buildings.crs = 'EPSG:3035'
 buildings.to_file(out_folder+"bu_dem_grid.gpkg", driver="GPKG")
+
+print(datetime.now(), "save grid CSV", len(cell_geometries))
+buildings = buildings.drop(columns=['geometry'])
+buildings.to_csv(out_folder+"bu_dem_grid.csv", index=False)
