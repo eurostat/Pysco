@@ -6,7 +6,7 @@ from building_demography import building_demography_grid
 
 #bbox = [3800000, 2700000, 4200000, 3000000]
 bbox = [4000000, 2800000, 4050000, 2850000]
-resolution = 1000
+resolution = 100
 partition_size = 50000
 num_processors_to_use = 8
 
