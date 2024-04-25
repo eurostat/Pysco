@@ -141,11 +141,15 @@ def building_demography_grid(buildings_loader,
             grd_ids += out[7]
 
 
-        print(datetime.now(), "save grid as GPKG", len(cell_geometries))
+        print(datetime.now(), len(cell_geometries), "cells")
+
+        print(datetime.now(), "save grid as GPKG")
         buildings = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids, 'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas, 'residential_floor_area': tot_res_floor_areas, 'cultural_ground_area': tot_cult_ground_areas, 'cultural_floor_area': tot_cult_floor_areas })
         buildings.crs = crs
         buildings.to_file(out_folder+out_file+".gpkg", driver="GPKG")
 
-        print(datetime.now(), "save grid as CSV", len(cell_geometries))
+        print(datetime.now(), "save grid as CSV")
         buildings = buildings.drop(columns=['geometry'])
         buildings.to_csv(out_folder+out_file+".csv", index=False)
+        print(datetime.now(), "save grid as parquet")
+        buildings.to_parquet(out_folder+out_file+".parquet")
