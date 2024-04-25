@@ -11,8 +11,8 @@ from lib.utils import cartesian_product_comp
 
 file_path = '/home/juju/geodata/FR/BDTOPO_3-3_TOUSTHEMES_GPKG_LAMB93_R44_2023-12-15/BDT_3-3_GPKG_3035_R44-ED2023-12-15.gpkg'
 out_folder = '/home/juju/gisco/building_demography/'
-minx = 3800000; maxx = 4200000; miny = 2700000; maxy = 3000000
-#minx = 3900000; maxx = 3950000; miny = 2800000; maxy = 2850000
+#minx = 3800000; maxx = 4200000; miny = 2700000; maxy = 3000000
+minx = 3900000; maxx = 3950000; miny = 2800000; maxy = 2850000
 #bbox = box(minx, miny, maxx, maxy)
 
 num_processors_to_use = 8
@@ -31,6 +31,7 @@ tot_floor_areas = []
 tot_res_floor_areas = []
 tot_cult_ground_areas = []
 tot_cult_floor_areas = []
+grd_ids = []
 
 
 def proceed_partition(xy):
@@ -87,6 +88,7 @@ def proceed_partition(xy):
                 tot_cult_ground_area += cult * a
                 tot_cult_floor_area += cult * floor_area
 
+            #round values
             tot_ground_area = round(tot_ground_area)
             tot_floor_area = round(tot_floor_area)
             tot_res_floor_area = round(tot_res_floor_area)
@@ -95,6 +97,7 @@ def proceed_partition(xy):
 
             if(tot_ground_area == 0): continue
 
+            #store cell values
             cell_geometries.append(cell_geometry)
             tot_nbs.append(tot_nb)
             tot_ground_areas.append(tot_ground_area)
@@ -102,6 +105,9 @@ def proceed_partition(xy):
             tot_res_floor_areas.append(tot_res_floor_area)
             tot_cult_ground_areas.append(tot_cult_ground_area)
             tot_cult_floor_areas.append(tot_cult_floor_area)
+
+            #cell code
+            grd_ids.append("CRS3035RES"+str(resolution)+"mN"+int(y)+"E"+int(x))
 
 
 #proceed_partition([3900000, 2800000])
@@ -113,6 +119,6 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as
 
 
 print(datetime.now(), "save grid", len(cell_geometries))
-buildings = gpd.GeoDataFrame({'geometry': cell_geometries, 'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas, 'residential_floor_area': tot_res_floor_areas, 'cultural_ground_area': tot_cult_ground_areas, 'cultural_floor_area': tot_cult_floor_areas })
+buildings = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids, 'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas, 'residential_floor_area': tot_res_floor_areas, 'cultural_ground_area': tot_cult_ground_areas, 'cultural_floor_area': tot_cult_floor_areas })
 buildings.crs = 'EPSG:3035'
 buildings.to_file(out_folder+"bu_dem_grid.gpkg", driver="GPKG")
