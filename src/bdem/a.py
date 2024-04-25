@@ -17,7 +17,7 @@ minx = 3900000; maxx = 3950000; miny = 2800000; maxy = 2850000
 
 num_processors_to_use = 8
 resolution = 1000
-partition_size = 100000
+partition_size = 10000
 
 
 nb_floors_fr_fun = lambda f: 1 if f.hauteur==None or isnan(f.hauteur) else ceil(f.hauteur/3.7)
@@ -107,16 +107,13 @@ def proceed_partition(xy):
             tot_cult_floor_areas.append(tot_cult_floor_area)
 
             #cell code
-            grd_ids.append("CRS3035RES"+str(resolution)+"mN"+int(y)+"E"+int(x))
-
+            grd_ids.append("CRS3035RES"+str(resolution)+"mN"+str(int(y))+"E"+str(int(x)))
 
 #proceed_partition([3900000, 2800000])
 
 #launch parallel computation   
 with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
     executor.map(proceed_partition, cartesian_product_comp(minx, miny, maxx, maxy, partition_size))
-
-
 
 print(datetime.now(), "save grid GPKG", len(cell_geometries))
 buildings = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids, 'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas, 'residential_floor_area': tot_res_floor_areas, 'cultural_ground_area': tot_cult_ground_areas, 'cultural_floor_area': tot_cult_floor_areas })
