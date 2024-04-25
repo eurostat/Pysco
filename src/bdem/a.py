@@ -115,11 +115,11 @@ def proceed_partition(xy):
 with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
     executor.map(proceed_partition, cartesian_product_comp(minx, miny, maxx, maxy, partition_size))
 
-print(datetime.now(), "save grid GPKG", len(cell_geometries))
+print(datetime.now(), "save grid as GPKG", len(cell_geometries))
 buildings = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids, 'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas, 'residential_floor_area': tot_res_floor_areas, 'cultural_ground_area': tot_cult_ground_areas, 'cultural_floor_area': tot_cult_floor_areas })
 buildings.crs = 'EPSG:3035'
 buildings.to_file(out_folder+"bu_dem_grid.gpkg", driver="GPKG")
 
-print(datetime.now(), "save grid CSV", len(cell_geometries))
+print(datetime.now(), "save grid as CSV", len(cell_geometries))
 buildings = buildings.drop(columns=['geometry'])
 buildings.to_csv(out_folder+"bu_dem_grid.csv", index=False)
