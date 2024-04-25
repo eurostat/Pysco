@@ -2,8 +2,7 @@ import geopandas as gpd
 from math import ceil,isnan
 from building_demography import building_demography_grid
 
-#minx = 3800000; maxx = 4200000; miny = 2700000; maxy = 3000000
-minx = 3900000; maxx = 3950000; miny = 2800000; maxy = 2850000
+
 
 buildings_loader = lambda bbox: gpd.read_file('/home/juju/geodata/FR/BDTOPO_3-3_TOUSTHEMES_GPKG_LAMB93_R44_2023-12-15/BDT_3-3_GPKG_3035_R44-ED2023-12-15.gpkg', layer='batiment', bbox=bbox)
 nb_floors_fun = lambda f: 1 if f.hauteur==None or isnan(f.hauteur) else ceil(f.hauteur/3.7)
@@ -12,7 +11,8 @@ cultural_value_fun = lambda f: 1 if f.usage_1=="Religieux" or f.nature=="Tour, d
 
 building_demography_grid(
     buildings_loader,
-    [minx, miny, maxx, maxy],
+    #[3800000, 2700000, 4200000, 3000000],
+    [3900000, 2800000, 3950000, 2850000],
     '/home/juju/gisco/building_demography/',
     "bu_dem_fr_bdtopo_grid",
     resolution=1000,
