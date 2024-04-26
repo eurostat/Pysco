@@ -10,6 +10,12 @@ resolution = 1000
 partition_size = 100000
 num_processors_to_use = 8
 
+# TODO accessibility. make with OME2 - then OSM, tomtom
+# TODO compare OSM/BDTOPO
+# TODO activity: residential, industrial, agri, services, +activity
+# gridviz - build_dem. for cult heritage
+
+
 
 # FR bd topo
 
