@@ -11,4 +11,6 @@
 
 #for each grid cell, get 5 hospitals around - compute shortest path to nearest
 #OR
+#for each hospital, compute shortest path to cells around - or isochrones
+
 
