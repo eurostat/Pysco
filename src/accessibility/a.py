@@ -50,7 +50,7 @@ def proceed(x_part, y_part, partition_size):
     if(len(pop)==0): return
 
     print(datetime.now(), "make graph")
-    graph = graph_from_geodataframe(rn)
+    graph = graph_from_geodataframe(links)
     del rn
 
     #make list of nodes
