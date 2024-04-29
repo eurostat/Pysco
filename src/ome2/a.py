@@ -5,7 +5,11 @@ from shapely.errors import GEOSException
 import networkx as nx
 from rtree import index
 from datetime import datetime
-from netutils import shortest_path_geometry,node_coordinate,graph_from_geodataframe,a_star_euclidian_dist,a_star_speed
+
+import sys
+sys.path.append('/home/juju/workspace/pyEx/src/')
+
+from lib.netutils import shortest_path_geometry,node_coordinate,graph_from_geodataframe,a_star_euclidian_dist,a_star_speed
 
 out_folder = '/home/juju/gisco/OME2_analysis/'
 

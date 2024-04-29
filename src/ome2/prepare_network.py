@@ -1,7 +1,7 @@
 import geopandas as gpd
 from shapely.geometry import LineString
 from datetime import datetime
-from ome2utils import ome2_filter_road_links, road_link_speed_kmh
+from lib.ome2utils import ome2_filter_road_links, road_link_speed_kmh
 
 out_folder = '/home/juju/gisco/OME2_analysis/'
 

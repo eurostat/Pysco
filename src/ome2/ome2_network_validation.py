@@ -2,8 +2,8 @@ import geopandas as gpd
 from shapely.errors import GEOSException
 from datetime import datetime
 import math
-from netutils import shortest_path_geometry,graph_from_geodataframe,nodes_spatial_index,a_star_euclidian_dist
-from ome2utils import ome2_filter_road_links
+from lib.netutils import shortest_path_geometry,graph_from_geodataframe,nodes_spatial_index,a_star_euclidian_dist
+from lib.ome2utils import ome2_filter_road_links
 import networkx as nx
 import concurrent.futures
 from utils import cartesian_product
