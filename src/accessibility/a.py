@@ -52,11 +52,13 @@ def proceed(x_part, y_part, partition_size):
     print(datetime.now(), "make graph")
     graph = graph_from_geodataframe(links)
     del links
-    #TODO: keep only larger connex component ?
-    #connected_components = list(nx.connected_components(graph))
-    #largest_component = max(connected_components, key=len)
-    #subgraph?
-    #largest_component_graph = G.subgraph(largest_component)
+    print(graph.number_of_edges())
+
+    print(datetime.now(), "keep larger connex component")
+    connected_components = list(nx.connected_components(graph))
+    largest_component = max(connected_components, key=len)
+    graph = graph.subgraph(largest_component)
+    print(graph.number_of_edges())
 
     #make list of nodes
     nodes_ = []
