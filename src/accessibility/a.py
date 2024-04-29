@@ -2,7 +2,6 @@ from shapely.geometry import box
 import geopandas as gpd
 from datetime import datetime
 import networkx as nx
-import math
 
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
