@@ -2,6 +2,7 @@ from shapely.geometry import box
 import geopandas as gpd
 from datetime import datetime
 import networkx as nx
+from lib.ome2utils import ome2_duration
 
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
@@ -22,7 +23,7 @@ layer = "tn_road_link"
 #define 50km partition
 x_part = 4000000
 y_part = 2850000
-partition_size = 100000
+partition_size = 10000
 extention_percentage = 0.2
 
 
@@ -52,7 +53,7 @@ def proceed(x_part, y_part, partition_size, out_file):
     #if(len(links)==0): continue
 
     print(datetime.now(), "make graph")
-    graph = graph_from_geodataframe(links)
+    graph = graph_from_geodataframe(links, lambda f:ome2_duration(f))
     del links
     print(graph.number_of_edges())
 
