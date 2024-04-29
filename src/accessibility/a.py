@@ -2,11 +2,11 @@ from shapely.geometry import box
 import geopandas as gpd
 from datetime import datetime
 import networkx as nx
-from lib.ome2utils import ome2_duration
 
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from lib.netutils import shortest_path_geometry,graph_from_geodataframe,nodes_spatial_index,a_star_euclidian_dist
+from lib.ome2utils import ome2_duration
 
 #TODO use weight/duration
 #TODO parallel
@@ -82,7 +82,7 @@ def proceed(x_part, y_part, partition_size, out_file):
     #TODO check pois are not too far from their node
 
     print(datetime.now(), "compute multi source dijkstra")
-    duration = nx.multi_source_dijkstra_path_length(graph, sources)
+    duration = nx.multi_source_dijkstra_path_length(graph, sources, weight='weight')
 
     grd_ids = []
     durations = []
