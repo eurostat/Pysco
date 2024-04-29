@@ -101,14 +101,5 @@ def proceed(x_part, y_part, partition_size, out_file):
     out = gpd.GeoDataFrame({'GRD_ID': grd_ids, 'duration': durations })
     out.to_csv(out_file, index=False)
 
-    print(datetime.now(), "save cells as GPKG")
-    cells.to_file("/home/juju/gisco/grid_accessibility_quality/cells.gpkg", driver="GPKG")
-
-    print(datetime.now(), "save rn as GPKG")
-    links.to_file("/home/juju/gisco/grid_accessibility_quality/links.gpkg", driver="GPKG")
-
-    print(datetime.now(), "save pois as GPKG")
-    pois.to_file("/home/juju/gisco/grid_accessibility_quality/pois.gpkg", driver="GPKG")
-
 proceed(x_part, y_part, partition_size, "/home/juju/gisco/grid_accessibility_quality/out.csv")
 
