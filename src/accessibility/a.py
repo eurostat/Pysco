@@ -61,6 +61,8 @@ def proceed(x_part, y_part, partition_size):
     graph = graph.subgraph(largest_component)
     print(graph.number_of_edges())
 
+    print(datetime.now(), "get POI nodes")
+
     #make list of nodes
     nodes_ = []
     for node in graph.nodes(): nodes_.append(node)
@@ -69,29 +71,27 @@ def proceed(x_part, y_part, partition_size):
     idx = nodes_spatial_index(graph)
 
     #get poi nodes
-    sources = []
+    sources = set()
     for iii, poi in pois.iterrows():
         n = nodes_[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
-        sources.append(n)
+        sources.add(n)
     del pois
 
     #TODO check pois are not too far from their node
 
+    print(datetime.now(), "compute multi source dijkstra")
+    duration = nx.multi_source_dijkstra_path_length(graph, sources)
+
     for iii, cell in cells.iterrows():
         #get cell node
-        x = cell.geometry.x + grid_resolution/2
-        y = cell.geometry.y + grid_resolution/2
+        b = cell.geometry.bounds
+        x = b[0] + grid_resolution/2
+        y = b[1] + grid_resolution/2
+        n = nodes_[next(idx.nearest((x, y, x, y), 1))]
+        d = duration[n]
+        #print(n, d)
 
-
-#use that with candidate hospitals as sources. use cutoff ?
-#multi_source_dijkstra(G, sources[, target, ...])
-#https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.multi_source_dijkstra.html#networkx.algorithms.shortest_paths.weighted.multi_source_dijkstra
-#rather use multi_source_dijkstra_path_length to get only the duration ?
-
-
-    #for each grid cell, get 5 hospitals around - compute shortest path to nearest
-    #OR
-    #for each hospital, compute shortest path to cells around - or isochrones
+    print(datetime.now(), "done")
 
 
 proceed(x_part, y_part, partition_size)
