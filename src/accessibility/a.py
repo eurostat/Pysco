@@ -21,24 +21,16 @@ layer = "tn_road_link"
 #define 50km partition
 x_part = 3950000
 y_part = 2850000
-partition_size = 10000
+partition_size = 50000
 extention_percentage = 0.3
 
 
 
 
-def proceed(x_part, y_part, partition_size):
+def proceed(x_part, y_part, partition_size, out_file):
     bbox = box(x_part, y_part, x_part+partition_size, y_part+partition_size)
     #make extended bbox around partition
     extended_bbox = box(x_part-partition_size*extention_percentage, y_part-partition_size*extention_percentage, x_part+partition_size*(1+extention_percentage), y_part+partition_size*(1+extention_percentage))
-
-    print(datetime.now(), "load and filter network links")
-    links = gpd.read_file(OME_dataset, layer=layer, bbox=extended_bbox)
-    print(len(links))
-    if(len(links)==0): return
-    #rn = ome2_filter_road_links(links)
-    #print(len(links))
-    #if(len(links)==0): continue
 
     print(datetime.now(), "load and filter pois")
     pois = gpd.read_file(poi_dataset, bbox=extended_bbox)
@@ -49,6 +41,14 @@ def proceed(x_part, y_part, partition_size):
     cells = gpd.read_file(pop_grid_dataset, bbox=bbox)
     print(len(cells))
     if(len(cells)==0): return
+
+    print(datetime.now(), "load and filter network links")
+    links = gpd.read_file(OME_dataset, layer=layer, bbox=extended_bbox)
+    print(len(links))
+    if(len(links)==0): return
+    #rn = ome2_filter_road_links(links)
+    #print(len(links))
+    #if(len(links)==0): continue
 
     print(datetime.now(), "make graph")
     graph = graph_from_geodataframe(links)
@@ -82,17 +82,22 @@ def proceed(x_part, y_part, partition_size):
     print(datetime.now(), "compute multi source dijkstra")
     duration = nx.multi_source_dijkstra_path_length(graph, sources)
 
+    cells['duration'] = None
     for iii, cell in cells.iterrows():
         #get cell node
         b = cell.geometry.bounds
         x = b[0] + grid_resolution/2
         y = b[1] + grid_resolution/2
         n = nodes_[next(idx.nearest((x, y, x, y), 1))]
+        #TODO store distance node/center
         d = duration[n]
-        #print(n, d)
+        #print(cell.GRD_ID, d)
+        cell.duration = d
+
+    print(datetime.now(), "save as GPKG")
+    cells.to_file(out_file, driver="GPKG")
 
     print(datetime.now(), "done")
 
-
-proceed(x_part, y_part, partition_size)
+proceed(x_part, y_part, partition_size, "/home/juju/gisco/grid_accessibility_quality/out.gpkg")
 
