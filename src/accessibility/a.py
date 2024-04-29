@@ -29,7 +29,6 @@ partition_size = 100000
 extention_buffer = 30000 #on each side
 
 
-
 def proceed_partition(xy):
     [x_part,y_part] = xy
 
