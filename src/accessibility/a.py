@@ -23,10 +23,8 @@ layer = "tn_road_link"
 #define 50km partition
 x_part = 4000000
 y_part = 2850000
-partition_size = 10000
+partition_size = 100000
 extention_percentage = 0.2
-
-
 
 
 def proceed(x_part, y_part, partition_size, out_file):
@@ -54,7 +52,7 @@ def proceed(x_part, y_part, partition_size, out_file):
 
     print(datetime.now(), "make graph")
     graph = graph_from_geodataframe(links, lambda f:ome2_duration(f))
-    del links
+    #del links
     print(graph.number_of_edges())
 
     print(datetime.now(), "keep larger connex component")
@@ -77,7 +75,7 @@ def proceed(x_part, y_part, partition_size, out_file):
     for iii, poi in pois.iterrows():
         n = nodes_[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
         sources.add(n)
-    del pois
+    #del pois
 
     #TODO check pois are not too far from their node
 
@@ -87,6 +85,7 @@ def proceed(x_part, y_part, partition_size, out_file):
     grd_ids = []
     durations = []
     for iii, cell in cells.iterrows():
+        if(cell.TOT_P_2021==0): continue
         #get cell node
         b = cell.geometry.bounds
         x = b[0] + grid_resolution/2
@@ -103,6 +102,12 @@ def proceed(x_part, y_part, partition_size, out_file):
 
     print(datetime.now(), "save cells as GPKG")
     cells.to_file("/home/juju/gisco/grid_accessibility_quality/cells.gpkg", driver="GPKG")
+
+    print(datetime.now(), "save rn as GPKG")
+    links.to_file("/home/juju/gisco/grid_accessibility_quality/links.gpkg", driver="GPKG")
+
+    print(datetime.now(), "save pois as GPKG")
+    pois.to_file("/home/juju/gisco/grid_accessibility_quality/pois.gpkg", driver="GPKG")
 
 proceed(x_part, y_part, partition_size, "/home/juju/gisco/grid_accessibility_quality/out.csv")
 
