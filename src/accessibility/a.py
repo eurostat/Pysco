@@ -54,7 +54,7 @@ def proceed_partition(xy):
 
     print(datetime.now(),x_part,y_part, "make graph")
     graph = graph_from_geodataframe(links, lambda f:ome2_duration(f))
-    #del links
+    del links
     print(graph.number_of_edges())
 
     print(datetime.now(),x_part,y_part, "keep larger connex component")
@@ -77,7 +77,7 @@ def proceed_partition(xy):
     for iii, poi in pois.iterrows():
         n = nodes_[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
         sources.add(n)
-    #del pois
+    del pois
 
     #TODO check pois are not too far from their node
 
@@ -94,7 +94,7 @@ def proceed_partition(xy):
         x = b[0] + grid_resolution/2
         y = b[1] + grid_resolution/2
         n = nodes_[next(idx.nearest((x, y, x, y), 1))]
-        
+
         #store duration, in minutes
         d = round(duration[n]/60)
         durations.append(d)
