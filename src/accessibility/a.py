@@ -67,6 +67,9 @@ def proceed(x_part, y_part, partition_size):
     #make nodes spatial index
     idx = nodes_spatial_index(graph)
 
+    #get hospital nodes
+    sources = []
+
     #snap hospitals to network
     #no need to keep the hospitals - only the nodes.
 
