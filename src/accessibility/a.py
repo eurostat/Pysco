@@ -13,11 +13,6 @@ from lib.ome2utils import ome2_duration
 #TODO filter by country
 #TODO do for osm
 
-bbox = [3700000, 2700000, 4200000, 3400000]
-#bbox = [4000000, 2800000, 4100000, 2900000]
-num_processors_to_use = 8
-partition_size = 100000
-extention_buffer = 30000 #on each side
 
 poi_dataset = '/home/juju/geodata/gisco/healthcare_EU_3035.gpkg'
 OME_dataset = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
@@ -27,15 +22,23 @@ grid_resolution = 1000
 layer = "tn_road_link"
 
 
+bbox = [3700000, 2700000, 4200000, 3400000]
+#bbox = [4000000, 2800000, 4100000, 2900000]
+num_processors_to_use = 8
+partition_size = 100000
+extention_buffer = 30000 #on each side
+
+
 
 def proceed_partition(xy):
     [x_part,y_part] = xy
 
+    #partition bbox
     bbox = box(x_part, y_part, x_part+partition_size, y_part+partition_size)
-    #make extended bbox around partition
+    #partition extended bbox
     extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
-    print(datetime.now(),x_part,y_part, "load and filter pois")
+    print(datetime.now(),x_part,y_part, "load POIs")
     pois = gpd.read_file(poi_dataset, bbox=extended_bbox)
     print(len(pois))
     if(len(pois)==0): return
@@ -73,35 +76,40 @@ def proceed_partition(xy):
     #make nodes spatial index
     idx = nodes_spatial_index(graph)
 
-    #get poi nodes
+    #get POI nodes
     sources = set()
     for iii, poi in pois.iterrows():
         n = nodes_[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
         sources.add(n)
     del pois
 
-    #TODO check pois are not too far from their node
+    #TODO check pois are not too far from their node ?
 
     print(datetime.now(),x_part,y_part, "compute multi source dijkstra")
     duration = nx.multi_source_dijkstra_path_length(graph, sources, weight='weight')
 
-    grd_ids = []
-    durations = []
-    distances_to_node = []
+    print(datetime.now(),x_part,y_part, "extract cell accessibility data")
+    grd_ids = [] #the cell identifiers
+    durations = [] #the durations
+    distances_to_node = [] #the cell center distance to its graph node
     for iii, cell in cells.iterrows():
+        #ignore unpopulated cells
         if(cell.TOT_P_2021==0): continue
+
         #get cell node
         b = cell.geometry.bounds
         x = b[0] + grid_resolution/2
         y = b[1] + grid_resolution/2
         n = nodes_[next(idx.nearest((x, y, x, y), 1))]
 
+        #store cell id
+        grd_ids.append(cell.GRD_ID)
+
         #store duration, in minutes
         d = round(duration[n]/60)
         durations.append(d)
-        #store cell id
-        grd_ids.append(cell.GRD_ID)
-        #store distance center/node
+
+        #store distance cell center/node
         d = round(distance_to_node(n,x,y))
         distances_to_node.append(d)
 
