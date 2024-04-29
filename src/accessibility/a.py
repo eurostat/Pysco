@@ -52,6 +52,11 @@ def proceed(x_part, y_part, partition_size):
     print(datetime.now(), "make graph")
     graph = graph_from_geodataframe(links)
     del links
+    #TODO: keep only larger connex component ?
+    #connected_components = list(nx.connected_components(graph))
+    #largest_component = max(connected_components, key=len)
+    #subgraph?
+    #largest_component_graph = G.subgraph(largest_component)
 
     #make list of nodes
     nodes_ = []
@@ -60,8 +65,14 @@ def proceed(x_part, y_part, partition_size):
     #make nodes spatial index
     idx = nodes_spatial_index(graph)
 
-
     #snap hospitals to network
+    #no need to keep the hospitals - only the nodes.
+
+
+#use that with candidate hospitals as sources. use cutoff ?
+#multi_source_dijkstra(G, sources[, target, ...])
+#https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.weighted.multi_source_dijkstra.html#networkx.algorithms.shortest_paths.weighted.multi_source_dijkstra
+#rather use multi_source_dijkstra_path_length to get only the duration ?
 
 
     #for each grid cell, get 5 hospitals around - compute shortest path to nearest
