@@ -128,6 +128,7 @@ def building_demography_grid(buildings_loader,
         # merge task outputs
         for task_output in concurrent.futures.as_completed(tasks_to_do):
             out = task_output.result()
+            if(out==None): continue
             cell_geometries += out[0]
             tot_nbs += out[1]
             tot_ground_areas += out[2]

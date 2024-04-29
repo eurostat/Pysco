@@ -2,9 +2,11 @@ from shapely.geometry import box
 import geopandas as gpd
 from datetime import datetime
 import networkx as nx
+import concurrent.futures
 
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
+from lib.utils import cartesian_product_comp
 from lib.netutils import graph_from_geodataframe,nodes_spatial_index,distance_to_node
 from lib.ome2utils import ome2_duration
 
@@ -15,8 +17,8 @@ from lib.ome2utils import ome2_duration
 #bbox = [3800000, 2700000, 4200000, 3000000]
 bbox = [4000000, 2800000, 4100000, 2900000]
 num_processors_to_use = 8
-partition_size = 10000
-extention_buffer = 30000 #on each side
+partition_size = 20000
+extention_buffer = 0 #on each side
 
 poi_dataset = '/home/juju/geodata/gisco/healthcare_EU_3035.gpkg'
 OME_dataset = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
@@ -107,11 +109,27 @@ def proceed_partition(xy):
     return [grd_ids, durations, distances_to_node]
 
 
-#launch
-[grd_ids, durations, distances_to_node] = proceed_partition([bbox[0], bbox[1]])
+#launch parallel computation   
+with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
+    partitions = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
+    tasks_to_do = {executor.submit(proceed_partition, partition): partition for partition in partitions}
 
+    #out data
+    grd_ids = []
+    durations = []
+    distances_to_node = []
 
-print(datetime.now(), "save as CSV")
-out = gpd.GeoDataFrame({'GRD_ID': grd_ids, 'duration': durations, "distance_to_node": distances_to_node })
-out.to_csv("/home/juju/gisco/grid_accessibility_quality/out.csv", index=False)
+    # merge task outputs
+    for task_output in concurrent.futures.as_completed(tasks_to_do):
+        out = task_output.result()
+        if(out==None): continue
+        grd_ids += out[0]
+        durations += out[1]
+        distances_to_node += out[2]
+
+    print(datetime.now(), len(grd_ids), "cells")
+
+    print(datetime.now(), "save as CSV")
+    out = gpd.GeoDataFrame({'GRD_ID': grd_ids, 'duration': durations, "distance_to_node": distances_to_node })
+    out.to_csv("/home/juju/gisco/grid_accessibility_quality/out.csv", index=False)
 
