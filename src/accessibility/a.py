@@ -12,22 +12,18 @@ from lib.ome2utils import ome2_duration
 #TODO filter by country
 #TODO parallel
 
+#bbox = [3800000, 2700000, 4200000, 3000000]
+bbox = [4000000, 2800000, 4100000, 2900000]
+num_processors_to_use = 8
+partition_size = 100000
+extention_buffer = 50000 #on each side
+
 poi_dataset = '/home/juju/geodata/gisco/healthcare_EU_3035.gpkg'
 OME_dataset = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 pop_grid_dataset = '/home/juju/geodata/grids/grid_1km_surf.gpkg'
 grid_resolution = 1000
 #the network layer to validate
 layer = "tn_road_link"
-
-
-
-#define partition
-x_part = 4000000
-y_part = 2800000
-partition_size = 100000
-extention_buffer = 50000 #on each side
-
-#2900000  3700000
 
 
 
@@ -105,7 +101,8 @@ def proceed_partition(xy):
     return [grd_ids, durations]
 
 
-[grd_ids, durations] = proceed_partition(x_part, y_part, partition_size)
+[grd_ids, durations] = proceed_partition(bbox[0], bbox[1])
+
 
 print(datetime.now(), "save as CSV")
 out = gpd.GeoDataFrame({'GRD_ID': grd_ids, 'duration': durations })
