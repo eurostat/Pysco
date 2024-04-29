@@ -12,6 +12,7 @@ from lib.netutils import shortest_path_geometry,graph_from_geodataframe,nodes_sp
 poi_dataset = '/home/juju/geodata/gisco/healthcare_EU_3035.gpkg'
 OME_dataset = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 pop_grid_dataset = '/home/juju/geodata/grids/grid_1km_surf.gpkg'
+grid_resolution = 1000
 #the network layer to validate
 layer = "tn_road_link"
 
@@ -45,9 +46,9 @@ def proceed(x_part, y_part, partition_size):
     if(len(pois)==0): return
 
     print(datetime.now(), "load population grid")
-    pop = gpd.read_file(pop_grid_dataset, bbox=bbox)
-    print(len(pop))
-    if(len(pop)==0): return
+    cells = gpd.read_file(pop_grid_dataset, bbox=bbox)
+    print(len(cells))
+    if(len(cells)==0): return
 
     print(datetime.now(), "make graph")
     graph = graph_from_geodataframe(links)
@@ -67,11 +68,19 @@ def proceed(x_part, y_part, partition_size):
     #make nodes spatial index
     idx = nodes_spatial_index(graph)
 
-    #get hospital nodes
+    #get poi nodes
     sources = []
+    for iii, poi in pois.iterrows():
+        n = nodes_[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
+        sources.append(n)
+    del pois
 
-    #snap hospitals to network
-    #no need to keep the hospitals - only the nodes.
+    #TODO check pois are not too far from their node
+
+    for iii, cell in cells.iterrows():
+        #get cell node
+        x = cell.geometry.x + grid_resolution/2
+        y = cell.geometry.y + grid_resolution/2
 
 
 #use that with candidate hospitals as sources. use cutoff ?

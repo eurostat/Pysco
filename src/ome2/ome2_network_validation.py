@@ -3,10 +3,10 @@ from shapely.errors import GEOSException
 from datetime import datetime
 import math
 from lib.netutils import shortest_path_geometry,graph_from_geodataframe,nodes_spatial_index,a_star_euclidian_dist
-from lib.ome2utils import ome2_filter_road_links
+#from lib.ome2utils import ome2_filter_road_links
 import networkx as nx
 import concurrent.futures
-from utils import cartesian_product
+from lib.utils import cartesian_product
 
 folder = '/home/juju/gisco/OME2_analysis/'
 file_path = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
