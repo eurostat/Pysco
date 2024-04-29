@@ -14,11 +14,11 @@ from lib.ome2utils import ome2_duration
 #TODO parallel
 #TODO filter by country
 
-#bbox = [3800000, 2700000, 4200000, 3000000]
-bbox = [4000000, 2800000, 4100000, 2900000]
+bbox = [3800000, 2700000, 4200000, 3000000]
+#bbox = [4000000, 2800000, 4100000, 2900000]
 num_processors_to_use = 8
-partition_size = 20000
-extention_buffer = 0 #on each side
+partition_size = 100000
+extention_buffer = 30000 #on each side
 
 poi_dataset = '/home/juju/geodata/gisco/healthcare_EU_3035.gpkg'
 OME_dataset = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
