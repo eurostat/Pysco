@@ -2,13 +2,14 @@ from shapely.geometry import box
 import geopandas as gpd
 from datetime import datetime
 import networkx as nx
+import math
 
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from lib.netutils import shortest_path_geometry,graph_from_geodataframe,nodes_spatial_index,a_star_euclidian_dist
 from lib.ome2utils import ome2_duration
 
-#TODO use weight/duration
+#TODO filter by country
 #TODO parallel
 
 poi_dataset = '/home/juju/geodata/gisco/healthcare_EU_3035.gpkg'
@@ -22,9 +23,9 @@ layer = "tn_road_link"
 
 #define 50km partition
 x_part = 4000000
-y_part = 2850000
+y_part = 2800000
 partition_size = 100000
-extention_percentage = 0.2
+extention_percentage = 0.3 #on each side
 
 
 def proceed(x_part, y_part, partition_size, out_file):
@@ -92,7 +93,7 @@ def proceed(x_part, y_part, partition_size, out_file):
         y = b[1] + grid_resolution/2
         n = nodes_[next(idx.nearest((x, y, x, y), 1))]
         #TODO store distance node/center
-        d = duration[n]
+        d = math.round(duration[n]/60)
         grd_ids.append(cell.GRD_ID)
         durations.append(d)
 
