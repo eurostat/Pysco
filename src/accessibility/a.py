@@ -101,7 +101,7 @@ def proceed_partition(xy):
         #store cell id
         grd_ids.append(cell.GRD_ID)
         #store distance center/node
-        d = distance_to_node(n,x,y)
+        d = round(distance_to_node(n,x,y))
         distances_to_node.append(d)
 
     return [grd_ids, durations, distances_to_node]
