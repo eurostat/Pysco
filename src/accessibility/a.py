@@ -82,7 +82,8 @@ def proceed(x_part, y_part, partition_size, out_file):
     print(datetime.now(), "compute multi source dijkstra")
     duration = nx.multi_source_dijkstra_path_length(graph, sources)
 
-    cells['duration'] = None
+    grd_ids = []
+    durations = []
     for iii, cell in cells.iterrows():
         #get cell node
         b = cell.geometry.bounds
@@ -91,13 +92,15 @@ def proceed(x_part, y_part, partition_size, out_file):
         n = nodes_[next(idx.nearest((x, y, x, y), 1))]
         #TODO store distance node/center
         d = duration[n]
-        #print(cell.GRD_ID, d)
-        cell.duration = d
+        grd_ids.append(cell.GRD_ID)
+        durations.append(d)
 
     print(datetime.now(), "save as GPKG")
     cells.to_file(out_file, driver="GPKG")
 
-    print(datetime.now(), "done")
+    print(datetime.now(), "save as CSV")
+    out = gpd.GeoDataFrame({'GRD_ID': grd_ids, 'duration': durations })
+    out.to_csv(out_file, index=False)
 
-proceed(x_part, y_part, partition_size, "/home/juju/gisco/grid_accessibility_quality/out.gpkg")
+proceed(x_part, y_part, partition_size, "/home/juju/gisco/grid_accessibility_quality/out.csv")
 
