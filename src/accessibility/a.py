@@ -34,17 +34,17 @@ def proceed_partition(xy):
     #make extended bbox around partition
     extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
-    print(datetime.now(), "load and filter pois")
+    print(datetime.now(),x_part,y_part, "load and filter pois")
     pois = gpd.read_file(poi_dataset, bbox=extended_bbox)
     print(len(pois))
     if(len(pois)==0): return
 
-    print(datetime.now(), "load population grid")
+    print(datetime.now(),x_part,y_part, "load population grid")
     cells = gpd.read_file(pop_grid_dataset, bbox=bbox)
     print(len(cells))
     if(len(cells)==0): return
 
-    print(datetime.now(), "load and filter network links")
+    print(datetime.now(),x_part,y_part, "load and filter network links")
     links = gpd.read_file(OME_dataset, layer=layer, bbox=extended_bbox)
     print(len(links))
     if(len(links)==0): return
@@ -52,18 +52,18 @@ def proceed_partition(xy):
     #print(len(links))
     #if(len(links)==0): continue
 
-    print(datetime.now(), "make graph")
+    print(datetime.now(),x_part,y_part, "make graph")
     graph = graph_from_geodataframe(links, lambda f:ome2_duration(f))
     #del links
     print(graph.number_of_edges())
 
-    print(datetime.now(), "keep larger connex component")
+    print(datetime.now(),x_part,y_part, "keep larger connex component")
     connected_components = list(nx.connected_components(graph))
     largest_component = max(connected_components, key=len)
     graph = graph.subgraph(largest_component)
     print(graph.number_of_edges())
 
-    print(datetime.now(), "get POI nodes")
+    print(datetime.now(),x_part,y_part, "get POI nodes")
 
     #make list of nodes
     nodes_ = []
@@ -81,7 +81,7 @@ def proceed_partition(xy):
 
     #TODO check pois are not too far from their node
 
-    print(datetime.now(), "compute multi source dijkstra")
+    print(datetime.now(),x_part,y_part, "compute multi source dijkstra")
     duration = nx.multi_source_dijkstra_path_length(graph, sources, weight='weight')
 
     grd_ids = []
