@@ -51,7 +51,7 @@ def proceed(x_part, y_part, partition_size):
 
     print(datetime.now(), "make graph")
     graph = graph_from_geodataframe(links)
-    del rn
+    del links
 
     #make list of nodes
     nodes_ = []
