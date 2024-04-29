@@ -10,11 +10,9 @@ from lib.utils import cartesian_product_comp
 from lib.netutils import graph_from_geodataframe,nodes_spatial_index,distance_to_node
 from lib.ome2utils import ome2_duration
 
-#TODO store also distance node/center
-#TODO parallel
 #TODO filter by country
 
-bbox = [3800000, 2700000, 4200000, 3000000]
+bbox = [3700000, 2700000, 4200000, 3400000]
 #bbox = [4000000, 2800000, 4100000, 2900000]
 num_processors_to_use = 8
 partition_size = 100000
