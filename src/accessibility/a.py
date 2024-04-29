@@ -9,8 +9,8 @@ sys.path.append('/home/juju/workspace/pyEx/src/')
 from lib.netutils import shortest_path_geometry,graph_from_geodataframe,nodes_spatial_index,a_star_euclidian_dist
 from lib.ome2utils import ome2_duration
 
-#TODO filter by country
 #TODO parallel
+#TODO filter by country
 
 #bbox = [3800000, 2700000, 4200000, 3000000]
 bbox = [4000000, 2800000, 4100000, 2900000]
