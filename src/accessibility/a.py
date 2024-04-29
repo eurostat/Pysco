@@ -4,6 +4,7 @@ from datetime import datetime
 
 poi_dataset = '/home/juju/geodata/gisco/healthcare_EU.gpkg'
 OME_dataset = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
+pop_grid_dataset = '/home/juju/geodata/grids/grid_1km_surf.gpkg'
 #the network layer to validate
 layer = "tn_road_link"
 
@@ -32,7 +33,10 @@ def proceed():
     print(len(pois))
     if(len(pois)==0): return
 
-    #get populated grid cells in 50km partition
+    print(datetime.now(), "load population grid")
+    pop = gpd.read_file(pop_grid_dataset, bbox=bbox)
+    print(len(pop))
+    if(len(pop)==0): return
 
     #for each grid cell, get 5 hospitals around - compute shortest path to nearest
     #OR
