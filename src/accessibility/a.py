@@ -2,7 +2,7 @@ from shapely.geometry import box
 import geopandas as gpd
 from datetime import datetime
 
-poi_dataset = '/home/juju/geodata/gisco/healthcare_EU.gpkg'
+poi_dataset = '/home/juju/geodata/gisco/healthcare_EU_3035.gpkg'
 OME_dataset = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
 pop_grid_dataset = '/home/juju/geodata/grids/grid_1km_surf.gpkg'
 #the network layer to validate
@@ -10,12 +10,13 @@ layer = "tn_road_link"
 
 
 #define 50km partition
-partition_size = 50000
 x_part = 3950000
 y_part = 2850000
+partition_size = 10000
 extention_percentage = 0.3
 
-def proceed():
+
+def proceed(x_part, y_part, partition_size):
     bbox = box(x_part, y_part, x_part+partition_size, y_part+partition_size)
     #make extended bbox around partition
     extended_bbox = box(x_part-partition_size*extention_percentage, y_part-partition_size*extention_percentage, x_part+partition_size*(1+extention_percentage), y_part+partition_size*(1+extention_percentage))
@@ -38,10 +39,25 @@ def proceed():
     print(len(pop))
     if(len(pop)==0): return
 
+    print(datetime.now(), "make graph")
+    graph = graph_from_geodataframe(rn)
+    del rn
+
+    #make list of nodes
+    nodes_ = []
+    for node in graph.nodes(): nodes_.append(node)
+
+    #make nodes spatial index
+    idx = nodes_spatial_index(graph)
+
+
+    #snap hospitals to network
+
+
     #for each grid cell, get 5 hospitals around - compute shortest path to nearest
     #OR
     #for each hospital, compute shortest path to cells around - or isochrones
 
 
-proceed()
+proceed(x_part, y_part, partition_size)
 
