@@ -19,7 +19,7 @@ layer = "tn_road_link"
 
 
 #define 50km partition
-x_part = 3950000
+x_part = 4000000
 y_part = 2850000
 partition_size = 50000
 extention_percentage = 0.3
@@ -95,12 +95,12 @@ def proceed(x_part, y_part, partition_size, out_file):
         grd_ids.append(cell.GRD_ID)
         durations.append(d)
 
-    print(datetime.now(), "save as GPKG")
-    cells.to_file(out_file, driver="GPKG")
-
     print(datetime.now(), "save as CSV")
     out = gpd.GeoDataFrame({'GRD_ID': grd_ids, 'duration': durations })
     out.to_csv(out_file, index=False)
+
+    print(datetime.now(), "save cells as GPKG")
+    cells.to_file("/home/juju/gisco/grid_accessibility_quality/cells.gpkg", driver="GPKG")
 
 proceed(x_part, y_part, partition_size, "/home/juju/gisco/grid_accessibility_quality/out.csv")
 
