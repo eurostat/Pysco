@@ -11,6 +11,7 @@ from lib.netutils import graph_from_geodataframe,nodes_spatial_index,distance_to
 from lib.ome2utils import ome2_duration
 
 #TODO filter by country
+#TODO do for osm
 
 bbox = [3700000, 2700000, 4200000, 3400000]
 #bbox = [4000000, 2800000, 4100000, 2900000]
