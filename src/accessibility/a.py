@@ -5,7 +5,7 @@ import networkx as nx
 
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
-from lib.netutils import shortest_path_geometry,graph_from_geodataframe,nodes_spatial_index,a_star_euclidian_dist
+from lib.netutils import graph_from_geodataframe,nodes_spatial_index,distance_to_node
 from lib.ome2utils import ome2_duration
 
 #TODO store also distance node/center
@@ -86,6 +86,7 @@ def proceed_partition(xy):
 
     grd_ids = []
     durations = []
+    distances_to_node = []
     for iii, cell in cells.iterrows():
         if(cell.TOT_P_2021==0): continue
         #get cell node
@@ -93,18 +94,24 @@ def proceed_partition(xy):
         x = b[0] + grid_resolution/2
         y = b[1] + grid_resolution/2
         n = nodes_[next(idx.nearest((x, y, x, y), 1))]
-        #TODO store also distance node/center
+        
+        #store duration, in minutes
         d = round(duration[n]/60)
-        grd_ids.append(cell.GRD_ID)
         durations.append(d)
+        #store cell id
+        grd_ids.append(cell.GRD_ID)
+        #store distance center/node
+        d = distance_to_node(n,x,y)
+        distances_to_node.append(d)
 
-    return [grd_ids, durations]
+    return [grd_ids, durations, distances_to_node]
 
 
-[grd_ids, durations] = proceed_partition([bbox[0], bbox[1]])
+#launch
+[grd_ids, durations, distances_to_node] = proceed_partition([bbox[0], bbox[1]])
 
 
 print(datetime.now(), "save as CSV")
-out = gpd.GeoDataFrame({'GRD_ID': grd_ids, 'duration': durations })
+out = gpd.GeoDataFrame({'GRD_ID': grd_ids, 'duration': durations, "distance_to_node": distances_to_node })
 out.to_csv("/home/juju/gisco/grid_accessibility_quality/out.csv", index=False)
 
