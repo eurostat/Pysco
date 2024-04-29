@@ -21,17 +21,22 @@ layer = "tn_road_link"
 
 
 
-#define 50km partition
+#define partition
 x_part = 4000000
 y_part = 2800000
 partition_size = 100000
-extention_percentage = 0.3 #on each side
+extention_buffer = 50000 #on each side
+
+#2900000  3700000
 
 
-def proceed(x_part, y_part, partition_size, out_file):
+
+def proceed_partition(xy):
+    [x_part,y_part] = xy
+
     bbox = box(x_part, y_part, x_part+partition_size, y_part+partition_size)
     #make extended bbox around partition
-    extended_bbox = box(x_part-partition_size*extention_percentage, y_part-partition_size*extention_percentage, x_part+partition_size*(1+extention_percentage), y_part+partition_size*(1+extention_percentage))
+    extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
     print(datetime.now(), "load and filter pois")
     pois = gpd.read_file(poi_dataset, bbox=extended_bbox)
@@ -97,9 +102,12 @@ def proceed(x_part, y_part, partition_size, out_file):
         grd_ids.append(cell.GRD_ID)
         durations.append(d)
 
-    print(datetime.now(), "save as CSV")
-    out = gpd.GeoDataFrame({'GRD_ID': grd_ids, 'duration': durations })
-    out.to_csv(out_file, index=False)
+    return [grd_ids, durations]
 
-proceed(x_part, y_part, partition_size, "/home/juju/gisco/grid_accessibility_quality/out.csv")
+
+[grd_ids, durations] = proceed_partition(x_part, y_part, partition_size)
+
+print(datetime.now(), "save as CSV")
+out = gpd.GeoDataFrame({'GRD_ID': grd_ids, 'duration': durations })
+out.to_csv("/home/juju/gisco/grid_accessibility_quality/out.csv", index=False)
 

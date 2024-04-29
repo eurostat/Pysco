@@ -111,9 +111,6 @@ def building_demography_grid(buildings_loader,
         ]
 
     #launch parallel computation   
-    #with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
-    #    executor.map(proceed_partition, cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size))
-
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
         partitions = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
         tasks_to_do = {executor.submit(proceed_partition, partition): partition for partition in partitions}
