@@ -101,7 +101,7 @@ def proceed_partition(xy):
     return [grd_ids, durations]
 
 
-[grd_ids, durations] = proceed_partition(bbox[0], bbox[1])
+[grd_ids, durations] = proceed_partition([bbox[0], bbox[1]])
 
 
 print(datetime.now(), "save as CSV")
