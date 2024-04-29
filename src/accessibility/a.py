@@ -7,7 +7,8 @@ import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from lib.netutils import shortest_path_geometry,graph_from_geodataframe,nodes_spatial_index,a_star_euclidian_dist
 
-
+#TODO use weight/duration
+#TODO parallel
 
 poi_dataset = '/home/juju/geodata/gisco/healthcare_EU_3035.gpkg'
 OME_dataset = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
@@ -21,8 +22,8 @@ layer = "tn_road_link"
 #define 50km partition
 x_part = 4000000
 y_part = 2850000
-partition_size = 50000
-extention_percentage = 0.3
+partition_size = 100000
+extention_percentage = 0.2
 
 
 
