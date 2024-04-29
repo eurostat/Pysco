@@ -2,7 +2,12 @@ from shapely.geometry import box
 import geopandas as gpd
 from datetime import datetime
 import networkx as nx
-from netutils import shortest_path_geometry,graph_from_geodataframe,nodes_spatial_index,a_star_euclidian_dist
+
+import sys
+sys.path.append('/home/juju/workspace/pyEx/src/')
+from lib.netutils import shortest_path_geometry,graph_from_geodataframe,nodes_spatial_index,a_star_euclidian_dist
+
+
 
 poi_dataset = '/home/juju/geodata/gisco/healthcare_EU_3035.gpkg'
 OME_dataset = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
@@ -11,11 +16,14 @@ pop_grid_dataset = '/home/juju/geodata/grids/grid_1km_surf.gpkg'
 layer = "tn_road_link"
 
 
+
 #define 50km partition
 x_part = 3950000
 y_part = 2850000
 partition_size = 10000
 extention_percentage = 0.3
+
+
 
 
 def proceed(x_part, y_part, partition_size):
