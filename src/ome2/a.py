@@ -76,6 +76,8 @@ for i in range(nb+1):
         seg_lengths.append(distNetw)
         try:
 
+            #TODO: test bidirectional_dijkstra ?
+
             #default
             #sp = nx.shortest_path(graph, node1, node, weight="weight")
             #8 min
