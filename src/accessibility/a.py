@@ -15,8 +15,8 @@ from lib.ome2utils import ome2_duration
 #bbox = [3800000, 2700000, 4200000, 3000000]
 bbox = [4000000, 2800000, 4100000, 2900000]
 num_processors_to_use = 8
-partition_size = 100000
-extention_buffer = 50000 #on each side
+partition_size = 10000
+extention_buffer = 30000 #on each side
 
 poi_dataset = '/home/juju/geodata/gisco/healthcare_EU_3035.gpkg'
 OME_dataset = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
@@ -93,8 +93,8 @@ def proceed_partition(xy):
         x = b[0] + grid_resolution/2
         y = b[1] + grid_resolution/2
         n = nodes_[next(idx.nearest((x, y, x, y), 1))]
-        #TODO store distance node/center
-        d = math.round(duration[n]/60)
+        #TODO store also distance node/center
+        d = round(duration[n]/60)
         grd_ids.append(cell.GRD_ID)
         durations.append(d)
 
