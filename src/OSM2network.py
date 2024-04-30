@@ -19,11 +19,11 @@ print(datetime.now(), "remove columns")
 rn.drop(columns=['name', 'aerialway', 'waterway', 'barrier', 'man_made', 'z_order'], inplace=True)
 
 #function to convert 'other_tags' attribute into a dictionnary
-def string_to_dict(input_string):
-    pairs = input_string.replace('"', '').split(',')
+def string_to_dict(input_text):
+    pairs = input_text.split('","')
     result_dict = {}
     for pair in pairs:
-        key, value = pair.split('=>')
+        key, value = pair.replace('"', '').split('=>')
         result_dict[key.strip()] = value.strip()
     return result_dict
 
@@ -41,8 +41,10 @@ for iii, r in rn.iterrows():
         #transform it into a dictionnary
         otd = string_to_dict(ot)
         #set attribute values
+        #print(otd)
+        if 'maxspeed' in otd: print(otd['maxspeed'])
         for attribute in attributes: r[attribute] = otd[attribute] if attribute in otd else None
-    except Exception as e: print(ot)
+    except Exception as e: print("", ot)
 
 print(datetime.now(), "remove other_tags")
 rn.drop(columns=['other_tags'], inplace=True)
