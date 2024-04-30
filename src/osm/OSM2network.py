@@ -9,15 +9,15 @@ osm_file = "/home/juju/geodata/OSM/europe_road_network_prep.gpkg"
 out_file = "/home/juju/geodata/OSM/europe_road_network.gpkg"
 
 print(datetime.now(), "load OSM lines")
-rn = gpd.read_file(osm_file, layer='lines', driver='GPKG', bbox=bbox)#, sql=query)
+rn = gpd.read_file(osm_file, layer='lines', driver='GPKG', bbox=bbox)
 print(len(rn), "lines")
 
-print(datetime.now(), "filter highway != NULL")
-rn = rn[rn['highway'].notnull()]
-print(str(len(rn)), "road sections")
+#print(datetime.now(), "filter highway != NULL")
+#rn = rn[rn['highway'].notnull()]
+#print(str(len(rn)), "road sections")
 
-print(datetime.now(), "remove columns")
-rn.drop(columns=['name', 'aerialway', 'waterway', 'barrier', 'man_made', 'z_order'], inplace=True)
+#print(datetime.now(), "remove columns")
+#rn.drop(columns=['name', 'aerialway', 'waterway', 'barrier', 'man_made', 'z_order'], inplace=True)
 
 #function to convert 'other_tags' attribute into a dictionnary
 def string_to_dict(input_text):
