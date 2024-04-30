@@ -36,10 +36,13 @@ for attribute in attributes: rn[attribute] = None
 for iii, r in rn.iterrows():
     #get other tags
     ot = r.other_tags
-    #transform it into a dictionnary
-    otd = string_to_dict(ot)
-    #set attribute values
-    for attribute in attributes: r[attribute] = otd[attribute] if attribute in otd else None
+    if ot == None: continue
+    try:
+        #transform it into a dictionnary
+        otd = string_to_dict(ot)
+        #set attribute values
+        for attribute in attributes: r[attribute] = otd[attribute] if attribute in otd else None
+    except Exception as e: print(ot)
 
 print(datetime.now(), "remove other_tags")
 rn.drop(columns=['other_tags'], inplace=True)
