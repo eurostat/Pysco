@@ -39,7 +39,7 @@ for iii, r in rn.iterrows():
     #transform it into a dictionnary
     otd = string_to_dict(ot)
     #set attribute values
-    for attribute in attributes: r[attribute] = otd[attribute]
+    for attribute in attributes: r[attribute] = otd[attribute] if attribute in otd else None
 
 print(datetime.now(), "remove other_tags")
 rn.drop(columns=['other_tags'], inplace=True)
