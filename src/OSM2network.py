@@ -18,19 +18,38 @@ print(str(len(rn)), "road sections")
 print(datetime.now(), "remove columns")
 rn.drop(columns=['name', 'aerialway', 'waterway', 'barrier', 'man_made', 'z_order'], inplace=True)
 
+#function to convert 'other_tags' attribute into a dictionnary
+def string_to_dict(input_string):
+    pairs = input_string.replace('"', '').split(',')
+    result_dict = {}
+    for pair in pairs:
+        key, value = pair.split('=>')
+        result_dict[key.strip()] = value.strip()
+    return result_dict
+
+print(datetime.now(), "add attributes from other_tags")
+
+#add new attributes, set to None
+attributes = ['maxspeed', 'lanes', 'oneway', 'smoothness', 'surface', 'access']
+for attribute in attributes: rn[attribute] = None
+
+for iii, r in rn.iterrows():
+    #get other tags
+    ot = r.other_tags
+    #transform it into a dictionnary
+    otd = string_to_dict(ot)
+    #set attribute values
+    for attribute in attributes: r[attribute] = otd[attribute]
+
+print(datetime.now(), "remove other_tags")
+rn.drop(columns=['other_tags'], inplace=True)
+
 print(datetime.now(), "save")
 rn.to_file(out_file, driver="GPKG")
 
 
-#attributes:
-#maxspeed
-#lanes
-#oneway
-#smoothness
-#surface
-#access
 
-
+#TODO make it a routable network
 #TODO: keep only segment ?
 #TODO: compute duration and keep only that ?
 
