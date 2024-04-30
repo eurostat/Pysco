@@ -1,7 +1,6 @@
 import geopandas as gpd
 from datetime import datetime
-from osgeo import ogr
-import fiona
+from osmutils import other_tags_to_dict
 
 #bbox = [3700000, 2700000, 4200000, 3400000]
 bbox = [4000000, 2800000, 4100000, 2900000]
@@ -19,15 +18,6 @@ print(len(rn), "lines")
 #print(datetime.now(), "remove columns")
 #rn.drop(columns=['name', 'aerialway', 'waterway', 'barrier', 'man_made', 'z_order'], inplace=True)
 
-#function to convert 'other_tags' attribute into a dictionnary
-def string_to_dict(input_text):
-    pairs = input_text.split('","')
-    result_dict = {}
-    for pair in pairs:
-        key, value = pair.split('"=>"')
-        result_dict[key.strip()] = value.strip().replace('"','')
-    return result_dict
-
 print(datetime.now(), "add attributes from other_tags")
 
 #add new attributes, set to None
@@ -40,7 +30,7 @@ for iii, r in rn.iterrows():
         ot = r.other_tags
         if ot == None: continue
         #transform it into a dictionnary
-        otd = string_to_dict(ot)
+        otd = other_tags_to_dict(ot)
         #set attribute values
         for attribute in attributes:
             if not attribute in otd: continue
