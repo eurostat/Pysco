@@ -23,7 +23,7 @@ def string_to_dict(input_text):
     pairs = input_text.split('","')
     result_dict = {}
     for pair in pairs:
-        key, value = pair.replace('"', '').split('=>')
+        key, value = pair.split('"=>"')
         result_dict[key.strip()] = value.strip()
     return result_dict
 
@@ -42,7 +42,7 @@ for iii, r in rn.iterrows():
         otd = string_to_dict(ot)
         #set attribute values
         #print(otd)
-        if 'maxspeed' in otd: print(otd['maxspeed'])
+        #if 'maxspeed' in otd: print(otd['maxspeed'])
         for attribute in attributes: r[attribute] = otd[attribute] if attribute in otd else None
     except Exception as e: print("", ot)
 
@@ -51,8 +51,6 @@ rn.drop(columns=['other_tags'], inplace=True)
 
 print(datetime.now(), "save")
 rn.to_file(out_file, driver="GPKG")
-
-
 
 #TODO make it a routable network
 #TODO: keep only segment ?
