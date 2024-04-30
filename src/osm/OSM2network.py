@@ -1,14 +1,16 @@
 import geopandas as gpd
 from datetime import datetime
+from osgeo import ogr
+import fiona
 
 #bbox = [3700000, 2700000, 4200000, 3400000]
-#bbox = [4000000, 2800000, 4100000, 2900000]
-osm_file = "/home/juju/geodata/OSM/europe.gpkg"
+bbox = [4000000, 2800000, 4100000, 2900000]
+osm_file = "/home/juju/geodata/OSM/europe_road_network_prep.gpkg"
 out_file = "/home/juju/geodata/OSM/europe_road_network.gpkg"
 
 print(datetime.now(), "load OSM lines")
-rn = gpd.read_file(osm_file, layer='lines') #, bbox=bbox)
-print(str(len(rn)), "lines")
+rn = gpd.read_file(osm_file, layer='lines', driver='GPKG', bbox=bbox)#, sql=query)
+print(len(rn), "lines")
 
 print(datetime.now(), "filter highway != NULL")
 rn = rn[rn['highway'].notnull()]
