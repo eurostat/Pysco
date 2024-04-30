@@ -6,7 +6,6 @@ bbox = [4000000, 2800000, 4100000, 2900000]
 osm_file = "/home/juju/geodata/OSM/europe.gpkg"
 out_file = "/home/juju/geodata/OSM/europe_road_network.gpkg"
 
-
 print(datetime.now(), "load OSM lines")
 rn = gpd.read_file(osm_file, layer='lines', bbox=bbox)
 print(str(len(rn)), "lines")
@@ -43,7 +42,10 @@ for iii, r in rn.iterrows():
         #set attribute values
         #print(otd)
         #if 'maxspeed' in otd: print(otd['maxspeed'])
-        for attribute in attributes: r[attribute] = otd[attribute] if attribute in otd else None
+        for attribute in attributes:
+            if not attribute in otd: continue
+            r[attribute] = otd[attribute]
+            print(r[attribute] , otd[attribute])
     except Exception as e: print("", ot)
 
 print(datetime.now(), "remove other_tags")
