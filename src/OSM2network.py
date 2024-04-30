@@ -2,12 +2,12 @@ import geopandas as gpd
 from datetime import datetime
 
 #bbox = [3700000, 2700000, 4200000, 3400000]
-bbox = [4000000, 2800000, 4100000, 2900000]
+#bbox = [4000000, 2800000, 4100000, 2900000]
 osm_file = "/home/juju/geodata/OSM/europe.gpkg"
 out_file = "/home/juju/geodata/OSM/europe_road_network.gpkg"
 
 print(datetime.now(), "load OSM lines")
-rn = gpd.read_file(osm_file, layer='lines', bbox=bbox)
+rn = gpd.read_file(osm_file, layer='lines') #, bbox=bbox)
 print(str(len(rn)), "lines")
 
 print(datetime.now(), "filter highway != NULL")
@@ -23,7 +23,7 @@ def string_to_dict(input_text):
     result_dict = {}
     for pair in pairs:
         key, value = pair.split('"=>"')
-        result_dict[key.strip()] = value.strip()
+        result_dict[key.strip()] = value.strip().replace('"','')
     return result_dict
 
 print(datetime.now(), "add attributes from other_tags")
@@ -33,19 +33,17 @@ attributes = ['maxspeed', 'lanes', 'oneway', 'smoothness', 'surface', 'access']
 for attribute in attributes: rn[attribute] = None
 
 for iii, r in rn.iterrows():
-    #get other tags
-    ot = r.other_tags
-    if ot == None: continue
     try:
+        #get other tags
+        ot = r.other_tags
+        if ot == None: continue
         #transform it into a dictionnary
         otd = string_to_dict(ot)
         #set attribute values
-        #print(otd)
-        #if 'maxspeed' in otd: print(otd['maxspeed'])
         for attribute in attributes:
             if not attribute in otd: continue
-            r[attribute] = otd[attribute]
-            print(r[attribute] , otd[attribute])
+            #r[attribute] = str(otd[attribute])
+            rn.at[iii, attribute] = otd[attribute]
     except Exception as e: print("", ot)
 
 print(datetime.now(), "remove other_tags")
