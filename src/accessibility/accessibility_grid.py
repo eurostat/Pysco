@@ -13,6 +13,7 @@ from lib.ome2utils import ome2_duration
 
 def accessibility_grid(pois_loader,
                        road_network_loader,
+                       cell_id_fun,
                        bbox,
                        out_csv_file,
                        grid_resolution=1000,
@@ -77,17 +78,15 @@ def accessibility_grid(pois_loader,
 
 
         #go through cells
+        r2 = grid_resolution / 2
         for x in range(x_part, x_part+partition_size, grid_resolution):
             for y in range(y_part, y_part+partition_size, grid_resolution):
 
                 #get cell node
-                b = cell.geometry.bounds
-                x = b[0] + grid_resolution/2
-                y = b[1] + grid_resolution/2
-                n = nodes_[next(idx.nearest((x, y, x, y), 1))]
+                n = nodes_[next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1))]
 
                 #store cell id
-                grd_ids.append(cell.GRD_ID)
+                grd_ids.append(cell_id_fun(x,y))
 
                 #store duration, in minutes
                 d = round(duration[n]/60)
