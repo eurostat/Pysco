@@ -1,4 +1,4 @@
-from shapely.geometry import box
+from shapely.geometry import box,Polygon
 import geopandas as gpd
 from datetime import datetime
 import networkx as nx
@@ -73,10 +73,10 @@ def accessibility_grid(pois_loader,
         duration = nx.multi_source_dijkstra_path_length(graph, sources, weight='weight')
 
         print(datetime.now(),x_part,y_part, "extract cell accessibility data")
+        cell_geometries = [] #the cell geometries
         grd_ids = [] #the cell identifiers
         durations = [] #the durations
         distances_to_node = [] #the cell center distance to its graph node
-
 
         #go through cells
         r2 = grid_resolution / 2
@@ -86,9 +86,6 @@ def accessibility_grid(pois_loader,
                 #get cell node
                 n = nodes_[next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1))]
 
-                #store cell id
-                grd_ids.append(cell_id_fun(x,y))
-
                 #store duration, in minutes
                 d = round(duration[n]/60)
                 durations.append(d)
@@ -97,7 +94,14 @@ def accessibility_grid(pois_loader,
                 d = round(distance_to_node(n,x,y))
                 distances_to_node.append(d)
 
-        return [grd_ids, durations, distances_to_node]
+                #store cell id
+                grd_ids.append(cell_id_fun(x,y))
+
+                #store grid cell geometry
+                cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
+                cell_geometries.append(cell_geometry)
+
+        return [cell_geometries, grd_ids, durations, distances_to_node]
 
 
     #launch parallel computation   
@@ -106,6 +110,7 @@ def accessibility_grid(pois_loader,
         tasks_to_do = {executor.submit(proceed_partition, partition): partition for partition in partitions}
 
         #out data
+        cell_geometries = []
         grd_ids = []
         durations = []
         distances_to_node = []
@@ -114,9 +119,10 @@ def accessibility_grid(pois_loader,
         for task_output in concurrent.futures.as_completed(tasks_to_do):
             out = task_output.result()
             if(out==None): continue
-            grd_ids += out[0]
-            durations += out[1]
-            distances_to_node += out[2]
+            cell_geometries += out[0]
+            grd_ids += out[1]
+            durations += out[2]
+            distances_to_node += out[3]
 
         print(datetime.now(), len(grd_ids), "cells")
 
