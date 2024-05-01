@@ -17,6 +17,7 @@ def accessibility_grid(pois_loader,
                              bbox,
                              out_folder,
                              out_file,
+                             grid_resolution=1000,
                              partition_size = 100000,
                              extention_buffer = 30000,
                              num_processors_to_use = 1):
@@ -82,6 +83,7 @@ def accessibility_grid(pois_loader,
         distances_to_node = [] #the cell center distance to its graph node
         for iii, cell in cells.iterrows():
             #ignore unpopulated cells
+            #TODO extract
             if(cell.TOT_P_2021==0): continue
 
             #get cell node
