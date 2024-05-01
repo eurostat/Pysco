@@ -3,7 +3,8 @@ from math import ceil,isnan
 from accessibility_grid import accessibility_grid
 
 #TODO
-#remove grid cells loading ?
+#save as GPKG
+#launch 100m resolution
 #OSM
 #tomtom
 
@@ -36,4 +37,4 @@ accessibility_grid(pois_loader,
 
 
 #OSM
-
+#TODO
