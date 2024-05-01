@@ -15,8 +15,7 @@ def accessibility_grid(pois_loader,
                        cells_loader,
                        road_network_loader,
                        bbox,
-                       out_folder,
-                       out_file,
+                       out_csv_file,
                        grid_resolution=1000,
                        partition_size = 100000,
                        extention_buffer = 30000,
@@ -84,7 +83,7 @@ def accessibility_grid(pois_loader,
         for iii, cell in cells.iterrows():
             #ignore unpopulated cells
             #TODO extract
-            if(cell.TOT_P_2021==0): continue
+            #if(cell.TOT_P_2021==0): continue
 
             #get cell node
             b = cell.geometry.bounds
@@ -128,4 +127,4 @@ def accessibility_grid(pois_loader,
 
         print(datetime.now(), "save as CSV")
         out = gpd.GeoDataFrame({'GRD_ID': grd_ids, 'duration': durations, "distance_to_node": distances_to_node })
-        out.to_csv(out_folder+out_file+".csv", index=False)
+        out.to_csv(out_csv_file, index=False)
