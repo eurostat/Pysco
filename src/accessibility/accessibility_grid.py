@@ -13,9 +13,9 @@ from lib.ome2utils import ome2_duration
 
 def accessibility_grid(pois_loader,
                        road_network_loader,
-                       cell_id_fun,
                        bbox,
                        out_csv_file,
+                       cell_id_fun=lambda x,y:str(x)+"_"+str(y),
                        grid_resolution=1000,
                        partition_size = 100000,
                        extention_buffer = 30000,
