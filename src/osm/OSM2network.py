@@ -18,28 +18,33 @@ print(len(rn), "lines")
 #print(datetime.now(), "remove columns")
 #rn.drop(columns=['name', 'aerialway', 'waterway', 'barrier', 'man_made', 'z_order'], inplace=True)
 
+
+def extract_attributes_from_other_tags(gdf, attributes, delete_other_tags=True):
+    #initialise with None value TODO
+    for attribute in attributes: gdf[attribute] = None
+
+    #iterate through features
+    for iii, feature in gdf.iterrows():
+        try:
+            #get other tags
+            other_tags = feature.other_tags
+            if other_tags == None: continue
+            #transform it into a dictionnary
+            other_tags_dict = other_tags_to_dict(other_tags)
+            #set attribute values
+            for attribute in attributes:
+                if not attribute in other_tags_dict: continue
+                #feature[attribute] = str(other_tags_dict[attribute])
+                gdf.at[iii, attribute] = other_tags_dict[attribute]
+        except Exception as e: print("", other_tags)
+
+    #delete other_tags attribute
+    if delete_other_tags: gdf.drop(columns=['other_tags'], inplace=True)
+
+
 print(datetime.now(), "add attributes from other_tags")
+extract_attributes_from_other_tags(rn, ['maxspeed', 'lanes', 'oneway', 'smoothness', 'surface', 'access'])
 
-#add new attributes, set to None
-attributes = ['maxspeed', 'lanes', 'oneway', 'smoothness', 'surface', 'access']
-for attribute in attributes: rn[attribute] = None
-
-for iii, r in rn.iterrows():
-    try:
-        #get other tags
-        ot = r.other_tags
-        if ot == None: continue
-        #transform it into a dictionnary
-        otd = other_tags_to_dict(ot)
-        #set attribute values
-        for attribute in attributes:
-            if not attribute in otd: continue
-            #r[attribute] = str(otd[attribute])
-            rn.at[iii, attribute] = otd[attribute]
-    except Exception as e: print("", ot)
-
-print(datetime.now(), "remove other_tags")
-rn.drop(columns=['other_tags'], inplace=True)
 
 print(datetime.now(), "save")
 rn.to_file(out_file, driver="GPKG")
