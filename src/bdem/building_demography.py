@@ -10,7 +10,7 @@ def building_demography_grid(buildings_loader,
                              bbox,
                              out_folder,
                              out_file,
-                             resolution=1000,
+                             grid_resolution=1000,
                              partition_size = 50000,
                              nb_floors_fun=lambda f:1,
                              residential_fun=lambda f:0,
@@ -20,11 +20,11 @@ def building_demography_grid(buildings_loader,
 
     #process on a partition
     def proceed_partition(xy):
-        [x_,y_] = xy
+        [x_part, y_part] = xy
 
-        print(datetime.now(), x_, y_, "load buildings")
-        buildings = buildings_loader(box(x_, y_, x_+partition_size, y_+partition_size))
-        print(datetime.now(), x_, y_, len(buildings), "buildings loaded")
+        print(datetime.now(), x_part, y_part, "load buildings")
+        buildings = buildings_loader(box(x_part, y_part, x_part+partition_size, y_part+partition_size))
+        print(datetime.now(), x_part, y_part, len(buildings), "buildings loaded")
         if len(buildings)==0: return
 
         #print(datetime.now(), "spatial index buildings")
@@ -41,11 +41,11 @@ def building_demography_grid(buildings_loader,
         grd_ids = []
 
         #go through cells
-        for x in range(x_, x_+partition_size, resolution):
-            for y in range(y_, y_+partition_size, resolution):
+        for x in range(x_part, x_part+partition_size, grid_resolution):
+            for y in range(y_part, y_part+partition_size, grid_resolution):
 
                 #make grid cell geometry
-                cell_geometry = Polygon([(x, y), (x+resolution, y), (x+resolution, y+resolution), (x, y+resolution)])
+                cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
 
                 #get buildings intersecting cell, using spatial index
                 buildings_ = buildings.sindex.intersection(cell_geometry.bounds)
@@ -104,7 +104,7 @@ def building_demography_grid(buildings_loader,
                 tot_cult_floor_areas.append(tot_cult_floor_area)
 
                 #cell code
-                grd_ids.append("CRS3035RES"+str(resolution)+"mN"+str(int(y))+"E"+str(int(x)))
+                grd_ids.append("CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)))
 
         return [
             cell_geometries ,tot_nbs , tot_ground_areas , tot_floor_areas ,  tot_res_floor_areas , tot_cult_ground_areas , tot_cult_floor_areas , grd_ids

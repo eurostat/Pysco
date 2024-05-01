@@ -12,7 +12,6 @@ from lib.ome2utils import ome2_duration
 
 
 def accessibility_grid(pois_loader,
-                       cells_loader,
                        road_network_loader,
                        bbox,
                        out_csv_file,
@@ -33,11 +32,6 @@ def accessibility_grid(pois_loader,
         pois = pois_loader(extended_bbox)
         print(len(pois))
         if(len(pois)==0): return
-
-        print(datetime.now(),x_part,y_part, "load population grid")
-        cells = cells_loader(bbox)
-        print(len(cells))
-        if(len(cells)==0): return
 
         print(datetime.now(),x_part,y_part, "load and filter network links")
         links = road_network_loader(extended_bbox)
@@ -80,27 +74,28 @@ def accessibility_grid(pois_loader,
         grd_ids = [] #the cell identifiers
         durations = [] #the durations
         distances_to_node = [] #the cell center distance to its graph node
-        for iii, cell in cells.iterrows():
-            #ignore unpopulated cells
-            #TODO extract
-            #if(cell.TOT_P_2021==0): continue
 
-            #get cell node
-            b = cell.geometry.bounds
-            x = b[0] + grid_resolution/2
-            y = b[1] + grid_resolution/2
-            n = nodes_[next(idx.nearest((x, y, x, y), 1))]
 
-            #store cell id
-            grd_ids.append(cell.GRD_ID)
+        #go through cells
+        for x in range(x_part, x_part+partition_size, grid_resolution):
+            for y in range(y_part, y_part+partition_size, grid_resolution):
 
-            #store duration, in minutes
-            d = round(duration[n]/60)
-            durations.append(d)
+                #get cell node
+                b = cell.geometry.bounds
+                x = b[0] + grid_resolution/2
+                y = b[1] + grid_resolution/2
+                n = nodes_[next(idx.nearest((x, y, x, y), 1))]
 
-            #store distance cell center/node
-            d = round(distance_to_node(n,x,y))
-            distances_to_node.append(d)
+                #store cell id
+                grd_ids.append(cell.GRD_ID)
+
+                #store duration, in minutes
+                d = round(duration[n]/60)
+                durations.append(d)
+
+                #store distance cell center/node
+                d = round(distance_to_node(n,x,y))
+                distances_to_node.append(d)
 
         return [grd_ids, durations, distances_to_node]
 
