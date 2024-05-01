@@ -4,9 +4,8 @@ from accessibility_grid import accessibility_grid
 
 
 
-
-bbox = [3700000, 2700000, 4200000, 3400000]
-#bbox = [4000000, 2800000, 4100000, 2900000]
+#bbox = [3700000, 2700000, 4200000, 3400000]
+bbox = [4000000, 2800000, 4100000, 2900000]
 grid_resolution = 1000
 num_processors_to_use = 8
 partition_size = 100000
@@ -15,14 +14,20 @@ extention_buffer = 30000 #on each side
 
 #OME
 
-poi_dataset = '/home/juju/geodata/gisco/healthcare_EU_3035.gpkg'
-OME_dataset = '/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg'
-pop_grid_dataset = '/home/juju/geodata/grids/grid_1km_surf.gpkg'
+pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/healthcare_EU_3035.gpkg', bbox=bbox)
+cells_loader = lambda bbox: gpd.read_file('/home/juju/geodata/grids/grid_1km_surf.gpkg', bbox=bbox)
+road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg', layer="tn_road_link", bbox=bbox)
 grid_resolution = 1000
-#the network layer to validate
-layer = "tn_road_link"
-
 out_folder = "/home/juju/gisco/grid_accessibility_quality/"
 out_file = "out"
 
-
+accessibility_grid(pois_loader,
+                       cells_loader,
+                       road_network_loader,
+                       bbox,
+                       out_folder,
+                       out_file,
+                       grid_resolution,
+                       partition_size,
+                       extention_buffer,
+                       num_processors_to_use)
