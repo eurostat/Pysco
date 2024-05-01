@@ -31,3 +31,7 @@ accessibility_grid(pois_loader,
                        partition_size = partition_size,
                        extention_buffer = extention_buffer,
                        num_processors_to_use = num_processors_to_use)
+
+
+#OSM
+
