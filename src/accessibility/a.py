@@ -26,7 +26,8 @@ accessibility_grid(pois_loader,
                        road_network_loader,
                        bbox,
                        out_csv_file,
-                       grid_resolution,
-                       partition_size,
-                       extention_buffer,
-                       num_processors_to_use)
+                       cell_id_fun=cell_id_fun,
+                       grid_resolution=grid_resolution,
+                       partition_size = partition_size,
+                       extention_buffer = extention_buffer,
+                       num_processors_to_use = num_processors_to_use)
