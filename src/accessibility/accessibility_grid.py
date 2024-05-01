@@ -14,13 +14,13 @@ from lib.ome2utils import ome2_duration
 def accessibility_grid(pois_loader,
                        cells_loader,
                        road_network_loader,
-                             bbox,
-                             out_folder,
-                             out_file,
-                             grid_resolution=1000,
-                             partition_size = 100000,
-                             extention_buffer = 30000,
-                             num_processors_to_use = 1):
+                       bbox,
+                       out_folder,
+                       out_file,
+                       grid_resolution=1000,
+                       partition_size = 100000,
+                       extention_buffer = 30000,
+                       num_processors_to_use = 1):
 
     def proceed_partition(xy):
         [x_part,y_part] = xy
