@@ -14,7 +14,8 @@ from lib.ome2utils import ome2_duration
 def accessibility_grid(pois_loader,
                        road_network_loader,
                        bbox,
-                       out_csv_file,
+                       out_folder,
+                       out_file,
                        cell_id_fun=lambda x,y:str(x)+"_"+str(y),
                        grid_resolution=1000,
                        partition_size = 100000,
@@ -119,6 +120,9 @@ def accessibility_grid(pois_loader,
 
         print(datetime.now(), len(grd_ids), "cells")
 
-        print(datetime.now(), "save as CSV")
         out = gpd.GeoDataFrame({'GRD_ID': grd_ids, 'duration': durations, "distance_to_node": distances_to_node })
-        out.to_csv(out_csv_file, index=False)
+
+        print(datetime.now(), "save as CSV")
+        out.to_csv(out_folder+out_file+".csv", index=False)
+        print(datetime.now(), "save as parquet")
+        out.to_parquet(out_folder+out_file+".parquet")

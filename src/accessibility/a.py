@@ -20,12 +20,14 @@ cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"
 pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/healthcare_EU_3035.gpkg', bbox=bbox)
 road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg', layer="tn_road_link", bbox=bbox)
 grid_resolution = 1000
-out_csv_file = "/home/juju/gisco/grid_accessibility_quality/accessibility_grid_OME2.csv"
+out_folder = "/home/juju/gisco/grid_accessibility_quality/5"
+out_file = "accessibility_grid_OME2"
 
 accessibility_grid(pois_loader,
                        road_network_loader,
                        bbox,
-                       out_csv_file,
+                       out_folder,
+                       out_file,
                        cell_id_fun=cell_id_fun,
                        grid_resolution=grid_resolution,
                        partition_size = partition_size,
