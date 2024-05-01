@@ -3,8 +3,7 @@ from math import ceil,isnan
 from accessibility_grid import accessibility_grid
 
 #TODO
-#save as GPKG
-#launch 100m resolution
+#test with detailled network - new graph making function
 #OSM
 #tomtom
 
@@ -16,13 +15,13 @@ partition_size = 100000
 extention_buffer = 30000
 cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 
+out_folder = "/home/juju/gisco/grid_accessibility_quality/"
+
 #OME2
 
 pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/healthcare_EU_3035.gpkg', bbox=bbox)
 road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg', layer="tn_road_link", bbox=bbox)
-grid_resolution = 1000
-out_folder = "/home/juju/gisco/grid_accessibility_quality/"
-out_file = "accessibility_grid_OME2"
+out_file = "accessibility_grid_OME2_" + grid_resolution
 
 accessibility_grid(pois_loader,
                        road_network_loader,
