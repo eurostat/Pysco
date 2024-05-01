@@ -7,8 +7,9 @@ sys.path.append('/home/juju/workspace/pyEx/src/')
 from lib.ome2utils import ome2_duration
 
 #TODO
-#test with detailled network - new graph making function
-#OSM
+#test with detailled network - new graph making function. merge graph_from_geodataframe_with_segments functions ?
+#test with OSM
+#compare
 #tomtom
 
 #bbox = [3700000, 2700000, 4200000, 3400000]
