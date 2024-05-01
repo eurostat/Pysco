@@ -14,22 +14,24 @@ print(len(rn), "lines")
 
 #TODO extract to osmutils
 def extract_attributes_from_other_tags(gdf, attributes, delete_other_tags=True):
-    #initialise with None value
-    #for attribute in attributes: gdf[attribute] = None
+
+    #initialise attributes with None value
+    for attribute in attributes:
+        gdf[attribute] = None
 
     #iterate through features
     for iii, feature in gdf.iterrows():
         try:
             #get other tags
             other_tags = feature.other_tags
-            #if other_tags == None: continue
+            if other_tags == None: continue
             #transform it into a dictionnary
-            #other_tags_dict = other_tags_to_dict(other_tags)
-            other_tags_dict = {} if other_tags == None else other_tags_to_dict(other_tags)
+            other_tags_dict = other_tags_to_dict(other_tags)
+            #other_tags_dict = {} if other_tags == None else other_tags_to_dict(other_tags)
             #set attribute values
             for attribute in attributes:
-                if not attribute in other_tags_dict: feature[attribute] = None
-                else: feature[attribute] = other_tags_dict[attribute]
+                if not attribute in other_tags_dict: continue #feature[attribute] = None
+                feature[attribute] = other_tags_dict[attribute]
                 #gdf.at[iii, attribute] = other_tags_dict[attribute]
         except Exception as e: print("Could not parse other_tags attribute: ", other_tags)
 
@@ -37,7 +39,7 @@ def extract_attributes_from_other_tags(gdf, attributes, delete_other_tags=True):
     if delete_other_tags: gdf.drop(columns=['other_tags'], inplace=True)
 
 
-print(datetime.now(), "add attributes from other_tags")
+print(datetime.now(), "extract attributes from other_tags")
 extract_attributes_from_other_tags(rn, ['maxspeed', 'lanes', 'oneway', 'smoothness', 'surface', 'access'])
 
 
