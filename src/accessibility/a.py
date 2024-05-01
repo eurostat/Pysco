@@ -9,7 +9,7 @@ bbox = [4000000, 2800000, 4100000, 2900000]
 grid_resolution = 1000
 num_processors_to_use = 8
 partition_size = 100000
-extention_buffer = 30000 #on each side
+extention_buffer = 30000
 
 
 #OME
