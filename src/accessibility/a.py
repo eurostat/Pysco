@@ -2,6 +2,10 @@ import geopandas as gpd
 from math import ceil,isnan
 from accessibility_grid import accessibility_grid
 
+import sys
+sys.path.append('/home/juju/workspace/pyEx/src/')
+from lib.ome2utils import ome2_duration
+
 #TODO
 #test with detailled network - new graph making function
 #OSM
@@ -22,6 +26,7 @@ out_folder = "/home/juju/gisco/grid_accessibility_quality/"
 #OME2
 pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/healthcare_EU_3035.gpkg', bbox=bbox)
 road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg', layer="tn_road_link", bbox=bbox)
+weight_function = lambda f:ome2_duration(f)
 out_file = "accessibility_grid_OME2_" + grid_resolution
 
 #OSM
@@ -30,6 +35,7 @@ out_file = "accessibility_grid_OME2_" + grid_resolution
 #execute accessibility analysis
 accessibility_grid(pois_loader,
                        road_network_loader,
+                       weight_function,
                        bbox,
                        out_folder,
                        out_file,

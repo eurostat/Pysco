@@ -8,11 +8,10 @@ import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from lib.utils import cartesian_product_comp
 from lib.netutils import graph_from_geodataframe,nodes_spatial_index,distance_to_node
-from lib.ome2utils import ome2_duration
-
 
 def accessibility_grid(pois_loader,
                        road_network_loader,
+                       weight_function,
                        bbox,
                        out_folder,
                        out_file,
@@ -42,7 +41,7 @@ def accessibility_grid(pois_loader,
         if(len(links)==0): return
 
         print(datetime.now(),x_part,y_part, "make graph")
-        graph = graph_from_geodataframe(links, lambda f:ome2_duration(f))
+        graph = graph_from_geodataframe(links, weight_function)
         del links
         print(graph.number_of_edges())
 
