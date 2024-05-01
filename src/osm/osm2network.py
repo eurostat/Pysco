@@ -11,14 +11,8 @@ print(datetime.now(), "load OSM lines")
 rn = gpd.read_file(osm_file, layer='lines', driver='GPKG', bbox=bbox)
 print(len(rn), "lines")
 
-#print(datetime.now(), "filter highway != NULL")
-#rn = rn[rn['highway'].notnull()]
-#print(str(len(rn)), "road sections")
 
-#print(datetime.now(), "remove columns")
-#rn.drop(columns=['name', 'aerialway', 'waterway', 'barrier', 'man_made', 'z_order'], inplace=True)
-
-
+#TODO extract to osmutils
 def extract_attributes_from_other_tags(gdf, attributes, delete_other_tags=True):
     #initialise with None value TODO
     for attribute in attributes: gdf[attribute] = None
