@@ -6,7 +6,7 @@ from building_demography import building_demography_grid
 
 #bbox = [3800000, 2700000, 4200000, 3000000]
 bbox = [4000000, 2800000, 4050000, 2850000]
-partition_size = 10000
+partition_size = 50000
 num_processors_to_use = 8
 cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 out_folder = '/home/juju/gisco/building_demography/'
@@ -16,7 +16,7 @@ out_folder = '/home/juju/gisco/building_demography/'
 # gridviz - build_dem. for cult heritage
 # date of construction
 
-for case in ["BDTOPO"]:
+for case in ["OSM"]:
     for grid_resolution in [100]:
 
         if(case == "BDTOPO"):
@@ -40,7 +40,7 @@ for case in ["BDTOPO"]:
 
             print("OSM")
             building_demography_grid(
-                lambda bbox: gpd.read_file('/home/juju/geodata/OSM/FR/buildings_grand_est.gpkg', bbox=bbox),
+                lambda bbox: gpd.read_file('/home/juju/geodata/OSM/europe_road_buildings_prep.gpkg', bbox=bbox),
                 bbox,
                 out_folder,
                 "bu_dem_grid_"+case+"_" + str(grid_resolution),
@@ -51,3 +51,8 @@ for case in ["BDTOPO"]:
                 cultural_value_fun = lambda f: 0,
                 num_processors_to_use = num_processors_to_use
             ) 
+
+#residential: apartments
+#activity: 
+#cultural value: 
+
