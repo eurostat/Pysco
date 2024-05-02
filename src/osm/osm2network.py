@@ -1,6 +1,6 @@
 import geopandas as gpd
 from datetime import datetime
-from osmutils import extract_attributes_from_other_tags
+from utils.osmutils import extract_attributes_from_other_tags
 
 bbox = [3700000, 2700000, 4200000, 3400000]
 #bbox = [4000000, 2800000, 4100000, 2900000]

@@ -4,7 +4,8 @@ from accessibility_grid import accessibility_grid
 
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
-from lib.ome2utils import ome2_duration
+from utils.ome2utils import ome2_duration
+from utils.osmutils import osm_duration
 
 #TODO
 #test with OSM

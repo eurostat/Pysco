@@ -6,8 +6,8 @@ import concurrent.futures
 
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
-from lib.utils import cartesian_product_comp
-from lib.netutils import graph_from_geodataframe,nodes_spatial_index,distance_to_node
+from utils.utils import cartesian_product_comp
+from utils.netutils import graph_from_geodataframe,nodes_spatial_index,distance_to_node
 
 def accessibility_grid(pois_loader,
                        road_network_loader,

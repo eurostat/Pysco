@@ -4,7 +4,7 @@ from datetime import datetime
 import concurrent.futures
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
-from lib.utils import cartesian_product_comp
+from utils.utils import cartesian_product_comp
 
 def building_demography_grid(buildings_loader,
                              bbox,
