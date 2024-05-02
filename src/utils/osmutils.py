@@ -37,9 +37,20 @@ def extract_attributes_from_other_tags(gdf, attributes, delete_other_tags=True):
 
 def osm_road_link_speed_kmh(feature):
     speed_kmh = 30
+
+    hw = feature.hw
+    if hw == 'motoway': speed_kmh = 100
+    elif hw == 'trunk': speed_kmh = 70
+    elif hw == 'primary': speed_kmh = 70
+    elif hw == 'secondary': speed_kmh = 60
+    elif hw == 'tertiary': speed_kmh = 40
+    elif hw == 'residential': speed_kmh = 30
+    elif hw == 'unclassified': speed_kmh = 30
+    elif hw == '': speed_kmh = 30
+
     #get other tags
     other_tags = feature.other_tags
-    if other_tags == None: continue
+    if other_tags == None: return speed_kmh
 
     #TODO
     return speed_kmh
