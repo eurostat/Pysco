@@ -82,16 +82,19 @@ def osm_duration(feature, length):
 
 def osm_building_floor_number(bu):
     if bu.other_tags == None: return 1
-    d = other_tags_to_dict(bu.other_tags)
-    if "building:levels" in d: return float(d["building:levels"])
-    if "height" in d: return float(d["height"].replace(",","."))/3
-    if "levels" in d: return float(d["levels"])
+    try:
+        d = other_tags_to_dict(bu.other_tags)
+        if "building:levels" in d: return float(d["building:levels"])
+        if "height" in d: return float(d["height"].replace(",",".").replace("~",""))/3
+        if "levels" in d: return float(d["levels"])
+    except: pass
     return 1
-
 
 def osm_building_construction_date(bu):
     if bu.other_tags == None: return None
-    d = other_tags_to_dict(bu.other_tags)
-    if "construction_date" in d: return d["construction_date"]
-    if "start_date" in d: return d["start_date"]
+    try:
+        d = other_tags_to_dict(bu.other_tags)
+        if "construction_date" in d: return d["construction_date"]
+        if "start_date" in d: return d["start_date"]
+    except: pass
     return None
