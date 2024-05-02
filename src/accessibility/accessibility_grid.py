@@ -36,13 +36,13 @@ def accessibility_grid(pois_loader,
 
         print(datetime.now(),x_part,y_part, "load and filter network links")
         links = road_network_loader(extended_bbox)
-        print(len(links))
+        print(len(links), "links")
         if(len(links)==0): return
 
         print(datetime.now(),x_part,y_part, "make graph")
         graph = graph_from_geodataframe(links, weight_function, detailled=detailled)
         del links
-        print(graph.number_of_edges())
+        print(graph.number_of_edges(), "edges")
 
         print(datetime.now(),x_part,y_part, "keep larger connex component")
         connected_components = list(nx.connected_components(graph))
