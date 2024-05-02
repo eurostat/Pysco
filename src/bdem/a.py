@@ -4,9 +4,9 @@ from building_demography import building_demography_grid
 
 
 
-bbox = [3800000, 2700000, 4200000, 3000000]
-#bbox = [4000000, 2800000, 4050000, 2850000]
-partition_size = 100000
+#bbox = [3800000, 2700000, 4200000, 3000000]
+bbox = [4000000, 2800000, 4050000, 2850000]
+partition_size = 10000
 num_processors_to_use = 8
 out_folder = '/home/juju/gisco/building_demography/'
 
@@ -15,8 +15,8 @@ out_folder = '/home/juju/gisco/building_demography/'
 # gridviz - build_dem. for cult heritage
 # date of construction
 
-for case in ["BDTOPO", "OSM"]:
-    for grid_resolution in [1000, 100]:
+for case in ["BDTOPO"]:
+    for grid_resolution in [100]:
 
         if(case == "BDTOPO"):
             print("FR BD Topo")
