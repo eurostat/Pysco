@@ -12,12 +12,12 @@ from lib.ome2utils import ome2_duration
 #tomtom
 
 #bbox = [3700000, 2700000, 4200000, 3400000]
-bbox = [4000000, 2800000, 4100000, 2900000]
-#bbox = [4100000, 2810000, 4110000, 2820000]
+#bbox = [4000000, 2800000, 4100000, 2900000]
+bbox = [4100000, 2810000, 4110000, 2820000]
 
-partition_size = 100000
+partition_size = 10000
 extention_buffer = 30000
-grid_resolution = 100
+grid_resolution = 1000
 num_processors_to_use = 8
 cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 detailled = True
@@ -35,6 +35,13 @@ weight_function = lambda feature, length : ome2_duration(feature, length)
 
 #OSM
 #TODO
+case = "OSM"
+#TODO test with OSM POIs ?
+pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/healthcare_EU_3035.gpkg', bbox=bbox)
+def road_network_loader(bbox):
+    pass
+    #= lambda bbox: gpd.read_file('/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg', layer="tn_road_link", bbox=bbox)
+weight_function = lambda feature, length : osm_duration(feature, length)
 
 #execute accessibility analysis
 accessibility_grid(pois_loader,
