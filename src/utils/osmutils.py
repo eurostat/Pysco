@@ -39,7 +39,7 @@ def osm_road_link_speed_kmh(feature):
     #default value
     speed_kmh = 30
 
-    hw = feature.hw
+    hw = feature.highway
     if hw == 'motoway': speed_kmh = 100
     elif hw == 'trunk': speed_kmh = 70
     elif hw == 'primary': speed_kmh = 70
