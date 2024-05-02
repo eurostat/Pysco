@@ -25,7 +25,7 @@ pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/healthcare_EU
 
 
 for detailled in [True,False]:
-    for case in ["OSM"]:
+    for case in ["OME2", "OSM"]:
         for grid_resolution in [1000, 100]:
 
             if(case == "OME2"):
