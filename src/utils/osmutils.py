@@ -1,8 +1,8 @@
 
 
 #function to convert 'other_tags' attribute into a dictionnary
-def other_tags_to_dict(input_text):
-    pairs = input_text.split('","')
+def other_tags_to_dict(other_tags_text):
+    pairs = other_tags_text.split('","')
     result_dict = {}
     for pair in pairs:
         key, value = pair.split('"=>"')
@@ -78,3 +78,33 @@ def osm_road_link_speed_kmh(feature):
 
 def osm_duration(feature, length):
     return length/osm_road_link_speed_kmh(feature)*3.6
+
+
+def osm_building_floof_number(bu):
+    if bu.other_tags == None: return 1
+    d = other_tags_to_dict(bu.other_tags)
+
+    lev = d["building:levels"]
+    if lev != None: return lev
+    
+    h = d.height
+    if h != None: return h/3
+    
+    lev = d["levels"]
+    if lev != None: return lev
+    
+    return 1
+
+
+
+def osm_building_construction_date(bu):
+    if bu.other_tags == None: return None
+    d = other_tags_to_dict(bu.other_tags)
+    
+    a = d["construction_date"]
+    if a != None: return a
+    
+    a = d["start_date"]
+    if a != None: return a
+    
+    return None
