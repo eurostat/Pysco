@@ -32,3 +32,13 @@ def extract_attributes_from_other_tags(gdf, attributes, delete_other_tags=True):
 
     #delete other_tags attribute
     if delete_other_tags: gdf.drop(columns=['other_tags'], inplace=True)
+
+
+
+def osm_road_link_speed_kmh(f):
+    speed_kmh = 30
+    #TODO
+    return speed_kmh
+
+def osm_duration(feature, length):
+    return length/osm_road_link_speed_kmh(feature)*3.6

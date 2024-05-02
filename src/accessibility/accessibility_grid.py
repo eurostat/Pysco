@@ -21,7 +21,11 @@ def accessibility_grid(pois_loader,
                        extention_buffer = 30000,
                        detailled = False,
                        crs = 'EPSG:3035',
-                       num_processors_to_use = 1):
+                       num_processors_to_use = 1,
+                       save_GPKG = True,
+                       save_CSV = False,
+                       save_parquet = False
+                       ):
 
     def proceed_partition(xy):
         [x_part,y_part] = xy
@@ -125,13 +129,21 @@ def accessibility_grid(pois_loader,
 
         print(datetime.now(), len(cell_geometries), "cells")
 
-        print(datetime.now(), "save as GPKG")
+        #make output geodataframe
         out = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids, 'duration': durations, "distance_to_node": distances_to_node })
-        out.crs = crs
-        out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
 
-        print(datetime.now(), "save as CSV")
-        out = out.drop(columns=['geometry'])
-        out.to_csv(out_folder+out_file+".csv", index=False)
-        print(datetime.now(), "save as parquet")
-        out.to_parquet(out_folder+out_file+".parquet")
+        #save output
+
+        if(save_GPKG):
+            print(datetime.now(), "save as GPKG")
+            out.crs = crs
+            out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
+
+        if(save_CSV or save_parquet): out = out.drop(columns=['geometry'])
+
+        if(save_CSV):
+            print(datetime.now(), "save as CSV")
+            out.to_csv(out_folder+out_file+".csv", index=False)
+        if(save_parquet):
+            print(datetime.now(), "save as parquet")
+            out.to_parquet(out_folder+out_file+".parquet")
