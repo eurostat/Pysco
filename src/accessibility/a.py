@@ -29,7 +29,7 @@ out_folder = "/home/juju/gisco/grid_accessibility_quality/"
 case = "OME2"
 pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/healthcare_EU_3035.gpkg', bbox=bbox)
 road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg', layer="tn_road_link", bbox=bbox)
-weight_function = lambda f,l:ome2_duration(f,l)
+weight_function = lambda feature, length : ome2_duration(feature, length)
 
 #OSM
 #TODO
