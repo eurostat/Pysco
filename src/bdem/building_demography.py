@@ -16,7 +16,11 @@ def building_demography_grid(buildings_loader,
                              residential_fun=lambda f:0,
                              cultural_value_fun=lambda f:0,
                              crs = 'EPSG:3035',
-                             num_processors_to_use = 1):
+                             num_processors_to_use = 1,
+                             save_GPKG = True,
+                             save_CSV = False,
+                             save_parquet = False
+                             ):
 
     #process on a partition
     def proceed_partition(xy):
@@ -138,16 +142,23 @@ def building_demography_grid(buildings_loader,
             tot_cult_floor_areas += out[6]
             grd_ids += out[7]
 
-
         print(datetime.now(), len(cell_geometries), "cells")
 
-        print(datetime.now(), "save as GPKG")
+        #make output geodataframe
         out = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids, 'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas, 'residential_floor_area': tot_res_floor_areas, 'cultural_ground_area': tot_cult_ground_areas, 'cultural_floor_area': tot_cult_floor_areas })
-        out.crs = crs
-        out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
 
-        print(datetime.now(), "save as CSV")
-        out = out.drop(columns=['geometry'])
-        out.to_csv(out_folder+out_file+".csv", index=False)
-        print(datetime.now(), "save as parquet")
-        out.to_parquet(out_folder+out_file+".parquet")
+        #save output
+
+        if(save_GPKG):
+            print(datetime.now(), "save as GPKG")
+            out.crs = crs
+            out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
+
+        if(save_CSV or save_parquet): out = out.drop(columns=['geometry'])
+
+        if(save_CSV):
+            print(datetime.now(), "save as CSV")
+            out.to_csv(out_folder+out_file+".csv", index=False)
+        if(save_parquet):
+            print(datetime.now(), "save as parquet")
+            out.to_parquet(out_folder+out_file+".parquet")
