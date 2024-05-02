@@ -80,7 +80,7 @@ def osm_duration(feature, length):
     return length/osm_road_link_speed_kmh(feature)*3.6
 
 
-def osm_building_floof_number(bu):
+def osm_building_floor_number(bu):
     if bu.other_tags == None: return 1
     d = other_tags_to_dict(bu.other_tags)
 
