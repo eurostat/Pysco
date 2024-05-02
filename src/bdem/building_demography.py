@@ -91,9 +91,9 @@ def building_demography_grid(buildings_loader,
                     tot_res_floor_area += residential_fun(bu) * floor_area
 
                     #economic activity buildings
-                    econ = economic_activity_fun(bu)
-                    tot_activity_ground_area += econ * a
-                    tot_activity_floor_area += econ * floor_area
+                    activity = economic_activity_fun(bu)
+                    tot_activity_ground_area += activity * a
+                    tot_activity_floor_area += activity * floor_area
 
                     #cultural buildings
                     cult = cultural_value_fun(bu)
@@ -144,6 +144,8 @@ def building_demography_grid(buildings_loader,
         tot_ground_areas = []
         tot_floor_areas = []
         tot_res_floor_areas = []
+        tot_activity_ground_areas = []
+        tot_activity_floor_areas = []
         tot_cult_ground_areas = []
         tot_cult_floor_areas = []
         grd_ids = []
@@ -157,9 +159,11 @@ def building_demography_grid(buildings_loader,
             tot_ground_areas += out[2]
             tot_floor_areas += out[3]
             tot_res_floor_areas += out[4]
-            tot_cult_ground_areas += out[5]
-            tot_cult_floor_areas += out[6]
-            grd_ids += out[7]
+            tot_activity_ground_areas += out[5]
+            tot_activity_floor_areas += out[6]
+            tot_cult_ground_areas += out[7]
+            tot_cult_floor_areas += out[8]
+            grd_ids += out[9]
 
         print(datetime.now(), len(cell_geometries), "cells")
 
