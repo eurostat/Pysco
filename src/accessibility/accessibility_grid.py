@@ -19,14 +19,13 @@ def accessibility_grid(pois_loader,
                        grid_resolution=1000,
                        partition_size = 100000,
                        extention_buffer = 30000,
+                       detailled = False,
                        crs = 'EPSG:3035',
                        num_processors_to_use = 1):
 
     def proceed_partition(xy):
         [x_part,y_part] = xy
 
-        #partition bbox
-        bbox = box(x_part, y_part, x_part+partition_size, y_part+partition_size)
         #partition extended bbox
         extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
@@ -41,7 +40,7 @@ def accessibility_grid(pois_loader,
         if(len(links)==0): return
 
         print(datetime.now(),x_part,y_part, "make graph")
-        graph = graph_from_geodataframe(links, weight_function)
+        graph = graph_from_geodataframe(links, weight_function, detailled=detailled)
         del links
         print(graph.number_of_edges())
 
