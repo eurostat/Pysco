@@ -17,10 +17,10 @@ def ome2_filter_road_links(gdf):
     return gdf
 
 
-def road_link_speed_kmh(f):
-    rsc = f["road_surface_category"]
-    fow = f["form_of_way"]
-    frc = f["functional_road_class"]
+def road_link_speed_kmh(feature):
+    rsc = feature["road_surface_category"]
+    fow = feature["form_of_way"]
+    frc = feature["functional_road_class"]
     speed_kmh = 30
     if(rsc != 'paved'): speed_kmh = 20
     elif(fow == 'motorway'): speed_kmh = 120
