@@ -10,6 +10,7 @@ def building_demography_grid(buildings_loader,
                              bbox,
                              out_folder,
                              out_file,
+                             cell_id_fun=lambda x,y:str(x)+"_"+str(y),
                              grid_resolution=1000,
                              partition_size = 50000,
                              nb_floors_fun=lambda f:1,
@@ -53,7 +54,7 @@ def building_demography_grid(buildings_loader,
 
                 #get buildings intersecting cell, using spatial index
                 buildings_ = buildings.sindex.intersection(cell_geometry.bounds)
-                if len(buildings_)==0: continue
+                #if len(buildings_)==0: continue
 
                 #initialise totals
                 tot_nb = 0
@@ -96,7 +97,7 @@ def building_demography_grid(buildings_loader,
                 tot_cult_ground_area = round(tot_cult_ground_area)
                 tot_cult_floor_area = round(tot_cult_floor_area)
 
-                if(tot_ground_area == 0): continue
+                #if(tot_ground_area == 0): continue
 
                 #store cell values
                 cell_geometries.append(cell_geometry)
@@ -108,7 +109,7 @@ def building_demography_grid(buildings_loader,
                 tot_cult_floor_areas.append(tot_cult_floor_area)
 
                 #cell code
-                grd_ids.append("CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)))
+                grd_ids.append(cell_id_fun(x,y))
 
         return [
             cell_geometries ,tot_nbs , tot_ground_areas , tot_floor_areas ,  tot_res_floor_areas , tot_cult_ground_areas , tot_cult_floor_areas , grd_ids

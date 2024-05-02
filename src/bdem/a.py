@@ -8,6 +8,7 @@ from building_demography import building_demography_grid
 bbox = [4000000, 2800000, 4050000, 2850000]
 partition_size = 10000
 num_processors_to_use = 8
+cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 out_folder = '/home/juju/gisco/building_demography/'
 
 # TODO
@@ -25,6 +26,7 @@ for case in ["BDTOPO"]:
                 bbox,
                 out_folder,
                 "bu_dem_grid_"+case+"_" + str(grid_resolution),
+                cell_id_fun=cell_id_fun,
                 grid_resolution = grid_resolution,
                 partition_size = partition_size,
                 nb_floors_fun = lambda f: 1 if f.hauteur==None or isnan(f.hauteur) else ceil(f.hauteur/3.7),
