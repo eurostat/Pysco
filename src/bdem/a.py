@@ -18,8 +18,8 @@ out_folder = '/home/juju/gisco/building_demography/'
 # date of construction
 
 
-for grid_resolution in [1000,100]:
-    for case in ["BDTOPO","OSM"]:
+for case in ["BDTOPO","OSM"]:
+    for grid_resolution in [1000,100]:
 
         print(case, grid_resolution)
 
