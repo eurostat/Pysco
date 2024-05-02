@@ -168,7 +168,11 @@ def building_demography_grid(buildings_loader,
         print(datetime.now(), len(cell_geometries), "cells")
 
         #make output geodataframe
-        out = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids, 'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas, 'residential_floor_area': tot_res_floor_areas, 'cultural_ground_area': tot_cult_ground_areas, 'cultural_floor_area': tot_cult_floor_areas })
+        out = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids,
+                                'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas,
+                                'residential_floor_area': tot_res_floor_areas,
+                                'economic_activity_ground_area': tot_activity_ground_areas, 'economic_activity_floor_area': tot_activity_floor_areas,
+                                'cultural_ground_area': tot_cult_ground_areas, 'cultural_floor_area': tot_cult_floor_areas })
 
         #save output
 
