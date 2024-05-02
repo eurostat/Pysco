@@ -21,8 +21,8 @@ out_folder = '/home/juju/gisco/building_demography/'
 
 
 
-for case in ["OSM"]:
-    for grid_resolution in [100]:
+for case in ["OSM","BDTOPO"]:
+    for grid_resolution in [100,1000]:
 
         if(case == "BDTOPO"):
             print("FR BD Topo")
