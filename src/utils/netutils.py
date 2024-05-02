@@ -47,6 +47,7 @@ def graph_from_geodataframe(gdf, weight = lambda feature:feature.geometry.length
                     #segment_length = math.hypot(pi[0]-pf[0],pi[1]-pf[1])
                     segment_length = distance(ni,nf) #TODO be more efficient here
                     w = weight(feature, segment_length)
+                    if(w<0): continue
 
                     #add edge
                     graph.add_edge(ni, nf, weight=w)
@@ -73,6 +74,7 @@ def graph_from_geodataframe(gdf, weight = lambda feature:feature.geometry.length
 
             #compute weight
             w = weight(feature, g.length)
+            if(w<0): continue
 
             #add edge
             graph.add_edge(pi, pf, weight=w)

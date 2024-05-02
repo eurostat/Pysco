@@ -36,6 +36,7 @@ def extract_attributes_from_other_tags(gdf, attributes, delete_other_tags=True):
 
 
 def osm_road_link_speed_kmh(feature):
+    #default value
     speed_kmh = 30
 
     hw = feature.hw
@@ -46,13 +47,33 @@ def osm_road_link_speed_kmh(feature):
     elif hw == 'tertiary': speed_kmh = 40
     elif hw == 'residential': speed_kmh = 30
     elif hw == 'unclassified': speed_kmh = 30
-    elif hw == '': speed_kmh = 30
+
+    if hw == 'motoway_link': speed_kmh = 70
+    elif hw == 'trunk_link': speed_kmh = 50
+    elif hw == 'primary_link': speed_kmh = 50
+    elif hw == 'secondary_link': speed_kmh = 40
+    elif hw == 'tertiary_link': speed_kmh = 30
+
+    elif hw == 'living_street': speed_kmh = 30
+    elif hw == 'service': speed_kmh = 30
+    elif hw == 'pedestrian': speed_kmh = 5
+    elif hw == 'track': speed_kmh = 10
+    elif hw == 'footway': speed_kmh = 5
+    elif hw == 'bridleway': speed_kmh = 5
+    elif hw == 'steps': speed_kmh = 5
+    elif hw == 'corridor': speed_kmh = 5
+    elif hw == 'path': speed_kmh = 5
+    elif hw == 'via_ferrata': speed_kmh = 5
+
+    elif hw == 'cycleway': speed_kmh = 10
+
+    elif hw == 'construction': speed_kmh = 10
+    elif hw == 'proposed': speed_kmh = 10
 
     #get other tags
-    other_tags = feature.other_tags
-    if other_tags == None: return speed_kmh
+    #other_tags = feature.other_tags
+    #if other_tags == None: return speed_kmh
 
-    #TODO
     return speed_kmh
 
 def osm_duration(feature, length):
