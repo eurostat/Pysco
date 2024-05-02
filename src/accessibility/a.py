@@ -26,10 +26,10 @@ out_folder = "/home/juju/gisco/grid_accessibility_quality/"
 #set variables
 
 #OME2
+case = "OME2"
 pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/healthcare_EU_3035.gpkg', bbox=bbox)
 road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg', layer="tn_road_link", bbox=bbox)
-weight_function = lambda f:ome2_duration(f)
-out_file = "accessibility_grid_OME2_" + grid_resolution
+weight_function = lambda f,l:ome2_duration(f,l)
 
 #OSM
 #TODO
@@ -40,9 +40,10 @@ accessibility_grid(pois_loader,
                        weight_function,
                        bbox,
                        out_folder,
-                       out_file,
+                       "accessibility_grid_"+case+"_" + grid_resolution + "_" + detailled,
                        cell_id_fun=cell_id_fun,
                        grid_resolution=grid_resolution,
                        partition_size = partition_size,
                        extention_buffer = extention_buffer,
+                       detailled = detailled,
                        num_processors_to_use = num_processors_to_use)
