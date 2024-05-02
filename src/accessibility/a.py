@@ -23,33 +23,37 @@ out_folder = "/home/juju/gisco/grid_accessibility_quality/"
 
 pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/healthcare_EU_3035.gpkg', bbox=bbox)
 
+
 for detailled in [True, False]:
-    for grid_resolution in [1000, 100]:
+    for case in ["OME2", "OSM"]:
+        for grid_resolution in [1000, 100]:
 
-        print("OME2", grid_resolution, detailled)
-        accessibility_grid(pois_loader,
-                            lambda bbox: gpd.read_file('/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg', layer="tn_road_link", bbox=bbox),
-                            lambda feature, length : ome2_duration(feature, length),
-                            bbox,
-                            out_folder,
-                            "accessibility_grid_OME2_" + str(grid_resolution) + "_" + str(detailled),
-                            cell_id_fun=cell_id_fun,
-                            grid_resolution=grid_resolution,
-                            partition_size = partition_size,
-                            extention_buffer = extention_buffer,
-                            detailled = detailled,
-                            num_processors_to_use = num_processors_to_use)
+            if(case == "OME2"):
+                print("OME2", grid_resolution, detailled)
+                accessibility_grid(pois_loader,
+                                    lambda bbox: gpd.read_file('/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg', layer="tn_road_link", bbox=bbox),
+                                    lambda feature, length : ome2_duration(feature, length),
+                                    bbox,
+                                    out_folder,
+                                    "accessibility_grid_OME2_" + str(grid_resolution) + "_" + str(detailled),
+                                    cell_id_fun=cell_id_fun,
+                                    grid_resolution=grid_resolution,
+                                    partition_size = partition_size,
+                                    extention_buffer = extention_buffer,
+                                    detailled = detailled,
+                                    num_processors_to_use = num_processors_to_use)
 
-        print("OSM", grid_resolution, detailled)
-        accessibility_grid(pois_loader,
-                            lambda bbox: gpd.read_file('/home/juju/geodata/OSM/europe_road_network_prep.gpkg', bbox=bbox),
-                            lambda feature, length : osm_duration(feature, length),
-                            bbox,
-                            out_folder,
-                            "accessibility_grid_OSM_" + str(grid_resolution) + "_" + str(detailled),
-                            cell_id_fun=cell_id_fun,
-                            grid_resolution=grid_resolution,
-                            partition_size = partition_size,
-                            extention_buffer = extention_buffer,
-                            detailled = detailled,
-                            num_processors_to_use = num_processors_to_use)
+            if(case == "OSM"):
+                print("OSM", grid_resolution, detailled)
+                accessibility_grid(pois_loader,
+                                    lambda bbox: gpd.read_file('/home/juju/geodata/OSM/europe_road_network_prep.gpkg', bbox=bbox),
+                                    lambda feature, length : osm_duration(feature, length),
+                                    bbox,
+                                    out_folder,
+                                    "accessibility_grid_OSM_" + str(grid_resolution) + "_" + str(detailled),
+                                    cell_id_fun=cell_id_fun,
+                                    grid_resolution=grid_resolution,
+                                    partition_size = partition_size,
+                                    extention_buffer = extention_buffer,
+                                    detailled = detailled,
+                                    num_processors_to_use = num_processors_to_use)
