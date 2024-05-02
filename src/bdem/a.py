@@ -5,9 +5,9 @@ import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from utils.osmutils import osm_building_floor_number
 
-
+bbox = [3700000, 2700000, 4200000, 3400000]
 #bbox = [3800000, 2700000, 4200000, 3000000]
-bbox = [4000000, 2800000, 4100000, 2900000]
+#bbox = [4000000, 2800000, 4100000, 2900000]
 partition_size = 100000
 num_processors_to_use = 8
 cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
@@ -18,8 +18,8 @@ out_folder = '/home/juju/gisco/building_demography/'
 # date of construction
 
 
-for case in ["OSM"]:
-    for grid_resolution in [100,1000]:
+for grid_resolution in [1000,100]:
+    for case in ["BDTOPO","OSM"]:
 
         print(case, grid_resolution)
 
