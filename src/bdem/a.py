@@ -21,8 +21,9 @@ out_folder = '/home/juju/gisco/building_demography/'
 for case in ["OSM","BDTOPO"]:
     for grid_resolution in [100,1000]:
 
+        print(case, grid_resolution)
+
         if(case == "BDTOPO"):
-            print("FR BD Topo")
             building_demography_grid(
                 lambda bbox: gpd.read_file('/home/juju/geodata/FR/BDTOPO_3-3_TOUSTHEMES_GPKG_LAMB93_R44_2023-12-15/BDT_3-3_GPKG_3035_R44-ED2023-12-15.gpkg', layer='batiment', bbox=bbox),
                 bbox,
@@ -39,8 +40,6 @@ for case in ["OSM","BDTOPO"]:
             ) 
 
         elif(case == "OSM"):
-
-            print("OSM")
             building_demography_grid(
                 lambda bbox: gpd.read_file('/home/juju/geodata/OSM/europe_road_buildings_prep.gpkg', bbox=bbox),
                 bbox,
