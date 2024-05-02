@@ -84,7 +84,7 @@ def osm_building_floor_number(bu):
     if bu.other_tags == None: return 1
     d = other_tags_to_dict(bu.other_tags)
 
-    lev = d["building:levels"]
+    lev = d["building_levels"]
     if lev != None: return lev
     
     h = d.height
