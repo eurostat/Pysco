@@ -43,7 +43,7 @@ for detailled in [True,False]:
                                     detailled = detailled,
                                     num_processors_to_use = num_processors_to_use)
 
-            if(case == "OSM"):
+            elif(case == "OSM"):
                 print("OSM", grid_resolution, detailled)
                 accessibility_grid(pois_loader,
                                     lambda bbox: gpd.read_file('/home/juju/geodata/OSM/europe_road_network_prep.gpkg', bbox=bbox),
