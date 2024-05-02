@@ -1,5 +1,4 @@
 import geopandas as gpd
-from math import ceil,isnan
 from accessibility_grid import accessibility_grid
 
 import sys

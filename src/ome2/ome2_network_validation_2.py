@@ -1,9 +1,12 @@
 import geopandas as gpd
 from datetime import datetime
-from lib.netutils import node_coordinate,graph_from_geodataframe
-from lib.ome2utils import ome2_filter_road_links
-from lib.geomutils import decompose_line
 from shapely import Point
+
+import sys
+sys.path.append('/home/juju/workspace/pyEx/src/')
+from utils.netutils import node_coordinate,graph_from_geodataframe
+from utils.ome2utils import ome2_filter_road_links
+from utils.geomutils import decompose_line
 
 # A validation process for network edge matching.
 # The procedure detects network nodes of degree 1 nearby boundary lines.
