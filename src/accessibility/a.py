@@ -12,8 +12,8 @@ from lib.ome2utils import ome2_duration
 #compare
 #tomtom
 
-bbox = [3700000, 2700000, 4200000, 3400000]
-#bbox = [4000000, 2800000, 4100000, 2900000]
+#bbox = [3700000, 2700000, 4200000, 3400000]
+bbox = [4000000, 2800000, 4100000, 2900000]
 grid_resolution = 1000
 num_processors_to_use = 8
 partition_size = 100000
@@ -40,7 +40,7 @@ accessibility_grid(pois_loader,
                        weight_function,
                        bbox,
                        out_folder,
-                       "accessibility_grid_"+case+"_" + grid_resolution + "_" + detailled,
+                       "accessibility_grid_" + case + "_" + str(grid_resolution) + "_" + str(detailled),
                        cell_id_fun=cell_id_fun,
                        grid_resolution=grid_resolution,
                        partition_size = partition_size,
