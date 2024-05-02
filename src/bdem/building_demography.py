@@ -15,6 +15,7 @@ def building_demography_grid(buildings_loader,
                              partition_size = 50000,
                              nb_floors_fun=lambda f:1,
                              residential_fun=lambda f:0,
+                             economic_activity_fun=lambda f:O,
                              cultural_value_fun=lambda f:0,
                              crs = 'EPSG:3035',
                              num_processors_to_use = 1,
@@ -41,6 +42,8 @@ def building_demography_grid(buildings_loader,
         tot_ground_areas = []
         tot_floor_areas = []
         tot_res_floor_areas = []
+        tot_activity_ground_areas = []
+        tot_activity_floor_areas = []
         tot_cult_ground_areas = []
         tot_cult_floor_areas = []
         grd_ids = []
@@ -61,6 +64,8 @@ def building_demography_grid(buildings_loader,
                 tot_ground_area = 0
                 tot_floor_area = 0
                 tot_res_floor_area = 0
+                tot_activity_ground_area = 0
+                tot_activity_floor_area = 0
                 tot_cult_ground_area = 0
                 tot_cult_floor_area = 0
 
@@ -85,6 +90,11 @@ def building_demography_grid(buildings_loader,
                     #residential buildings
                     tot_res_floor_area += residential_fun(bu) * floor_area
 
+                    #economic activity buildings
+                    econ = economic_activity_fun(bu)
+                    tot_activity_ground_area += econ * a
+                    tot_activity_floor_area += econ * floor_area
+
                     #cultural buildings
                     cult = cultural_value_fun(bu)
                     tot_cult_ground_area += cult * a
@@ -94,6 +104,8 @@ def building_demography_grid(buildings_loader,
                 tot_ground_area = round(tot_ground_area)
                 tot_floor_area = round(tot_floor_area)
                 tot_res_floor_area = round(tot_res_floor_area)
+                tot_activity_ground_area = round(tot_activity_ground_area)
+                tot_activity_floor_area = round(tot_activity_floor_area)
                 tot_cult_ground_area = round(tot_cult_ground_area)
                 tot_cult_floor_area = round(tot_cult_floor_area)
 
@@ -105,6 +117,8 @@ def building_demography_grid(buildings_loader,
                 tot_ground_areas.append(tot_ground_area)
                 tot_floor_areas.append(tot_floor_area)
                 tot_res_floor_areas.append(tot_res_floor_area)
+                tot_activity_ground_areas.append(tot_activity_ground_area)
+                tot_activity_floor_areas.append(tot_activity_floor_area)
                 tot_cult_ground_areas.append(tot_cult_ground_area)
                 tot_cult_floor_areas.append(tot_cult_floor_area)
 
@@ -112,7 +126,11 @@ def building_demography_grid(buildings_loader,
                 grd_ids.append(cell_id_fun(x,y))
 
         return [
-            cell_geometries ,tot_nbs , tot_ground_areas , tot_floor_areas ,  tot_res_floor_areas , tot_cult_ground_areas , tot_cult_floor_areas , grd_ids
+            cell_geometries ,tot_nbs , tot_ground_areas , tot_floor_areas ,
+            tot_res_floor_areas , 
+            tot_activity_ground_areas , tot_activity_floor_areas , 
+            tot_cult_ground_areas , tot_cult_floor_areas , 
+            grd_ids
         ]
 
     #launch parallel computation   
