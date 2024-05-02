@@ -40,19 +40,19 @@ def osm_road_link_speed_kmh(feature):
     speed_kmh = 30
 
     hw = feature.highway
-    if hw == 'motoway': speed_kmh = 100
-    elif hw == 'trunk': speed_kmh = 70
-    elif hw == 'primary': speed_kmh = 70
-    elif hw == 'secondary': speed_kmh = 60
-    elif hw == 'tertiary': speed_kmh = 40
+    if hw == 'motoway': speed_kmh = 110
+    elif hw == 'trunk': speed_kmh = 80
+    elif hw == 'primary': speed_kmh = 80
+    elif hw == 'secondary': speed_kmh = 70
+    elif hw == 'tertiary': speed_kmh = 50
     elif hw == 'residential': speed_kmh = 30
     elif hw == 'unclassified': speed_kmh = 30
 
-    if hw == 'motoway_link': speed_kmh = 70
-    elif hw == 'trunk_link': speed_kmh = 50
-    elif hw == 'primary_link': speed_kmh = 50
-    elif hw == 'secondary_link': speed_kmh = 40
-    elif hw == 'tertiary_link': speed_kmh = 30
+    if hw == 'motoway_link': speed_kmh = 80
+    elif hw == 'trunk_link': speed_kmh = 60
+    elif hw == 'primary_link': speed_kmh = 60
+    elif hw == 'secondary_link': speed_kmh = 50
+    elif hw == 'tertiary_link': speed_kmh = 40
 
     elif hw == 'living_street': speed_kmh = 30
     elif hw == 'service': speed_kmh = 30

@@ -24,8 +24,8 @@ out_folder = "/home/juju/gisco/grid_accessibility_quality/"
 pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/healthcare_EU_3035.gpkg', bbox=bbox)
 
 
-for detailled in [True, False]:
-    for case in ["OME2", "OSM"]:
+for detailled in [True,False]:
+    for case in ["OSM"]:
         for grid_resolution in [1000, 100]:
 
             if(case == "OME2"):
