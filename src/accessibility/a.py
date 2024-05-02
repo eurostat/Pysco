@@ -7,19 +7,21 @@ sys.path.append('/home/juju/workspace/pyEx/src/')
 from lib.ome2utils import ome2_duration
 
 #TODO
-#test with detailled network - new graph making function. merge graph_from_geodataframe_with_segments functions ?
 #test with OSM
 #compare
 #tomtom
 
 #bbox = [3700000, 2700000, 4200000, 3400000]
 bbox = [4000000, 2800000, 4100000, 2900000]
-grid_resolution = 1000
-num_processors_to_use = 8
+#bbox = [4100000, 2810000, 4110000, 2820000]
+
 partition_size = 100000
 extention_buffer = 30000
+grid_resolution = 100
+num_processors_to_use = 8
 cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 detailled = True
+
 
 out_folder = "/home/juju/gisco/grid_accessibility_quality/"
 
