@@ -49,6 +49,6 @@ for case in ["OSM"]:
                 nb_floors_fun = lambda f: 1,
                 residential_fun = lambda f: 1 if f.building=="apartments" or f.building=="barracks" or f.building=="bungalow" or f.building=="cabin" or f.building=="detached" or f.building=="dormitory" or f.building=="farm" or f.building=="ger" or f.building=="farm" or f.building=="house" or f.building=="houseboat" or f.building=="residential" or f.building=="semidetached_house" or f.building=="static_caravan" or f.building=="stilt_house" or f.building=="terrace" or f.building=="tree_house" or f.building=="trullo" else 0.7 if f.building=="yes" else 0,
                 economic_activity_fun = lambda f: 0,
-                cultural_value_fun = lambda f: 0,
+                cultural_value_fun = lambda f: 1 if f.building=="religious" or f.building=="cathedral" or f.building=="chapel" or f.building=="church" or f.building=="kingdom_hall" or f.building=="monastery" or f.building=="mosque" or f.building=="presbytery" or f.building=="shrine" or f.building=="synagogue" or f.building=="temple" or f.building=="pagoda" or f.building=="bunker" or f.building=="castle" or f.building=="tower" or f.building=="windmill" else 0,
                 num_processors_to_use = num_processors_to_use
             ) 
