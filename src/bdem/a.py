@@ -14,11 +14,8 @@ cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"
 out_folder = '/home/juju/gisco/building_demography/'
 
 # TODO
-# activity
 # gridviz - build_dem. for cult heritage
 # date of construction
-
-
 
 
 for case in ["OSM","BDTOPO"]:

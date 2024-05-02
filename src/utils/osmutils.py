@@ -83,9 +83,9 @@ def osm_duration(feature, length):
 def osm_building_floor_number(bu):
     if bu.other_tags == None: return 1
     d = other_tags_to_dict(bu.other_tags)
-    if "building:levels" in d: return d["building:levels"]
-    if "height" in d: return d["height"]/3
-    if "levels" in d: return d["levels"]
+    if "building:levels" in d: return float(d["building:levels"])
+    if "height" in d: return float(d["height"]/3)
+    if "levels" in d: return float(d["levels"])
     return 1
 
 
