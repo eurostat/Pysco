@@ -24,8 +24,8 @@ pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/healthcare_EU
 
 
 for detailled in [True]:
-    for case in ["tomtom"]:
-        for grid_resolution in [1000, 100]:
+    for grid_resolution in [1000, 100]:
+        for case in ["tomtom", "OME2", "OSM"]:
 
             print(case, grid_resolution, detailled)
 
