@@ -10,8 +10,8 @@ from utils.osmutils import osm_duration
 #test with tomtom
 #compare
 
-#bbox = [3700000, 2700000, 4200000, 3400000]
-bbox = [4000000, 2800000, 4100000, 2900000]
+bbox = [3700000, 2700000, 4200000, 3400000]
+#bbox = [4000000, 2800000, 4100000, 2900000]
 #bbox = [4100000, 2810000, 4110000, 2820000]
 
 partition_size = 100000
@@ -24,8 +24,8 @@ pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/healthcare_EU
 
 
 for detailled in [True]:
-    for grid_resolution in [1000, 100]:
-        for case in ["tomtom"]:
+    for grid_resolution in [100, 1000]:
+        for case in ["OME2","tomtom","OSM"]:
 
             print(case, grid_resolution, detailled)
 
