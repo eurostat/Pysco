@@ -31,8 +31,8 @@ for detailled in [True]:
 
             if(case == "tomtom"):
                 accessibility_grid(pois_loader,
-                                    lambda bbox: gpd.read_file('/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg', layer="tn_road_link", bbox=bbox),
-                                    lambda feature, length : ome2_duration(feature, length),
+                                    lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/2021/nw.gpkg', bbox=bbox),
+                                    lambda feature, length : lambda feature, length : feature.MINUTES * 60
                                     bbox,
                                     out_folder,
                                     "accessibility_grid_"+case+"_" + str(grid_resolution) + "_" + str(detailled),
