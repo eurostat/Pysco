@@ -7,7 +7,6 @@ from utils.ome2utils import ome2_duration
 from utils.osmutils import osm_duration
 
 #TODO
-#test with OSM
 #test with tomtom
 #compare
 
@@ -24,12 +23,27 @@ out_folder = "/home/juju/gisco/grid_accessibility_quality/"
 pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/healthcare_EU_3035.gpkg', bbox=bbox)
 
 
-for detailled in [True,False]:
-    for case in ["OME2", "OSM"]:
+for detailled in [True]:
+    for case in ["tomtom"]:
         for grid_resolution in [1000, 100]:
 
+            print(case, grid_resolution, detailled)
+
+            if(case == "tomtom"):
+                accessibility_grid(pois_loader,
+                                    lambda bbox: gpd.read_file('/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg', layer="tn_road_link", bbox=bbox),
+                                    lambda feature, length : ome2_duration(feature, length),
+                                    bbox,
+                                    out_folder,
+                                    "accessibility_grid_"+case+"_" + str(grid_resolution) + "_" + str(detailled),
+                                    cell_id_fun=cell_id_fun,
+                                    grid_resolution=grid_resolution,
+                                    partition_size = partition_size,
+                                    extention_buffer = extention_buffer,
+                                    detailled = detailled,
+                                    num_processors_to_use = num_processors_to_use)
+
             if(case == "OME2"):
-                print("OME2", grid_resolution, detailled)
                 accessibility_grid(pois_loader,
                                     lambda bbox: gpd.read_file('/home/juju/geodata/OME2_HVLSP_v1/gpkg/ome2.gpkg', layer="tn_road_link", bbox=bbox),
                                     lambda feature, length : ome2_duration(feature, length),
@@ -44,7 +58,6 @@ for detailled in [True,False]:
                                     num_processors_to_use = num_processors_to_use)
 
             elif(case == "OSM"):
-                print("OSM", grid_resolution, detailled)
                 accessibility_grid(pois_loader,
                                     lambda bbox: gpd.read_file('/home/juju/geodata/OSM/europe_road_network_prep.gpkg', bbox=bbox),
                                     lambda feature, length : osm_duration(feature, length),
