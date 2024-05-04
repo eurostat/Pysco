@@ -27,7 +27,7 @@ for detailled in [True]:
         for case in ["OME2","tomtom","OSM"]:
             #detailled = True if case == "OSM" else False
 
-            print(case, grid_resolution, detailled)
+            print("###############", case, grid_resolution, detailled)
 
             if(case == "tomtom"):
                 accessibility_grid(pois_loader,
