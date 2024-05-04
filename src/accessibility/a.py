@@ -9,7 +9,7 @@ from utils.osmutils import osm_duration
 #TODO
 #check data loading with fiona only. faster ? filter on loading ?
 
-bbox = [3800000, 2900000, 4000000, 3300000]
+bbox = [3800000, 2900000, 4200000, 3300000]
 #bbox = [4000000, 2800000, 4100000, 2900000]
 #bbox = [4100000, 2810000, 4110000, 2820000]
 

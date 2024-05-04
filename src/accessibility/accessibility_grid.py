@@ -17,6 +17,7 @@ def accessibility_grid(pois_loader,
                        out_file,
                        cell_id_fun=lambda x,y:str(x)+"_"+str(y),
                        grid_resolution=1000,
+                       cell_network_max_distance=-1,
                        partition_size = 100000,
                        extention_buffer = 30000,
                        detailled = False,
@@ -89,12 +90,15 @@ def accessibility_grid(pois_loader,
                 #get cell node
                 n = nodes_[next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1))]
 
+                #compute distance to network and skip if too far
+                d = round(distance_to_node(n,x,y))
+                if cell_network_max_distance>0 and d>= cell_network_max_distance: continue
+
                 #store duration, in minutes
                 d = round(duration[n]/60)
                 durations.append(d)
 
                 #store distance cell center/node
-                d = round(distance_to_node(n,x,y))
                 distances_to_node.append(d)
 
                 #store cell id
