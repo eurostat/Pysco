@@ -28,11 +28,12 @@ def road_link_speed_kmh(feature):
     elif(fow == 'slip_road'): speed_kmh = 80
     #elif(fow == 'single_carriage_way'): speed_kmh = 80
     elif(frc == 'main_road'): speed_kmh = 80
-    elif(frc == 'first_class'): speed_kmh = 80
-    elif(frc == 'second_class'): speed_kmh = 70
-    elif(frc == 'third_class'): speed_kmh = 50
-    elif(frc == 'fourth_class'): speed_kmh = 40
-    elif(frc == 'fifth_class'): speed_kmh = 30
+    elif('first_class' in frc): speed_kmh = 80
+    elif('second_class' in frc): speed_kmh = 70
+    elif('third_class' in frc): speed_kmh = 50
+    elif('fourth_class' in frc): speed_kmh = 40
+    elif('fifth_class' in frc): speed_kmh = 30
+    elif('sixth_class' in frc): speed_kmh = 30
     elif(frc == 'void_unk'): speed_kmh = 30
     else: print(rsc,fow,frc)
     return speed_kmh
