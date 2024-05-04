@@ -7,10 +7,9 @@ from utils.ome2utils import ome2_duration
 from utils.osmutils import osm_duration
 
 #TODO
-#test with tomtom
-#compare
+#check data loading with fiona only. faster ? filter on loading ?
 
-bbox = [3700000, 2700000, 4200000, 3400000]
+bbox = [3800000, 2900000, 4000000, 3300000]
 #bbox = [4000000, 2800000, 4100000, 2900000]
 #bbox = [4100000, 2810000, 4110000, 2820000]
 
@@ -26,6 +25,7 @@ pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/healthcare_EU
 for detailled in [True]:
     for grid_resolution in [100, 1000]:
         for case in ["OME2","tomtom","OSM"]:
+            #detailled = True if case == "OSM" else False
 
             print(case, grid_resolution, detailled)
 
