@@ -10,6 +10,7 @@ from utils.osmutils import osm_building_floor_number
 bbox = [3900000, 2700000, 4200000, 3000000]
 #bbox = [4000000, 2800000, 4100000, 2900000]
 
+
 partition_size = 100000
 num_processors_to_use = 9
 cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
