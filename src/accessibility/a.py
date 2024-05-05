@@ -15,7 +15,7 @@ bbox = [3800000, 2900000, 4200000, 3300000]
 
 partition_size = 100000
 extention_buffer = 30000
-num_processors_to_use = 8
+num_processors_to_use = 6
 cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 out_folder = "/home/juju/gisco/grid_accessibility_quality/"
 
