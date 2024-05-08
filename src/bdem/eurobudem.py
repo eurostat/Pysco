@@ -2,6 +2,11 @@ import geopandas as gpd
 from math import ceil,isnan,floor
 from building_demography import building_demography_grid
 
+#TODO
+# date of creation
+# other countries: NL, BE, PL, IT... see eubc
+# other years
+
 
 bbox = [2000000, 3000000, 3162995, 4313621]
 grid_resolution = 100
