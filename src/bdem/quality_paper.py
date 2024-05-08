@@ -5,7 +5,6 @@ import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from utils.osmutils import osm_building_floor_number
 
-#TODO round building number to 2 decimals
 
 bbox = [3900000, 2700000, 4200000, 3000000]
 #bbox = [4000000, 2800000, 4100000, 2900000]

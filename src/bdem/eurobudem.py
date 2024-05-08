@@ -1,9 +1,7 @@
 import geopandas as gpd
 from math import ceil,isnan,floor
 from building_demography import building_demography_grid
-import sys
 
-#TODO round building number to 2 decimals
 
 bbox = [2000000, 3000000, 3162995, 4313621]
 grid_resolution = 100
