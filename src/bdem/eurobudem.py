@@ -8,7 +8,7 @@ from building_demography import building_demography_grid
 # other years
 
 
-bbox = [2000000, 3000000, 3162995, 4313621]
+bbox = [3000000, 2000000, 4313621, 3162995]
 grid_resolution = 100
 out_folder = '/home/juju/gisco/building_demography/out_partition/'
 
