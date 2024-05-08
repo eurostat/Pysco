@@ -101,6 +101,7 @@ def building_demography_grid(buildings_loader,
                     tot_cult_floor_area += cult * floor_area
 
                 #round values
+                tot_nb = round(tot_ground_area, 2)
                 tot_ground_area = round(tot_ground_area)
                 tot_floor_area = round(tot_floor_area)
                 tot_res_floor_area = round(tot_res_floor_area)
