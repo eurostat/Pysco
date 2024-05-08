@@ -166,6 +166,9 @@ def building_demography_grid(buildings_loader,
             grd_ids += out[9]
 
         print(datetime.now(), len(cell_geometries), "cells")
+        if(len(cell_geometries) == 0):
+            print("No cell created")
+            return
 
         #make output geodataframe
         out = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids,

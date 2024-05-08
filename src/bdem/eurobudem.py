@@ -22,7 +22,7 @@ for x in range(xmin, xmax+1, file_size_m):
             lambda bbox: gpd.read_file('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox=bbox),
             [x, x+file_size_m, y, y+file_size_m],
             out_folder,
-            "bu_dem_grid_" + str(grid_resolution) + "_" + str(x) + "_" + str(y),
+            "eurobudem_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y),
             cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
             grid_resolution = grid_resolution,
             partition_size = 100000,
