@@ -123,7 +123,7 @@ def building_demography_grid(buildings_loader,
                 tot_cult_ground_areas.append(tot_cult_ground_area)
                 tot_cult_floor_areas.append(tot_cult_floor_area)
 
-                #cell code
+                #store cell code
                 grd_ids.append(cell_id_fun(x,y))
 
         return [
