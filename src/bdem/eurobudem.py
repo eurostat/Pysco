@@ -10,9 +10,9 @@ from building_demography import building_demography_grid
 
 bbox = [3000000, 2000000, 4313621, 3162995]
 grid_resolution = 100
+file_size_m = 500000
 out_folder = '/home/juju/gisco/building_demography/out_partition/'
 
-file_size_m = 500000
 clamp = lambda v:floor(v/file_size_m)*file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
