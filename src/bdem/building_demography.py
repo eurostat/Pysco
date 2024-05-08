@@ -41,6 +41,7 @@ def building_demography_grid(buildings_loader,
         tot_nbs = []
         tot_ground_areas = []
         tot_floor_areas = []
+        tot_res_ground_areas = []
         tot_res_floor_areas = []
         tot_activity_ground_areas = []
         tot_activity_floor_areas = []
@@ -63,6 +64,7 @@ def building_demography_grid(buildings_loader,
                 tot_nb = 0
                 tot_ground_area = 0
                 tot_floor_area = 0
+                tot_res_ground_area = 0
                 tot_res_floor_area = 0
                 tot_activity_ground_area = 0
                 tot_activity_floor_area = 0
@@ -74,36 +76,39 @@ def building_demography_grid(buildings_loader,
                     bu = buildings.iloc[i_]
                     if not cell_geometry.intersects(bu.geometry): continue
                     bug = bu.geometry.buffer(0)
-                    a = cell_geometry.intersection(bug).area
-                    if a == 0: continue
+                    ground_area = cell_geometry.intersection(bug).area
+                    if ground_area == 0: continue
 
                     #building number
-                    nb = a/bug.area
+                    nb = ground_area/bug.area
                     if nb>1: nb=1
                     tot_nb += nb
 
                     #building area
-                    tot_ground_area += a
-                    floor_area = a * nb_floors_fun(bu)
+                    tot_ground_area += ground_area
+                    floor_area = ground_area * nb_floors_fun(bu)
                     tot_floor_area += floor_area
 
                     #residential buildings
-                    tot_res_floor_area += residential_fun(bu) * floor_area
+                    resid = residential_fun(bu)
+                    tot_res_ground_area += resid * ground_area
+                    tot_res_floor_area += resid * floor_area
 
                     #economic activity buildings
                     activity = economic_activity_fun(bu)
-                    tot_activity_ground_area += activity * a
+                    tot_activity_ground_area += activity * ground_area
                     tot_activity_floor_area += activity * floor_area
 
                     #cultural buildings
                     cult = cultural_value_fun(bu)
-                    tot_cult_ground_area += cult * a
+                    tot_cult_ground_area += cult * ground_area
                     tot_cult_floor_area += cult * floor_area
 
                 #round values
                 tot_nb = round(tot_nb, 2)
                 tot_ground_area = round(tot_ground_area)
                 tot_floor_area = round(tot_floor_area)
+                tot_res_ground_area = round(tot_res_ground_area)
                 tot_res_floor_area = round(tot_res_floor_area)
                 tot_activity_ground_area = round(tot_activity_ground_area)
                 tot_activity_floor_area = round(tot_activity_floor_area)
@@ -117,6 +122,7 @@ def building_demography_grid(buildings_loader,
                 tot_nbs.append(tot_nb)
                 tot_ground_areas.append(tot_ground_area)
                 tot_floor_areas.append(tot_floor_area)
+                tot_res_ground_areas.append(tot_res_ground_area)
                 tot_res_floor_areas.append(tot_res_floor_area)
                 tot_activity_ground_areas.append(tot_activity_ground_area)
                 tot_activity_floor_areas.append(tot_activity_floor_area)
@@ -128,7 +134,7 @@ def building_demography_grid(buildings_loader,
 
         return [
             cell_geometries ,tot_nbs , tot_ground_areas , tot_floor_areas ,
-            tot_res_floor_areas , 
+            tot_res_ground_areas , tot_res_floor_areas , 
             tot_activity_ground_areas , tot_activity_floor_areas , 
             tot_cult_ground_areas , tot_cult_floor_areas , 
             grd_ids
@@ -144,6 +150,7 @@ def building_demography_grid(buildings_loader,
         tot_nbs = []
         tot_ground_areas = []
         tot_floor_areas = []
+        tot_res_ground_areas = []
         tot_res_floor_areas = []
         tot_activity_ground_areas = []
         tot_activity_floor_areas = []
@@ -159,12 +166,13 @@ def building_demography_grid(buildings_loader,
             tot_nbs += out[1]
             tot_ground_areas += out[2]
             tot_floor_areas += out[3]
-            tot_res_floor_areas += out[4]
-            tot_activity_ground_areas += out[5]
-            tot_activity_floor_areas += out[6]
-            tot_cult_ground_areas += out[7]
-            tot_cult_floor_areas += out[8]
-            grd_ids += out[9]
+            tot_res_ground_areas += out[4]
+            tot_res_floor_areas += out[5]
+            tot_activity_ground_areas += out[6]
+            tot_activity_floor_areas += out[7]
+            tot_cult_ground_areas += out[8]
+            tot_cult_floor_areas += out[9]
+            grd_ids += out[10]
 
         print(datetime.now(), len(cell_geometries), "cells")
         if(len(cell_geometries) == 0):
@@ -174,7 +182,7 @@ def building_demography_grid(buildings_loader,
         #make output geodataframe
         out = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids,
                                 'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas,
-                                'residential_floor_area': tot_res_floor_areas,
+                                'residential_ground_area': tot_res_ground_areas, 'residential_floor_area': tot_res_floor_areas,
                                 'economic_activity_ground_area': tot_activity_ground_areas, 'economic_activity_floor_area': tot_activity_floor_areas,
                                 'cultural_ground_area': tot_cult_ground_areas, 'cultural_floor_area': tot_cult_floor_areas })
 
