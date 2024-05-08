@@ -16,7 +16,6 @@ file_size_m = 500000
 clamp = lambda v:floor(v/file_size_m)*file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
-print([xmin,ymin,xmax,ymax])
 for x in range(xmin, xmax+1, file_size_m):
     for y in range(ymin, ymax+1, file_size_m):
         print(x,y)
