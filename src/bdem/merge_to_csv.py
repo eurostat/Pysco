@@ -6,12 +6,13 @@ gpkg_file = '/home/juju/gisco/building_demography/out_partition/eurobudem_100m_4
 csv_file = '/home/juju/gisco/building_demography/building_demography.csv'
 
 with fiona.open(gpkg_file, 'r') as src:
-   with open(csv_file, 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)        
-        writer.writerow(['property1', 'property2'])
-
+    schema = src.schema
+    fieldnames = [field for field in schema['properties'].keys() if field != 'geometry']
+    with open(csv_file, 'w', newline='') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
         for feature in src:
             number = feature['properties']['number']
             if number<=0: continue
-            writer.writerow(["aaa", number])
-
+            properties = {key: value for key, value in feature['properties'].items() if key != 'geometry'}
+            writer.writerow(properties)
