@@ -42,6 +42,8 @@ def building_demography_grid(buildings_loader,
             geom = shape(f[1]['geometry'])
             sindex.insert(i, geom.bounds)
 
+        print(datetime.now(), "done")
+
         #out data
         cell_geometries = []
         tot_nbs = []
