@@ -43,10 +43,13 @@ def keepOnlyGeometry(feature):
 
 
 def loadBuildings(bbox):
-    #FR
-    buildings = loadFeatures('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox)
-    for bu in buildings: formatBuildingFR(bu)
+    buildings = []
 
+    #FR
+    buildings_FR = loadFeatures('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox)
+    for bu in buildings_FR: formatBuildingFR(bu)
+    buildings += buildings_FR
+    
     #IT
     #TODO
 
@@ -54,6 +57,8 @@ def loadBuildings(bbox):
     #TODO
 
     return buildings
+
+
 
 
 def formatBuildingFR(bu):
@@ -72,6 +77,9 @@ def formatBuildingFR(bu):
     bu["activity"] = activity
     cultural_value = 1 if u1=="Religieux" or n=="Tour, donjon" or n=="Monument" or n=="Moulin à vent" or n=="Arc de triomphe" or n=="Fort, blockhaus, casemate" or n=="Eglise" or n=="Château" or n=="Chapelle" or n=="Arène ou théâtre antique" else 0
     bu["cultural_value"] = cultural_value
+
+
+
 
 
 for x in range(xmin, xmax+1, file_size_m):
