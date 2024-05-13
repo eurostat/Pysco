@@ -84,9 +84,9 @@ def building_demography_grid(buildings_loader,
                     #bu = buildings.iloc[i_]
                     bu = buildings[i_]
 
-                    bug = 
-                    if not cell_geometry.intersects(bu.geometry): continue
-                    bug = bu.geometry.buffer(0)
+                    bug = shape(bu[1]['geometry'])
+                    if not cell_geometry.intersects(bug): continue
+                    bug = bug.buffer(0)
                     ground_area = cell_geometry.intersection(bug).area
                     if ground_area == 0: continue
 
