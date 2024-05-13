@@ -34,7 +34,7 @@ def building_demography_grid(buildings_loader,
         print(datetime.now(), x_part, y_part, len(buildings), "buildings loaded")
         if len(buildings)==0: return
 
-        #print(datetime.now(), "spatial index buildings")
+        print(datetime.now(), "spatial index buildings")
         #buildings.sindex
 
         sindex = index.Index()
@@ -60,11 +60,17 @@ def building_demography_grid(buildings_loader,
             for y in range(y_part, y_part+partition_size, grid_resolution):
 
                 #make grid cell geometry
-                cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
+                #cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
 
                 #get buildings intersecting cell, using spatial index
-                buildings_ = buildings.sindex.intersection(cell_geometry.bounds)
+                #buildings_ = buildings.sindex.intersection(cell_geometry.bounds)
                 #if len(buildings_)==0: continue
+
+                bbox = (x, y, x+grid_resolution, y+grid_resolution)
+                bbox_geometry = box(*bbox)
+                buildings_ = sindex.intersection(bbox_geometry.bounds)
+
+                print(buildings_)
 
                 #initialise totals
                 tot_nb = 0
