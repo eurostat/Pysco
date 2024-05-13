@@ -1,5 +1,6 @@
 import fiona
 from shapely.geometry import shape
+from rtree import index
 
 
 
@@ -18,3 +19,8 @@ def loadFeatures(file, bbox):
 def keepOnlyGeometry(feature):
     for attribute in list(feature.keys()):
         if attribute != 'geometry': feature.pop(attribute)
+
+def spatialIndex(features):
+    sindex = index.Index()
+    for i,f in enumerate(features): sindex.insert(i, f['geometry'].bounds)
+    return sindex

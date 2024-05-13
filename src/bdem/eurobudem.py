@@ -1,6 +1,11 @@
 from math import ceil,isnan,floor
 from building_demography import building_demography_grid
 
+import sys
+sys.path.append('/home/juju/workspace/pyEx/src/')
+from utils.featureutils import loadFeatures,keepOnlyGeometry
+
+
 #TODO
 # other countries: NL, BE, PL, IT... see eubc
 # test GPKG writing with fiona

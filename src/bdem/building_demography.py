@@ -2,17 +2,11 @@ import geopandas as gpd
 from shapely.geometry import Polygon,box,shape
 from datetime import datetime
 import concurrent.futures
+
 import sys
-from rtree import index
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from utils.utils import cartesian_product_comp
-
-
-#TODO extract
-def spatialIndex(features):
-    sindex = index.Index()
-    for i,f in enumerate(features): sindex.insert(i, f['geometry'].bounds)
-    return sindex
+from utils.featureutils import spatialIndex
 
 
 
