@@ -1,21 +1,32 @@
-import geopandas as gpd
+import fiona
 from math import ceil,isnan,floor
 from building_demography import building_demography_grid
 
 #TODO
-# migrate to fiona
+# migrate to fiona for loading
 # date of creation
 # other countries: NL, BE, PL, IT... see eubc
 # other years
 
 
-bbox = [3000000, 2000000, 4313621, 3162995]
+bbox = [3000001, 3000001, 3000001, 3000001]
+#bbox = [3000000, 2000000, 4313621, 3162995]
 grid_resolution = 100
 file_size_m = 500000
 out_folder = '/home/juju/gisco/building_demography/out_partition/'
 
 clamp = lambda v:floor(v/file_size_m)*file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
+
+
+def loadBuildings(bbox):
+    features = []
+    gpkg = fiona.open('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', 'r')
+    features = list(gpkg.items(bbox=bbox))
+    return features
+
+
+
 
 for x in range(xmin, xmax+1, file_size_m):
     for y in range(ymin, ymax+1, file_size_m):

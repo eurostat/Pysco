@@ -10,7 +10,7 @@ gpkg_file = "/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg"
 
 """
 print(datetime.now(), "fiona loading")
-gpkg = fiona.open(gpkg_file, 'r', bbox=bbox1):
+gpkg = fiona.open(gpkg_file, 'r'):
 features = list(gpkg.items(bbox=bbox1))
 print(datetime.now(), len(features))
 """
