@@ -23,10 +23,6 @@ def building_demography_grid(buildings_loader,
                              cell_id_fun=lambda x,y:str(x)+"_"+str(y),
                              grid_resolution=1000,
                              partition_size = 50000,
-                             nb_floors_fun=lambda f:1,
-                             residential_fun=lambda f:0,
-                             economic_activity_fun=lambda f:0,
-                             cultural_value_fun=lambda f:0,
                              crs = 'EPSG:3035',
                              num_processors_to_use = 1,
                              save_GPKG = True,
@@ -103,21 +99,21 @@ def building_demography_grid(buildings_loader,
 
                     #building area
                     tot_ground_area += ground_area
-                    floor_area = ground_area * nb_floors_fun(bu)
+                    floor_area = ground_area * bu["floor_nb"]
                     tot_floor_area += floor_area
 
                     #residential buildings
-                    resid = residential_fun(bu)
+                    resid = bu["residential"]
                     tot_res_ground_area += resid * ground_area
                     tot_res_floor_area += resid * floor_area
 
                     #economic activity buildings
-                    activity = economic_activity_fun(bu)
+                    activity = bu["activity"]
                     tot_activity_ground_area += activity * ground_area
                     tot_activity_floor_area += activity * floor_area
 
-                    #cultural buildings
-                    cult = cultural_value_fun(bu)
+                    #cultural value buildings
+                    cult = bu["cultural_value"]
                     tot_cult_ground_area += cult * ground_area
                     tot_cult_floor_area += cult * floor_area
 
