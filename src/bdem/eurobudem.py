@@ -3,7 +3,7 @@ from math import ceil,isnan,floor
 from building_demography import building_demography_grid
 
 #TODO
-# test lading speed - gp vs fiona
+# migrate to fiona
 # date of creation
 # other countries: NL, BE, PL, IT... see eubc
 # other years
