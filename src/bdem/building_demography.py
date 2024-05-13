@@ -38,9 +38,9 @@ def building_demography_grid(buildings_loader,
         #buildings.sindex
 
         sindex = index.Index()
-        for i,f in enumerate(buildings):
-            geom = f['fgeom']
-            sindex.insert(i, geom.bounds)
+        for f in buildings:
+            geom = shape(f[1]['geometry'])
+            sindex.insert(f[0], geom.bounds)
 
         #out data
         cell_geometries = []
