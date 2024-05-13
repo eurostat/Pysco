@@ -1,6 +1,7 @@
 import fiona
 from math import ceil,isnan,floor
 from building_demography import building_demography_grid
+from shapely.geometry import shape
 
 #TODO
 # migrate to fiona for loading
@@ -22,15 +23,12 @@ clamp = lambda v:floor(v/file_size_m)*file_size_m
 def loadBuildings(bbox):
     features = []
     gpkg = fiona.open('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', 'r')
-    features = list(gpkg.items(bbox=bbox))
-    print(len(features))
-    for f in features:
-        print(f)
-        print(f["geometry"])
-        print(f["properties"])
-
-    return[]
-    #return features
+    data = list(gpkg.items(bbox=bbox))
+    for d in data:
+        f = d[1]
+        f['geometry'] = shape(f['geometry'])
+        features.append(f)
+    return features
 
 
 
