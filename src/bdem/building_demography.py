@@ -65,7 +65,6 @@ def building_demography_grid(buildings_loader,
                 #get buildings intersecting cell, using spatial index
                 #buildings_ = buildings.sindex.intersection(cell_geometry.bounds)
                 buildings_ = sindex.intersection(cell_geometry.bounds)
-                buildings_ = [feature_id for feature_id in buildings_]
                 if len(buildings_)==0: continue
 
                 #initialise totals
