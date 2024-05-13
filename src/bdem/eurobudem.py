@@ -26,7 +26,7 @@ def loadBuildings(bbox):
     data = list(gpkg.items(bbox=bbox))
     for d in data:
         f = d[1]
-        f['geometry'] = shape(f['geometry'])
+        f['fgeom'] = shape(f['geometry'])
         features.append(f)
     return features
 
