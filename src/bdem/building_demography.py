@@ -38,11 +38,9 @@ def building_demography_grid(buildings_loader,
         #buildings.sindex
 
         sindex = index.Index()
-        for i,f in enumerate(buildings):
-            geom = shape(f[1]['geometry'])
-            sindex.insert(i, geom.bounds)
+        for i,f in enumerate(buildings): sindex.insert(i, f['geometry'].bounds)
 
-        print(datetime.now(), "done")
+        print(datetime.now(), "indexing done")
 
         #out data
         cell_geometries = []
@@ -86,7 +84,7 @@ def building_demography_grid(buildings_loader,
                     #bu = buildings.iloc[i_]
                     bu = buildings[i_]
 
-                    bug = shape(bu[1]['geometry'])
+                    bug = bu['geometry']
                     if not cell_geometry.intersects(bug): continue
                     bug = bug.buffer(0)
                     ground_area = cell_geometry.intersection(bug).area
