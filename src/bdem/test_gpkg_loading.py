@@ -8,7 +8,7 @@ bbox1 = (4000000, 2700000, 4100000, 2800000)
 bbox2 = [4000000, 2700000, 4100000, 2800000]
 gpkg_file = "/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg"
 
-print(datetime.now())
+print(datetime.now(), "start")
 
 
 
