@@ -38,9 +38,9 @@ def building_demography_grid(buildings_loader,
         #buildings.sindex
 
         sindex = index.Index()
-        for f in buildings:
+        for i,f in enumerate(buildings):
             geom = shape(f[1]['geometry'])
-            sindex.insert(f[0], geom.bounds)
+            sindex.insert(i, geom.bounds)
 
         #out data
         cell_geometries = []
@@ -60,17 +60,13 @@ def building_demography_grid(buildings_loader,
             for y in range(y_part, y_part+partition_size, grid_resolution):
 
                 #make grid cell geometry
-                #cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
+                cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
 
                 #get buildings intersecting cell, using spatial index
                 #buildings_ = buildings.sindex.intersection(cell_geometry.bounds)
-                #if len(buildings_)==0: continue
-
-                bbox = (x, y, x+grid_resolution, y+grid_resolution)
-                bbox_geometry = box(*bbox)
-                buildings_ = sindex.intersection(bbox_geometry.bounds)
-
-                print(buildings_)
+                buildings_ = sindex.intersection(cell_geometry.bounds)
+                buildings_ = [feature_id for feature_id in buildings_]
+                if len(buildings_)==0: continue
 
                 #initialise totals
                 tot_nb = 0
@@ -85,7 +81,11 @@ def building_demography_grid(buildings_loader,
 
                 #go through buildings
                 for i_ in buildings_:
-                    bu = buildings.iloc[i_]
+                    print(i_)
+                    bu = buildings[i_]
+                    print(bu)
+
+                    #bu = buildings.iloc[i_]
                     if not cell_geometry.intersects(bu.geometry): continue
                     bug = bu.geometry.buffer(0)
                     ground_area = cell_geometry.intersection(bug).area
