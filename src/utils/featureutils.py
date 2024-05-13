@@ -3,7 +3,7 @@ from shapely.geometry import shape
 from rtree import index
 
 
-
+#load features from a file, as a list of features - each feature is a simple dictionnary
 def loadFeatures(file, bbox):
     features = []
     gpkg = fiona.open(file, 'r')
@@ -16,10 +16,14 @@ def loadFeatures(file, bbox):
         features.append(f)
     return features
 
+
+#remove all properties of the feature/dictionnary, except the geometry
 def keepOnlyGeometry(feature):
     for attribute in list(feature.keys()):
         if attribute != 'geometry': feature.pop(attribute)
 
+
+#make features spatial index
 def spatialIndex(features):
     sindex = index.Index()
     for i,f in enumerate(features): sindex.insert(i, f['geometry'].bounds)
