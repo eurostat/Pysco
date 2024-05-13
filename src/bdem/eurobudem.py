@@ -20,12 +20,11 @@ clamp = lambda v:floor(v/file_size_m)*file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
 
-
-def loadFeatures(bbox):
+#TODO extract
+def loadFeatures(file, bbox):
     features = []
-    gpkg = fiona.open('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', 'r')
+    gpkg = fiona.open(file, 'r')
     data = list(gpkg.items(bbox=bbox))
-    #features = data
     for d in data:
         d = d[1]
         f = { "geometry": shape(d['geometry']) }
@@ -35,6 +34,10 @@ def loadFeatures(bbox):
     return features
 
 
+def loadBuildings(bbox):
+    buildings = loadFeatures('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox)
+    #TODO format
+    return buildings
 
 
 for x in range(xmin, xmax+1, file_size_m):
@@ -42,8 +45,7 @@ for x in range(xmin, xmax+1, file_size_m):
         print(x,y)
 
         building_demography_grid(
-            loadFeatures,
-            #lambda bbox: gpd.read_file('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox=bbox),
+            loadBuildings,
             [x, y, x+file_size_m, y+file_size_m],
             out_folder,
             "eurobudem_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y),

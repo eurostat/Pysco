@@ -7,6 +7,15 @@ from rtree import index
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from utils.utils import cartesian_product_comp
 
+
+#TODO extract
+def spatialIndex(features):
+    sindex = index.Index()
+    for i,f in enumerate(features): sindex.insert(i, f['geometry'].bounds)
+    return sindex
+
+
+
 def building_demography_grid(buildings_loader,
                              bbox,
                              out_folder,
@@ -36,10 +45,7 @@ def building_demography_grid(buildings_loader,
 
         print(datetime.now(), "spatial index buildings")
         #buildings.sindex
-
-        sindex = index.Index()
-        for i,f in enumerate(buildings): sindex.insert(i, f['geometry'].bounds)
-
+        sindex = spatialIndex(buildings)
         print(datetime.now(), "indexing done")
 
         #out data
