@@ -5,9 +5,9 @@ from shapely.geometry import shape
 import random
 
 #TODO
-# migrate to fiona for loading
-# date of creation
 # other countries: NL, BE, PL, IT... see eubc
+# test GPKG writing with fiona
+# FR date of creation
 # other years
 
 
