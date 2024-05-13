@@ -33,10 +33,37 @@ def loadFeatures(file, bbox):
         features.append(f)
     return features
 
+#TODO extract
+def keepOnlyGeometry(feature):
+    for attribute in list(feature.keys()):
+        if attribute != 'geometry': feature.pop(attribute)
+
+
+
 
 def loadBuildings(bbox):
     buildings = loadFeatures('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox)
-    #TODO format
+
+    #format buildings
+    for bu in buildings:
+
+        #TODO
+        floor_nb = 1
+        residential = 1
+        activity = 0
+        cultural_value = 0
+
+            #nb_floors_fun = lambda f: 1 if f.hauteur==None or isnan(f.hauteur) else ceil(f.hauteur/3),
+            #residential_fun = lambda f: 1 if f.usage_1=="Résidentiel" else 0.3 if f.usage_2=="Résidentiel" else 0.1 if f.usage_1=="Indifférencié" else 0,
+            #economic_activity_fun = lambda f: 1 if f.usage_1=="Agricole" or f.usage_1=="Commercial et services" or f.usage_1=="Industriel" else 0.3 if f.usage_2=="Agricole" or f.usage_2=="Commercial et services" or f.usage_2=="Industriel" else 0.1 if f.usage_1=="Indifférencié" else 0,
+            #cultural_value_fun = lambda f: 1 if f.usage_1=="Religieux" or f.nature=="Tour, donjon" or f.nature=="Monument" or f.nature=="Moulin à vent" or f.nature=="Arc de triomphe" or f.nature=="Fort, blockhaus, casemate" or f.nature=="Eglise" or f.nature=="Château" or f.nature=="Chapelle" or f.nature=="Arène ou théâtre antique" else 0,
+
+        keepOnlyGeometry(bu)
+        bu["floor_nb"] = floor_nb
+        bu["residential"] = residential
+        bu["activity"] = activity
+        bu["cultural_value"] = cultural_value
+
     return buildings
 
 
@@ -52,9 +79,5 @@ for x in range(xmin, xmax+1, file_size_m):
             cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
             grid_resolution = grid_resolution,
             partition_size = 100000,
-            nb_floors_fun = lambda f: 1 if f.hauteur==None or isnan(f.hauteur) else ceil(f.hauteur/3),
-            residential_fun = lambda f: 1 if f.usage_1=="Résidentiel" else 0.3 if f.usage_2=="Résidentiel" else 0.1 if f.usage_1=="Indifférencié" else 0,
-            economic_activity_fun = lambda f: 1 if f.usage_1=="Agricole" or f.usage_1=="Commercial et services" or f.usage_1=="Industriel" else 0.3 if f.usage_2=="Agricole" or f.usage_2=="Commercial et services" or f.usage_2=="Industriel" else 0.1 if f.usage_1=="Indifférencié" else 0,
-            cultural_value_fun = lambda f: 1 if f.usage_1=="Religieux" or f.nature=="Tour, donjon" or f.nature=="Monument" or f.nature=="Moulin à vent" or f.nature=="Arc de triomphe" or f.nature=="Fort, blockhaus, casemate" or f.nature=="Eglise" or f.nature=="Château" or f.nature=="Chapelle" or f.nature=="Arène ou théâtre antique" else 0,
             num_processors_to_use = 8
         ) 
