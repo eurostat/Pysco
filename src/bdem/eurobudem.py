@@ -1,8 +1,5 @@
-import fiona
 from math import ceil,isnan,floor
 from building_demography import building_demography_grid
-from shapely.geometry import shape
-import random
 
 #TODO
 # other countries: NL, BE, PL, IT... see eubc
@@ -11,7 +8,8 @@ import random
 # other years
 
 
-bbox = [3000001, 3000001, 3000001, 3000001]
+bbox = [4039813, 2954105, 4039813, 2954105]
+#bbox = [3000001, 3000001, 3000001, 3000001]
 #bbox = [3000000, 2000000, 4313621, 3162995]
 grid_resolution = 100
 file_size_m = 500000
@@ -19,25 +17,6 @@ out_folder = '/home/juju/gisco/building_demography/out_partition/'
 
 clamp = lambda v:floor(v/file_size_m)*file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
-
-
-#TODO extract
-def loadFeatures(file, bbox):
-    features = []
-    gpkg = fiona.open(file, 'r')
-    data = list(gpkg.items(bbox=bbox))
-    for d in data:
-        d = d[1]
-        f = { "geometry": shape(d['geometry']) }
-        properties = d['properties']
-        for key, value in properties.items(): f[key] = value
-        features.append(f)
-    return features
-
-#TODO extract
-def keepOnlyGeometry(feature):
-    for attribute in list(feature.keys()):
-        if attribute != 'geometry': feature.pop(attribute)
 
 
 
@@ -49,16 +28,24 @@ def loadBuildings(bbox):
     buildings_FR = loadFeatures('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox)
     for bu in buildings_FR: formatBuildingFR(bu)
     buildings += buildings_FR
-    
-    #IT
-    #TODO
 
     #LU
+    buildings_LU = loadFeatures('/home/juju/geodata/LU/ACT/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', bbox)
+    for bu in buildings_LU: formatBuildingLU(bu)
+    buildings += buildings_LU
+
+    #IT
     #TODO
 
     return buildings
 
 
+def formatBuildingLU(bu):
+    keepOnlyGeometry(bu)
+    bu["floor_nb"] = 1
+    bu["residential"] = 1
+    bu["activity"] = 0
+    bu["cultural_value"] = 0
 
 
 def formatBuildingFR(bu):
