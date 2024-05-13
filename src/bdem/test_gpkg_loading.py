@@ -1,19 +1,31 @@
 import fiona
+import geopandas as gpd
 from datetime import datetime
 
 
+
+bbox1 = (4000000, 2700000, 4100000, 2800000)
+bbox2 = [4000000, 2700000, 4100000, 2800000]
 gpkg_file = "/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg"
 
 print(datetime.now())
 
+
+
+#fiona loading
+
 #open gpkg file
-features = []
-with fiona.open(gpkg_file, 'r') as src:
-    for feature in src: features.append(feature)
-
-
-print(datetime.now())
-
-del features
+with fiona.open(gpkg_file, 'r', bbox=bbox) as gpkg:
+    features = list(gpkg.items(bbox=bbox1))
+    print(datetime.now(), len(features))
 
 print(datetime.now())
+
+
+
+
+#geopandas loading
+
+features = gpd.read_file('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox=bbox)
+print(datetime.now(), len(features))
+
