@@ -15,7 +15,7 @@ print(datetime.now())
 #fiona loading
 
 #open gpkg file
-with fiona.open(gpkg_file, 'r', bbox=bbox) as gpkg:
+with fiona.open(gpkg_file, 'r', bbox=bbox1) as gpkg:
     features = list(gpkg.items(bbox=bbox1))
     print(datetime.now(), len(features))
 
@@ -26,6 +26,6 @@ print(datetime.now())
 
 #geopandas loading
 
-features = gpd.read_file('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox=bbox)
+features = gpd.read_file('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox=bbox2)
 print(datetime.now(), len(features))
 
