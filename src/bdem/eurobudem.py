@@ -2,6 +2,7 @@ import fiona
 from math import ceil,isnan,floor
 from building_demography import building_demography_grid
 from shapely.geometry import shape
+import random
 
 #TODO
 # migrate to fiona for loading
@@ -47,21 +48,20 @@ def loadBuildings(bbox):
     #format buildings
     for bu in buildings:
 
-        #TODO
-        floor_nb = 1
-        residential = 1
-        activity = 0
-        cultural_value = 0
-
-            #nb_floors_fun = lambda f: 1 if f.hauteur==None or isnan(f.hauteur) else ceil(f.hauteur/3),
-            #residential_fun = lambda f: 1 if f.usage_1=="Résidentiel" else 0.3 if f.usage_2=="Résidentiel" else 0.1 if f.usage_1=="Indifférencié" else 0,
-            #economic_activity_fun = lambda f: 1 if f.usage_1=="Agricole" or f.usage_1=="Commercial et services" or f.usage_1=="Industriel" else 0.3 if f.usage_2=="Agricole" or f.usage_2=="Commercial et services" or f.usage_2=="Industriel" else 0.1 if f.usage_1=="Indifférencié" else 0,
-            #cultural_value_fun = lambda f: 1 if f.usage_1=="Religieux" or f.nature=="Tour, donjon" or f.nature=="Monument" or f.nature=="Moulin à vent" or f.nature=="Arc de triomphe" or f.nature=="Fort, blockhaus, casemate" or f.nature=="Eglise" or f.nature=="Château" or f.nature=="Chapelle" or f.nature=="Arène ou théâtre antique" else 0,
+        h = bu["hauteur"]
+        u1 = bu["usage_1"]
+        u2 = bu["usage_2"]
+        n = bu["nature"]
 
         keepOnlyGeometry(bu)
+
+        floor_nb = 1 if h==None or isnan(h) else ceil(h/3)
         bu["floor_nb"] = floor_nb
+        residential = 1 if u1=="Résidentiel" else 0.3 if u2=="Résidentiel" else 0.1 if u1=="Indifférencié" else 0
         bu["residential"] = residential
+        activity = 1 if u1=="Agricole" or u1=="Commercial et services" or u1=="Industriel" else 0.3 if u2=="Agricole" or u2=="Commercial et services" or u2=="Industriel" else 0.1 if u1=="Indifférencié" else 0
         bu["activity"] = activity
+        cultural_value = 1 if u1=="Religieux" or n=="Tour, donjon" or n=="Monument" or n=="Moulin à vent" or n=="Arc de triomphe" or n=="Fort, blockhaus, casemate" or n=="Eglise" or n=="Château" or n=="Chapelle" or n=="Arène ou théâtre antique" else 0
         bu["cultural_value"] = cultural_value
 
     return buildings

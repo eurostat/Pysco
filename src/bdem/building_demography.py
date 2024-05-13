@@ -39,10 +39,10 @@ def building_demography_grid(buildings_loader,
         print(datetime.now(), x_part, y_part, len(buildings), "buildings loaded")
         if len(buildings)==0: return
 
-        print(datetime.now(), "spatial index buildings")
+        #print(datetime.now(), "spatial index buildings")
         #buildings.sindex
         sindex = spatialIndex(buildings)
-        print(datetime.now(), "indexing done")
+        #print(datetime.now(), "indexing done")
 
         #out data
         cell_geometries = []
