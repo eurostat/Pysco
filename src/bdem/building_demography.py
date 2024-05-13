@@ -1,8 +1,9 @@
 import geopandas as gpd
-from shapely.geometry import Polygon,box
+from shapely.geometry import Polygon,box,shape
 from datetime import datetime
 import concurrent.futures
 import sys
+from rtree import index
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from utils.utils import cartesian_product_comp
 
@@ -29,12 +30,17 @@ def building_demography_grid(buildings_loader,
         [x_part, y_part] = xy
 
         print(datetime.now(), x_part, y_part, "load buildings")
-        buildings = buildings_loader(box(x_part, y_part, x_part+partition_size, y_part+partition_size))
+        buildings = buildings_loader((x_part, y_part, x_part+partition_size, y_part+partition_size))
         print(datetime.now(), x_part, y_part, len(buildings), "buildings loaded")
         if len(buildings)==0: return
 
         #print(datetime.now(), "spatial index buildings")
-        buildings.sindex
+        #buildings.sindex
+
+        sindex = index.Index()
+        for feature in buildings:
+            geom = shape(feature['geometry'])
+            sindex.insert(feature, geom.bounds)
 
         #out data
         cell_geometries = []

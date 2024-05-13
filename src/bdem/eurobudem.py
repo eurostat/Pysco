@@ -23,7 +23,14 @@ def loadBuildings(bbox):
     features = []
     gpkg = fiona.open('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', 'r')
     features = list(gpkg.items(bbox=bbox))
-    return features
+    print(len(features))
+    for f in features:
+        print(f)
+        print(f["geometry"])
+        print(f["properties"])
+
+    return[]
+    #return features
 
 
 
