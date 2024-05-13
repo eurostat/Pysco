@@ -33,7 +33,8 @@ for x in range(xmin, xmax+1, file_size_m):
         print(x,y)
 
         building_demography_grid(
-            lambda bbox: gpd.read_file('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox=bbox),
+            loadBuildings,
+            #lambda bbox: gpd.read_file('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox=bbox),
             [x, y, x+file_size_m, y+file_size_m],
             out_folder,
             "eurobudem_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y),
