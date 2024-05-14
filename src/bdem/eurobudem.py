@@ -14,7 +14,7 @@ from utils.featureutils import loadFeatures,keepOnlyGeometry
 # other years
 
 
-bbox = [4039813, 3054105, 4049813, 3094105]
+bbox = [4039813, 2954105, 4049813, 3094105]
 #bbox = [3000001, 3000001, 3000001, 3000001]
 #bbox = [3000000, 2000000, 4313621, 3162995]
 grid_resolution = 100
@@ -58,7 +58,6 @@ def formatBuildingLU(bu):
     row, col = DTM_LU.index(centroid.x, centroid.y)
     elevation = DTM_LU.read(1, window=((row, row+1), (col, col+1)))[0][0]
     h = bu_top - elevation
-    if h<1.5: print(h)
 
     bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(h/3), 1)
 
