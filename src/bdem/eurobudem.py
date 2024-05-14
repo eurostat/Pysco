@@ -47,6 +47,8 @@ def loadBuildings(bbox):
 
     #IT
     #TODO
+    #edifc_uso edifc_ty edifc_at edifc_mon
+
 
     return buildings
 
