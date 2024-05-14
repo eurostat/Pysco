@@ -1,5 +1,6 @@
 from math import ceil,isnan,floor
 from building_demography import building_demography_grid
+import rasterio
 
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
@@ -45,11 +46,22 @@ def loadBuildings(bbox):
     return buildings
 
 
+DTM_LU = rasterio.open("/home/juju/geodata/LU/EL.ElevationGridCoverage.jp2")
+
+
 def formatBuildingLU(bu):
     n = int(bu["NATURE"])
     keepOnlyGeometry(bu)
-    print("cs: ", bu["geometry"].exterior.coords)
-    bu["floor_nb"] = 1
+
+    bu_top = bu["geometry"].exterior.coords[0][2]
+    centroid = bu["geometry"].centroid
+    row, col = DTM_LU.index(centroid.x, centroid.y)
+    elevation = DTM_LU.read(1, window=((row, row+1), (col, col+1)))[0][0]
+    h = bu_top - elevation
+    print(h)
+
+    bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(h/3), 1)
+
     bu["residential"] = 1 if n==0 else 0
     bu["activity"] = 1 if (n>=10000 and n<42000) or n==80000 or n==11000 else 0
     bu["cultural_value"] = 1 if n in [41004,41005,41302,41303,41305] or (n>=50000 and n<=50011) else 0
