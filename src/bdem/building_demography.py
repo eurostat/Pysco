@@ -236,7 +236,7 @@ def building_demography_grid(buildings_loader,
         out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
         """
 
-        print(datetime.now(), "save as GPKG")
+        print(datetime.now(), "convert")
 
         cells = []
         for i in range(len(cell_geometries)):
