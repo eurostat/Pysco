@@ -1,3 +1,4 @@
+import gpd
 import fiona
 from fiona.crs import CRS
 from shapely.geometry import Polygon,box,shape,mapping
@@ -221,7 +222,7 @@ def building_demography_grid(buildings_loader,
             print("No cell created")
             return
 
-        """"
+        
         #make output geodataframe
         out = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids,
                                 'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas,
@@ -234,7 +235,7 @@ def building_demography_grid(buildings_loader,
         print(datetime.now(), "save as GPKG")
         out.crs = crs
         out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
-        """
+        
 
         print(datetime.now(), "convert")
 
