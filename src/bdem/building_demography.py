@@ -11,6 +11,8 @@ from utils.featureutils import spatialIndex,get_schema_from_feature
 
 
 
+
+
 def building_demography_grid(buildings_loader,
                              bbox,
                              out_folder,
@@ -50,12 +52,18 @@ def building_demography_grid(buildings_loader,
         tot_cult_floor_areas = []
         grd_ids = []
 
-        #go through cells
+        #make cells
+        cells = []
         for x in range(x_part, x_part+partition_size, grid_resolution):
             for y in range(y_part, y_part+partition_size, grid_resolution):
 
+                #make cell
+                c = {"type":"Feature", "properties":{}}
+                p = c["properties"]
+
                 #make grid cell geometry
                 cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
+                c["geometry"] = mapping(cell_geometry)
 
                 #get buildings intersecting cell, using spatial index
                 #buildings_ = buildings.sindex.intersection(cell_geometry.bounds)
@@ -64,15 +72,15 @@ def building_demography_grid(buildings_loader,
                 #if skip_empty_cells and len(buildings_)==0: continue
 
                 #initialise totals
-                tot_nb = 0
-                tot_ground_area = 0
-                tot_floor_area = 0
-                tot_res_ground_area = 0
-                tot_res_floor_area = 0
-                tot_activity_ground_area = 0
-                tot_activity_floor_area = 0
-                tot_cult_ground_area = 0
-                tot_cult_floor_area = 0
+                p["number"] = 0
+                p["ground_area"] = 0
+                p["floor_area"] = 0
+                p["residential_ground_area"] = 0
+                p["residential_floor_area"] = 0
+                p["economic_activity_ground_area"] = 0
+                p["economic_activity_floor_area"] = 0
+                p["cultural_ground_area"] = 0
+                p["cultural_floor_area"] = 0
 
                 #go through buildings
                 for i_ in buildings_:
@@ -137,96 +145,26 @@ def building_demography_grid(buildings_loader,
                 tot_cult_floor_areas.append(tot_cult_floor_area)
 
                 #store cell code
-                grd_ids.append(cell_id_fun(x,y))
+                p["GRD_ID"] = cell_id_fun(x,y)
 
-        return [
-            cell_geometries ,tot_nbs , tot_ground_areas , tot_floor_areas ,
-            tot_res_ground_areas , tot_res_floor_areas , 
-            tot_activity_ground_areas , tot_activity_floor_areas , 
-            tot_cult_ground_areas , tot_cult_floor_areas , 
-            grd_ids
-        ]
+        return cells
 
     #launch parallel computation   
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
         partitions = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
         tasks_to_do = {executor.submit(proceed_partition, partition): partition for partition in partitions}
 
-        #out data
-        cell_geometries = []
-        tot_nbs = []
-        tot_ground_areas = []
-        tot_floor_areas = []
-        tot_res_ground_areas = []
-        tot_res_floor_areas = []
-        tot_activity_ground_areas = []
-        tot_activity_floor_areas = []
-        tot_cult_ground_areas = []
-        tot_cult_floor_areas = []
-        grd_ids = []
-
         # merge task outputs
+        cells = []
         for task_output in concurrent.futures.as_completed(tasks_to_do):
             out = task_output.result()
             if(out==None): continue
-            cell_geometries += out[0]
-            tot_nbs += out[1]
-            tot_ground_areas += out[2]
-            tot_floor_areas += out[3]
-            tot_res_ground_areas += out[4]
-            tot_res_floor_areas += out[5]
-            tot_activity_ground_areas += out[6]
-            tot_activity_floor_areas += out[7]
-            tot_cult_ground_areas += out[8]
-            tot_cult_floor_areas += out[9]
-            grd_ids += out[10]
+            cells += out
 
-        print(datetime.now(), len(cell_geometries), "cells")
-        if(len(cell_geometries) == 0):
+        print(datetime.now(), len(cells), "cells")
+        if(len(cells) == 0):
             print("No cell created")
             return
-
-        """"
-        print(datetime.now(), "gpd")
-        
-        #make output geodataframe
-        out = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids,
-                                'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas,
-                                'residential_ground_area': tot_res_ground_areas, 'residential_floor_area': tot_res_floor_areas,
-                                'economic_activity_ground_area': tot_activity_ground_areas, 'economic_activity_floor_area': tot_activity_floor_areas,
-                                'cultural_ground_area': tot_cult_ground_areas, 'cultural_floor_area': tot_cult_floor_areas })
-
-        #save output
-
-        print(datetime.now(), "save as GPKG")
-        out.crs = "EPSG:"+str(crs)
-        out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
-        
-        print(datetime.now(), "end gpd")
-        """
-
-
-        #TODO remove that
-        print(datetime.now(), "convert")
-
-        cells = []
-        for i in range(len(cell_geometries)):
-            c = {}
-            c["type"] = "Feature"
-            c["geometry"] = mapping(cell_geometries[i])
-            c["properties"] = {}
-            p = c["properties"]
-            p["GRD_ID"] = grd_ids[i]
-            p["number"] = tot_nbs[i]
-            p["ground_area"] = tot_ground_areas[i]
-            p["floor_area"] = tot_floor_areas[i]
-            p["residential_ground_area"] = tot_res_ground_areas[i]
-            p["residential_floor_area"] = tot_res_floor_areas[i]
-            p["economic_activity_ground_area"] = tot_activity_ground_areas[i]
-            p["economic_activity_floor_area"] = tot_activity_floor_areas[i]
-            p["cultural_ground_area"] = tot_cult_ground_areas[i]
-            p["cultural_floor_area"] = tot_cult_floor_areas[i]
-            cells.append(c)
 
         print(datetime.now(), "save as GPKG")
 
