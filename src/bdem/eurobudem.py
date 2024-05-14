@@ -59,6 +59,7 @@ def formatBuildingLU(bu):
     n = int(bu["NATURE"])
     keepOnlyGeometry(bu)
 
+    #estimate building height from geometry 'z' and DTM
     bu_top = average_z_coordinate(bu["geometry"])
     centroid = bu["geometry"].centroid
     row, col = DTM_LU.index(centroid.x, centroid.y)
