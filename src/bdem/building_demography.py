@@ -63,7 +63,7 @@ def building_demography_grid(buildings_loader,
                 #buildings_ = buildings.sindex.intersection(cell_geometry.bounds)
                 buildings_ = sindex.intersection(cell_geometry.bounds)
                 #buildings_ = [feature_id for feature_id in buildings_]
-                if skip_empty_cells and len(buildings_)==0: continue
+                #if skip_empty_cells and len(buildings_)==0: continue
 
                 #initialise totals
                 tot_nb = 0
@@ -112,6 +112,9 @@ def building_demography_grid(buildings_loader,
                     tot_cult_ground_area += cult * ground_area
                     tot_cult_floor_area += cult * floor_area
 
+                #skip empty cells
+                if skip_empty_cells and tot_nb == 0: continue
+
                 #round values
                 tot_nb = round(tot_nb, 2)
                 tot_ground_area = round(tot_ground_area)
@@ -122,8 +125,6 @@ def building_demography_grid(buildings_loader,
                 tot_activity_floor_area = round(tot_activity_floor_area)
                 tot_cult_ground_area = round(tot_cult_ground_area)
                 tot_cult_floor_area = round(tot_cult_floor_area)
-
-                if skip_empty_cells and tot_ground_area == 0: continue
 
                 #store cell values
                 cell_geometries.append(cell_geometry)
