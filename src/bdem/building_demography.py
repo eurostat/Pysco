@@ -9,6 +9,9 @@ sys.path.append('/home/juju/workspace/pyEx/src/')
 from utils.utils import cartesian_product_comp
 from utils.featureutils import spatialIndex,get_schema_from_feature
 
+cell_id_fun = lambda x, y, crs, resolution: "CRS"+str(crs)+"RES"+str(resolution)+"mN"+str(int(y))+"E"+str(int(x))
+
+
 def building_demography_grid(buildings_loader,
                              bbox,
                              out_folder,
@@ -19,9 +22,6 @@ def building_demography_grid(buildings_loader,
                              num_processors_to_use = 1,
                              skip_empty_cells = False
                              ):
-
-
-    cell_id_fun = lambda x,y,crs,grid_resolution: "CRS"+str(crs)+"RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
 
     #process on a partition
     def proceed_partition(xy):
