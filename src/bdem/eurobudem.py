@@ -8,8 +8,8 @@ from utils.featureutils import loadFeatures,keepOnlyGeometry
 
 
 #TODO
-# other countries: NL, BE, PL, IT... see eubc
 # test GPKG writing with fiona
+# other countries: NL, BE, PL, IT... see eubc
 # FR date of creation
 # other years
 
@@ -46,9 +46,9 @@ def loadBuildings(bbox):
     return buildings
 
 
-DTM_LU = rasterio.open("/home/juju/geodata/LU/EL.ElevationGridCoverage.jp2")
 
 
+DTM_LU = rasterio.open("/home/juju/geodata/LU/MNT_lux2017_3035.tif")
 def formatBuildingLU(bu):
     n = int(bu["NATURE"])
     keepOnlyGeometry(bu)
@@ -58,7 +58,7 @@ def formatBuildingLU(bu):
     row, col = DTM_LU.index(centroid.x, centroid.y)
     elevation = DTM_LU.read(1, window=((row, row+1), (col, col+1)))[0][0]
     h = bu_top - elevation
-    print(h)
+    if h<1.5: print(h)
 
     bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(h/3), 1)
 
