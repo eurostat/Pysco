@@ -1,5 +1,5 @@
 import fiona
-from fiona import crs as crsf
+from fiona import CRS
 from shapely.geometry import Polygon,box,shape,mapping
 from datetime import datetime
 import concurrent.futures
@@ -260,7 +260,7 @@ def building_demography_grid(buildings_loader,
         print(datetime.now(), "save as GPKG")
 
         schema = get_schema_from_feature(cells[0])
-        dst = fiona.open(out_folder+out_file+".gpkg", 'w', driver='GPKG', crs=crsf.from_epsg(crs), schema=schema)
+        dst = fiona.open(out_folder+out_file+".gpkg", 'w', driver='GPKG', crs=CRS.from_epsg(crs), schema=schema)
         for f in cells: dst.write(f)
 
         print(datetime.now(), "Done")
