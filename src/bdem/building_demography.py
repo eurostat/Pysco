@@ -1,5 +1,5 @@
 import fiona
-from fiona import CRS
+from fiona.crs import CRS
 from shapely.geometry import Polygon,box,shape,mapping
 from datetime import datetime
 import concurrent.futures
