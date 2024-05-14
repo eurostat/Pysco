@@ -19,9 +19,6 @@ def building_demography_grid(buildings_loader,
                              partition_size = 50000,
                              crs = 'EPSG:3035',
                              num_processors_to_use = 1,
-                             save_GPKG = True,
-                             save_CSV = False,
-                             save_parquet = False,
                              skip_empty_cells = False
                              ):
 
@@ -197,18 +194,8 @@ def building_demography_grid(buildings_loader,
 
         #save output
 
-        if(save_GPKG):
-            print(datetime.now(), "save as GPKG")
-            out.crs = crs
-            out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
-
-        if(save_CSV or save_parquet): out = out.drop(columns=['geometry'])
-
-        if(save_CSV):
-            print(datetime.now(), "save as CSV")
-            out.to_csv(out_folder+out_file+".csv", index=False)
-        if(save_parquet):
-            print(datetime.now(), "save as parquet")
-            out.to_parquet(out_folder+out_file+".parquet")
+        print(datetime.now(), "save as GPKG")
+        out.crs = crs
+        out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
 
         print(datetime.now(), "Done")
