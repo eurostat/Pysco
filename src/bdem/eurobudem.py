@@ -55,16 +55,16 @@ def formatBuildingLU(bu):
     n = int(bu["NATURE"])
     keepOnlyGeometry(bu)
 
-    try:
-        bu_top = average_z_coordinate(bu["geometry"])
-        centroid = bu["geometry"].centroid
-        row, col = DTM_LU.index(centroid.x, centroid.y)
-        elevation = DTM_LU.read(1, window=((row, row+1), (col, col+1)))[0][0]
-        h = bu_top - elevation
-        print(h)
-    except:
-        h = -1
-        print("Could not compute height for building in Luxembourg")
+    #try:
+    bu_top = average_z_coordinate(bu["geometry"])
+    centroid = bu["geometry"].centroid
+    row, col = DTM_LU.index(centroid.x, centroid.y)
+    elevation = DTM_LU.read(1, window=((row, row+1), (col, col+1)))[0][0]
+    h = bu_top - elevation
+    print(h)
+    #except:
+    #    h = -1
+    #    print("Could not compute height for building in Luxembourg")
 
     bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(h/3), 1)
 
