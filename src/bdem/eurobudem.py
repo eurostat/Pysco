@@ -14,8 +14,8 @@ from utils.featureutils import loadFeatures,keepOnlyGeometry
 # other years
 
 
-#bbox = [4039813, 3004105, 4049813, 3094105] #LU north
-bbox = [4039813, 2954105, 4049813, 3094105] #LU FR
+bbox = [4039813, 3004105, 4049813, 3094105] #LU north
+#bbox = [4039813, 2954105, 4049813, 3094105] #LU FR
 
 #bbox = [3000001, 3000001, 3000001, 3000001]
 #bbox = [3000000, 2000000, 4313621, 3162995]
@@ -62,6 +62,7 @@ def formatBuildingLU(bu):
         elevation = DTM_LU.read(1, window=((row, row+1), (col, col+1)))[0][0]
         h = bu_top - elevation
     except:
+        h = -1
         print("Could not compute height for building in Luxembourg")
 
     bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(h/3), 1)

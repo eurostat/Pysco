@@ -10,7 +10,7 @@ from utils.utils import cartesian_product_comp
 from utils.featureutils import spatialIndex,get_schema_from_feature
 
 
-cell_id_fun = lambda x,y,crs: "CRS"+str(crs)+"RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
+cell_id_fun = lambda x,y,crs,grid_resolution: "CRS"+str(crs)+"RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
 
 
 
@@ -122,7 +122,7 @@ def building_demography_grid(buildings_loader,
                 p["cultural_floor_area"] = round(p["cultural_floor_area"])
 
                 #cell code
-                p["GRD_ID"] = cell_id_fun(x,y,crs)
+                p["GRD_ID"] = cell_id_fun(x,y,crs,grid_resolution)
 
                 #cell geometry
                 c["geometry"] = mapping(cell_geometry)
