@@ -1,5 +1,5 @@
-import geopandas as gpd
-from shapely.geometry import Polygon,box,shape
+import fiona
+from shapely.geometry import Polygon,box,shape,mapping
 from datetime import datetime
 import concurrent.futures
 
@@ -7,6 +7,41 @@ import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from utils.utils import cartesian_product_comp
 from utils.featureutils import spatialIndex
+
+
+
+#TODO extract
+def get_schema_from_feature(feature):
+    """
+    Function to extract schema from a feature.
+
+    Parameters:
+    - feature: A GeoJSON-like dictionary representing a feature.
+
+    Returns:
+    - schema: A dictionary representing the schema derived from the feature.
+    """
+    schema = {
+        'geometry': feature['geometry']['type'],
+        'properties': {}
+    }
+
+    # Extract property names and types from the feature's properties
+    for prop_name, prop_value in feature['properties'].items():
+        prop_type = None
+        if isinstance(prop_value, str):
+            prop_type = 'str'
+        elif isinstance(prop_value, int):
+            prop_type = 'int'
+        elif isinstance(prop_value, float):
+            prop_type = 'float'
+        else: print("Unhandled property type for: ", prop_value)
+
+        if prop_type:
+            schema['properties'][prop_name] = prop_type
+
+    return schema
+
 
 
 
@@ -185,6 +220,7 @@ def building_demography_grid(buildings_loader,
             print("No cell created")
             return
 
+        """"
         #make output geodataframe
         out = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids,
                                 'number': tot_nbs, 'ground_area': tot_ground_areas, 'floor_area': tot_floor_areas,
@@ -197,5 +233,31 @@ def building_demography_grid(buildings_loader,
         print(datetime.now(), "save as GPKG")
         out.crs = crs
         out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
+        """
+
+        print(datetime.now(), "save as GPKG")
+
+        cells = []
+        for i in range(len(cell_geometries)):
+            c = {}
+            c["type"] = "Feature"
+            c["geometry"] = mapping(cell_geometries[i])
+            c["properties"] = {}
+            p = c["properties"]
+            p["GRD_ID"] = grd_ids[i]
+            p["number"] = tot_nbs[i]
+            p["ground_area"] = tot_ground_areas[i]
+            p["floor_area"] = tot_floor_areas[i]
+            p["residential_ground_area"] = tot_res_ground_areas[i]
+            p["residential_floor_area"] = tot_res_floor_areas[i]
+            p["economic_activity_ground_area"] = tot_activity_ground_areas[i]
+            p["economic_activity_floor_area"] = tot_activity_floor_areas[i]
+            p["cultural_ground_area"] = tot_cult_ground_areas[i]
+            p["cultural_floor_area"] = tot_cult_floor_areas[i]
+            cells.append(c)
+
+        schema = get_schema_from_feature(cells[0])
+        dst = fiona.open(out_folder+out_file+".gpkg", 'w', driver='GPKG', crs=crs.from_epsg(crs), schema=schema)
+        for f in cells: dst.write(f)
 
         print(datetime.now(), "Done")

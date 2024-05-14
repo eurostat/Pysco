@@ -14,7 +14,9 @@ from utils.featureutils import loadFeatures,keepOnlyGeometry
 # other years
 
 
-bbox = [4039813, 2954105, 4049813, 3094105]
+bbox = [4039813, 3004105, 4049813, 3094105] #LU north
+#bbox = [4039813, 2954105, 4049813, 3094105] #LU FR
+
 #bbox = [3000001, 3000001, 3000001, 3000001]
 #bbox = [3000000, 2000000, 4313621, 3162995]
 grid_resolution = 100
