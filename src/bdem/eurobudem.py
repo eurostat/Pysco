@@ -49,9 +49,9 @@ def formatBuildingLU(bu):
     n = int(bu["NATURE"])
     keepOnlyGeometry(bu)
     bu["floor_nb"] = 1
-    bu["residential"] = 1
-    bu["activity"] = 0
-    bu["cultural_value"] = 0
+    bu["residential"] = 1 if n==0 else 0
+    bu["activity"] = 1 if (n>=10000 and n<42000) or n==80000 or n==11000 else 0
+    bu["cultural_value"] = 1 if n in [41004,41005,41302,41303,41305] or (n>=50000 and n<=50011) else 0
 
 
 def formatBuildingFR(bu):
