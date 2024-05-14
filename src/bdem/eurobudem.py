@@ -90,3 +90,5 @@ for x in range(xmin, xmax+1, file_size_m):
             num_processors_to_use = 8,
             skip_empty_cells = True
         ) 
+
+print("Done")
