@@ -55,7 +55,9 @@ def loadBuildings(bbox):
 
 DTM_LU = rasterio.open("/home/juju/geodata/LU/MNT_lux2017_3035.tif")
 def formatBuildingLU(bu):
-    n = int(bu["NATURE"])
+    n = bu["NATURE"]
+    if n==None: n=0
+    n = int(n)
     keepOnlyGeometry(bu)
 
     #estimate building height from geometry 'z' and DTM
