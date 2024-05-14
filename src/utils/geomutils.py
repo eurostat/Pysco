@@ -1,5 +1,5 @@
 #import geopandas as gpd
-from shapely.geometry import LineString, MultiPoint
+from shapely.geometry import LineString, MultiPoint, Point, Polygon, MultiLineString, MultiPolygon
 
 #function to get segments of a linestring, as 2 vertices linestrings
 def extract_segments(line):
@@ -29,3 +29,27 @@ def decompose_point_array(geom_array):
         else:
             out.append(g)
     return out
+
+
+def average_z_coordinate(geometry):
+    total_z = 0
+    total_points = 0
+
+    def process_geometry(geom):
+        nonlocal total_z, total_points
+
+        if isinstance(geom, Point):
+            total_z += geom.z
+            total_points += 1
+        elif isinstance(geom, (LineString, Polygon)):
+            for point in geom.coords:
+                total_z += point[2]
+                total_points += 1
+        elif isinstance(geom, (MultiPoint, MultiLineString, MultiPolygon)):
+            for sub_geom in geom:
+                process_geometry(sub_geom)
+
+    process_geometry(geometry)
+
+    if total_points > 0: return total_z / total_points
+    return None

@@ -5,7 +5,7 @@ import rasterio
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from utils.featureutils import loadFeatures,keepOnlyGeometry
-
+from utils.geomutils import average_z_coordinate
 
 #TODO
 # test GPKG writing with fiona
@@ -61,6 +61,7 @@ def formatBuildingLU(bu):
         row, col = DTM_LU.index(centroid.x, centroid.y)
         elevation = DTM_LU.read(1, window=((row, row+1), (col, col+1)))[0][0]
         h = bu_top - elevation
+        print(h)
     except:
         h = -1
         print("Could not compute height for building in Luxembourg")
