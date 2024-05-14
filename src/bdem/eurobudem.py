@@ -48,7 +48,7 @@ def loadBuildings(bbox):
 def formatBuildingLU(bu):
     n = int(bu["NATURE"])
     keepOnlyGeometry(bu)
-    print(bu["geometry"].coords)
+    print("cs: ", bu["geometry"].exterior.coords)
     bu["floor_nb"] = 1
     bu["residential"] = 1 if n==0 else 0
     bu["activity"] = 1 if (n>=10000 and n<42000) or n==80000 or n==11000 else 0
