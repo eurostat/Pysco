@@ -210,3 +210,5 @@ def building_demography_grid(buildings_loader,
         if(save_parquet):
             print(datetime.now(), "save as parquet")
             out.to_parquet(out_folder+out_file+".parquet")
+
+        print(datetime.now(), "Done")
