@@ -56,7 +56,7 @@ def formatBuildingLU(bu):
     keepOnlyGeometry(bu)
 
     try:
-        bu_top = bu["geometry"].coords[0][2]
+        bu_top = average_z_coordinate(bu["geometry"])
         centroid = bu["geometry"].centroid
         row, col = DTM_LU.index(centroid.x, centroid.y)
         elevation = DTM_LU.read(1, window=((row, row+1), (col, col+1)))[0][0]
