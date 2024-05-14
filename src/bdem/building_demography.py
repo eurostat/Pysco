@@ -266,6 +266,7 @@ def building_demography_grid(buildings_loader,
 
         schema = get_schema_from_feature(cells[0])
         dst = fiona.open(out_folder+out_file+".gpkg", 'w', driver='GPKG', crs=CRS.from_epsg(crs), schema=schema)
-        for f in cells: dst.write(f)
+        dst.writerecords(cells)
+        #for f in cells: dst.write(f)
 
         print(datetime.now(), "Done")
