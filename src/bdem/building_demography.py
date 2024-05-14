@@ -88,9 +88,11 @@ def building_demography_grid(buildings_loader,
 
                     bug = bu['geometry']
                     if not cell_geometry.intersects(bug): continue
+
                     bug = bug.buffer(0)
                     ground_area = cell_geometry.intersection(bug).area
                     if ground_area == 0: continue
+                    floor_area = ground_area * bu["floor_nb"]
 
                     #building number
                     nb = ground_area/bug.area
@@ -98,24 +100,23 @@ def building_demography_grid(buildings_loader,
                     p["number"] += nb
 
                     #building area
-                    tot_ground_area += ground_area
-                    floor_area = ground_area * bu["floor_nb"]
-                    tot_floor_area += floor_area
+                    p["ground_area"] += ground_area
+                    p["floor_area"] += floor_area
 
                     #residential buildings
                     resid = bu["residential"]
-                    tot_res_ground_area += resid * ground_area
-                    tot_res_floor_area += resid * floor_area
+                    p["residential_ground_area"] += resid * ground_area
+                    p["residential_floor_area"] += resid * floor_area
 
                     #economic activity buildings
                     activity = bu["activity"]
-                    tot_activity_ground_area += activity * ground_area
-                    tot_activity_floor_area += activity * floor_area
+                    p["economic_activity_ground_area"] += activity * ground_area
+                    p["economic_activity_floor_area"] += activity * floor_area
 
                     #cultural value buildings
                     cult = bu["cultural_value"]
-                    tot_cult_ground_area += cult * ground_area
-                    tot_cult_floor_area += cult * floor_area
+                    p["cultural_ground_area"] += cult * ground_area
+                    p["cultural_floor_area"] += cult * floor_area
 
                 #skip empty cells
                 if skip_empty_cells and p["number"] == 0: continue
