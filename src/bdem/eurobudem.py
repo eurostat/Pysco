@@ -13,7 +13,7 @@ from utils.featureutils import loadFeatures,keepOnlyGeometry
 # other years
 
 
-bbox = [4039813, 2954105, 4039813, 2954105]
+bbox = [4039813, 3054105, 4049813, 3094105]
 #bbox = [3000001, 3000001, 3000001, 3000001]
 #bbox = [3000000, 2000000, 4313621, 3162995]
 grid_resolution = 100
@@ -46,6 +46,7 @@ def loadBuildings(bbox):
 
 
 def formatBuildingLU(bu):
+    n = int(bu["NATURE"])
     keepOnlyGeometry(bu)
     bu["floor_nb"] = 1
     bu["residential"] = 1
