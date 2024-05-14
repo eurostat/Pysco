@@ -10,6 +10,7 @@ from utils.utils import cartesian_product_comp
 from utils.featureutils import spatialIndex,get_schema_from_feature
 
 
+cell_id_fun = lambda x,y,crs: "CRS"+str(crs)+"RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
 
 
 
@@ -17,13 +18,14 @@ def building_demography_grid(buildings_loader,
                              bbox,
                              out_folder,
                              out_file,
-                             cell_id_fun=lambda x,y:str(x)+"_"+str(y),
                              grid_resolution=1000,
                              partition_size = 50000,
                              crs = 3035,
                              num_processors_to_use = 1,
                              skip_empty_cells = False
                              ):
+
+
 
     #process on a partition
     def proceed_partition(xy):
@@ -38,19 +40,6 @@ def building_demography_grid(buildings_loader,
         #buildings.sindex
         sindex = spatialIndex(buildings)
         #print(datetime.now(), "indexing done")
-
-        #out data
-        cell_geometries = []
-        tot_nbs = []
-        tot_ground_areas = []
-        tot_floor_areas = []
-        tot_res_ground_areas = []
-        tot_res_floor_areas = []
-        tot_activity_ground_areas = []
-        tot_activity_floor_areas = []
-        tot_cult_ground_areas = []
-        tot_cult_floor_areas = []
-        grd_ids = []
 
         #make cells
         cells = []
@@ -133,7 +122,7 @@ def building_demography_grid(buildings_loader,
                 p["cultural_floor_area"] = round(p["cultural_floor_area"])
 
                 #cell code
-                p["GRD_ID"] = cell_id_fun(x,y)
+                p["GRD_ID"] = cell_id_fun(x,y,crs)
 
                 #cell geometry
                 c["geometry"] = mapping(cell_geometry)
@@ -162,7 +151,7 @@ def building_demography_grid(buildings_loader,
 
         print(datetime.now(), "save as GPKG")
         schema = get_schema_from_feature(cells[0])
-        dst = fiona.open(out_folder+out_file+".gpkg", 'w', driver='GPKG', crs=CRS.from_epsg(crs), schema=schema)
-        dst.writerecords(cells)
+        out = fiona.open(out_folder+out_file+".gpkg", 'w', driver='GPKG', crs=CRS.from_epsg(crs), schema=schema)
+        out.writerecords(cells)
 
         print(datetime.now(), "Done")

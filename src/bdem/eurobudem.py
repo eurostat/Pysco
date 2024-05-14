@@ -98,7 +98,6 @@ for x in range(xmin, xmax+1, file_size_m):
             [x, y, x+file_size_m, y+file_size_m],
             out_folder,
             "eurobudem_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y),
-            cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
             grid_resolution = grid_resolution,
             partition_size = 100000,
             num_processors_to_use = 8,
