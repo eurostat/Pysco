@@ -1,4 +1,4 @@
-import gpd
+import geopandas as gpd
 import fiona
 from fiona.crs import CRS
 from shapely.geometry import Polygon,box,shape,mapping
