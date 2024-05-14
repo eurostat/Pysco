@@ -21,7 +21,8 @@ def building_demography_grid(buildings_loader,
                              num_processors_to_use = 1,
                              save_GPKG = True,
                              save_CSV = False,
-                             save_parquet = False
+                             save_parquet = False,
+                             skip_empty_cells = False
                              ):
 
     #process on a partition
@@ -62,7 +63,7 @@ def building_demography_grid(buildings_loader,
                 #buildings_ = buildings.sindex.intersection(cell_geometry.bounds)
                 buildings_ = sindex.intersection(cell_geometry.bounds)
                 #buildings_ = [feature_id for feature_id in buildings_]
-                #if len(buildings_)==0: continue
+                if skip_empty_cells and len(buildings_)==0: continue
 
                 #initialise totals
                 tot_nb = 0
@@ -122,7 +123,7 @@ def building_demography_grid(buildings_loader,
                 tot_cult_ground_area = round(tot_cult_ground_area)
                 tot_cult_floor_area = round(tot_cult_floor_area)
 
-                #if(tot_ground_area == 0): continue
+                if skip_empty_cells and tot_ground_area == 0: continue
 
                 #store cell values
                 cell_geometries.append(cell_geometry)
