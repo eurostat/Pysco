@@ -55,7 +55,7 @@ def formatBuildingLU(bu):
     n = int(bu["NATURE"])
     keepOnlyGeometry(bu)
 
-    bu_top = bu["geometry"].exterior.coords[0][2]
+    bu_top = bu["geometry"].coords[0][2]
     centroid = bu["geometry"].centroid
     row, col = DTM_LU.index(centroid.x, centroid.y)
     elevation = DTM_LU.read(1, window=((row, row+1), (col, col+1)))[0][0]
