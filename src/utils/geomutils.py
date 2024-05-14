@@ -49,7 +49,7 @@ def average_z_coordinate(geometry):
             process_ring(geom.exterior)
             for interior in geom.interiors: process_ring(interior)
         elif isinstance(geom, (MultiPoint, MultiLineString, MultiPolygon)):
-            for sub_geom in geom: process_geometry(sub_geom)
+            for sub_geom in geom.geoms: process_geometry(sub_geom)
 
     def process_ring(ring):
         nonlocal total_z, total_points

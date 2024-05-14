@@ -8,8 +8,7 @@ from utils.featureutils import loadFeatures,keepOnlyGeometry
 from utils.geomutils import average_z_coordinate
 
 #TODO
-# test GPKG writing with fiona
-# other countries: NL, BE, PL, IT... see eubc
+# other countries: IT, NL, BE, SK, CZ, PL... see eubc
 # FR date of creation
 # other years
 
