@@ -222,6 +222,7 @@ def building_demography_grid(buildings_loader,
             print("No cell created")
             return
 
+        """"
         print(datetime.now(), "gpd")
         
         #make output geodataframe
@@ -238,9 +239,10 @@ def building_demography_grid(buildings_loader,
         out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
         
         print(datetime.now(), "end gpd")
+        """
 
 
-
+        #TODO remove that
         print(datetime.now(), "convert")
 
         cells = []
