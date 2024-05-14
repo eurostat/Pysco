@@ -34,12 +34,16 @@ def loadBuildings(bbox):
 
     #FR
     buildings_FR = loadFeatures('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox)
-    for bu in buildings_FR: formatBuildingFR(bu)
+    for bu in buildings_FR:
+        bu["geometry"] = bu["geometry"].buffer(0)
+        formatBuildingFR(bu)
     buildings += buildings_FR
 
     #LU
     buildings_LU = loadFeatures('/home/juju/geodata/LU/ACT/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', bbox)
-    for bu in buildings_LU: formatBuildingLU(bu)
+    for bu in buildings_LU:
+        bu["geometry"] = bu["geometry"].buffer(0)
+        formatBuildingLU(bu)
     buildings += buildings_LU
 
     #IT
@@ -55,16 +59,11 @@ def formatBuildingLU(bu):
     n = int(bu["NATURE"])
     keepOnlyGeometry(bu)
 
-    #try:
     bu_top = average_z_coordinate(bu["geometry"])
     centroid = bu["geometry"].centroid
     row, col = DTM_LU.index(centroid.x, centroid.y)
     elevation = DTM_LU.read(1, window=((row, row+1), (col, col+1)))[0][0]
     h = bu_top - elevation
-    print(h)
-    #except:
-    #    h = -1
-    #    print("Could not compute height for building in Luxembourg")
 
     bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(h/3), 1)
 

@@ -74,7 +74,7 @@ def building_demography_grid(buildings_loader,
                     bug = bu['geometry']
                     if not cell_geometry.intersects(bug): continue
 
-                    bug = bug.buffer(0)
+                    #bug = bug.buffer(0)
                     ground_area = cell_geometry.intersection(bug).area
                     if ground_area == 0: continue
                     floor_area = ground_area * bu["floor_nb"]

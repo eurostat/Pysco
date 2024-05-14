@@ -41,13 +41,21 @@ def average_z_coordinate(geometry):
         if isinstance(geom, Point):
             total_z += geom.z
             total_points += 1
-        elif isinstance(geom, (LineString, Polygon)):
+        elif isinstance(geom, (LineString)):
             for point in geom.coords:
                 total_z += point[2]
                 total_points += 1
+        elif isinstance(geom, Polygon):
+            process_ring(geom.exterior)
+            for interior in geom.interiors: process_ring(interior)
         elif isinstance(geom, (MultiPoint, MultiLineString, MultiPolygon)):
-            for sub_geom in geom:
-                process_geometry(sub_geom)
+            for sub_geom in geom: process_geometry(sub_geom)
+
+    def process_ring(ring):
+        nonlocal total_z, total_points
+        for point in ring.coords:
+            total_z += point[2]
+            total_points += 1
 
     process_geometry(geometry)
 
