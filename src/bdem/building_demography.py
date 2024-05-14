@@ -7,42 +7,7 @@ import concurrent.futures
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from utils.utils import cartesian_product_comp
-from utils.featureutils import spatialIndex
-
-
-
-#TODO extract
-def get_schema_from_feature(feature):
-    """
-    Function to extract schema from a feature.
-
-    Parameters:
-    - feature: A GeoJSON-like dictionary representing a feature.
-
-    Returns:
-    - schema: A dictionary representing the schema derived from the feature.
-    """
-    schema = {
-        'geometry': feature['geometry']['type'],
-        'properties': {}
-    }
-
-    # Extract property names and types from the feature's properties
-    for prop_name, prop_value in feature['properties'].items():
-        prop_type = None
-        if isinstance(prop_value, str):
-            prop_type = 'str'
-        elif isinstance(prop_value, int):
-            prop_type = 'int'
-        elif isinstance(prop_value, float):
-            prop_type = 'float'
-        else: print("Unhandled property type for: ", prop_value)
-
-        if prop_type:
-            schema['properties'][prop_name] = prop_type
-
-    return schema
-
+from utils.featureutils import spatialIndex,get_schema_from_feature
 
 
 
