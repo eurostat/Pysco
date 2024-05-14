@@ -87,9 +87,9 @@ def formatBuildingFR(bu):
 
     floor_nb = 1 if h==None or isnan(h) else ceil(h/3)
     bu["floor_nb"] = floor_nb
-    residential = 1 if u1=="Résidentiel" else 0.3 if u2=="Résidentiel" else 0.1 if u1=="Indifférencié" else 0
+    residential = 1 if u1=="Résidentiel" else 0.3 if u2=="Résidentiel" else 0.25 if u1=="Indifférencié" else 0
     bu["residential"] = residential
-    activity = 1 if u1=="Agricole" or u1=="Commercial et services" or u1=="Industriel" else 0.3 if u2=="Agricole" or u2=="Commercial et services" or u2=="Industriel" else 0.1 if u1=="Indifférencié" else 0
+    activity = 1 if u1=="Agricole" or u1=="Commercial et services" or u1=="Industriel" else 0.3 if u2=="Agricole" or u2=="Commercial et services" or u2=="Industriel" else 0.25 if u1=="Indifférencié" else 0
     bu["activity"] = activity
     cultural_value = 1 if u1=="Religieux" or n=="Tour, donjon" or n=="Monument" or n=="Moulin à vent" or n=="Arc de triomphe" or n=="Fort, blockhaus, casemate" or n=="Eglise" or n=="Château" or n=="Chapelle" or n=="Arène ou théâtre antique" else 0
     bu["cultural_value"] = cultural_value
