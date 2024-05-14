@@ -222,6 +222,7 @@ def building_demography_grid(buildings_loader,
             print("No cell created")
             return
 
+        print(datetime.now(), "gpd")
         
         #make output geodataframe
         out = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids,
@@ -233,9 +234,12 @@ def building_demography_grid(buildings_loader,
         #save output
 
         print(datetime.now(), "save as GPKG")
-        out.crs = crs
+        out.crs = "EPSG:"+str(crs)
         out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
         
+        print(datetime.now(), "end gpd")
+
+
 
         print(datetime.now(), "convert")
 
