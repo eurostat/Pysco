@@ -13,18 +13,12 @@ def grid_tiling(
     tile_size_cell = 128,
     x_origin = 0,
     y_origin = 0,
-    crs = ""
+    crs = "",
+    position_fun = None
 ):
 
     #compute tile size, in geo unit
     tile_size_m = resolution * tile_size_cell
-
-    #set cell x,y from its grid_id
-    def position_fun(c):
-        a = c['GRD_ID'].split("N")[1].split("E")
-        c["x"] = int(a[1])
-        c["y"] = int(a[0])
-        del c['GRD_ID']
 
     #make csv header from a cell, starting with "x" and "y"
     def get_csv_header(cell):
@@ -54,8 +48,9 @@ def grid_tiling(
 
         #iterate through cells
         for c in csvreader:
+
             #set position
-            position_fun(c)
+            if(position_fun!=None): position_fun(c)
 
             #get cell tile x,y
             xt = int(floor((c["x"] - x_origin) / tile_size_m))
