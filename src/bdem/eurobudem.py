@@ -21,7 +21,7 @@ bbox = [4250000, 1250000, 5250000, 2750000] #IT
 grid_resolution = 100
 file_size_m = 500000
 out_folder = '/home/juju/gisco/building_demography/out_partition/'
-num_processors_to_use = 5
+num_processors_to_use = 6
 
 clamp = lambda v:floor(v/file_size_m)*file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
