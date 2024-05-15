@@ -99,5 +99,5 @@ data = {
     }
 }
 
-with open(output_folder + 'info.json', 'w') as json_file:
+with open(output_folder + '/info.json', 'w') as json_file:
     json.dump(data, json_file, indent=3)
