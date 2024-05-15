@@ -4,6 +4,7 @@ from math import floor
 import json
 
 
+#TODO move to gridtiler repository
 
 def grid_tiling(
     input_file,
