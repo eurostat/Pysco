@@ -29,9 +29,8 @@ def building_demography_grid(buildings_loader,
 
         print(datetime.now(), x_part, y_part, "load buildings")
         buildings = buildings_loader((x_part, y_part, x_part+partition_size, y_part+partition_size))
-        print(datetime.now(), x_part, y_part, len(buildings), "buildings loaded")
         if len(buildings)==0: return
-        print(datetime.now(), x_part, y_part, "processing...")
+        print(datetime.now(), x_part, y_part, "processing", len(buildings), "buildings...")
 
         #print(datetime.now(), "spatial index buildings")
         #buildings.sindex
