@@ -111,5 +111,6 @@ def get_csv_header(cell):
 def round_floats_to_ints(cell):
     for key, value in cell.items():
         try:
-            if float(value).is_integer(): cell[key] = int(value)
+            f = float(value)
+            if f.is_integer(): cell[key] = int(f)
         except ValueError: pass
