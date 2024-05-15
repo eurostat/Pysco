@@ -1,6 +1,4 @@
-import gridtiler
-
-
+from gridtiler import gridtiler
 
 
 #set cell x,y from its grid_id
@@ -19,5 +17,5 @@ gridtiler(
     x_origin = 2500000,
     y_origin = 1000000,
     crs = "EPSG:3035",
-    position_fun = position_fun
+    preprocess = position_fun
 )

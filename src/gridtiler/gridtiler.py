@@ -14,27 +14,11 @@ def grid_tiling(
     x_origin = 0,
     y_origin = 0,
     crs = "",
-    position_fun = None
+    preprocess = None
 ):
 
     #compute tile size, in geo unit
     tile_size_m = resolution * tile_size_cell
-
-    #make csv header from a cell, starting with "x" and "y"
-    def get_csv_header(cell):
-        keys = list(cell.keys())
-        keys.remove("x")
-        keys.remove("y")
-        keys.insert(0, "x")
-        keys.insert(1, "y")
-        return keys
-
-    #convert rounded floats into ints so that we do not have useless ".0"
-    def round_floats_to_ints(cell):
-        for key, value in cell.items():
-            try:
-                if float(value).is_integer(): cell[key] = int(value)
-            except ValueError: pass
 
     #minimum and maximum tile x,x, for info.json file
     minTX=None
@@ -46,11 +30,11 @@ def grid_tiling(
         csvreader = csv.DictReader(csvfile)
         csv_header = None
 
-        #iterate through cells
+        #iterate through cells from the input CSV file
         for c in csvreader:
 
-            #set position
-            if(position_fun!=None): position_fun(c)
+            #set position, if specified
+            if(preprocess!=None): preprocess(c)
 
             #get cell tile x,y
             xt = int(floor((c["x"] - x_origin) / tile_size_m))
@@ -111,3 +95,21 @@ def grid_tiling(
 
     with open(output_folder + '/info.json', 'w') as json_file:
         json.dump(data, json_file, indent=3)
+
+
+
+#make csv header from a cell, starting with "x" and "y"
+def get_csv_header(cell):
+    keys = list(cell.keys())
+    keys.remove("x")
+    keys.remove("y")
+    keys.insert(0, "x")
+    keys.insert(1, "y")
+    return keys
+
+#convert rounded floats into ints so that we do not have useless ".0"
+def round_floats_to_ints(cell):
+    for key, value in cell.items():
+        try:
+            if float(value).is_integer(): cell[key] = int(value)
+        except ValueError: pass
