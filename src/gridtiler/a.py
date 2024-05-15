@@ -1,4 +1,4 @@
-from gridtiler import gridtiler
+from gridtiler import grid_tiling
 
 
 #set cell x,y from its grid_id
@@ -9,7 +9,7 @@ def position_fun(c):
     del c['GRD_ID']
 
 
-gridtiler(
+grid_tiling(
     "/home/juju/gisco/building_demography/building_demography.csv",
     '/home/juju/Bureau/test_tiling',
     100,
