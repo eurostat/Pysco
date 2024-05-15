@@ -22,4 +22,6 @@ with open(input_file, 'r') as csvfile:
     #print(csvreader.fieldnames)
     for c in csvreader:
         position_fun(c)
-        print(c)
+
+        #get cell file
+        
