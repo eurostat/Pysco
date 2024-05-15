@@ -8,12 +8,18 @@ origin_x = 3200000
 origin_y = 1850000
 crs = "3035"
 
-# --positionFunction "const a=c.GRD_ID.split('N')[1].split('E');return {x:a[1],y:a[0]};"
-# --postFunction "delete c.GRD_ID"
+
+#set cell x,y from its grid_id
+def position_fun(c):
+    a = c['GRD_ID'].split("N")[1].split("E")
+    c["x"] = int(a[1])
+    c["y"] = int(a[0])
+    del c['GRD_ID']
 
 
 with open(input_file, 'r') as csvfile:
     csvreader = csv.DictReader(csvfile)
-    for row in csvreader:
-        #pass
-        print(row)
+    #print(csvreader.fieldnames)
+    for c in csvreader:
+        position_fun(c)
+        print(c)
