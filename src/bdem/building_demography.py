@@ -32,10 +32,8 @@ def building_demography_grid(buildings_loader,
         if len(buildings)==0: return
         print(datetime.now(), x_part, y_part, "processing", len(buildings), "buildings...")
 
-        #print(datetime.now(), "spatial index buildings")
-        #buildings.sindex
+        #spatial index buildings
         sindex = spatialIndex(buildings)
-        #print(datetime.now(), "indexing done")
 
         #make cells
         cells = []
@@ -50,7 +48,6 @@ def building_demography_grid(buildings_loader,
                 cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
 
                 #get buildings intersecting cell, using spatial index
-                #buildings_ = buildings.sindex.intersection(cell_geometry.bounds)
                 buildings_ = sindex.intersection(cell_geometry.bounds)
                 #buildings_ = [feature_id for feature_id in buildings_]
                 #if skip_empty_cells and len(buildings_)==0: continue
@@ -68,7 +65,6 @@ def building_demography_grid(buildings_loader,
 
                 #go through buildings
                 for i_ in buildings_:
-                    #bu = buildings.iloc[i_]
                     bu = buildings[i_]
 
                     bug = bu['geometry']
