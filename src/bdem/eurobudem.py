@@ -17,11 +17,12 @@ from utils.geomutils import average_z_coordinate
 #bbox = [4039813, 3004105, 4049813, 3094105] #LU north
 #bbox = [4039813, 2954105, 4049813, 3094105] #LU-FR
 
-#bbox = [3000001, 3000001, 3000001, 3000001]
-bbox = [3000000, 2000000, 4413621, 3462995] #FR
+bbox = [3500001, 2500001, 4400001, 3400001]
+#bbox = [3000000, 2000000, 4413621, 3462995] #FR
 grid_resolution = 100
 file_size_m = 500000
 out_folder = '/home/juju/gisco/building_demography/out_partition/'
+num_processors_to_use = 5
 
 clamp = lambda v:floor(v/file_size_m)*file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
@@ -109,6 +110,6 @@ for x in range(xmin, xmax+1, file_size_m):
             "eurobudem_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y),
             grid_resolution = grid_resolution,
             partition_size = 100000,
-            num_processors_to_use = 8,
+            num_processors_to_use = num_processors_to_use,
             skip_empty_cells = True
         ) 
