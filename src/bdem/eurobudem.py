@@ -53,7 +53,6 @@ def loadBuildings(bbox):
     buildings += buildings_IT
     #   
 
-
     return buildings
 
 
