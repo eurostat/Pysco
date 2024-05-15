@@ -20,9 +20,19 @@ def position_fun(c):
     c["y"] = int(a[0])
     del c['GRD_ID']
 
+#make list of keys from a cell, starting with "x" and "y"
+def keys(cell):
+    keys = cell.keys()
+    keys.remove("x")
+    keys.remove("y")
+    keys.insert(0, "x")
+    keys.insert(1, "y")
+    return keys
+
 
 with open(input_file, 'r') as csvfile:
     csvreader = csv.DictReader(csvfile)
+    keys = None
 
     #iterate through cells
     for c in csvreader:
@@ -30,12 +40,12 @@ with open(input_file, 'r') as csvfile:
         position_fun(c)
 
         #get cell tile x,y
-        xt = floor((c["x"] - xO) / tile_size_m)
-        yt = floor((c["y"] - yO) / tile_size_m)
+        xt = int(floor((c["x"] - xO) / tile_size_m))
+        yt = int(floor((c["y"] - yO) / tile_size_m))
 
         #compute cell position within its tile
-        c["x"] = floor((c["x"] - xO) / r - xt * tile_size_cell)
-        c["y"] = floor((c["y"]- yO) / r - yt * tile_size_cell)
+        c["x"] = int(floor((c["x"] - xO) / r - xt * tile_size_cell))
+        c["y"] = int(floor((c["y"]- yO) / r - yt * tile_size_cell))
 
         #check x,y values. Should be within [0,tile_size_cell-1]
         if (c["x"] < 0): print("Too low value: " + c.x + " <0")
@@ -48,11 +58,13 @@ with open(input_file, 'r') as csvfile:
         if not os.path.exists(t_folder): os.makedirs(t_folder)
 
         file_path = t_folder + str(yt) + ".csv"
+        file_exists = os.path.exists(file_path)
         with open(file_path, 'a', newline='') as csvfile:
             #writer
-            writer = csv.DictWriter(csvfile, fieldnames=c.keys())
+            if keys==None: keys = keys(c)
+            writer = csv.DictWriter(csvfile, fieldnames=keys)
             #write header
-            if not os.path.exists(file_path): writer.writeheader()
+            if not file_exists: writer.writeheader()
             #write cell data
             writer.writerow(c)
 
