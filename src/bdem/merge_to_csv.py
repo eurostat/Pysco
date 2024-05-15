@@ -3,12 +3,14 @@ import csv
 import os
 from datetime import datetime
 
-csv_file = '/home/juju/gisco/building_demography/building_demography.csv'
 gpkg_folder = '/home/juju/gisco/building_demography/out_partition/'
+out_csv_file = '/home/juju/gisco/building_demography/building_demography.csv'
+
+#get all gpkg files to merge
 gpkg_files = os.listdir(gpkg_folder)
 
 #open CSV file
-with open(csv_file, 'w', newline='') as csvfile:
+with open(out_csv_file, 'w', newline='') as csvfile:
 
     #go through gpkg files
     for i, gpkg_file in enumerate(gpkg_files):
