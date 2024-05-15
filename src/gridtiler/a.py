@@ -9,7 +9,7 @@ r = 100
 tile_size_cell = 128
 xO = 3200000
 yO = 1850000
-crs = "3035"
+crs = "EPSG:3035"
 
 #compute tile size, in geo unit
 tile_size_m = r * tile_size_cell
