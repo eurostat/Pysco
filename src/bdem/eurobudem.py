@@ -13,11 +13,9 @@ from utils.geomutils import average_z_coordinate
 # other years
 
 
-#bbox = [5267541, 1749532, 5267541, 1749532] #IT small
+bbox = [5267541, 1749532, 5267541, 1749532] #IT small
 #bbox = [4039813, 3004105, 4049813, 3094105] #LU north
 #bbox = [4039813, 2954105, 4049813, 3094105] #LU-FR
-
-bbox = [3500001, 2500001, 4400001, 3400001]
 #bbox = [3000000, 2000000, 4413621, 3462995] #FR
 grid_resolution = 100
 file_size_m = 500000
@@ -48,12 +46,29 @@ def loadBuildings(bbox):
     buildings += buildings_LU
 
     #IT
-    #TODO
-    #edifc_uso edifc_ty edifc_at edifc_mon
+    buildings_IT = loadFeatures('/home/juju/geodata/IT/DBSN/dbsn.gpkg', bbox)
+    for bu in buildings_IT:
+        bu["geometry"] = bu["geometry"].buffer(0)
+        formatBuildingIT(bu)
+    buildings += buildings_IT
+    #   
 
 
     return buildings
 
+
+def formatBuildingIT(bu):
+    u = bu["edifc_uso"]
+    t = bu["edifc_ty"]
+    a = bu["edifc_at"]
+    m = bu["edifc_mon"]
+    keepOnlyGeometry(bu)
+
+    bu["floor_nb"] = 1
+
+    bu["residential"] = 1
+    bu["activity"] = 0
+    bu["cultural_value"] = 0
 
 
 
