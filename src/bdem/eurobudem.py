@@ -55,7 +55,7 @@ def loadBuildings(bbox):
 
     return buildings
 
-
+#IT
 def formatBuildingIT(bu):
     u = bu["edifc_uso"]
     u = u[:2]
@@ -69,12 +69,14 @@ def formatBuildingIT(bu):
     if a != None and a != -9999 : print("Elevation provided for IT building:", a)
 
     #TODO
+    #bu_top = average_z_coordinate(bu["geometry"])
     bu["floor_nb"] = 1
 
     bu["residential"] = 1 if u=="01" else 0.25 if u=="93" else 0
     bu["activity"] = 1 if u in ["02","03","04","06","07","08","09","10","11","12"] else 0.25 if u=="93" else 0
     bu["cultural_value"] = 1 if u=="05" or m=="01" or t in ["03","06","07","10","11","12","13","15","16","17","18","20","22","24","25"] else 0
 
+#LU
 DTM_LU = rasterio.open("/home/juju/geodata/LU/MNT_lux2017_3035.tif")
 def formatBuildingLU(bu):
     n = bu["NATURE"]
@@ -95,7 +97,7 @@ def formatBuildingLU(bu):
     bu["activity"] = 1 if (n>=10000 and n<42000) or n==80000 or n==11000 else 0
     bu["cultural_value"] = 1 if n in [41004,41005,41302,41303,41305] or (n>=50000 and n<=50011) else 0
 
-
+#FR
 def formatBuildingFR(bu):
     h = bu["hauteur"]
     u1 = bu["usage_1"]
