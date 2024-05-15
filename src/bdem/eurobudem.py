@@ -69,7 +69,8 @@ def formatBuildingIT(bu):
     if a != None and a != -9999 : print("Elevation provided for IT building:", a)
 
     #TODO
-    #bu_top = average_z_coordinate(bu["geometry"])
+    bu_top = average_z_coordinate(bu["geometry"])
+    if(bu_top != 0): print("Elevation provided for IT building geometry:", bu_top)
     bu["floor_nb"] = 1
 
     bu["residential"] = 1 if u=="01" else 0.25 if u=="93" else 0
