@@ -72,7 +72,7 @@ def formatBuildingIT(bu):
 
     keepOnlyGeometry(bu)
 
-    if a != None and a != -9999 and a!=0 and a!=-29997 : print("Elevation provided for IT building:", a)
+    if a != None and a != -9999 and a!=0 and a!=-29997.0 : print("Elevation provided for IT building:", a)
 
     #TODO
     #bu_top = average_z_coordinate(bu["geometry"])
