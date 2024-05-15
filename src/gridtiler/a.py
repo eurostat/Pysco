@@ -1,13 +1,16 @@
 import csv
+from math import floor
 
 input_file = "/home/juju/gisco/building_demography/building_demography.csv"
 output_folder = '/home/juju/Bureau/test_tiling'
-resolution = 100
+r = 100
 tile_size_cell = 128
-origin_x = 3200000
-origin_y = 1850000
+xO = 3200000
+yO = 1850000
 crs = "3035"
 
+#compute tile size, in geo unit
+tileSizeM = r * tile_size_cell
 
 #set cell x,y from its grid_id
 def position_fun(c):
@@ -23,5 +26,6 @@ with open(input_file, 'r') as csvfile:
     for c in csvreader:
         position_fun(c)
 
-        #get cell file
-        
+        #get tile x,y
+        xt = floor((c.x - xO) / tileSizeM)
+        yt = floor((c.y - yO) / tileSizeM)
