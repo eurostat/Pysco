@@ -12,9 +12,9 @@ from utils.geomutils import average_z_coordinate
 # FR date of creation
 # other years
 
-
+bbox = [4750000, 1250000, 4750000, 2750000] #IT rest
 #bbox = [4250000, 1250000, 5250000, 2750000] #IT
-bbox = [4267541, 2749532, 4267541, 2749532] #IT FR LU CH
+#bbox = [4267541, 2749532, 4267541, 2749532] #IT FR LU CH
 #bbox = [5267541, 1749532, 5267541, 1749532] #IT small
 #bbox = [4039813, 3004105, 4049813, 3094105] #LU north
 #bbox = [4039813, 2954105, 4049813, 3094105] #LU-FR
