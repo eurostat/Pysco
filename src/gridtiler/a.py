@@ -33,8 +33,9 @@ def get_csv_header(cell):
 #convert rounded floats into ints so that we do not have useless ".0"
 def round_floats_to_ints(cell):
     for key, value in cell.items():
-        if isinstance(value, float) and value.is_integer():
-            cell[key] = int(value)
+        try:
+            if float(value).is_integer(): cell[key] = int(value)
+        except ValueError: pass
 
 #minimum and maximum tile x,x, for info.json file
 minTX=None
