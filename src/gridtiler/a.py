@@ -80,8 +80,8 @@ with open(input_file, 'r') as csvfile:
             #write cell data
             writer.writerow(c)
 
-#write info.json
 
+#write info.json
 data = {
     "dims": [],
     "crs": crs,
@@ -98,3 +98,6 @@ data = {
         "xMin": minTX
     }
 }
+
+with open(output_folder + 'info.json', 'w') as json_file:
+    json.dump(data, json_file, indent=3)
