@@ -58,21 +58,22 @@ def loadBuildings(bbox):
 
 def formatBuildingIT(bu):
     u = bu["edifc_uso"]
+    u = u[:2]
     t = bu["edifc_ty"]
-    a = bu["edifc_at"]
+    t = t[:2]
     m = bu["edifc_mon"]
+    m = m[:2]
+    a = bu["edifc_at"]
     keepOnlyGeometry(bu)
 
-    if (a != None or  a != -9999) : print(a, a==-9999)
-    #print("Elevation provided for IT building:", a, type(a))
+    if a != None and a != -9999 : print("Elevation provided for IT building:", a)
 
+    #TODO
     bu["floor_nb"] = 1
 
-    bu["residential"] = 1
-    bu["activity"] = 0
-    bu["cultural_value"] = 0
-
-
+    bu["residential"] = 1 if u=="01" else 0.25 if u=="93" else 0
+    bu["activity"] = 1 if u in ["02","03","04","06","07","08","09","10","11","12"] else 0.25 if u=="93" else 0
+    bu["cultural_value"] = 1 if u=="05" or m=="01" or t in ["03","06","07","08","10","11","12","13","15","16","17","18","20","22","24","25"] else 0
 
 DTM_LU = rasterio.open("/home/juju/geodata/LU/MNT_lux2017_3035.tif")
 def formatBuildingLU(bu):
