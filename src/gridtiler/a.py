@@ -7,8 +7,8 @@ input_file = "/home/juju/gisco/building_demography/building_demography.csv"
 output_folder = '/home/juju/Bureau/test_tiling'
 r = 100
 tile_size_cell = 128
-xO = 3200000
-yO = 1850000
+xO = 2500000
+yO = 1000000
 crs = "EPSG:3035"
 
 #compute tile size, in geo unit
