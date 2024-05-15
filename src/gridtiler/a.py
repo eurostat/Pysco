@@ -1,3 +1,4 @@
+import os
 import csv
 from math import floor
 
@@ -22,11 +23,13 @@ def position_fun(c):
 
 with open(input_file, 'r') as csvfile:
     csvreader = csv.DictReader(csvfile)
-    #print(csvreader.fieldnames)
+
+    #iterate through cells
     for c in csvreader:
+        #set position
         position_fun(c)
 
-        #get tile x,y
+        #get cell tile x,y
         xt = floor((c.x - xO) / tileSizeM)
         yt = floor((c.y - yO) / tileSizeM)
 
@@ -34,7 +37,7 @@ with open(input_file, 'r') as csvfile:
         c["x"] = floor((c["x"] - xO) / r - xt * tile_size_cell)
         c["y"] = floor((c["y"]- yO) / r - yt * tile_size_cell)
 
-        #check x,y values. Should be within [0,tileResolutionPix-1]
+        #check x,y values. Should be within [0,tile_size_cell-1]
         if (c["x"] < 0): print("Too low value: " + c.x + " <0")
         if (c["y"] < 0): print("Too low value: " + c.y + " <0")
         if (c["x"] > tile_size_cell - 1): print("Too high value: " + c.x + " >" + (tile_size_cell - 1))
