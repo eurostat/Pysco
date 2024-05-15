@@ -8,6 +8,7 @@ from utils.featureutils import loadFeatures,keepOnlyGeometry
 from utils.geomutils import average_z_coordinate
 
 #TODO
+# test del my_dict['b'] for input data formating
 # other countries: IT, NL, BE, SK, CZ, PL... see eubc
 # FR date of creation
 # other years

@@ -14,7 +14,7 @@ with open(out_csv_file, 'w', newline='') as csvfile:
 
     #go through gpkg files
     for i, gpkg_file in enumerate(gpkg_files):
-        print(datetime.now(), i, "/", len(gpkg_files), gpkg_folder + gpkg_file)
+        print(datetime.now(), (i+1), "/", len(gpkg_files), gpkg_folder + gpkg_file)
 
         #open gpkg file
         with fiona.open(gpkg_folder + gpkg_file, 'r') as src:
