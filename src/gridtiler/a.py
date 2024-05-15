@@ -30,6 +30,12 @@ def get_csv_header(cell):
     keys.insert(1, "y")
     return keys
 
+#convert rounded floats into ints so that we do not have useless ".0"
+def round_floats_to_ints(cell):
+    for key, value in cell.items():
+        if isinstance(value, float) and value.is_integer():
+            cell[key] = int(value)
+
 #minimum and maximum tile x,x, for info.json file
 minTX=None
 maxTX=None
@@ -64,6 +70,9 @@ with open(input_file, 'r') as csvfile:
         if (c["y"] < 0): print("Too low value: " + c.y + " <0")
         if (c["x"] > tile_size_cell - 1): print("Too high value: " + c.x + " >" + (tile_size_cell - 1))
         if (c["y"] > tile_size_cell - 1): print("Too high value: " + c.y + " >" + (tile_size_cell - 1))
+
+        #round floats to ints, when possible
+        round_floats_to_ints(c)
 
         #create folder
         t_folder = output_folder + "/" + str(xt) + "/"
