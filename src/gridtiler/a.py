@@ -1,6 +1,7 @@
 import os
 import csv
 from math import floor
+import json
 
 input_file = "/home/juju/gisco/building_demography/building_demography.csv"
 output_folder = '/home/juju/Bureau/test_tiling'
@@ -29,6 +30,11 @@ def get_csv_header(cell):
     keys.insert(1, "y")
     return keys
 
+#minimum and maximum tile x,x, for info.json file
+minTX=None
+maxTX=None
+minTY=None
+maxTY=None
 
 with open(input_file, 'r') as csvfile:
     csvreader = csv.DictReader(csvfile)
@@ -42,6 +48,12 @@ with open(input_file, 'r') as csvfile:
         #get cell tile x,y
         xt = int(floor((c["x"] - xO) / tile_size_m))
         yt = int(floor((c["y"] - yO) / tile_size_m))
+
+        #store extreme positions, for info.json file
+        if minTX == None or xt<minTX: minTX = xt
+        if maxTX == None or xt>maxTX: maxTX = xt
+        if minTY == None or yt<minTY: minTY = yt
+        if maxTY == None or yt>maxTY: maxTY = yt
 
         #compute cell position within its tile
         c["x"] = int(floor((c["x"] - xO) / r - xt * tile_size_cell))
@@ -68,4 +80,21 @@ with open(input_file, 'r') as csvfile:
             #write cell data
             writer.writerow(c)
 
-        #TODO: write info.json
+#write info.json
+
+data = {
+    "dims": [],
+    "crs": crs,
+    "tileSizeCell": tile_size_cell,
+    "originPoint": {
+        "x": xO,
+        "y": yO
+    },
+    "resolutionGeo": r,
+    "tilingBounds": {
+        "yMin": minTY,
+        "yMax": maxTY,
+        "xMax": maxTX,
+        "xMin": minTX
+    }
+}
