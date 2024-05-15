@@ -13,7 +13,8 @@ from utils.geomutils import average_z_coordinate
 # other years
 
 
-bbox = [4250000, 1250000, 5250000, 2750000] #IT
+#bbox = [4250000, 1250000, 5250000, 2750000] #IT
+bbox = [4267541, 2749532, 4267541, 2749532] #IT FR LU CH
 #bbox = [5267541, 1749532, 5267541, 1749532] #IT small
 #bbox = [4039813, 3004105, 4049813, 3094105] #LU north
 #bbox = [4039813, 2954105, 4049813, 3094105] #LU-FR
@@ -59,18 +60,22 @@ def loadBuildings(bbox):
 #IT
 def formatBuildingIT(bu):
     u = bu["edifc_uso"]
-    u = u[:2]
+    if u!=None: u = u[:2]
+
     t = bu["edifc_ty"]
-    t = t[:2]
+    if t!=None: t = t[:2]
+
     m = bu["edifc_mon"]
-    m = m[:2]
+    if m!=None: m = m[:2]
+
     a = bu["edifc_at"]
+
     keepOnlyGeometry(bu)
 
     if a != None and a != -9999 and a!=0 and a!=29997.0 : print("Elevation provided for IT building:", a)
 
     #TODO
-    bu_top = average_z_coordinate(bu["geometry"])
+    #bu_top = average_z_coordinate(bu["geometry"])
     #if(bu_top != 0): print("Elevation provided for IT building geometry:", bu_top)
     bu["floor_nb"] = 1
 
