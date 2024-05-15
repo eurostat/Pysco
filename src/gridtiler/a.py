@@ -29,3 +29,16 @@ with open(input_file, 'r') as csvfile:
         #get tile x,y
         xt = floor((c.x - xO) / tileSizeM)
         yt = floor((c.y - yO) / tileSizeM)
+
+        #compute cell position within its tile
+        c["x"] = floor((c["x"] - xO) / r - xt * tile_size_cell)
+        c["y"] = floor((c["y"]- yO) / r - yt * tile_size_cell)
+
+        #check x,y values. Should be within [0,tileResolutionPix-1]
+        if (c["x"] < 0): print("Too low value: " + c.x + " <0")
+        if (c["y"] < 0): print("Too low value: " + c.y + " <0")
+        if (c["x"] > tile_size_cell - 1): print("Too high value: " + c.x + " >" + (tile_size_cell - 1))
+        if (c["y"] > tile_size_cell - 1): print("Too high value: " + c.y + " >" + (tile_size_cell - 1))
+
+        #create folder
+        folder = output_folder + "/" + xt + "/"
