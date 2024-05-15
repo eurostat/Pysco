@@ -73,7 +73,7 @@ def formatBuildingIT(bu):
 
     bu["residential"] = 1 if u=="01" else 0.25 if u=="93" else 0
     bu["activity"] = 1 if u in ["02","03","04","06","07","08","09","10","11","12"] else 0.25 if u=="93" else 0
-    bu["cultural_value"] = 1 if u=="05" or m=="01" or t in ["03","06","07","08","10","11","12","13","15","16","17","18","20","22","24","25"] else 0
+    bu["cultural_value"] = 1 if u=="05" or m=="01" or t in ["03","06","07","10","11","12","13","15","16","17","18","20","22","24","25"] else 0
 
 DTM_LU = rasterio.open("/home/juju/geodata/LU/MNT_lux2017_3035.tif")
 def formatBuildingLU(bu):
