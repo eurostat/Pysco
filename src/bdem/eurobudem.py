@@ -63,7 +63,7 @@ def formatBuildingIT(bu):
     m = bu["edifc_mon"]
     keepOnlyGeometry(bu)
 
-    if str(a)!="-9999.0" or a!=-9999 or a!=-9999.0 or a!=None: print("Elevation provided for IT building:", a)
+    if str(a)!="-9999.0" or a!=-9999 or a!=-9999.0 or a!=None: print("Elevation provided for IT building:", a, type(a))
 
     bu["floor_nb"] = 1
 
