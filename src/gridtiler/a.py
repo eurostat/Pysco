@@ -20,9 +20,9 @@ def position_fun(c):
     c["y"] = int(a[0])
     del c['GRD_ID']
 
-#make list of keys from a cell, starting with "x" and "y"
-def keys(cell):
-    keys = cell.keys()
+#make csv header from a cell, starting with "x" and "y"
+def get_csv_header(cell):
+    keys = list(cell.keys())
     keys.remove("x")
     keys.remove("y")
     keys.insert(0, "x")
@@ -32,7 +32,7 @@ def keys(cell):
 
 with open(input_file, 'r') as csvfile:
     csvreader = csv.DictReader(csvfile)
-    keys = None
+    csv_header = None
 
     #iterate through cells
     for c in csvreader:
@@ -61,8 +61,8 @@ with open(input_file, 'r') as csvfile:
         file_exists = os.path.exists(file_path)
         with open(file_path, 'a', newline='') as csvfile:
             #writer
-            if keys==None: keys = keys(c)
-            writer = csv.DictWriter(csvfile, fieldnames=keys)
+            if csv_header==None: csv_header = get_csv_header(c)
+            writer = csv.DictWriter(csvfile, fieldnames=csv_header)
             #write header
             if not file_exists: writer.writeheader()
             #write cell data
