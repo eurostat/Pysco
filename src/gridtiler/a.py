@@ -11,7 +11,7 @@ yO = 1850000
 crs = "3035"
 
 #compute tile size, in geo unit
-tileSizeM = r * tile_size_cell
+tile_size_m = r * tile_size_cell
 
 #set cell x,y from its grid_id
 def position_fun(c):
@@ -30,8 +30,8 @@ with open(input_file, 'r') as csvfile:
         position_fun(c)
 
         #get cell tile x,y
-        xt = floor((c.x - xO) / tileSizeM)
-        yt = floor((c.y - yO) / tileSizeM)
+        xt = floor((c["x"] - xO) / tile_size_m)
+        yt = floor((c["y"] - yO) / tile_size_m)
 
         #compute cell position within its tile
         c["x"] = floor((c["x"] - xO) / r - xt * tile_size_cell)
@@ -44,4 +44,16 @@ with open(input_file, 'r') as csvfile:
         if (c["y"] > tile_size_cell - 1): print("Too high value: " + c.y + " >" + (tile_size_cell - 1))
 
         #create folder
-        folder = output_folder + "/" + xt + "/"
+        t_folder = output_folder + "/" + str(xt) + "/"
+        if not os.path.exists(t_folder): os.makedirs(t_folder)
+
+        file_path = t_folder + str(yt) + ".csv"
+        with open(file_path, 'a', newline='') as csvfile:
+            #writer
+            writer = csv.DictWriter(csvfile, fieldnames=c.keys())
+            #write header
+            if not os.path.exists(file_path): writer.writeheader()
+            #write cell data
+            writer.writerow(c)
+
+        #TODO: write info.json
