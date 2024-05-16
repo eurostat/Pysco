@@ -10,6 +10,14 @@ def position_fun(c):
     del c['GRD_ID']
 
 
+grid_transformation(
+    "/home/juju/gisco/building_demography/building_demography.csv",
+    position_fun,
+    '/home/juju/Bureau/out_100.csv'
+)
+
+
+""""
 
 grid_aggregation(
     "/home/juju/gisco/building_demography/building_demography.csv",
@@ -17,11 +25,6 @@ grid_aggregation(
     '/home/juju/Bureau/out_1000.csv',
     10
 )
-
-
-
-
-""""
 
 
 
