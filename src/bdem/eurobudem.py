@@ -33,7 +33,7 @@ def loadBuildings(bbox):
     buildings = []
 
     #PL
-    bs = loadFeatures('/home/juju/geodata/PL/bdot10k/bu_dbsn.gpkg', bbox, layer="bubd")
+    bs = loadFeatures('/home/juju/geodata/PL/bdot10k/bu_bubd_bdot10k.gpkg', bbox)
     for bu in bs: formatBuildingPL(bu)
     buildings += bs
 
