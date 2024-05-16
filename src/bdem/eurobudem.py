@@ -13,8 +13,9 @@ from utils.geomutils import average_z_coordinate
 # FR date of creation
 # other years
 
+bbox = [5250000, 2750000, 5250000, 2750000] #PL small
 #bbox = [4250000, 1250000, 5250000, 2750000] #IT
-bbox = [4267541, 2749532, 4267541, 3250000] #LU
+#bbox = [4267541, 2749532, 4267541, 3250000] #LU
 #bbox = [3000000, 2000000, 4413621, 3462995] #FR
 
 grid_resolution = 100
@@ -30,6 +31,11 @@ clamp = lambda v:floor(v/file_size_m)*file_size_m
 
 def loadBuildings(bbox):
     buildings = []
+
+    #PL
+    bs = loadFeatures('/home/juju/geodata/PL/bdot10k/bu_dbsn.gpkg', bbox, layer="bubd")
+    for bu in bs: formatBuildingPL(bu)
+    buildings += bs
 
     #FR
     bs = loadFeatures('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox)
@@ -49,6 +55,20 @@ def loadBuildings(bbox):
     #TODO remove duplicates
 
     return buildings
+
+
+#PL
+def formatBuildingPL(bu):
+
+    keepOnlyGeometry(bu)
+
+    bu["floor_nb"] = 1
+
+    bu["residential"] = 1
+    bu["activity"] = 0
+    bu["cultural_value"] = 0
+
+
 
 #IT
 def formatBuildingIT(bu):
