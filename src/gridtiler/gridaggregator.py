@@ -15,6 +15,7 @@ def grid_aggregation(
     target_resolution = a*resolution
     keys = None
 
+    print("aggregation indexing...")
     with open(input_file, 'r') as csvfile:
         csvreader = csv.DictReader(csvfile)
 
@@ -27,15 +28,17 @@ def grid_aggregation(
             ya = target_resolution * floor(float(c["y"]) / target_resolution)
 
             #add cell to its aggregation level
-            cA_ = aggregation_index[xa]
-            if cA_==None:
+            try: cA_ = aggregation_index[str(xa)]
+            except:
                 cA_ = {}
-                aggregation_index[xa] = cA_
-            cA = cA_[ya]
-            if cA==None: 
+                aggregation_index[str(xa)] = cA_
+            try: cA = cA_[str(ya)]
+            except:
                 cA = []
-                cA_[ya] = cA
+                cA_[str(ya)] = cA
             cA.append(c)
+
+    print("aggregation computation...")
 
     #aggregation function
     #TODO handle other cases: average, mode, etc
