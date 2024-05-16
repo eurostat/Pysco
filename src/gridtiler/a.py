@@ -23,7 +23,6 @@ grid_transformation("/home/juju/gisco/building_demography/building_demography.cs
 
 
 
-
 #aggregation
 for a in [2,5,10,20,50,100,200,500]:
     print("aggregation to", a*100, "m")
@@ -31,21 +30,14 @@ for a in [2,5,10,20,50,100,200,500]:
 
 
 #tiling
-#TODO
-
-
-""""
-
-
-
-grid_tiling(
-    "/home/juju/gisco/building_demography/building_demography.csv",
-    '/home/juju/Bureau/test_tiling',
-    100,
-    #tile_size_cell = 128,
-    x_origin = 2500000,
-    y_origin = 1000000,
-    crs = "EPSG:3035",
-    preprocess = position_fun
-)
-"""
+for a in [1,2,5,10,20,50,100,200,500]:
+    print("tiling for resolution", a*100, "m")
+    grid_tiling(
+        folder+str(a*100)+'.csv',
+        '/home/juju/workspace/BuildingDemography/pub/tiles/',
+        100,
+        #tile_size_cell = 128,
+        x_origin = 2500000,
+        y_origin = 1000000,
+        crs = "EPSG:3035"
+    )
