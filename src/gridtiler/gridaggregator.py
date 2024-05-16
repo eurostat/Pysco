@@ -16,8 +16,8 @@ def grid_aggregation(
     keys = None
 
     print("aggregation indexing...")
-    with open(input_file, 'r') as csvfile:
-        csvreader = csv.DictReader(csvfile)
+    with open(input_file, 'r') as infile:
+        csvreader = csv.DictReader(infile)
 
         #iterate through cells from the input CSV file
         for c in csvreader:
@@ -46,7 +46,10 @@ def grid_aggregation(
 
     #aggregation function
     #TODO handle other cases: average, mode, etc
-    aggregation_fun = sum
+    def aggregation_fun(values):
+        sum = 0
+        for value in values: sum += float(value)
+        return sum
 
     #prepare function to round aggregated figures
     tolerance = pow(10, aggregation_rounding)
@@ -54,7 +57,7 @@ def grid_aggregation(
 
 
     writer = None
-    with open(output_file, 'w') as file:
+    with open(output_file, 'w') as outfile:
 
         #aggregate cell values
         for xa, d in aggregation_index.items():
@@ -77,7 +80,7 @@ def grid_aggregation(
 
                 #if not, create writer and write header
                 if writer == None:
-                    writer = csv.DictWriter(csvfile, fieldnames=get_csv_header(cA))
+                    writer = csv.DictWriter(outfile, fieldnames=get_csv_header(cA))
                     writer.writeheader()
 
                 #round floats
