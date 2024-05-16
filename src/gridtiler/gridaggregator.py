@@ -21,11 +21,15 @@ def grid_aggregation(
 
         #iterate through cells from the input CSV file
         for c in csvreader:
-            if keys==None: keys = list(c.keys())
-
             #get aggregated cell x,y
             xa = target_resolution * floor(float(c["x"]) / target_resolution)
             ya = target_resolution * floor(float(c["y"]) / target_resolution)
+
+            #release memory
+            del c["x"]; del c["y"]
+
+            #store keys
+            if keys==None: keys = list(c.keys())
 
             #add cell to its aggregation level
             try: cA_ = aggregation_index[str(xa)]
@@ -46,29 +50,29 @@ def grid_aggregation(
 
     #prepare function to round aggregated figures
     tolerance = pow(10, aggregation_rounding)
-    roundToTolerance = lambda number : round(number * tolerance) / tolerance
+    round_to_tolerance = lambda number : round(number * tolerance) / tolerance
 
     #aggregate cell values
     for xa, d in aggregation_index.items():
         for ya, cells in d.items():
 
-            print(xa,ya,len(cells))
+            #print(xa,ya,len(cells))
 
-            #TODO compute aggregated values
+            #make aggregated cell
+            cA = { "x": xa, "y": ya }
+
+            #compute aggregates values
+            for k in keys:
+                #get list of values to aggregate
+                values = []
+                for c in cells: values.append(c[k])
+                #compute and set aggregated value
+                cA[k] = aggregation_fun(values)
+                if (aggregation_rounding != None): cA[k] = round_to_tolerance(cA[k])
+
+            print(cA)
+
             #TODO write in file
 
             #release memory immediatelly
-            del d[ya]
-
-            """
-            //compute aggregates values
-            for (let k of keys) {
-                //get list of values to aggregate
-                const vs = []
-                for (let c of cA.cells) vs.push(c[k])
-                //compute and set aggregated value
-                cA[k] = aggregateSum(vs)
-                if (opts.aggregationRounding != undefined)
-                    cA[k] = roundToTolerance(cA[k])
-            }
-            """    
+            #del d[ya]
