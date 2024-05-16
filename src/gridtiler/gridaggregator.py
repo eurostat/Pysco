@@ -76,8 +76,6 @@ def grid_aggregation(
                     cA[k] = aggregation_fun(values)
                     if (aggregation_rounding != None): cA[k] = round_to_tolerance(cA[k])
 
-                print(cA)
-
                 #if not, create writer and write header
                 if writer == None:
                     writer = csv.DictWriter(outfile, fieldnames=get_csv_header(cA))
