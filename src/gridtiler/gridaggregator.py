@@ -87,6 +87,6 @@ def grid_aggregation(
                 #write aggregated cell data in output file
                 writer.writerow(cA)
 
-                #TODO release memory immediatelly
+                #release memory immediatelly
                 cells.clear()
                 #del d[ya]
