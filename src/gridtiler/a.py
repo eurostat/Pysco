@@ -2,6 +2,14 @@ from gridtiler import grid_tiling
 from gridaggregator import grid_aggregation
 
 
+#set cell x,y from its grid_id
+def position_fun(c):
+    a = c['GRD_ID'].split("N")[1].split("E")
+    c["x"] = int(a[1])
+    c["y"] = int(a[0])
+    del c['GRD_ID']
+
+
 
 grid_aggregation(
     "/home/juju/gisco/building_demography/building_demography.csv",
@@ -15,12 +23,6 @@ grid_aggregation(
 
 """"
 
-#set cell x,y from its grid_id
-def position_fun(c):
-    a = c['GRD_ID'].split("N")[1].split("E")
-    c["x"] = int(a[1])
-    c["y"] = int(a[0])
-    del c['GRD_ID']
 
 
 grid_tiling(
