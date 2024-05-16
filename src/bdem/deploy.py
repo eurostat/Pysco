@@ -14,7 +14,7 @@ if not os.path.exists(folder): os.makedirs(folder)
 
 
 #make csv file
-with open(folder + "100m", 'w', newline='') as csvfile:
+with open(folder + "100.csv", 'w', newline='') as csvfile:
 
     #get all gpkg files to merge
     gpkg_files = os.listdir(gpkg_folder)
