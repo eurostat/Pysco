@@ -1,6 +1,6 @@
-import os
 import csv
 from math import floor,pow
+from gridtiler import get_csv_header,round_floats_to_ints
 
 def grid_aggregation(
     input_file,
@@ -52,27 +52,39 @@ def grid_aggregation(
     tolerance = pow(10, aggregation_rounding)
     round_to_tolerance = lambda number : round(number * tolerance) / tolerance
 
-    #aggregate cell values
-    for xa, d in aggregation_index.items():
-        for ya, cells in d.items():
 
-            #print(xa,ya,len(cells))
+    writer = None
+    with open(output_file, 'w') as file:
 
-            #make aggregated cell
-            cA = { "x": xa, "y": ya }
+        #aggregate cell values
+        for xa, d in aggregation_index.items():
+            for ya, cells in d.items():
+                #print(xa,ya,len(cells))
 
-            #compute aggregates values
-            for k in keys:
-                #get list of values to aggregate
-                values = []
-                for c in cells: values.append(c[k])
-                #compute and set aggregated value
-                cA[k] = aggregation_fun(values)
-                if (aggregation_rounding != None): cA[k] = round_to_tolerance(cA[k])
+                #make aggregated cell
+                cA = { "x": xa, "y": ya }
 
-            print(cA)
+                #compute aggregates values
+                for k in keys:
+                    #get list of values to aggregate
+                    values = []
+                    for c in cells: values.append(c[k])
+                    #compute and set aggregated value
+                    cA[k] = aggregation_fun(values)
+                    if (aggregation_rounding != None): cA[k] = round_to_tolerance(cA[k])
 
-            #TODO write in file
+                print(cA)
 
-            #release memory immediatelly
-            #del d[ya]
+                #if not, create writer and write header
+                if writer == None:
+                    writer = csv.DictWriter(csvfile, fieldnames=get_csv_header(cA))
+                    writer.writeheader()
+
+                #round floats
+                round_floats_to_ints(cA)
+
+                #write aggregated cell data in output file
+                writer.writerow(cA)
+
+                #TODO release memory immediatelly
+                #del d[ya]
