@@ -9,7 +9,7 @@ from utils.geomutils import average_z_coordinate
 
 #TODO
 # test del my_dict['b'] for input data formating in keepOnlyGeometry
-# other countries: IT, NL, BE, SK, CZ, PL... see eubc
+# other countries: PL, NL, BE, SK, CZ... see eubc
 # FR date of creation
 # other years
 
