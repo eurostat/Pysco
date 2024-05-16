@@ -20,8 +20,10 @@ with open(folder + "100m", 'w', newline='') as csvfile:
     gpkg_files = os.listdir(gpkg_folder)
 
     #go through gpkg files
+    i=1
     for gpkg_file in gpkg_files:
-        print(datetime.now(), (i+1), "/", len(gpkg_files), gpkg_folder + gpkg_file)
+        print(datetime.now(), i, "/", len(gpkg_files), gpkg_folder + gpkg_file)
+        i+=1
 
         #open gpkg file
         with fiona.open(gpkg_folder + gpkg_file, 'r') as src:
