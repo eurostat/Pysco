@@ -1,5 +1,4 @@
 import os
-from gridtiler import grid_tiling
 
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
