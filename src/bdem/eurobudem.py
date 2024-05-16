@@ -63,52 +63,27 @@ def formatBuildingPL(bu):
     """"
     FUNOGBUD
 
-    *budynekGospodarstwaRolnego
-    budynekZabytkowy M
-    budynkiBiurowe
-    budynkiGarazy
-    budynkiHandlowoUslugowe
-    *Agricultural Farm building
-    Historic building
-    Office buildings
-    Garage buildings
-    Commercial and Service buildings
-
-    *budynkiHoteli
-    budynkiKultuReligijnego M
-    budynkiKulturyFizycznej
-    budynkiLacznosciDworcowITerminali
-    budynkiMieszkalneJednorodzinne R
-    *Hotel buildings
-    Religious Cult buildings
-    Physical Culture buildings
-    communication buildings, railway stations and terminals
-    Single-family residential buildings
-
-    *budynkiMuzeowIBibliotek
-    budynkiODwochMieszkaniach R
-    budynkiOTrzechIWiecejMieszkaniach R
-    budynkiPrzemyslowe
-    budynkiSzkolIInstytucjiBadawczych
-    *buildings of museums and libraries
-    buildings About Two Apartments
-    buildings with three more apartments
-    Industrial buildings
-    buildings of schools and research institutions
-
-    *budynkiSzpitaliIZakladowOpiekiMedycznej
-    budynkiZakwaterowaniaTurystycznegoPozostale
-    budynkiZbiorowegoZamieszkania R
-    ogolnodostepneObiektyKulturalne
-    pozostaleBudynkiNiemieszkalne
-    *buildings of hospitals and medical care facilities
-    Tourist Accommodation buildings Other
-    Collective Housing buildings
-    publicly accessible Cultural Facilities
-    other non-residential buildings
-
-    *zbiornikSilosIBudynkiMagazynowe
-    *Silos tank and warehouse buildings
+    Agricultural Farm building budynekGospodarstwaRolnego
+    M Historic building budynekZabytkowy
+    Office buildings budynkiBiurowe
+    Garage buildings budynkiGarazy
+    Commercial and Service buildings budynkiHandlowoUslugowe
+    Hotel buildings budynkiHoteli
+    M Religious Cult buildings budynkiKultuReligijnego
+    Physical Culture buildings budynkiKulturyFizycznej
+    communication buildings, railway stations and terminals budynkiLacznosciDworcowITerminali
+    R Single-family residential buildings budynkiMieszkalneJednorodzinne
+    buildings of museums and libraries budynkiMuzeowIBibliotek
+    R buildings About Two Apartments budynkiODwochMieszkaniach
+    R buildings with three more apartments budynkiOTrzechIWiecejMieszkaniach
+    Industrial buildings budynkiPrzemyslowe
+    buildings of schools and research institutions budynkiSzkolIInstytucjiBadawczych
+    buildings of hospitals and medical care facilities budynkiSzpitaliIZakladowOpiekiMedycznej
+    Tourist Accommodation buildings Other budynkiZakwaterowaniaTurystycznegoPozostale
+    R Collective Housing buildings budynkiZbiorowegoZamieszkania
+    publicly accessible Cultural Facilities ogolnodostepneObiektyKulturalne
+    other non-residential buildings pozostaleBudynkiNiemieszkalne
+    *Silos tank and warehouse buildings zbiornikSilosIBudynkiMagazynowe
 
     """
 
@@ -127,7 +102,7 @@ def formatBuildingPL(bu):
 
     #FUNOGBUD - main function
     #FUNSZCZ - detailled function
-    bu["residential"] = 1 if f in ["","","","","","","",""] else 0
+    bu["residential"] = 1 if f in ["budynkiMieszkalneJednorodzinne","budynkiODwochMieszkaniach","budynkiOTrzechIWiecejMieszkaniach","budynkiZbiorowegoZamieszkania"] else 0
     bu["activity"] = 0
     bu["cultural_value"] = 1 if m=="Tak" or f in ["budynekZabytkowy","budynkiKultuReligijnego"] else 0
 
