@@ -21,19 +21,17 @@ if compilation:
 
     #make csv file
     with open(folder + "100.csv", 'w', newline='') as csvfile:
+        writer = None
 
         #get all gpkg files to merge
         gpkg_files = os.listdir(gpkg_folder)
 
         #go through gpkg files
-        i=1
-        for gpkg_file in gpkg_files:
-            print(datetime.now(), i, "/", len(gpkg_files), gpkg_folder + gpkg_file)
-            i+=1
+        for i, gpkg_file in enumerate(gpkg_files):
+            print(datetime.now(), (i+1), "/", len(gpkg_files), gpkg_folder + gpkg_file)
 
             #open gpkg file
             with fiona.open(gpkg_folder + gpkg_file, 'r') as src:
-                writer = None
 
                 #write columns
                 for feature in src:
