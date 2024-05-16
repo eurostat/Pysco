@@ -13,9 +13,9 @@ from utils.geomutils import average_z_coordinate
 # FR date of creation
 # other years
 
-bbox = [4750000, 1510000, 4750000, 2750000] #IT rest
+#bbox = [4750000, 1510000, 4750000, 2750000] #IT rest
 #bbox = [4250000, 1250000, 5250000, 2750000] #IT
-#bbox = [4267541, 2749532, 4267541, 2749532] #IT FR LU CH
+bbox = [4267541, 2749532, 4267541, 2749532] #IT FR LU CH
 #bbox = [5267541, 1749532, 5267541, 1749532] #IT small
 #bbox = [4039813, 3004105, 4049813, 3094105] #LU north
 #bbox = [4039813, 2954105, 4049813, 3094105] #LU-FR
@@ -98,6 +98,7 @@ def formatBuildingLU(bu):
     row, col = DTM_LU.index(centroid.x, centroid.y)
     elevation = DTM_LU.read(1, window=((row, row+1), (col, col+1)))[0][0]
     h = bu_top - elevation
+    if h>38*3: h=3 #if a building has more than 38 floors, then there is a bug. Set height to one floor only.
 
     bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(h/3), 1)
 
