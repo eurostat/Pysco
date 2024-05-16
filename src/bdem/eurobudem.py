@@ -60,8 +60,6 @@ def loadBuildings(bbox):
 #PL
 def formatBuildingPL(bu):
 
-    keepOnlyGeometry(bu)
-
     """"
     budynki przemysłowe
     budynki transportu i łączności
@@ -84,13 +82,35 @@ def formatBuildingPL(bu):
     production, service and farm buildings for agriculture
     other non-residential buildings
     residential buildings
+
+
+    funkcja Ogol na Budynku: OT_FunOgol na Budynku [0..1]
+    funkcja Szczegol owa Budynku: OT_FunSzczegol owa Budynku [0..*]
+    przewa za ja ca Funkcja Budynku: OT_FunSzczegol owa Budynku [0..1]
+    l i czba Kondygna cji : Integer [0..1]
+        
+    function Ogol on Building: OT_FunOgol on Building [0..1]
+    Building Detail function: OT_Building Detail Fun [0..*]
+    predominant building function: OT_FunBuilding Detail [0..1]
+    l and number of Storeys: Integer [0..1]    
+
+
     """
 
-    bu["floor_nb"] = 1
+    #floor number
+    u = bu["LKOND"]
+    if u==None: u = 1
+    #monument
+    m = bu["ZABYTEK"]
+
+    keepOnlyGeometry(bu)
+
+    #LKOND - KODKST
+    bu["floor_nb"] = int(u)
 
     bu["residential"] = 1
     bu["activity"] = 0
-    bu["cultural_value"] = 0
+    bu["cultural_value"] = 1 if m=="Tak" else 0
 
 
 
@@ -121,7 +141,10 @@ def formatBuildingIT(bu):
     bu["cultural_value"] = 1 if u=="05" or m=="01" or t in ["03","06","07","10","11","12","13","15","16","17","18","20","22","24","25"] else 0
 
 #LU
-DTM_LU = rasterio.open("/home/juju/geodata/LU/MNT_lux2017_3035.tif")
+DTM_LU = None
+def get_DTM_LU():
+    if DTM_LU==None: DTM_LU = rasterio.open("/home/juju/geodata/LU/MNT_lux2017_3035.tif")
+    return DTM_LU
 def formatBuildingLU(bu):
     n = bu["NATURE"]
     if n==None: n=0
@@ -131,8 +154,8 @@ def formatBuildingLU(bu):
     #estimate building height from geometry 'z' and DTM
     bu_top = average_z_coordinate(bu["geometry"])
     centroid = bu["geometry"].centroid
-    row, col = DTM_LU.index(centroid.x, centroid.y)
-    elevation = DTM_LU.read(1, window=((row, row+1), (col, col+1)))[0][0]
+    row, col = get_DTM_LU().index(centroid.x, centroid.y)
+    elevation = get_DTM_LU().read(1, window=((row, row+1), (col, col+1)))[0][0]
     h = bu_top - elevation
     if elevation == -32767 or bu_top > 1000 or bu_top<0 or elevation<0: h=3
     if h>38*3: h=3 #if a building has more than 38 floors, then there is a bug. Set height to one floor only.
