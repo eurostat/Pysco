@@ -61,25 +61,23 @@ if compilation:
 
 
 #aggregation
-aggregations = [2,5,10,20,50,100,200,500]
 if aggregation:
-    for a in aggregations:
+    for a in [2,5,10,20,50,100,200,500]:
         print("aggregation to", a*100, "m")
         grid_aggregation(folder+"100.csv", 100, folder+str(a*100)+'.csv', a)
 
 
 #tiling
 if tiling:
-    for a in aggregations:
-        resolution = a*100
+    for resolution in [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]:
         print("tiling for resolution", resolution)
         
         #create output folder
-        out_folder = '/home/juju/workspace/BuildingDemography/pub/tiles/' + str(a*100)
+        out_folder = '/home/juju/workspace/BuildingDemography/pub/tiles/' + str(resolution)
         if not os.path.exists(folder): os.makedirs(folder)
 
         grid_tiling(
-            folder+str(a*100)+'.csv',
+            folder+str(resolution)+'.csv',
             out_folder,
             resolution,
             #tile_size_cell = 128,
