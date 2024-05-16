@@ -20,19 +20,12 @@ with open(folder + "100m", 'w', newline='') as csvfile:
     gpkg_files = os.listdir(gpkg_folder)
 
     #go through gpkg files
-    for i, gpkg_file in enumerate(gpkg_files):
+    for gpkg_file in gpkg_files:
         print(datetime.now(), (i+1), "/", len(gpkg_files), gpkg_folder + gpkg_file)
 
         #open gpkg file
         with fiona.open(gpkg_folder + gpkg_file, 'r') as src:
-
-            #write header for the first one only
-            if i==0:
-                #write header
-                schema = src.schema
-                fieldnames = [field for field in schema['properties'].keys() if field != 'geometry']
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                writer.writeheader()
+            writer = None
 
             #write columns
             for feature in src:
@@ -41,13 +34,19 @@ with open(folder + "100m", 'w', newline='') as csvfile:
                 if feature['properties']['number'] <= 0: continue
 
                 #get properties
-                properties = {key: value for key, value in feature['properties'].items() if key != 'geometry'}
+                properties = feature['properties']
+                del properties["geometry"]
 
                 #grid_id to x,y
                 a = properties['GRD_ID'].split("N")[1].split("E")
                 properties["x"] = int(a[1])
                 properties["y"] = int(a[0])
                 del properties['GRD_ID']
+
+                #create writer and write header if not already done
+                if writer==None:
+                    writer = csv.DictWriter(csvfile, fieldnames=properties.keys())
+                    writer.writeheader()
 
                 #write
                 writer.writerow(properties)
