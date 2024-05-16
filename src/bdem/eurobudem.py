@@ -63,27 +63,27 @@ def formatBuildingPL(bu):
     """"
     FUNOGBUD
 
-    Agricultural Farm building budynekGospodarstwaRolnego
+    A Agricultural Farm building budynekGospodarstwaRolnego
     M Historic building budynekZabytkowy
-    Office buildings budynkiBiurowe
+    A Office buildings budynkiBiurowe
     Garage buildings budynkiGarazy
-    Commercial and Service buildings budynkiHandlowoUslugowe
-    Hotel buildings budynkiHoteli
+    A Commercial and Service buildings budynkiHandlowoUslugowe
+    A Hotel buildings budynkiHoteli
     M Religious Cult buildings budynkiKultuReligijnego
-    Physical Culture buildings budynkiKulturyFizycznej
-    communication buildings, railway stations and terminals budynkiLacznosciDworcowITerminali
+    A Physical Culture buildings budynkiKulturyFizycznej
+    A communication buildings, railway stations and terminals budynkiLacznosciDworcowITerminali
     R Single-family residential buildings budynkiMieszkalneJednorodzinne
-    buildings of museums and libraries budynkiMuzeowIBibliotek
+    A buildings of museums and libraries budynkiMuzeowIBibliotek
     R buildings About Two Apartments budynkiODwochMieszkaniach
     R buildings with three more apartments budynkiOTrzechIWiecejMieszkaniach
-    Industrial buildings budynkiPrzemyslowe
-    buildings of schools and research institutions budynkiSzkolIInstytucjiBadawczych
-    buildings of hospitals and medical care facilities budynkiSzpitaliIZakladowOpiekiMedycznej
-    Tourist Accommodation buildings Other budynkiZakwaterowaniaTurystycznegoPozostale
+    A Industrial buildings budynkiPrzemyslowe
+    A buildings of schools and research institutions budynkiSzkolIInstytucjiBadawczych
+    A buildings of hospitals and medical care facilities budynkiSzpitaliIZakladowOpiekiMedycznej
+    A Tourist Accommodation buildings Other budynkiZakwaterowaniaTurystycznegoPozostale
     R Collective Housing buildings budynkiZbiorowegoZamieszkania
-    publicly accessible Cultural Facilities ogolnodostepneObiektyKulturalne
-    other non-residential buildings pozostaleBudynkiNiemieszkalne
-    *Silos tank and warehouse buildings zbiornikSilosIBudynkiMagazynowe
+    A publicly accessible Cultural Facilities ogolnodostepneObiektyKulturalne
+    A other non-residential buildings pozostaleBudynkiNiemieszkalne
+    A Silos tank and warehouse buildings zbiornikSilosIBudynkiMagazynowe
 
     """
 
@@ -103,9 +103,21 @@ def formatBuildingPL(bu):
     #FUNOGBUD - main function
     #FUNSZCZ - detailled function
     bu["residential"] = 1 if f in ["budynkiMieszkalneJednorodzinne","budynkiODwochMieszkaniach","budynkiOTrzechIWiecejMieszkaniach","budynkiZbiorowegoZamieszkania"] else 0
-    bu["activity"] = 0
+    bu["activity"] = 1 if f in ["budynekGospodarstwaRolnego",
+    "budynkiBiurowe",
+    "budynkiHandlowoUslugowe",
+    "budynkiHoteli",
+    "budynkiKulturyFizycznej",
+    "budynkiLacznosciDworcowITerminali",
+    "budynkiMuzeowIBibliotek",
+    "budynkiPrzemyslowe",
+    "budynkiSzkolIInstytucjiBadawczych",
+    "budynkiSzpitaliIZakladowOpiekiMedycznej",
+    "budynkiZakwaterowaniaTurystycznegoPozostale",
+    "ogolnodostepneObiektyKulturalne",
+    "pozostaleBudynkiNiemieszkalne",
+    "zbiornikSilosIBudynkiMagazynowe"] else 0
     bu["cultural_value"] = 1 if m=="Tak" or f in ["budynekZabytkowy","budynkiKultuReligijnego"] else 0
-
 
 
 #IT
