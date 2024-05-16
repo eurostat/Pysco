@@ -43,7 +43,7 @@ def loadBuildings(bbox):
     #LU
     buildings_LU = loadFeatures('/home/juju/geodata/LU/ACT/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', bbox)
     for bu in buildings_LU:
-        bu["geometry"] = bu["geometry"].buffer(0)
+        #bu["geometry"] = bu["geometry"].buffer(0)
         formatBuildingLU(bu)
     buildings += buildings_LU
 
@@ -51,7 +51,7 @@ def loadBuildings(bbox):
     #IT
     buildings_IT = loadFeatures('/home/juju/geodata/IT/DBSN/dbsn.gpkg', bbox)
     for bu in buildings_IT:
-        bu["geometry"] = bu["geometry"].buffer(0)
+        #bu["geometry"] = bu["geometry"].buffer(0)
         formatBuildingIT(bu)
     buildings += buildings_IT
 
