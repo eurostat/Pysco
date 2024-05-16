@@ -37,7 +37,6 @@ with open(folder + "100m", 'w', newline='') as csvfile:
 
                 #get properties
                 properties = { key: value for key, value in feature['properties'].items() }
-                del properties["geometry"]
 
                 #grid_id to x,y
                 a = properties['GRD_ID'].split("N")[1].split("E")
