@@ -61,7 +61,8 @@ def grid_aggregation(
 
         #aggregate cell values
         for xa, d in aggregation_index.items():
-            for ya, cells in d.items():
+            items = d.items()
+            for ya, cells in items:
                 #print(xa,ya,len(cells))
 
                 #make aggregated cell
@@ -88,4 +89,5 @@ def grid_aggregation(
                 writer.writerow(cA)
 
                 #TODO release memory immediatelly
-                #del d[ya]
+                cells.clear()
+                del d[ya]
