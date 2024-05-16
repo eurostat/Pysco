@@ -94,6 +94,52 @@ def formatBuildingPL(bu):
     predominant building function: OT_FunBuilding Detail [0..1]
     l and number of Storeys: Integer [0..1]    
 
+    *budynekGospodarstwaRolnego
+    budynekZabytkowy M
+    budynkiBiurowe
+    budynkiGarazy
+    budynkiHandlowoUslugowe
+    *Agricultural Farm building
+    Historic building
+    Office buildings
+    Garage buildings
+    Commercial and Service buildings
+
+    *budynkiHoteli
+    budynkiKultuReligijnego M
+    budynkiKulturyFizycznej
+    budynkiLacznosciDworcowITerminali
+    budynkiMieszkalneJednorodzinne
+    *Hotel buildings
+    Religious Cult buildings M
+    Physical Culture buildings
+    communication buildings, railway stations and terminals
+    Single-family residential buildings R
+
+    *budynkiMuzeowIBibliotek
+    budynkiODwochMieszkaniach
+    budynkiOTrzechIWiecejMieszkaniach
+    budynkiPrzemyslowe
+    budynkiSzkolIInstytucjiBadawczych
+    *buildings of museums and libraries
+    buildings About Two Apartments R
+    buildings with three more apartments R
+    Industrial buildings
+    buildings of schools and research institutions
+
+    *budynkiSzpitaliIZakladowOpiekiMedycznej
+    budynkiZakwaterowaniaTurystycznegoPozostale
+    budynkiZbiorowegoZamieszkania R
+    ogolnodostepneObiektyKulturalne
+    pozostaleBudynkiNiemieszkalne
+    *buildings of hospitals and medical care facilities
+    Tourist Accommodation buildings Other
+    Collective Housing buildings R
+    publicly accessible Cultural Facilities
+    other non-residential buildings
+
+    *zbiornikSilosIBudynkiMagazynowe
+    *Silos tank and warehouse buildings
 
     """
 
@@ -108,6 +154,8 @@ def formatBuildingPL(bu):
     #LKOND - KODKST
     bu["floor_nb"] = int(u)
 
+    #FUNOGBUD - main function
+    #FUNSZCZ - detailled function
     bu["residential"] = 1
     bu["activity"] = 0
     bu["cultural_value"] = 1 if m=="Tak" else 0
