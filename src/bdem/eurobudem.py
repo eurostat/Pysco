@@ -62,6 +62,30 @@ def formatBuildingPL(bu):
 
     keepOnlyGeometry(bu)
 
+    """"
+    budynki przemysłowe
+    budynki transportu i łączności
+    budynki handlowo-usługowe
+    zbiorniki, silosy i budynki magazynowe
+    budynki biurowe
+    budynki szpitali i inne budynki opieki zdrowotnej
+    budynki oświaty, nauki i kultury oraz budynki sportowe
+    budynki produkcyjne, usługowe i gospodarcze dla rolnictwa
+    pozostałe budynki niemieszkalne
+    budynki mieszkalne
+
+    industrial buildings
+    transport and communications buildings
+    commercial and service buildings
+    tanks, silos and storage buildings
+    office buildings
+    hospital buildings and other health care buildings
+    education, science and culture buildings and sports buildings
+    production, service and farm buildings for agriculture
+    other non-residential buildings
+    residential buildings
+    """
+
     bu["floor_nb"] = 1
 
     bu["residential"] = 1
