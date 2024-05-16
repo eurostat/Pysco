@@ -4,7 +4,9 @@ import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from gridtiler.gridtiler import grid_transformation, grid_aggregation, grid_tiling
 
-#TODO publish that to buildingdem repository
+
+
+#TODO publish that to buildingdemography repository
 
 
 
@@ -35,7 +37,8 @@ for a in [2,5,10,20,50,100,200,500]:
 
 #tiling
 for a in [1,2,5,10,20,50,100,200,500]:
-    print("tiling for resolution", a*100, "m")
+    resolution = a*100
+    print("tiling for resolution", resolution)
     
     #create output folder
     out_folder = '/home/juju/workspace/BuildingDemography/pub/tiles/' + str(a*100)
@@ -44,7 +47,7 @@ for a in [1,2,5,10,20,50,100,200,500]:
     grid_tiling(
         folder+str(a*100)+'.csv',
         out_folder,
-        100,
+        resolution,
         #tile_size_cell = 128,
         x_origin = 2500000,
         y_origin = 1000000,
