@@ -36,7 +36,7 @@ with open(folder + "100m", 'w', newline='') as csvfile:
                 if feature['properties']['number'] <= 0: continue
 
                 #get properties
-                properties = feature['properties']
+                properties = { key: value for key, value in feature['properties'].items() }
                 del properties["geometry"]
 
                 #grid_id to x,y
