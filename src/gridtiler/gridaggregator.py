@@ -23,8 +23,8 @@ def grid_aggregation(
             if keys==None: keys = list(c.keys())
 
             #get aggregated cell x,y
-            xa = target_resolution * floor(c["x"] / target_resolution)
-            ya = target_resolution * floor(c["y"] / target_resolution)
+            xa = target_resolution * floor(float(c["x"]) / target_resolution)
+            ya = target_resolution * floor(float(c["y"]) / target_resolution)
 
             #add cell to its aggregation level
             cA_ = aggregation_index[xa]

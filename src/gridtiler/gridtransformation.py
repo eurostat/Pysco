@@ -1,6 +1,6 @@
 import os
 import csv
-from gridtiler import get_csv_header
+from gridtiler import get_csv_header,round_floats_to_ints
 
 def grid_transformation(
     input_file,
@@ -22,6 +22,7 @@ def grid_transformation(
 
                 #apply function
                 function(c)
+                round_floats_to_ints(c)
 
                 #create writer, if necessary, write file header
                 if writer==None:
