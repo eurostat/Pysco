@@ -4,6 +4,10 @@ from gridaggregator import grid_aggregation
 from gridtransformation import grid_transformation
 
 
+#TODO publish that to buildingdem repository
+
+
+
 #working folder
 folder = "/home/juju/Bureau/tmp_bdem_tiling_prep/"
 if not os.path.exists(folder): os.makedirs(folder)
@@ -32,9 +36,14 @@ for a in [2,5,10,20,50,100,200,500]:
 #tiling
 for a in [1,2,5,10,20,50,100,200,500]:
     print("tiling for resolution", a*100, "m")
+    
+    #create output folder
+    out_folder = '/home/juju/workspace/BuildingDemography/pub/tiles/' + str(a*100)
+    if not os.path.exists(folder): os.makedirs(folder)
+
     grid_tiling(
         folder+str(a*100)+'.csv',
-        '/home/juju/workspace/BuildingDemography/pub/tiles/',
+        out_folder,
         100,
         #tile_size_cell = 128,
         x_origin = 2500000,
