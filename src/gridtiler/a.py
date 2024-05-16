@@ -1,19 +1,16 @@
+import os
 from gridtiler import grid_tiling
 from gridaggregator import grid_aggregation
 from gridtransformation import grid_transformation
 
 
-grid_aggregation(
-    "/home/juju/Bureau/out_100.csv",
-    100,
-    '/home/juju/Bureau/out_1000.csv',
-    10
-)
+#working folder
+folder = "/home/juju/Bureau/tmp_bdem_tiling_prep/"
+if not os.path.exists(folder): os.makedirs(folder)
 
 
 
-""""
-
+#input file preparation
 
 #set cell x,y from its grid_id
 def position_fun(c):
@@ -22,12 +19,23 @@ def position_fun(c):
     c["y"] = int(a[0])
     del c['GRD_ID']
 
+grid_transformation("/home/juju/gisco/building_demography/building_demography.csv", position_fun, folder + '100.csv')
 
-grid_transformation(
-    "/home/juju/gisco/building_demography/building_demography.csv",
-    position_fun,
-    '/home/juju/Bureau/out_100.csv'
-)
+
+
+
+#aggregation
+for a in [2,5,10,20,50,100,200,500]:
+    print("aggregation to", a*100, "m")
+    grid_aggregation(folder+"100.csv", 100, folder+str(a*100)+'.csv', a)
+
+
+#tiling
+#TODO
+
+
+""""
+
 
 
 grid_tiling(
