@@ -32,9 +32,12 @@ def grid_tiling(
         #iterate through cells from the input CSV file
         for c in csvreader:
 
+            c["x"] = float(c["x"])
+            c["y"] = float(c["y"])
+
             #get cell tile x,y
-            xt = int(floor((float(c["x"]) - x_origin) / tile_size_m))
-            yt = int(floor((float(c["y"]) - y_origin) / tile_size_m))
+            xt = int(floor((c["x"] - x_origin) / tile_size_m))
+            yt = int(floor((c["y"] - y_origin) / tile_size_m))
 
             #store extreme positions, for info.json file
             if minTX == None or xt<minTX: minTX = xt
