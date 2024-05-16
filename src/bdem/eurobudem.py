@@ -31,30 +31,20 @@ clamp = lambda v:floor(v/file_size_m)*file_size_m
 def loadBuildings(bbox):
     buildings = []
 
-
     #FR
-    buildings_FR = loadFeatures('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox)
-    for bu in buildings_FR:
-        bu["geometry"] = bu["geometry"].buffer(0)
-        formatBuildingFR(bu)
-    buildings += buildings_FR
-
+    bs = loadFeatures('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox)
+    for bu in bs: formatBuildingFR(bu)
+    buildings += bs
 
     #LU
-    buildings_LU = loadFeatures('/home/juju/geodata/LU/ACT/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', bbox)
-    for bu in buildings_LU:
-        #bu["geometry"] = bu["geometry"].buffer(0)
-        formatBuildingLU(bu)
-    buildings += buildings_LU
-
+    bs = loadFeatures('/home/juju/geodata/LU/ACT/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', bbox)
+    for bu in bs: formatBuildingLU(bu)
+    buildings += bs
 
     #IT
-    buildings_IT = loadFeatures('/home/juju/geodata/IT/DBSN/dbsn.gpkg', bbox)
-    for bu in buildings_IT:
-        #bu["geometry"] = bu["geometry"].buffer(0)
-        formatBuildingIT(bu)
-    buildings += buildings_IT
-
+    bs = loadFeatures('/home/juju/geodata/IT/DBSN/dbsn.gpkg', bbox)
+    for bu in bs: formatBuildingIT(bu)
+    buildings += bs
 
     return buildings
 
