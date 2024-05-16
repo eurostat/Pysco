@@ -61,38 +61,7 @@ def loadBuildings(bbox):
 def formatBuildingPL(bu):
 
     """"
-    budynki przemysłowe
-    budynki transportu i łączności
-    budynki handlowo-usługowe
-    zbiorniki, silosy i budynki magazynowe
-    budynki biurowe
-    budynki szpitali i inne budynki opieki zdrowotnej
-    budynki oświaty, nauki i kultury oraz budynki sportowe
-    budynki produkcyjne, usługowe i gospodarcze dla rolnictwa
-    pozostałe budynki niemieszkalne
-    budynki mieszkalne
-
-    industrial buildings
-    transport and communications buildings
-    commercial and service buildings
-    tanks, silos and storage buildings
-    office buildings
-    hospital buildings and other health care buildings
-    education, science and culture buildings and sports buildings
-    production, service and farm buildings for agriculture
-    other non-residential buildings
-    residential buildings
-
-
-    funkcja Ogol na Budynku: OT_FunOgol na Budynku [0..1]
-    funkcja Szczegol owa Budynku: OT_FunSzczegol owa Budynku [0..*]
-    przewa za ja ca Funkcja Budynku: OT_FunSzczegol owa Budynku [0..1]
-    l i czba Kondygna cji : Integer [0..1]
-        
-    function Ogol on Building: OT_FunOgol on Building [0..1]
-    Building Detail function: OT_Building Detail Fun [0..*]
-    predominant building function: OT_FunBuilding Detail [0..1]
-    l and number of Storeys: Integer [0..1]    
+    FUNOGBUD
 
     *budynekGospodarstwaRolnego
     budynekZabytkowy M
@@ -109,21 +78,21 @@ def formatBuildingPL(bu):
     budynkiKultuReligijnego M
     budynkiKulturyFizycznej
     budynkiLacznosciDworcowITerminali
-    budynkiMieszkalneJednorodzinne
+    budynkiMieszkalneJednorodzinne R
     *Hotel buildings
-    Religious Cult buildings M
+    Religious Cult buildings
     Physical Culture buildings
     communication buildings, railway stations and terminals
-    Single-family residential buildings R
+    Single-family residential buildings
 
     *budynkiMuzeowIBibliotek
-    budynkiODwochMieszkaniach
-    budynkiOTrzechIWiecejMieszkaniach
+    budynkiODwochMieszkaniach R
+    budynkiOTrzechIWiecejMieszkaniach R
     budynkiPrzemyslowe
     budynkiSzkolIInstytucjiBadawczych
     *buildings of museums and libraries
-    buildings About Two Apartments R
-    buildings with three more apartments R
+    buildings About Two Apartments
+    buildings with three more apartments
     Industrial buildings
     buildings of schools and research institutions
 
@@ -134,7 +103,7 @@ def formatBuildingPL(bu):
     pozostaleBudynkiNiemieszkalne
     *buildings of hospitals and medical care facilities
     Tourist Accommodation buildings Other
-    Collective Housing buildings R
+    Collective Housing buildings
     publicly accessible Cultural Facilities
     other non-residential buildings
 
@@ -148,6 +117,8 @@ def formatBuildingPL(bu):
     if u==None: u = 1
     #monument
     m = bu["ZABYTEK"]
+    #function
+    f = bu["FUNOGBUD"]
 
     keepOnlyGeometry(bu)
 
@@ -156,9 +127,9 @@ def formatBuildingPL(bu):
 
     #FUNOGBUD - main function
     #FUNSZCZ - detailled function
-    bu["residential"] = 1
+    bu["residential"] = 1 if f in ["","","","","","","",""] else 0
     bu["activity"] = 0
-    bu["cultural_value"] = 1 if m=="Tak" else 0
+    bu["cultural_value"] = 1 if m=="Tak" or f in ["budynekZabytkowy","budynkiKultuReligijnego"] else 0
 
 
 
