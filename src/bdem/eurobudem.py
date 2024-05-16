@@ -164,8 +164,8 @@ def formatBuildingLU(bu):
     row, col = get_DTM_LU().index(centroid.x, centroid.y)
     elevation = get_DTM_LU().read(1, window=((row, row+1), (col, col+1)))[0][0]
     h = bu_top - elevation
-    if elevation == -32767 or bu_top > 1000 or bu_top<0 or elevation<0: h=3
-    if h>38*3: h=3 #if a building has more than 38 floors, then there is a bug. Set height to one floor only.
+    if elevation == -32767 or bu_top > 1000 or bu_top<0 or elevation<0 or elevation>700: h=3
+    if h>40*3: h=3 #if a building has more than 40 floors, then there is a bug. Set height to one floor only.
 
     bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(h/3), 1)
 
