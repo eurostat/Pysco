@@ -55,14 +55,16 @@ with open(folder + "100m", 'w', newline='') as csvfile:
 
 
 
+
 #aggregation
-for a in [2,5,10,20,50,100,200,500]:
+aggregations = [2,5,10,20,50,100,200,500]
+for a in aggregations:
     print("aggregation to", a*100, "m")
     grid_aggregation(folder+"100.csv", 100, folder+str(a*100)+'.csv', a)
 
 
 #tiling
-for a in [1,2,5,10,20,50,100,200,500]:
+for a in aggregations:
     resolution = a*100
     print("tiling for resolution", resolution)
     
