@@ -46,6 +46,8 @@ def loadBuildings(bbox):
     for bu in bs: formatBuildingIT(bu)
     buildings += bs
 
+    #TODO remove duplicates
+
     return buildings
 
 #IT
