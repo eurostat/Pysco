@@ -1,8 +1,10 @@
 import os
 from gridtiler import grid_tiling
-from gridaggregator import grid_aggregation
-from gridtransformation import grid_transformation
 
+import sys
+sys.path.append('/home/juju/workspace/pyEx/src/')
+from gridtiler.gridaggregator import grid_aggregation
+from gridtiler.gridtransformation import grid_transformation
 
 #TODO publish that to buildingdem repository
 

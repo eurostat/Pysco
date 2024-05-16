@@ -2,11 +2,7 @@ import os
 import csv
 from gridtiler import get_csv_header,round_floats_to_ints
 
-def grid_transformation(
-    input_file,
-    function,
-    output_file
-):
+def grid_transformation(input_file, function, output_file):
 
     #open file to read
     with open(input_file, 'r') as infile:
