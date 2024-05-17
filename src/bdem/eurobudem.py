@@ -14,8 +14,8 @@ from utils.geomutils import average_z_coordinate
 # FR date of creation
 # other years
 
-bbox = [4750000, 2750000, 5250000, 3750000] #PL
-#bbox = [5250000, 2750000, 5250000, 2750000] #PL small
+
+#bbox = [4750000, 2750000, 5250000, 3750000] #PL
 #bbox = [4250000, 1250000, 5250000, 2750000] #IT
 #bbox = [4267541, 2749532, 4267541, 3250000] #LU
 #bbox = [3000000, 2000000, 4413621, 3462995] #FR
@@ -33,6 +33,11 @@ clamp = lambda v:floor(v/file_size_m)*file_size_m
 
 def loadBuildings(bbox):
     buildings = []
+
+    #NL
+    bs = loadFeatures('/home/juju/geodata/NL/top10nl_Compleet.gpkg', bbox, layer = "top10nl_gebouw_vlak")
+    for bu in bs: formatBuildingNL(bu)
+    buildings += bs
 
     #PL
     bs = loadFeatures('/home/juju/geodata/PL/bdot10k/bu_bubd_bdot10k.gpkg', bbox)
@@ -57,6 +62,24 @@ def loadBuildings(bbox):
     #TODO remove duplicates
 
     return buildings
+
+
+
+#NL
+def formatBuildingNL(bu):
+
+    #typegebouw
+
+    #hoogte: not provided !?
+    #hoogteniveau
+    #hoogteklasse: hoogbouw, laagbouw
+
+    keepOnlyGeometry(bu)
+    bu["floor_nb"] = 1
+    bu["residential"] = 1
+    bu["activity"] = 0
+    bu["cultural_value"] = 0
+
 
 
 #PL
@@ -86,7 +109,6 @@ def formatBuildingPL(bu):
     A publicly accessible Cultural Facilities ogolnodostepneObiektyKulturalne
     A other non-residential buildings pozostaleBudynkiNiemieszkalne
     A Silos tank and warehouse buildings zbiornikSilosIBudynkiMagazynowe
-
     """
 
     #floor number
