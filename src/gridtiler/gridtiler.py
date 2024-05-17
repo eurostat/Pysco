@@ -2,7 +2,7 @@ import os
 import csv
 from math import floor
 import json
-
+import shutil
 
 #TODO move to gridtiler repository
 #TODO parquet output
@@ -15,7 +15,8 @@ def grid_tiling(
     tile_size_cell = 128,
     x_origin = 0,
     y_origin = 0,
-    crs = ""
+    crs = "",
+    clean_output_folder = True
 ):
 
     #compute tile size, in geo unit
@@ -27,6 +28,12 @@ def grid_tiling(
     minTY=None
     maxTY=None
 
+    #clean
+    if clean_output_folder:
+        shutil.rmtree(output_folder)
+        os.makedirs(output_folder)
+
+    #open file with data to tile
     with open(input_file, 'r') as csvfile:
         csvreader = csv.DictReader(csvfile)
         csv_header = None
@@ -57,7 +64,7 @@ def grid_tiling(
             if (c["x"] > tile_size_cell - 1): print("Too high value: " + c.x + " >" + (tile_size_cell - 1))
             if (c["y"] > tile_size_cell - 1): print("Too high value: " + c.y + " >" + (tile_size_cell - 1))
 
-            #round floats to ints, when possible
+            #round floats to ints, when possible, to avoid useless ".0"
             round_floats_to_ints(c)
 
             #create folder
