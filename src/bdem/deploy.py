@@ -8,7 +8,7 @@ from gridtiler.gridtiler import grid_aggregation,grid_tiling
 
 compilation = True
 aggregation = True
-tiling = True
+tiling = False
 
 gpkg_folder = '/home/juju/gisco/building_demography/out_partition/'
 
