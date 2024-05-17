@@ -28,10 +28,9 @@ def grid_tiling(
     minTY=None
     maxTY=None
 
-    #clean
-    if clean_output_folder:
-        shutil.rmtree(output_folder)
-        os.makedirs(output_folder)
+    #clean output folder and create it
+    if clean_output_folder and os.path.exists(output_folder): shutil.rmtree(output_folder)
+    if not os.path.exists(output_folder): os.makedirs(output_folder)
 
     #open file with data to tile
     with open(input_file, 'r') as csvfile:
