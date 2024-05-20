@@ -20,7 +20,9 @@ def loadFeatures(file, bbox=None, layer=None):
 #remove all properties of the feature/dictionnary, except the geometry
 def keepOnlyGeometry(feature):
     for attribute in list(feature.keys()):
-        if attribute != 'geometry': feature.pop(attribute)
+        if attribute != 'geometry':
+            #feature.pop(attribute)
+            del feature[attribute]
 
 
 #make features spatial index
