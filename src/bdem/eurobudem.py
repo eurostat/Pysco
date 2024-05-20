@@ -9,7 +9,6 @@ from utils.geomutils import average_z_coordinate
 
 #TODO
 # join population from 1000m resolution
-# test del my_dict['b'] for input data formating in keepOnlyGeometry
 # other countries: PL, NL, BE, SK, CZ... see eubc
 # FR date of creation
 # other years
