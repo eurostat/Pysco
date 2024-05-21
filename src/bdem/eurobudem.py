@@ -8,7 +8,7 @@ from utils.featureutils import loadFeatures,keepOnlyGeometry
 from utils.geomutils import average_z_coordinate
 
 #TODO
-# NL: get height from (https://docs.3dbag.nl/en/) and cultural from topNL10 (typegebouw)
+# NL: get height from (https://docs.3dbag.nl/en/ pand b3_volume_lod12) and cultural from topNL10 (typegebouw)
 # join population from 1000m resolution
 # other countries: PL, NL, BE, SK, CZ... see eubc
 # FR date of creation
@@ -33,6 +33,8 @@ clamp = lambda v:floor(v/file_size_m)*file_size_m
 
 def loadBuildings(bbox):
     buildings = []
+
+    #NL: join baglight__pand with 3dbag_pand to get volumes (https://docs.3dbag.nl/en/ pand b3_volume_lod12)
 
     #NL
     bs = loadFeatures('/home/juju/geodata/NL/BAG/baglight__pand.gpkg', bbox)
