@@ -67,27 +67,29 @@ def loadBuildings(bbox):
 #NL
 def formatBuildingNL(bu):
 
+    #https://www.kadaster.nl/zakelijk/registraties/basisregistraties/bag
 
     #status
     #not: Bouwvergunning verleend     Pand buiten gebruik      Sloopvergunning verleend
 
-    #bouwjaar: 2022
+    #construction year
+    y = bu["bouwjaar"]
 
     #gebruiksdoel   -   utilisation
-
-
-    #aantal_verblijfsobjecten: number of residencial housholds ?
-
-
-
-    #https://docs.3dbag.nl/en/overview/sources/
-    #https://www.kadaster.nl/zakelijk/registraties/basisregistraties/bag
-
-    #typegebouw
-
-    #hoogte: not provided !?
-    #hoogteniveau
-    #hoogteklasse: hoogbouw, laagbouw
+    ''''
+None
+woonfunctie      residential
+overige gebruiksfunctie     other usage
+industriefunctie     industry
+kantoorfunctie      office
+sportfunctie      sports
+winkelfunctie     store
+gezondheidszorgfunctie      healthcare
+bijeenkomstfunctie       meeting
+onderwijsfunctie      education
+logiesfunctie      accommodation
+celfunctie      cell
+    '''
 
     keepOnlyGeometry(bu)
     bu["floor_nb"] = 1
