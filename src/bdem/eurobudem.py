@@ -65,6 +65,8 @@ def loadBuildings(bbox):
 
 
 #NL
+res_NL = ["woonfunctie", "logiesfunctie"]
+act_NL = ["overige gebruiksfunctie", "industriefunctie", "kantoorfunctie", "sportfunctie", "winkelfunctie", "gezondheidszorgfunctie", "bijeenkomstfunctie", "onderwijsfunctie", "celfunctie"]
 def formatBuildingNL(bu):
 
     #https://www.kadaster.nl/zakelijk/registraties/basisregistraties/bag
@@ -76,6 +78,9 @@ def formatBuildingNL(bu):
     y = bu["bouwjaar"]
 
     #gebruiksdoel   -   utilisation
+    u = bu["gebruiksdoel"]
+    u= [] if u==None else u.split(",")
+
     ''''
 None
 woonfunctie      residential
@@ -91,10 +96,17 @@ logiesfunctie      accommodation
 celfunctie      cell
     '''
 
+    #count types
+    nb_res=0; nb_act=0
+    for u_ in u:
+        if u_ in res_NL: nb_res+=1
+        if u_ in act_NL: nb_act+=1
+    nb = nb_act + nb_res
+
     keepOnlyGeometry(bu)
     bu["floor_nb"] = 1
-    bu["residential"] = 1
-    bu["activity"] = 0
+    bu["residential"] = 0 if nb==0 else nb_res/nb
+    bu["activity"] = 0 if nb==0 else nb_act/nb
     bu["cultural_value"] = 0
 
 
