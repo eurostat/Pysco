@@ -13,7 +13,7 @@ from utils.geomutils import average_z_coordinate
 # FR date of creation
 # other years
 
-
+bbox = [4250000, 3250000, 4250000, 3250000] #NL small
 #bbox = [4750000, 2750000, 5250000, 3750000] #PL
 #bbox = [4250000, 1250000, 5250000, 2750000] #IT
 #bbox = [4267541, 2749532, 4267541, 3250000] #LU
@@ -34,7 +34,7 @@ def loadBuildings(bbox):
     buildings = []
 
     #NL
-    bs = loadFeatures('/home/juju/geodata/NL/top10nl_Compleet.gpkg', bbox, layer = "top10nl_gebouw_vlak")
+    bs = loadFeatures('/home/juju/geodata/NL/BAG/baglight__pand.gpkg', bbox)
     for bu in bs: formatBuildingNL(bu)
     buildings += bs
 
@@ -66,6 +66,22 @@ def loadBuildings(bbox):
 
 #NL
 def formatBuildingNL(bu):
+
+
+    #status
+    #not: Bouwvergunning verleend     Pand buiten gebruik      Sloopvergunning verleend
+
+    #bouwjaar: 2022
+
+    #gebruiksdoel   -   utilisation
+
+
+    #aantal_verblijfsobjecten: number of residencial housholds ?
+
+
+
+    #https://docs.3dbag.nl/en/overview/sources/
+    #https://www.kadaster.nl/zakelijk/registraties/basisregistraties/bag
 
     #typegebouw
 
