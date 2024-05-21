@@ -8,7 +8,7 @@ from utils.featureutils import loadFeatures,keepOnlyGeometry
 from utils.geomutils import average_z_coordinate
 
 #TODO
-# NL: get height and cultural
+# NL: get height from (https://docs.3dbag.nl/en/) and cultural from topNL10 (typegebouw)
 # join population from 1000m resolution
 # other countries: PL, NL, BE, SK, CZ... see eubc
 # FR date of creation
