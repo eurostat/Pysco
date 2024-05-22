@@ -1,0 +1,52 @@
+
+
+NL
+
+3 sources:
+https://www.kadaster.nl/zakelijk/registraties/basisregistraties/bag
+https://docs.3dbag.nl/en/ for the building height
+top10nl_Compleet for the building type
+    
+compute height in 3dbag as: b3_height_lod12 = abs("b3_volume_lod22" / $area)
+join baglight__pand with 3dbag_pand to get volumes (3dbag pand b3_volume_lod12). For that, create suitable identifier(s), with NL.IMBANG.Pand. prefix, to join.
+filter from status to exclude:  Bouwvergunning verleend     Pand buiten gebruik      Sloopvergunning verleend
+in qgis, spatial join 'typegebouw' attribute from top10nl_Compleet-top10nl_gebouw_vlak to get cultural value buildings
+final necessary attributes: bouwjaar gebruiksdoel b3_volume_lod22 typegebouw
+
+
+attribute: gebruiksdoel
+values:
+None
+woonfunctie      residential
+overige gebruiksfunctie     other usage
+industriefunctie     industry
+kantoorfunctie      office
+sportfunctie      sports
+winkelfunctie     store
+gezondheidszorgfunctie      healthcare
+bijeenkomstfunctie       meeting
+onderwijsfunctie      education
+logiesfunctie      accommodation
+celfunctie      cell
+
+
+attribute: typegebouw
+values, for cultural value buildings:
+windmolen: korenmolen
+kerk
+kasteel
+kapel
+bunker
+vuurtoren
+toren
+windmolen: watermolen
+windmolen
+klooster, abdij
+moskee
+fort
+waterradmolen
+paleis
+overig religieus gebouw
+klokkentoren
+koepel
+synagoge
