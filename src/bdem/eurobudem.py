@@ -83,6 +83,7 @@ def formatBuildingNL(bu):
 
     keepOnlyGeometry(bu)
 
+    #TODO check buildings higher
     if(h!=None and h>150):
         print(h)
         h=1
@@ -172,7 +173,7 @@ def formatBuildingIT(bu):
 
 #LU
 DTM_LU = None
-def get_DTM_LU():
+def get_DTM_LU(DTM_LU):
     if DTM_LU==None: DTM_LU = rasterio.open("/home/juju/geodata/LU/MNT_lux2017_3035.tif")
     return DTM_LU
 def formatBuildingLU(bu):
@@ -184,8 +185,8 @@ def formatBuildingLU(bu):
     #estimate building height from geometry 'z' and DTM
     bu_top = average_z_coordinate(bu["geometry"])
     centroid = bu["geometry"].centroid
-    row, col = get_DTM_LU().index(centroid.x, centroid.y)
-    elevation = get_DTM_LU().read(1, window=((row, row+1), (col, col+1)))[0][0]
+    row, col = get_DTM_LU(DTM_LU).index(centroid.x, centroid.y)
+    elevation = get_DTM_LU(DTM_LU).read(1, window=((row, row+1), (col, col+1)))[0][0]
     h = bu_top - elevation
     if elevation == -32767 or bu_top > 1000 or bu_top<0 or elevation<0 or elevation>700: h=3
     if h>40*3: h=3 #if a building has more than 40 floors, then there is a bug. Set height to one floor only.
