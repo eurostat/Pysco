@@ -34,6 +34,7 @@ clamp = lambda v:floor(v/file_size_m)*file_size_m
 def loadBuildings(bbox):
     buildings = []
 
+    #compute height in 3dbag as: b3_height_lod12 = abs("b3_volume_lod22") / $area 
     #NL: join baglight__pand with 3dbag_pand to get volumes (https://docs.3dbag.nl/en/ pand b3_volume_lod12)
 
     #NL
