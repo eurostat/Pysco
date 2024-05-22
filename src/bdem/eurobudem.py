@@ -83,12 +83,11 @@ def formatBuildingNL(bu):
 
     keepOnlyGeometry(bu)
 
-    #TODO check buildings higher
-    if(h!=None and h>150):
-        print(h)
-        h=1
-    bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(abs(h)/3), 1)
+    #buildings heigth
+    if(h!=None and (h>250 or h<0)): h=1
+    bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(h/3), 1)
 
+    #building use
     #count types
     u = [] if u==None else u.split(",")
     nb_res=0; nb_act=0
@@ -100,6 +99,8 @@ def formatBuildingNL(bu):
     bu["residential"] = 0 if nb==0 else nb_res/nb
     bu["activity"] = 0 if nb==0 else nb_act/nb
 
+    #building cultural nature
+    #count types
     t = [] if t==None else t.split("|")
     nb_cul=0; nb=0
     for t_ in t:
