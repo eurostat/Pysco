@@ -8,13 +8,11 @@ from utils.featureutils import loadFeatures,keepOnlyGeometry
 from utils.geomutils import average_z_coordinate
 
 #TODO
-# NL: get height from (https://docs.3dbag.nl/en/ pand b3_volume_lod12) and cultural from topNL10 (typegebouw)
 # join population from 1000m resolution
-# other countries: PL, NL, BE, SK, CZ... see eubc
-# FR date of creation
+# other countries: DK, SP, BE, SK, CZ, SI, FI... see eubc
+# FR NL date of creation
 # other years
 
-bbox = [3750000, 3250000, 3750000, 3250000] #NL west
 #bbox = [3750000, 3250000, 4250000, 3250000] #NL
 #bbox = [4750000, 2750000, 5250000, 3750000] #PL
 #bbox = [4250000, 1250000, 5250000, 2750000] #IT

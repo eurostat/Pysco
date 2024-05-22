@@ -62,16 +62,16 @@ if compilation:
 #aggregation
 if aggregation:
     for a in [2,5,10]:
-        print("aggregation to", a*100, "m")
+        print(datetime.now(), "aggregation to", a*100, "m")
         grid_aggregation(folder+"100.csv", 100, folder+str(a*100)+'.csv', a)
 
     #TODO join population figures at 1000m ?
 
     for a in [2,5,10]:
-        print("aggregation to", a*1000, "m")
+        print(datetime.now(), "aggregation to", a*1000, "m")
         grid_aggregation(folder+"1000.csv", 1000, folder+str(a*1000)+'.csv', a)
     for a in [2,5,10]:
-        print("aggregation to", a*10000, "m")
+        print(datetime.now(), "aggregation to", a*10000, "m")
         grid_aggregation(folder+"10000.csv", 10000, folder+str(a*10000)+'.csv', a)
 
 
