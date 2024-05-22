@@ -40,11 +40,12 @@ def loadBuildings(bbox):
     #compute height in 3dbag as: b3_height_lod12 = abs("b3_volume_lod22" / $area)
     #NL: join baglight__pand with 3dbag_pand to get volumes (3dbag pand b3_volume_lod12). For that, create suitable identifier(s), with NL.IMBANG.Pand. prefix, to join.
     #filter from status to exclude:  Bouwvergunning verleend     Pand buiten gebruik      Sloopvergunning verleend
+    #spatial join 'typegebouw' from top10nl_Compleet-top10nl_gebouw_vlak
     #save as in qgis - keep only necessary attributes:
-    #bouwjaar gebruiksdoel b3_volume_lod22
+    #bouwjaar gebruiksdoel b3_volume_lod22 typegebouw
 
     #NL
-    bs = loadFeatures('/home/juju/geodata/NL/BAG/baglight__pand.gpkg', bbox)
+    bs = loadFeatures('/home/juju/geodata/NL/bu_integrated.gpkg', bbox)
     for bu in bs: formatBuildingNL(bu)
     buildings += bs
 
@@ -77,16 +78,19 @@ def loadBuildings(bbox):
 #NL
 res_NL = ["woonfunctie", "logiesfunctie"]
 act_NL = ["overige gebruiksfunctie", "industriefunctie", "kantoorfunctie", "sportfunctie", "winkelfunctie", "gezondheidszorgfunctie", "bijeenkomstfunctie", "onderwijsfunctie", "celfunctie"]
+cul_NL = ["windmolen: korenmolen","kerk","kasteel","kapel","bunker","vuurtoren","toren","windmolen: watermolen","windmolen","klooster, abdij","moskee","fort","waterradmolen","paleis","overig religieus gebouw","klokkentoren","koepel","synagoge"]
 def formatBuildingNL(bu):
 
     #construction year
     y = bu["bouwjaar"]
 
+    #b3_volume_lod22   height, in m
+    h = bu["b3_volume_lod22"]
+
     #gebruiksdoel   -   utilisation
     u = bu["gebruiksdoel"]
-    u= [] if u==None else u.split(",")
 
-    ''''
+    '''
 None
 woonfunctie      residential
 overige gebruiksfunctie     other usage
@@ -101,19 +105,55 @@ logiesfunctie      accommodation
 celfunctie      cell
     '''
 
+    #typegebouw
+    t = bu["typegebouw"]
+
+    '''
+windmolen: korenmolen
+kerk
+kasteel
+kapel
+bunker
+vuurtoren
+toren
+windmolen: watermolen
+windmolen
+klooster, abdij
+moskee
+fort
+waterradmolen
+paleis
+overig religieus gebouw
+klokkentoren
+koepel
+synagoge
+    '''
+
+    keepOnlyGeometry(bu)
+
+    bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(h/3), 1)
+
     #count types
+    u= [] if u==None else u.split(",")
+    #TODO check
+    print(u)
     nb_res=0; nb_act=0
     for u_ in u:
         if u_ in res_NL: nb_res+=1
         if u_ in act_NL: nb_act+=1
     nb = nb_act + nb_res
 
-    keepOnlyGeometry(bu)
-    bu["floor_nb"] = 1
     bu["residential"] = 0 if nb==0 else nb_res/nb
     bu["activity"] = 0 if nb==0 else nb_act/nb
-    bu["cultural_value"] = 0
 
+    t= [] if t==None else t.split("|")
+    #TODO check
+    print(t)
+    nb_cul=0; nb
+    for t_ in t:
+        nb+=1
+        if t_ in nb_cul: nb_cul+=1
+    bu["cultural_value"] = 0 if nb==0 else nb_cul/nb
 
 
 #PL
