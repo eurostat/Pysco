@@ -34,12 +34,14 @@ clamp = lambda v:floor(v/file_size_m)*file_size_m
 def loadBuildings(bbox):
     buildings = []
 
+    #https://www.kadaster.nl/zakelijk/registraties/basisregistraties/bag
+    #https://docs.3dbag.nl/en/
     #
     #compute height in 3dbag as: b3_height_lod12 = abs("b3_volume_lod22" / $area)
-    #NL: join baglight__pand with 3dbag_pand to get volumes (https://docs.3dbag.nl/en/ pand b3_volume_lod12). For that, create suitable identifier(s) to join.
+    #NL: join baglight__pand with 3dbag_pand to get volumes (3dbag pand b3_volume_lod12). For that, create suitable identifier(s) to join.
+    #filter from status to exclude:  Bouwvergunning verleend     Pand buiten gebruik      Sloopvergunning verleend
     #save as in qgis - keep only necessary attributes:
-    #status bouwjaar gebruiksdoel b3_volume_lod22
-
+    #bouwjaar gebruiksdoel b3_volume_lod22
 
     #NL
     bs = loadFeatures('/home/juju/geodata/NL/BAG/baglight__pand.gpkg', bbox)
@@ -76,11 +78,6 @@ def loadBuildings(bbox):
 res_NL = ["woonfunctie", "logiesfunctie"]
 act_NL = ["overige gebruiksfunctie", "industriefunctie", "kantoorfunctie", "sportfunctie", "winkelfunctie", "gezondheidszorgfunctie", "bijeenkomstfunctie", "onderwijsfunctie", "celfunctie"]
 def formatBuildingNL(bu):
-
-    #https://www.kadaster.nl/zakelijk/registraties/basisregistraties/bag
-
-    #status
-    #not: Bouwvergunning verleend     Pand buiten gebruik      Sloopvergunning verleend
 
     #construction year
     y = bu["bouwjaar"]
