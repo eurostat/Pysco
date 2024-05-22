@@ -83,7 +83,7 @@ def formatBuildingNL(bu):
 
     keepOnlyGeometry(bu)
 
-    if(h>150):
+    if(h!=None and h>150):
         print(h)
         h=1
     bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(abs(h)/3), 1)
