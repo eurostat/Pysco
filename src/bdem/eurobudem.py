@@ -38,7 +38,7 @@ def loadBuildings(bbox):
     #https://docs.3dbag.nl/en/
     #
     #compute height in 3dbag as: b3_height_lod12 = abs("b3_volume_lod22" / $area)
-    #NL: join baglight__pand with 3dbag_pand to get volumes (3dbag pand b3_volume_lod12). For that, create suitable identifier(s) to join.
+    #NL: join baglight__pand with 3dbag_pand to get volumes (3dbag pand b3_volume_lod12). For that, create suitable identifier(s), with NL.IMBANG.Pand. prefix, to join.
     #filter from status to exclude:  Bouwvergunning verleend     Pand buiten gebruik      Sloopvergunning verleend
     #save as in qgis - keep only necessary attributes:
     #bouwjaar gebruiksdoel b3_volume_lod22
