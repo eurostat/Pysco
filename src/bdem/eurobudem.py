@@ -103,7 +103,7 @@ def formatBuildingNL(bu):
     nb_cul=0; nb=0
     for t_ in t:
         nb+=1
-        if t_ in nb_cul: nb_cul+=1
+        if t_ in cul_NL: nb_cul+=1
     bu["cultural_value"] = 0 if nb==0 else nb_cul/nb
 
 
