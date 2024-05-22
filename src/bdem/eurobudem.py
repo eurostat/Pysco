@@ -34,16 +34,6 @@ clamp = lambda v:floor(v/file_size_m)*file_size_m
 def loadBuildings(bbox):
     buildings = []
 
-    #https://www.kadaster.nl/zakelijk/registraties/basisregistraties/bag
-    #https://docs.3dbag.nl/en/
-    #
-    #compute height in 3dbag as: b3_height_lod12 = abs("b3_volume_lod22" / $area)
-    #NL: join baglight__pand with 3dbag_pand to get volumes (3dbag pand b3_volume_lod12). For that, create suitable identifier(s), with NL.IMBANG.Pand. prefix, to join.
-    #filter from status to exclude:  Bouwvergunning verleend     Pand buiten gebruik      Sloopvergunning verleend
-    #spatial join 'typegebouw' from top10nl_Compleet-top10nl_gebouw_vlak
-    #save as in qgis - keep only necessary attributes:
-    #bouwjaar gebruiksdoel b3_volume_lod22 typegebouw
-
     #NL
     bs = loadFeatures('/home/juju/geodata/NL/bu_integrated.gpkg', bbox)
     for bu in bs: formatBuildingNL(bu)
@@ -82,52 +72,14 @@ cul_NL = ["windmolen: korenmolen","kerk","kasteel","kapel","bunker","vuurtoren",
 def formatBuildingNL(bu):
 
     #construction year
-    y = bu["bouwjaar"]
+    #y = bu["bouwjaar"]
 
     #b3_volume_lod22   height, in m
     h = bu["b3_volume_lod22"]
-
-    #gebruiksdoel   -   utilisation
+    #gebruiksdoel - use
     u = bu["gebruiksdoel"]
-
-    '''
-None
-woonfunctie      residential
-overige gebruiksfunctie     other usage
-industriefunctie     industry
-kantoorfunctie      office
-sportfunctie      sports
-winkelfunctie     store
-gezondheidszorgfunctie      healthcare
-bijeenkomstfunctie       meeting
-onderwijsfunctie      education
-logiesfunctie      accommodation
-celfunctie      cell
-    '''
-
-    #typegebouw
+    #typegebouw - nature
     t = bu["typegebouw"]
-
-    '''
-windmolen: korenmolen
-kerk
-kasteel
-kapel
-bunker
-vuurtoren
-toren
-windmolen: watermolen
-windmolen
-klooster, abdij
-moskee
-fort
-waterradmolen
-paleis
-overig religieus gebouw
-klokkentoren
-koepel
-synagoge
-    '''
 
     keepOnlyGeometry(bu)
 
