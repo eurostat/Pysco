@@ -50,3 +50,32 @@ overig religieus gebouw
 klokkentoren
 koepel
 synagoge
+
+
+
+
+PL
+
+    FUNOGBUD
+
+    A Agricultural Farm building budynekGospodarstwaRolnego
+    M Historic building budynekZabytkowy
+    A Office buildings budynkiBiurowe
+    Garage buildings budynkiGarazy
+    A Commercial and Service buildings budynkiHandlowoUslugowe
+    A Hotel buildings budynkiHoteli
+    M Religious Cult buildings budynkiKultuReligijnego
+    A Physical Culture buildings budynkiKulturyFizycznej
+    A communication buildings, railway stations and terminals budynkiLacznosciDworcowITerminali
+    R Single-family residential buildings budynkiMieszkalneJednorodzinne
+    A buildings of museums and libraries budynkiMuzeowIBibliotek
+    R buildings About Two Apartments budynkiODwochMieszkaniach
+    R buildings with three more apartments budynkiOTrzechIWiecejMieszkaniach
+    A Industrial buildings budynkiPrzemyslowe
+    A buildings of schools and research institutions budynkiSzkolIInstytucjiBadawczych
+    A buildings of hospitals and medical care facilities budynkiSzpitaliIZakladowOpiekiMedycznej
+    A Tourist Accommodation buildings Other budynkiZakwaterowaniaTurystycznegoPozostale
+    R Collective Housing buildings budynkiZbiorowegoZamieszkania
+    A publicly accessible Cultural Facilities ogolnodostepneObiektyKulturalne
+    A other non-residential buildings pozostaleBudynkiNiemieszkalne
+    A Silos tank and warehouse buildings zbiornikSilosIBudynkiMagazynowe

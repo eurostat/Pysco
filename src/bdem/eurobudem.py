@@ -74,21 +74,23 @@ def formatBuildingNL(bu):
     #construction year
     #y = bu["bouwjaar"]
 
-    #b3_volume_lod22   height, in m
-    h = bu["b3_volume_lod22"]
+    #3dbag_b3_height_lod12   height, in m
+    h = bu["3dbag_b3_height_lod12"]
     #gebruiksdoel - use
     u = bu["gebruiksdoel"]
     #typegebouw - nature
-    t = bu["typegebouw"]
+    t = bu["top10nl_typegebouw"]
 
     keepOnlyGeometry(bu)
 
     bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(h/3), 1)
+    h = abs(h)
+    if(h>150):
+        print(h)
+        h=1
 
     #count types
-    u= [] if u==None else u.split(",")
-    #TODO check
-    print(u)
+    u = [] if u==None else u.split(",")
     nb_res=0; nb_act=0
     for u_ in u:
         if u_ in res_NL: nb_res+=1
@@ -98,44 +100,17 @@ def formatBuildingNL(bu):
     bu["residential"] = 0 if nb==0 else nb_res/nb
     bu["activity"] = 0 if nb==0 else nb_act/nb
 
-    t= [] if t==None else t.split("|")
-    #TODO check
-    print(t)
-    nb_cul=0; nb
+    t = [] if t==None else t.split("|")
+    nb_cul=0; nb=0
     for t_ in t:
         nb+=1
         if t_ in nb_cul: nb_cul+=1
     bu["cultural_value"] = 0 if nb==0 else nb_cul/nb
 
 
+
 #PL
 def formatBuildingPL(bu):
-
-    """"
-    FUNOGBUD
-
-    A Agricultural Farm building budynekGospodarstwaRolnego
-    M Historic building budynekZabytkowy
-    A Office buildings budynkiBiurowe
-    Garage buildings budynkiGarazy
-    A Commercial and Service buildings budynkiHandlowoUslugowe
-    A Hotel buildings budynkiHoteli
-    M Religious Cult buildings budynkiKultuReligijnego
-    A Physical Culture buildings budynkiKulturyFizycznej
-    A communication buildings, railway stations and terminals budynkiLacznosciDworcowITerminali
-    R Single-family residential buildings budynkiMieszkalneJednorodzinne
-    A buildings of museums and libraries budynkiMuzeowIBibliotek
-    R buildings About Two Apartments budynkiODwochMieszkaniach
-    R buildings with three more apartments budynkiOTrzechIWiecejMieszkaniach
-    A Industrial buildings budynkiPrzemyslowe
-    A buildings of schools and research institutions budynkiSzkolIInstytucjiBadawczych
-    A buildings of hospitals and medical care facilities budynkiSzpitaliIZakladowOpiekiMedycznej
-    A Tourist Accommodation buildings Other budynkiZakwaterowaniaTurystycznegoPozostale
-    R Collective Housing buildings budynkiZbiorowegoZamieszkania
-    A publicly accessible Cultural Facilities ogolnodostepneObiektyKulturalne
-    A other non-residential buildings pozostaleBudynkiNiemieszkalne
-    A Silos tank and warehouse buildings zbiornikSilosIBudynkiMagazynowe
-    """
 
     #floor number
     u = bu["LKOND"]
