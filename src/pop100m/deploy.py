@@ -6,9 +6,9 @@ import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from gridtiler.gridtiler import grid_aggregation,grid_tiling
 
-compilation = True
-aggregation = False
-tiling = False
+compilation = False
+aggregation = True
+tiling = True
 
 gpkg_folder = '/home/juju/gisco/grid_pop_100m/out_partition/'
 
