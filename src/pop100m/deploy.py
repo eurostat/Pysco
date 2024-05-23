@@ -8,7 +8,7 @@ from gridtiler.gridtiler import grid_aggregation,grid_tiling
 
 compilation = True
 aggregation = False
-tiling = False #change repository
+tiling = False
 
 gpkg_folder = '/home/juju/gisco/grid_pop_100m/out_partition/'
 
@@ -83,7 +83,7 @@ if tiling:
         print("tiling for resolution", resolution)
         
         #create output folder
-        out_folder = '/home/juju/workspace/BuildingDemography/pub/tiles/' + str(resolution)
+        out_folder = '/home/juju/workspace/europop100m/pub/tiles/' + str(resolution)
         if not os.path.exists(folder): os.makedirs(folder)
 
         grid_tiling(

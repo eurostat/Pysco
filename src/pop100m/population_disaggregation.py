@@ -106,7 +106,7 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
 
     #save it as gpkg
     schema = get_schema_from_feature(outd[0])
-    outf = fiona.open("/home/juju/gisco/grid_pop_100m/pop_2021_100m_"+str(x_min)+"_"+str(y_min)+".gpkg", 'w', driver='GPKG', crs=CRS.from_epsg(3035), schema=schema)
+    outf = fiona.open("/home/juju/gisco/grid_pop_100m/out_partition/pop_2021_100m_"+str(x_min)+"_"+str(y_min)+".gpkg", 'w', driver='GPKG', crs=CRS.from_epsg(3035), schema=schema)
     outf.writerecords(outd)
 
 
