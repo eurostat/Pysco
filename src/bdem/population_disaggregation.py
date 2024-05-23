@@ -1,6 +1,7 @@
 import fiona
 from fiona.crs import CRS
 from datetime import datetime
+import os
 
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
@@ -11,11 +12,14 @@ from utils.featureutils import loadFeatures, keep_attributes, get_schema_from_fe
 
 def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
 
+    input_budem_file = "/home/juju/gisco/building_demography/out_partition/eurobudem_100m_"+str(x_min)+"_"+str(y_min)+".gpkg"
+    if not os.path.isfile(input_budem_file): return
+
     #load 100m budem cells in tile
     print(datetime.now(), x_min, y_min, "load 100m budem cells")
-    budem_grid = loadFeatures("/home/juju/gisco/building_demography/out_partition/eurobudem_100m_"+str(x_min)+"_"+str(y_min)+".gpkg")
+    budem_grid = loadFeatures(input_budem_file)
     print(datetime.now(), x_min, y_min, len(budem_grid), "budem cells loaded")
-    if(len(budem_grid)==0): exit
+    if(len(budem_grid)==0): return
 
     #filter population cell data
     for c in budem_grid:
