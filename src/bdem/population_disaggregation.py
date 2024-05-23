@@ -20,9 +20,9 @@ if(len(budem)==0): exit
 for c in budem:
     keep_attributes(c, ["GRD_ID", "residential_floor_area"])
     #CRS3035RES1000mN2820000E4197000
-    a = c['GRD_ID'].split('E')
+    a = c['GRD_ID'].split('mN')[1].split('E')
     c['X_LLC'] = int(a[1])
-    c['Y_LLC'] = int(a[0].split('mN')[1])
+    c['Y_LLC'] = int(a[0])
     print(c)
 
 #load 1000m population cells in tile
