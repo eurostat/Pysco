@@ -69,6 +69,7 @@ for pc in pop_grid:
         for j in range(10):
             y_ = y+j*100
             if not y_ in a: continue
+            if cbu["residential_floor_area"]==0: continue
             c100m.append(a[y_])
 
     if len(c100m)==0:
@@ -77,6 +78,14 @@ for pc in pop_grid:
         continue
 
     #compute total bu_res
-    #for each 100m cell
-        #assign 100m population as pop*bu_res/tot_bu_res
+    bu_res = 0
+    for cbu in c100m: bu_res+=cbu["residential_floor_area"]
+
+    if bu_res == 0:
+        print("Unexpectect null building residence area around",x,y)
+        continue
+
+    #assign 100m population as pop*bu_res/tot_bu_res
+    for cbu in c100m: cbu["TOT_P_2021"] = pop * cbu["residential_floor_area"] / bu_res
+
 
