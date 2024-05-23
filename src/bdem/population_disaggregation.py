@@ -23,17 +23,17 @@ for c in budem:
     a = c['GRD_ID'].split('mN')[1].split('E')
     c['X_LLC'] = int(a[1])
     c['Y_LLC'] = int(a[0])
-    print(c)
 
 #load 1000m population cells in tile
 print(datetime.now(), x_min, y_min, "load 1000m population cells")
 pop = loadFeatures("/home/juju/geodata/grids/grid_1km_surf.gpkg", bbox=[x_min, y_min, x_min+500000, y_min+500000])
 print(datetime.now(), x_min, y_min, len(pop), "pop cells loaded")
+pop = [pc for pc in pop if pop["NUTS2021_0"] in cnt]
+print(datetime.now(), x_min, y_min, len(pop), "pop cells, after filtering on " + cnt)
 
 #filter population cell data
 for pc in pop:
     keep_attributes(pc, ["Y_LLC", "X_LLC", "NUTS2021_0", "TOT_P_2021"])
-    print(c)
 
 
 #filter pop: countries and keep only cell_id,pop
