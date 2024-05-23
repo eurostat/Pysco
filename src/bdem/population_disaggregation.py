@@ -3,6 +3,7 @@ import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from utils.featureutils import loadFeatures, keep_attributes
 
+nb_decimal = 2
 
 #define budem tile to process
 x_min = 4000000; y_min = 2500000 #LU
@@ -70,12 +71,13 @@ for pc in pop_grid:
             y_ = y+j*100
             if not y_ in a: continue
             cbu = a[y_]
+            #exclude the ones without residential area
             if cbu["residential_floor_area"]==0: continue
             c100m.append(cbu)
 
     if len(c100m)==0:
         print("found population cell without residential area around",x,y)
-        #TODO
+        #TODO assign population equally to all cells ? or a central one ?
         continue
 
     #compute total bu_res
@@ -87,6 +89,7 @@ for pc in pop_grid:
         continue
 
     #assign 100m population as pop*bu_res/tot_bu_res
-    for cbu in c100m: cbu["TOT_P_2021"] = pop * cbu["residential_floor_area"] / bu_res
+    for cbu in c100m: cbu["TOT_P_2021"] = round(pop * cbu["residential_floor_area"] / bu_res, nb_decimal)
 
 
+print(budem_grid[0])
