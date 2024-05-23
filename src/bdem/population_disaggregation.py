@@ -9,7 +9,7 @@ from utils.featureutils import loadFeatures, keep_attributes, get_schema_from_fe
 
 
 
-def decompose(x_min, y_min, nb_decimal = 2, cnt_codes = []):
+def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
 
     #load 100m budem cells in tile
     print(datetime.now(), x_min, y_min, "load 100m budem cells")
@@ -110,7 +110,7 @@ def decompose(x_min, y_min, nb_decimal = 2, cnt_codes = []):
 
 #define country list
 cnt_codes = ["FR", "NL", "PL", "IT", "LU"]
-decompose(4000000, 2500000, cnt_codes)
-decompose(3500000, 2500000, cnt_codes)
-decompose(4000000, 2000000, cnt_codes)
-decompose(3500000, 2000000, cnt_codes)
+disaggregate_population_100m(4000000, 2500000, cnt_codes)
+disaggregate_population_100m(3500000, 2500000, cnt_codes)
+disaggregate_population_100m(4000000, 2000000, cnt_codes)
+disaggregate_population_100m(3500000, 2000000, cnt_codes)
