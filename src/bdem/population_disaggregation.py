@@ -69,8 +69,9 @@ for pc in pop_grid:
         for j in range(10):
             y_ = y+j*100
             if not y_ in a: continue
+            cbu = a[y_]
             if cbu["residential_floor_area"]==0: continue
-            c100m.append(a[y_])
+            c100m.append(cbu)
 
     if len(c100m)==0:
         print("found population cell without residential area around",x,y)
