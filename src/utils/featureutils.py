@@ -24,6 +24,10 @@ def keepOnlyGeometry(feature):
             #feature.pop(attribute)
             del feature[attribute]
 
+def keep_attributes(feature, attributes_to_keep):
+    for att in list(feature.keys()):
+        if att in attributes_to_keep: continue
+        del feature[att]
 
 #make features spatial index
 def spatialIndex(features):
