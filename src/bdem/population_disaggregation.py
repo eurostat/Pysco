@@ -77,7 +77,7 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
                 c100m.append(cbu)
 
         if len(c100m)==0:
-            print("found population cell without residential area around",x,y, "population lost:", pop)
+            print(datetime.now(), x_min, y_min, "found population cell without residential area around",x,y, "population lost:", pop)
             #TODO assign population equally to all cells ? or a central one ?
             continue
 
@@ -86,13 +86,13 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
         for cbu in c100m: bu_res+=cbu["residential_floor_area"]
 
         if bu_res == 0:
-            print("Unexpectect null building residence area around",x,y)
+            print(datetime.now(), x_min, y_min, "Unexpectect null building residence area around",x,y)
             continue
 
         #assign 100m population as pop*bu_res/tot_bu_res
         for cbu in c100m: cbu["TOT_P_2021"] = round(pop * cbu["residential_floor_area"] / bu_res, nb_decimal)
 
-    print(datetime.now(), "save as GPKG")
+    print(datetime.now(), x_min, y_min, "save as GPKG")
 
     #build output data
     outd = []
