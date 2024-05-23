@@ -97,9 +97,18 @@ for pc in pop_grid:
     #assign 100m population as pop*bu_res/tot_bu_res
     for cbu in c100m: cbu["TOT_P_2021"] = round(pop * cbu["residential_floor_area"] / bu_res, nb_decimal)
 
-
 print(datetime.now(), "save as GPKG")
-for cell in budem_grid: cell["geometry"] = None
-schema = get_schema_from_feature(budem_grid[0])
-out = fiona.open("/home/juju/Bureau/test.gpkg", 'w', driver='GPKG', crs=CRS.from_epsg(3035), schema=schema)
-out.writerecords(budem_grid)
+
+outd = []
+for cell in budem_grid:
+    o = {"properties":{}}
+    x = cell["X_LLC"]; y = cell["Y_LLC"]
+    del cell["X_LLC"]; del cell["Y_LLC"]
+    for k in cell: o["properties"][k] = cell[k]
+    o["geometry"] = {'type': 'Polygon', 'coordinates': [[(x,y),(x+100,y),(x+100,y+100),(x,y+100),(x,y)]]}
+    outd.append(o)
+    print(o)
+
+schema = get_schema_from_feature(outd[0])
+outf = fiona.open("/home/juju/Bureau/test.gpkg", 'w', driver='GPKG', crs=CRS.from_epsg(3035), schema=schema)
+outf.writerecords(outd)
