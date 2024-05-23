@@ -111,3 +111,6 @@ def decompose(x_min, y_min, nb_decimal = 2, cnt_codes = []):
 #define country list
 cnt_codes = ["FR", "NL", "PL", "IT", "LU"]
 decompose(4000000, 2500000, cnt_codes)
+decompose(3500000, 2500000, cnt_codes)
+decompose(4000000, 2000000, cnt_codes)
+decompose(3500000, 2000000, cnt_codes)
