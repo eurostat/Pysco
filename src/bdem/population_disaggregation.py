@@ -19,8 +19,7 @@ cnt = ["FR", "NL", "PL", "IT", "LU"]
 
 #load 100m budem cells in tile
 print(datetime.now(), x_min, y_min, "load budem cells")
-budem_grid = loadFeatures("/home/juju/Bureau/budem_test.gpkg")
-#budem_grid = loadFeatures("/home/juju/gisco/building_demography/out_partition/eurobudem_100m_"+str(x_min)+"_"+str(y_min)+".gpkg")
+budem_grid = loadFeatures("/home/juju/gisco/building_demography/out_partition/eurobudem_100m_"+str(x_min)+"_"+str(y_min)+".gpkg")
 print(datetime.now(), x_min, y_min, len(budem_grid), "budem cells loaded")
 if(len(budem_grid)==0): exit
 
@@ -36,8 +35,7 @@ for c in budem_grid:
 
 #load 1000m population cells in tile
 print(datetime.now(), x_min, y_min, "load 1000m population cells")
-pop_grid = loadFeatures("/home/juju/Bureau/pop_test.gpkg", bbox=[x_min, y_min, x_min+500000, y_min+500000])
-#pop_grid = loadFeatures("/home/juju/geodata/grids/grid_1km_surf.gpkg", bbox=[x_min, y_min, x_min+500000, y_min+500000])
+pop_grid = loadFeatures("/home/juju/geodata/grids/grid_1km_surf.gpkg", bbox=[x_min, y_min, x_min+500000, y_min+500000])
 print(datetime.now(), x_min, y_min, len(pop_grid), "pop cells loaded")
 pop_grid = [pc for pc in pop_grid if pc["NUTS2021_0"] in cnt]
 print(datetime.now(), x_min, y_min, len(pop_grid), "pop cells, after filtering on " + str(cnt))
@@ -99,6 +97,7 @@ for pc in pop_grid:
 
 print(datetime.now(), "save as GPKG")
 
+#build output data
 outd = []
 for cell in budem_grid:
     o = {"properties":{}}
@@ -107,8 +106,8 @@ for cell in budem_grid:
     for k in cell: o["properties"][k] = cell[k]
     o["geometry"] = {'type': 'Polygon', 'coordinates': [[(x,y),(x+100,y),(x+100,y+100),(x,y+100),(x,y)]]}
     outd.append(o)
-    print(o)
 
+#save it as gpkg
 schema = get_schema_from_feature(outd[0])
-outf = fiona.open("/home/juju/Bureau/test.gpkg", 'w', driver='GPKG', crs=CRS.from_epsg(3035), schema=schema)
+outf = fiona.open("/home/juju/gisco/grid_pop_100m/pop_2021_100m_"+str(x_min)+"_"+str(y_min)+".gpkg", 'w', driver='GPKG', crs=CRS.from_epsg(3035), schema=schema)
 outf.writerecords(outd)
