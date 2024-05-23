@@ -110,7 +110,7 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
     outf.writerecords(outd)
 
 
-#TODO parallel
+#TODO parallel ?
 #define country list
 cnt_codes = ["FR", "NL", "PL", "IT", "LU"]
 for x_min in range(3000000, 5500000, 500000):
