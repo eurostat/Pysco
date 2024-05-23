@@ -28,7 +28,7 @@ for c in budem:
 print(datetime.now(), x_min, y_min, "load 1000m population cells")
 pop = loadFeatures("/home/juju/geodata/grids/grid_1km_surf.gpkg", bbox=[x_min, y_min, x_min+500000, y_min+500000])
 print(datetime.now(), x_min, y_min, len(pop), "pop cells loaded")
-pop = [pc for pc in pop if pop["NUTS2021_0"] in cnt]
+pop = [pc for pc in pop if pc["NUTS2021_0"] in cnt]
 print(datetime.now(), x_min, y_min, len(pop), "pop cells, after filtering on " + cnt)
 
 #filter population cell data
