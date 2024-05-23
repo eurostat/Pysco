@@ -18,7 +18,7 @@ x_min = 4000000; y_min = 2500000 #LU
 cnt = ["FR", "NL", "PL", "IT", "LU"]
 
 #load 100m budem cells in tile
-print(datetime.now(), x_min, y_min, "load budem cells")
+print(datetime.now(), x_min, y_min, "load 100m budem cells")
 budem_grid = loadFeatures("/home/juju/gisco/building_demography/out_partition/eurobudem_100m_"+str(x_min)+"_"+str(y_min)+".gpkg")
 print(datetime.now(), x_min, y_min, len(budem_grid), "budem cells loaded")
 if(len(budem_grid)==0): exit
