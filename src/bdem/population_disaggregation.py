@@ -110,7 +110,7 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
 
 #define country list
 cnt_codes = ["FR", "NL", "PL", "IT", "LU"]
-disaggregate_population_100m(4000000, 2500000, cnt_codes)
-disaggregate_population_100m(3500000, 2500000, cnt_codes)
-disaggregate_population_100m(4000000, 2000000, cnt_codes)
-disaggregate_population_100m(3500000, 2000000, cnt_codes)
+for x_min in range(3000000, 5500000, 500000):
+    for y_min in range(1000000, 4000000, 500000):
+        print(datetime.now(), x_min, y_min, "disaggregation ************")
+        disaggregate_population_100m(x_min, y_min, cnt_codes=cnt_codes)
