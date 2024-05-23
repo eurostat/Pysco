@@ -1,7 +1,13 @@
+import fiona
+from fiona.crs import CRS
 from datetime import datetime
+
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
-from utils.featureutils import loadFeatures, keep_attributes
+from utils.featureutils import loadFeatures, keep_attributes, get_schema_from_feature
+
+
+
 
 nb_decimal = 2
 
@@ -92,4 +98,8 @@ for pc in pop_grid:
     for cbu in c100m: cbu["TOT_P_2021"] = round(pop * cbu["residential_floor_area"] / bu_res, nb_decimal)
 
 
-print(budem_grid[0])
+print(datetime.now(), "save as GPKG")
+for cell in budem_grid: cell["geometry"] = None
+schema = get_schema_from_feature(budem_grid[0])
+out = fiona.open("/home/juju/Bureau/test.gpkg", 'w', driver='GPKG', crs=CRS.from_epsg(3035), schema=schema)
+out.writerecords(budem_grid)
