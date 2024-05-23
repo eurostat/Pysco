@@ -9,7 +9,6 @@ from utils.featureutils import loadFeatures, keep_attributes, get_schema_from_fe
 
 
 
-
 def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
 
     input_budem_file = "/home/juju/gisco/building_demography/out_partition/eurobudem_100m_"+str(x_min)+"_"+str(y_min)+".gpkg"
@@ -78,7 +77,7 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
                 c100m.append(cbu)
 
         if len(c100m)==0:
-            print("found population cell without residential area around",x,y)
+            print("found population cell without residential area around",x,y, "population lost:", pop)
             #TODO assign population equally to all cells ? or a central one ?
             continue
 
@@ -111,7 +110,7 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
     outf.writerecords(outd)
 
 
-
+#TODO parallel
 #define country list
 cnt_codes = ["FR", "NL", "PL", "IT", "LU"]
 for x_min in range(3000000, 5500000, 500000):
