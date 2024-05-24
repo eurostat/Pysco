@@ -90,7 +90,8 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
             continue
 
         #assign 100m population as pop*bu_res/tot_bu_res
-        for cbu in c100m: cbu["TOT_P_2021"] = round(pop * cbu["residential_floor_area"] / bu_res, nb_decimal)
+        for cbu in c100m:
+            cbu["TOT_P_2021"] = round(pop * cbu["residential_floor_area"] / bu_res, nb_decimal)
 
     print(datetime.now(), x_min, y_min, "save as GPKG")
 
@@ -107,6 +108,7 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
 
     #save it as gpkg
     schema = get_schema_from_feature(outd[0])
+    #force type of TOT_P_2021 to be float
     schema["properties"]["TOT_P_2021"] = "float"
     outf = fiona.open("/home/juju/gisco/grid_pop_100m/out_partition/pop_2021_100m_"+str(x_min)+"_"+str(y_min)+".gpkg", 'w', driver='GPKG', crs=CRS.from_epsg(3035), schema=schema)
     outf.writerecords(outd)
