@@ -1,9 +1,44 @@
 import pandas as pd
 import subprocess
+import os
 
 
 # the folder where to put the input files. Naming convention: DK_in_3.csv of NL_in.csv
 rep="/home/juju/gisco/grid_pop_c2021/"
+
+
+
+input_files = os.listdir(rep+"input_data/")
+
+dfs = []
+for file in input_files:
+    print(file)
+
+    #load data
+    df = pd.read_csv(rep + "input_data/" + file, sep=';')
+
+    #select colmuns
+    df = df[["STAT","SPATIAL","OBS_VALUE"]]
+
+    #remove country code from grid id
+    df['SPATIAL'] = df['SPATIAL'].str[3:]
+
+    #pivot
+    df = df.pivot(index='SPATIAL', columns='STAT', values='OBS_VALUE')
+
+    #add column with country code
+    df['cc'] = file[14:16]
+
+    dfs.append(df)
+
+df = pd.concat(dfs, ignore_index=True)
+
+#save
+df.to_csv(rep+"EU.csv", index=True)
+
+
+
+
 
 # load all country files into a single data frame
 def load(cc, nb=0):
@@ -59,7 +94,7 @@ def merge(ccs):
 
 
 # merge
-merge(['LV','NL','AT', 'SK', 'DK'])
+#merge(['LV','NL','AT', 'SK', 'DK'])
 
 
 
@@ -94,4 +129,4 @@ def tiling(a):
     )
 
 # launch tiling
-for a in [1,2,5,10,20,50,100]: tiling(a)
+#for a in [1,2,5,10,20,50,100]: tiling(a)
