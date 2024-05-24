@@ -78,6 +78,7 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
 
         if len(c100m)==0:
             print(datetime.now(), x_min, y_min, "found population cell without residential area",x,y, "population loss:", pop)
+            #TODO store the lost population on 1000m cells and analyse...
             #TODO assign population equally to all cells ? or a central one ?
             continue
 
