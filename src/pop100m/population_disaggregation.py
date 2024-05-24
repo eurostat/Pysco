@@ -21,14 +21,14 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
     if(len(budem_grid)==0): return
 
     #filter population cell data
-    for c in budem_grid:
-        keep_attributes(c, ["GRD_ID", "residential_floor_area"])
+    for c100 in budem_grid:
+        keep_attributes(c100, ["GRD_ID", "residential_floor_area"])
         #extract LLC position
-        a = c['GRD_ID'].split('mN')[1].split('E')
-        c['X_LLC'] = int(a[1])
-        c['Y_LLC'] = int(a[0])
+        a = c100['GRD_ID'].split('mN')[1].split('E')
+        c100['X_LLC'] = int(a[1])
+        c100['Y_LLC'] = int(a[0])
         #initialise population
-        c['TOT_P_2021'] = 0
+        c100['TOT_P_2021'] = 0
 
     #load 1000m population cells in tile
     print(datetime.now(), x_min, y_min, "load 1000m population cells")
@@ -38,61 +38,65 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
     print(datetime.now(), x_min, y_min, len(pop_grid), "pop cells, after filtering on " + str(cnt_codes))
 
     #filter population cell data
-    for pc in pop_grid:
-        keep_attributes(pc, ["Y_LLC", "X_LLC", "TOT_P_2021"])
+    for c1000 in pop_grid:
+        keep_attributes(c1000, ["Y_LLC", "X_LLC", "TOT_P_2021"])
 
 
 
     #index 100m cells by x and then y
     index = {}
-    for c in budem_grid:
-        x = c["X_LLC"]
-        if not x in index: index[x]={}
-        index[x][c["Y_LLC"]] = c
+    for c100 in budem_grid:
+        x100 = c100["X_LLC"]
+        if not x100 in index: index[x100]={}
+        index[x100][c100["Y_LLC"]] = c100
 
 
     #for each 1000m population cell
-    for pc in pop_grid:
+    for c1000 in pop_grid:
 
         #skip non populated cell
-        pop = pc["TOT_P_2021"]
-        if pop == None or pop == "" or pop == 0: continue
+        pop1000 = c1000["TOT_P_2021"]
+        if pop1000 == None or pop1000 == "" or pop1000 == 0: continue
 
         #get cell position
-        x = pc["X_LLC"]
-        y = pc["Y_LLC"]
+        x1000 = c1000["X_LLC"]
+        y1000 = c1000["Y_LLC"]
 
         #get 100m cells inside 1000m cell using index
-        c100m = []
-        for i in range(10):
-            x_ = x+i*100
-            if not x_ in index: continue
-            a = index[x_]
-            for j in range(10):
-                y_ = y+j*100
-                if not y_ in a: continue
-                cbu = a[y_]
-                #exclude the ones without residential area
-                if cbu["residential_floor_area"]==0: continue
-                c100m.append(cbu)
+        cs100 = []
 
-        if len(c100m)==0:
-            print(datetime.now(), x_min, y_min, "found population cell without residential area",x,y, "population loss:", pop)
+        for x100 in range(x1000, x1000+1000, 100):
+            if not x100 in index: continue
+            a = index[x100]
+            for y100 in range(y1000, y1000+1000, 100):
+                if not y100 in a: continue
+
+                #get 100m cell
+                c100 = a[y100]
+                res_area = c100["residential_floor_area"]
+
+                #exclude the 100m cells without residential area
+                if res_area==None or res_area==0: continue
+
+                cs100.append(c100)
+
+        if len(cs100)==0:
+            print(datetime.now(), x_min, y_min, "found population cell without residential area",x1000,y1000, "population loss:", pop1000)
             #TODO store the lost population on 1000m cells and analyse...
             #TODO assign population equally to all cells ? or a central one ?
             continue
 
         #compute total bu_res
-        bu_res = 0
-        for cbu in c100m: bu_res+=cbu["residential_floor_area"]
+        res_area = 0
+        for c100 in cs100: res_area+=c100["residential_floor_area"]
 
-        if bu_res == 0:
-            print(datetime.now(), x_min, y_min, "Unexpectect null building residence area around",x,y)
+        if res_area == 0:
+            print(datetime.now(), x_min, y_min, "Unexpectect null building residence area around",x1000,y1000)
             continue
 
         #assign 100m population as pop*bu_res/tot_bu_res
-        for cbu in c100m:
-            cbu["TOT_P_2021"] = round(pop * cbu["residential_floor_area"] / bu_res, nb_decimal)
+        for c100 in cs100:
+            c100["TOT_P_2021"] = round(pop1000 * c100["residential_floor_area"] / res_area, nb_decimal)
 
     print(datetime.now(), x_min, y_min, "save as GPKG")
 
@@ -101,10 +105,10 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
     outd = []
     for cell in budem_grid:
         o = {"properties":{}}
-        x = cell["X_LLC"]; y = cell["Y_LLC"]
+        x1000 = cell["X_LLC"]; y1000 = cell["Y_LLC"]
         del cell["X_LLC"]; del cell["Y_LLC"]
         for k in cell: o["properties"][k] = cell[k]
-        o["geometry"] = {'type': 'Polygon', 'coordinates': [[(x,y),(x+100,y),(x+100,y+100),(x,y+100),(x,y)]]}
+        o["geometry"] = {'type': 'Polygon', 'coordinates': [[(x1000,y1000),(x1000+100,y1000),(x1000+100,y1000+100),(x1000,y1000+100),(x1000,y1000)]]}
         outd.append(o)
 
     #save it as gpkg

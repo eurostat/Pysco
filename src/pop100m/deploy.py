@@ -6,7 +6,7 @@ import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from gridtiler.gridtiler import grid_aggregation,grid_tiling
 
-compilation = False
+compilation = True
 aggregation = True
 tiling = True
 
