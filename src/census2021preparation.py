@@ -40,9 +40,9 @@ for file in input_files:
 print("merge")
 df = pd.concat(dfs, ignore_index=False)
 
-print(df)
-
 #TODO aggregate by cell id
+
+print(df)
 
 #save
 print("save")
