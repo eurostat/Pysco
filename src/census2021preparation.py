@@ -45,6 +45,16 @@ df.to_csv(rep+"EU.csv", index=True)
 
 
 
+
+
+
+
+
+
+
+
+
+
 # load all country files into a single data frame
 def load(cc, nb=0):
     if (nb==0):
