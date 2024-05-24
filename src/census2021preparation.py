@@ -3,13 +3,13 @@ import subprocess
 import os
 
 
-# the folder where to put the input files. Naming convention: DK_in_3.csv of NL_in.csv
+#the working folder
 rep="/home/juju/gisco/grid_pop_c2021/"
 
-
-
+#the input files
 input_files = os.listdir(rep+"input_data/")
 
+#load files in dataframes
 dfs = []
 for file in input_files:
     print(file)
@@ -31,9 +31,14 @@ for file in input_files:
 
     dfs.append(df)
 
+#merge file dataframes into a single one
+print("merge")
 df = pd.concat(dfs, ignore_index=True)
 
+#TODO aggregate by cell id
+
 #save
+print("save")
 df.to_csv(rep+"EU.csv", index=True)
 
 
