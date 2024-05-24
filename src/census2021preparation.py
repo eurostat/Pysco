@@ -6,50 +6,86 @@ import os
 #the working folder
 rep="/home/juju/gisco/grid_pop_c2021/"
 
-#the input files
-inrep = rep+"input_data/"
-input_files = os.listdir(inrep)
+def prepare():
+    #the input files
+    inrep = rep+"input_data/"
+    input_files = os.listdir(inrep)
 
-#load files in dataframes
-dfs = []
-for file in input_files:
+    #load files in dataframes
+    dfs = []
+    for file in input_files:
 
-    cc = file[14:16]
-    #if cc!="AT": continue
+        cc = file[14:16]
+        #if cc!="AT": continue
 
-    print(file)
+        print(file)
 
-    #load data
-    df = pd.read_csv(inrep + file, sep=';')
+        #load data
+        df = pd.read_csv(inrep + file, sep=';')
 
-    #select colmuns
-    df = df[["STAT","SPATIAL","OBS_VALUE"]]
+        #select colmuns
+        df = df[["STAT","SPATIAL","OBS_VALUE"]]
 
-    #remove country code from grid id
-    df['SPATIAL'] = df['SPATIAL'].str[3:]
+        #remove country code from grid id
+        df['SPATIAL'] = df['SPATIAL'].str[3:]
 
-    #pivot
-    df = df.pivot(index='SPATIAL', columns='STAT', values='OBS_VALUE')
+        #pivot
+        df = df.pivot(index='SPATIAL', columns='STAT', values='OBS_VALUE')
 
-    #add column with country code
-    df['cc'] = cc
+        #add column with country code
+        df['cc'] = cc
 
-    dfs.append(df)
+        dfs.append(df)
 
-#merge file dataframes into a single one
-print("merge")
-df = pd.concat(dfs, ignore_index=False)
+    #merge file dataframes into a single one
+    print("merge")
+    df = pd.concat(dfs, ignore_index=False)
 
-#TODO aggregate by cell id
+    #TODO aggregate by cell id
 
-print(df)
+    print(df)
 
-#save
-print("save")
-df.to_csv(rep+"EU.csv", index=True)
+    #save
+    print("save")
+    df.to_csv(rep+"EU.csv", index=True)
+
+
+#prepare()
 
 
 
+# tiling function, via gridtiler
+def tiling(a):
+    subprocess.run(
+        [
+            "gridtiler",
+            "-i",
+            rep+"EU.csv",
+            "-r",
+            "1000",
+            "-c",
+            "3035",
+            "-x",
+            "3800000",
+            "-y",
+            "2500000",
+            "-p",
+            "const a = c.SPATIAL.split('N')[1].split('E'); return { x:a[1],y:a[0] };",
+            "-m",
+            "delete c.SPATIAL",
+            "-a",
+            str(a),
+            "-o",
+            rep+"tiled/"
+            + str(a * 1000)
+            + "m/",
+            "-e",
+            "csv",
+        ]
+    )
+
+# launch tiling
+for a in [1,2,5,10,20,50,100]: tiling(a)
 
 
 
@@ -118,37 +154,3 @@ def merge(ccs):
 # merge
 #merge(['LV','NL','AT', 'SK', 'DK'])
 
-
-
-# tiling function, via gridtiler
-def tiling(a):
-    subprocess.run(
-        [
-            "gridtiler",
-            "-i",
-            rep+"EU.csv",
-            "-r",
-            "1000",
-            "-c",
-            "3035",
-            "-x",
-            "3800000",
-            "-y",
-            "2500000",
-            "-p",
-            "const a = c.SPATIAL.split('N')[1].split('E'); return { x:a[1],y:a[0] };",
-            "-m",
-            "delete c.SPATIAL",
-            "-a",
-            str(a),
-            "-o",
-            rep+"tiled/"
-            + str(a * 1000)
-            + "m/",
-            "-e",
-            "csv",
-        ]
-    )
-
-# launch tiling
-#for a in [1,2,5,10,20,50,100]: tiling(a)
