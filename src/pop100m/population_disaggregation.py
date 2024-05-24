@@ -77,7 +77,7 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
                 c100m.append(cbu)
 
         if len(c100m)==0:
-            print(datetime.now(), x_min, y_min, "found population cell without residential area around",x,y, "population lost:", pop)
+            print(datetime.now(), x_min, y_min, "found population cell without residential area",x,y, "population loss:", pop)
             #TODO assign population equally to all cells ? or a central one ?
             continue
 
@@ -95,6 +95,7 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
     print(datetime.now(), x_min, y_min, "save as GPKG")
 
     #build output data
+    #TODO extract that ? as reverse of loadFeatures ? with 'mapping' function
     outd = []
     for cell in budem_grid:
         o = {"properties":{}}
