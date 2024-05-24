@@ -7,15 +7,20 @@ import os
 rep="/home/juju/gisco/grid_pop_c2021/"
 
 #the input files
-input_files = os.listdir(rep+"input_data/")
+inrep = rep+"input_data/"
+input_files = os.listdir(inrep)
 
 #load files in dataframes
 dfs = []
 for file in input_files:
+
+    cc = file[14:16]
+    #if cc!="AT": continue
+
     print(file)
 
     #load data
-    df = pd.read_csv(rep + "input_data/" + file, sep=';')
+    df = pd.read_csv(inrep + file, sep=';')
 
     #select colmuns
     df = df[["STAT","SPATIAL","OBS_VALUE"]]
@@ -27,13 +32,15 @@ for file in input_files:
     df = df.pivot(index='SPATIAL', columns='STAT', values='OBS_VALUE')
 
     #add column with country code
-    df['cc'] = file[14:16]
+    df['cc'] = cc
 
     dfs.append(df)
 
 #merge file dataframes into a single one
 print("merge")
-df = pd.concat(dfs, ignore_index=True)
+df = pd.concat(dfs, ignore_index=False)
+
+print(df)
 
 #TODO aggregate by cell id
 
