@@ -28,7 +28,7 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
         c100['X_LLC'] = int(a[1])
         c100['Y_LLC'] = int(a[0])
         #initialise population
-        c100['TOT_P_2021'] = 0
+        c100['TOT_P_2021'] = 0.0
 
     #load 1000m population cells in tile
     print(datetime.now(), x_min, y_min, "load 1000m population cells")
@@ -79,6 +79,9 @@ def disaggregate_population_100m(x_min, y_min, nb_decimal = 2, cnt_codes = []):
                 if res_area==None or res_area==0: continue
 
                 cs100.append(c100)
+
+        print(x1000, y1000)
+        print(cs100)
 
         if len(cs100)==0:
             print(datetime.now(), x_min, y_min, "found population cell without residential area",x1000,y1000, "population loss:", pop1000)
