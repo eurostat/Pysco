@@ -5,10 +5,10 @@ import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from gridtiler.gridtiler import grid_aggregation,grid_tiling,grid_transformation
 
-prepare = False
-extract_xy = False
+prepare = True
+transform = True
 aggregation = True
-tiling = False
+tiling = True
 
 
 #the working folder
@@ -67,8 +67,8 @@ if prepare:
 
 
 
-if extract_xy:
-    print("extract xy")
+if transform:
+    print("transform")
     def fun(c):
         a = c['SPATIAL'].split("N")[1].split("E")
         c["x"] = int(a[1])
