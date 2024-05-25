@@ -62,7 +62,11 @@ if prepare:
 if xy:
     print("extract xy")
     def fun(c):
-        #TODO
+        a = c['SPATIAL'].split("N")[1].split("E")
+        c["x"] = int(a[1])
+        c["y"] = int(a[0])
+        del c['SPATIAL']
+    #transform
     grid_transformation(rep+"EU.csv", fun, rep+"EU_1000.csv")
 
 
