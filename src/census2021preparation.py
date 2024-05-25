@@ -61,18 +61,15 @@ if prepare:
 #aggregation
 if aggregation:
     for a in [2,5,10]:
-        print("aggregation to", a*100, "m")
-        grid_aggregation(folder+"100.csv", 100, folder+str(a*100)+'.csv', a)
-
+        print("aggregation to", a*1000, "m")
+        grid_aggregation(rep+"EU_1000.csv", 1000, rep+"EU-"+str(a*1000)+'.csv', a)
     for a in [2,5,10]:
-        print(datetime.now(), "aggregation to", a*1000, "m")
-        grid_aggregation(folder+"1000.csv", 1000, folder+str(a*1000)+'.csv', a)
-    for a in [2,5,10]:
-        print(datetime.now(), "aggregation to", a*10000, "m")
-        grid_aggregation(folder+"10000.csv", 10000, folder+str(a*10000)+'.csv', a)
+        print("aggregation to", a*10000, "m")
+        grid_aggregation(rep+"EU_10000.csv", 10000, rep+"EU-"+str(a*10000)+'.csv', a)
 
 
 
+#TODO
 
 #tiling
 if tiling:
