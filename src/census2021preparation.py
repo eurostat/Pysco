@@ -5,8 +5,8 @@ import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from gridtiler.gridtiler import grid_aggregation,grid_tiling,grid_transformation
 
-prepare = False
-xy = True
+prepare = True
+xy = False
 aggregation = False
 tiling = False
 
@@ -37,6 +37,11 @@ if prepare:
         #remove country code from grid id
         df['SPATIAL'] = df['SPATIAL'].str[3:]
 
+        #remove unallocated rows
+        df = df[df['SPATIAL'] != 'unallocated']
+        #un_i = df[df['SPATIAL'] == 'unallocated'].index
+        #df = df.drop(un_i)
+
         #pivot
         df = df.pivot(index='SPATIAL', columns='STAT', values='OBS_VALUE')
 
@@ -62,6 +67,7 @@ if prepare:
 if xy:
     print("extract xy")
     def fun(c):
+        print(c)
         a = c['SPATIAL'].split("N")[1].split("E")
         c["x"] = int(a[1])
         c["y"] = int(a[0])
