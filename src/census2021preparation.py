@@ -1,12 +1,19 @@
 import pandas as pd
 import subprocess
 import os
+import sys
+sys.path.append('/home/juju/workspace/pyEx/src/')
+from gridtiler.gridtiler import grid_aggregation,grid_tiling
+
+prepare = False
+aggregation = False
+tiling = False
 
 
 #the working folder
 rep="/home/juju/gisco/grid_pop_c2021/"
 
-def prepare():
+if prepare:
     #the input files
     inrep = rep+"input_data/"
     input_files = os.listdir(inrep)
@@ -47,10 +54,45 @@ def prepare():
 
     #save
     print("save")
-    df.to_csv(rep+"EU.csv", index=True)
+    df.to_csv(rep+"EU_1000.csv", index=True)
 
 
-#prepare()
+
+#aggregation
+if aggregation:
+    for a in [2,5,10]:
+        print("aggregation to", a*100, "m")
+        grid_aggregation(folder+"100.csv", 100, folder+str(a*100)+'.csv', a)
+
+    for a in [2,5,10]:
+        print(datetime.now(), "aggregation to", a*1000, "m")
+        grid_aggregation(folder+"1000.csv", 1000, folder+str(a*1000)+'.csv', a)
+    for a in [2,5,10]:
+        print(datetime.now(), "aggregation to", a*10000, "m")
+        grid_aggregation(folder+"10000.csv", 10000, folder+str(a*10000)+'.csv', a)
+
+
+
+
+#tiling
+if tiling:
+    for resolution in [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]:
+        print("tiling for resolution", resolution)
+        
+        #create output folder
+        out_folder = '/home/juju/workspace/europop100m/pub/tiles/' + str(resolution)
+        if not os.path.exists(folder): os.makedirs(folder)
+
+        grid_tiling(
+            folder+str(resolution)+'.csv',
+            out_folder,
+            resolution,
+            #tile_size_cell = 128,
+            x_origin = 2500000,
+            y_origin = 1000000,
+            crs = "EPSG:3035"
+        )
+
 
 
 
@@ -85,7 +127,11 @@ def tiling(a):
     )
 
 # launch tiling
-for a in [1,2,5,10,20,50,100]: tiling(a)
+for a in [1,2,5,10,20,50,100]:
+    tiling(a)
+
+
+
 
 
 
