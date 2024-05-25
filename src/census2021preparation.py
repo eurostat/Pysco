@@ -74,6 +74,7 @@ if extract_xy:
         c["x"] = int(a[1])
         c["y"] = int(a[0])
         del c['SPATIAL']
+        del c['cc']
     #transform
     grid_transformation(rep+"EU.csv", fun, rep+"EU_1000.csv")
 
