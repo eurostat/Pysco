@@ -3,9 +3,10 @@ import subprocess
 import os
 import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
-from gridtiler.gridtiler import grid_aggregation,grid_tiling
+from gridtiler.gridtiler import grid_aggregation,grid_tiling,grid_transformation
 
 prepare = False
+xy = True
 aggregation = False
 tiling = False
 
@@ -54,7 +55,17 @@ if prepare:
 
     #save
     print("save")
-    df.to_csv(rep+"EU_1000.csv", index=True)
+    df.to_csv(rep+"EU.csv", index=True)
+
+
+
+if xy:
+    print("extract xy")
+    def fun(c):
+        #TODO
+    grid_transformation(rep+"EU.csv", fun, rep+"EU_1000.csv")
+
+
 
 
 
@@ -66,7 +77,6 @@ if aggregation:
     for a in [2,5,10]:
         print("aggregation to", a*10000, "m")
         grid_aggregation(rep+"EU_10000.csv", 10000, rep+"EU-"+str(a*10000)+'.csv', a)
-
 
 
 #TODO
