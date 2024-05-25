@@ -5,9 +5,9 @@ import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from gridtiler.gridtiler import grid_aggregation,grid_tiling,grid_transformation
 
-prepare = True
-xy = True
-aggregation = False
+prepare = False
+xy = False
+aggregation = True
 tiling = False
 
 
@@ -70,7 +70,6 @@ if prepare:
 if xy:
     print("extract xy")
     def fun(c):
-        print(c)
         a = c['SPATIAL'].split("N")[1].split("E")
         c["x"] = int(a[1])
         c["y"] = int(a[0])
@@ -86,30 +85,30 @@ if xy:
 if aggregation:
     for a in [2,5,10]:
         print("aggregation to", a*1000, "m")
-        grid_aggregation(rep+"EU_1000.csv", 1000, rep+"EU-"+str(a*1000)+'.csv', a)
+        grid_aggregation(rep+"EU_1000.csv", 1000, rep+"EU_"+str(a*1000)+'.csv', a)
     for a in [2,5,10]:
         print("aggregation to", a*10000, "m")
-        grid_aggregation(rep+"EU_10000.csv", 10000, rep+"EU-"+str(a*10000)+'.csv', a)
+        grid_aggregation(rep+"EU_10000.csv", 10000, rep+"EU_"+str(a*10000)+'.csv', a)
 
 
 #TODO
 
 #tiling
 if tiling:
-    for resolution in [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]:
+    for resolution in [1000, 2000, 5000, 10000, 20000, 50000, 100000]:
         print("tiling for resolution", resolution)
         
         #create output folder
-        out_folder = '/home/juju/workspace/europop100m/pub/tiles/' + str(resolution)
-        if not os.path.exists(folder): os.makedirs(folder)
+        out_folder = rep+'/tiled/' + str(resolution)
+        if not os.path.exists(out_folder): os.makedirs(out_folder)
 
         grid_tiling(
-            folder+str(resolution)+'.csv',
+            rep+"EU_"+str(resolution)+'.csv',
             out_folder,
             resolution,
             #tile_size_cell = 128,
-            x_origin = 2500000,
-            y_origin = 1000000,
+            #x_origin = 2500000,
+            #y_origin = 1000000,
             crs = "EPSG:3035"
         )
 
