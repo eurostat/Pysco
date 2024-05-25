@@ -191,7 +191,9 @@ def grid_aggregation(
     #TODO handle other cases: average, mode, etc
     def aggregation_fun(values):
         sum = 0
-        for value in values: sum += float(value)
+        for value in values:
+            if value == "" or value == None: continue
+            sum += float(value)
         return sum
 
     #prepare function to round aggregated figures
