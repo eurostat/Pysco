@@ -6,7 +6,7 @@ sys.path.append('/home/juju/workspace/pyEx/src/')
 from gridtiler.gridtiler import grid_aggregation,grid_tiling,grid_transformation
 
 prepare = True
-xy = False
+xy = True
 aggregation = False
 tiling = False
 
@@ -55,6 +55,9 @@ if prepare:
     df = pd.concat(dfs, ignore_index=False)
 
     #TODO aggregate by cell id
+
+    #remove unpopulated cells
+    df = df[df['T'] != 0]
 
     print(df)
 
