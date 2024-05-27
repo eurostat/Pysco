@@ -5,9 +5,9 @@ import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from gridtiler.gridtiler import grid_aggregation,grid_tiling,grid_transformation
 
-prepare = True
-transform = True
-aggregation = True
+prepare = False
+transform = False
+aggregation = False
 tiling = True
 format = "parquet"
 

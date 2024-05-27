@@ -128,7 +128,6 @@ def csv_to_parquet(folder_path, clean=False):
             df.to_parquet(parquet_file_path, engine='pyarrow', index=False)
             #delete csv file
             if clean: os.remove(csv_file_path)
-            print(f'Converted {csv_file_path} to {parquet_file_path}')
 
 
 
