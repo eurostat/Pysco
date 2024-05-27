@@ -3,9 +3,10 @@ import csv
 from math import floor
 import json
 import shutil
+import pandas as pd
 
+#TODO parquet: test csv_to_parquet
 #TODO move to gridtiler repository
-#TODO parquet output
 #TODO geotiff/image input
 
 def grid_tiling(
