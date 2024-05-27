@@ -7,7 +7,6 @@ import shutil
 #TODO move to gridtiler repository
 #TODO parquet output
 #TODO geotiff/image input
-#TODO -d, --delim		The CSV delimiter.
 
 def grid_tiling(
     input_file,
