@@ -5,7 +5,6 @@ import json
 import shutil
 import pandas as pd
 
-#TODO parquet: test csv_to_parquet
 #TODO move to gridtiler repository
 #TODO geotiff/image input
 
@@ -20,7 +19,8 @@ def grid_tiling(
     clean_output_folder = False,
     input_file_delimiter = ",",
     output_file_delimiter = ",",
-    format = "csv"
+    format = "csv",
+    parquet_compression = "snappy"
 ):
 
     #compute tile size, in geo unit
@@ -110,11 +110,11 @@ def grid_tiling(
     if format == "csv": return
 
     #parquet format
-    csv_to_parquet(output_folder, clean=True)
+    csv_to_parquet(output_folder, clean=True, compression=parquet_compression)
 
 
 
-def csv_to_parquet(folder_path, clean=False):
+def csv_to_parquet(folder_path, clean=False, compression='snappy'):
     for root, _, files in os.walk(folder_path):
         for file in files:
             if not file.endswith('.csv'): continue
