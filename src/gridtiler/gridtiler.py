@@ -20,6 +20,7 @@ def grid_tiling(
     clean_output_folder = False,
     input_file_delimiter = ",",
     output_file_delimiter = ",",
+    format = "csv"
 ):
 
     #compute tile size, in geo unit
@@ -106,7 +107,10 @@ def grid_tiling(
     with open(output_folder + '/info.json', 'w') as json_file:
         json.dump(data, json_file, indent=3)
 
+    if format == "csv": return
 
+    #parquet format
+    csv_to_parquet(output_folder, clean=True)
 
 
 
