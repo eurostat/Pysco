@@ -18,7 +18,7 @@ def grid_tiling(
     crs = "",
     clean_output_folder = False,
     input_file_delimiter = ",",
-    output_file_delimiter = ","
+    output_file_delimiter = ",",
 ):
 
     #compute tile size, in geo unit
@@ -106,6 +106,24 @@ def grid_tiling(
         json.dump(data, json_file, indent=3)
 
 
+
+
+
+def csv_to_parquet(folder_path, clean=False):
+    for root, _, files in os.walk(folder_path):
+        for file in files:
+            if not file.endswith('.csv'): continue
+
+            csv_file_path = os.path.join(root, file)
+            parquet_file_path = os.path.splitext(csv_file_path)[0] + '.parquet'
+
+            #load csv file            
+            df = pd.read_csv(csv_file_path)
+            #save as parquet            
+            df.to_parquet(parquet_file_path, engine='pyarrow', index=False)
+            #delete csv file
+            if clean: os.remove(csv_file_path)
+            print(f'Converted {csv_file_path} to {parquet_file_path}')
 
 
 
