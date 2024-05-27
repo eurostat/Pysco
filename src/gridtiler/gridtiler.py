@@ -112,11 +112,11 @@ def grid_tiling(
 
 
 
-def grid_transformation(input_file, function, output_file):
+def grid_transformation(input_file, function, output_file, input_file_delimiter = ",", output_file_delimiter = ","):
 
     #open file to read
     with open(input_file, 'r') as infile:
-        csvreader = csv.DictReader(infile)
+        csvreader = csv.DictReader(infile, delimiter=input_file_delimiter)
 
         #check output file exists
         file_exists = os.path.exists(output_file)
@@ -133,7 +133,7 @@ def grid_transformation(input_file, function, output_file):
                 #create writer, if necessary, write file header
                 if writer==None:
                     csv_header = get_csv_header(c)
-                    writer = csv.DictWriter(outfile, fieldnames=csv_header)
+                    writer = csv.DictWriter(outfile, fieldnames=csv_header, delimiter=output_file_delimiter)
                     if not file_exists: writer.writeheader()
 
                 #write cell data
