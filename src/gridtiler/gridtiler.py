@@ -153,7 +153,9 @@ def grid_aggregation(
     resolution,
     output_file,
     a,
-    aggregation_rounding = 6
+    aggregation_rounding = 6,
+    input_file_delimiter = ",",
+    output_file_delimiter = ","
 ):
 
     # the aggregated cells, indexed by xa and then ya
@@ -163,7 +165,7 @@ def grid_aggregation(
 
     print("aggregation indexing...")
     with open(input_file, 'r') as infile:
-        csvreader = csv.DictReader(infile)
+        csvreader = csv.DictReader(infile, delimiter=input_file_delimiter)
 
         #iterate through cells from the input CSV file
         for c in csvreader:
@@ -226,7 +228,7 @@ def grid_aggregation(
 
                 #if not, create writer and write header
                 if writer == None:
-                    writer = csv.DictWriter(outfile, fieldnames=get_csv_header(cA))
+                    writer = csv.DictWriter(outfile, fieldnames=get_csv_header(cA), delimiter=output_file_delimiter)
                     writer.writeheader()
 
                 #round floats
