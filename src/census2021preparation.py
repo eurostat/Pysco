@@ -100,7 +100,7 @@ if tiling:
         print("tiling for resolution", resolution)
         
         #create output folder
-        out_folder = rep+'/tiled/' + str(resolution)
+        out_folder = rep+'/tiled_'+format+'/' + str(resolution)
         if not os.path.exists(out_folder): os.makedirs(out_folder)
 
         grid_tiling(
@@ -110,7 +110,8 @@ if tiling:
             #tile_size_cell = 128,
             #x_origin = 2500000,
             #y_origin = 1000000,
-            crs = "EPSG:3035"
+            crs = "EPSG:3035",
+            format = format
         )
 
 
