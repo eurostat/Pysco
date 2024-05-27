@@ -125,7 +125,7 @@ def csv_to_parquet(folder_path, clean=False, compression='snappy'):
             #load csv file            
             df = pd.read_csv(csv_file_path)
             #save as parquet            
-            df.to_parquet(parquet_file_path, engine='pyarrow', index=False)
+            df.to_parquet(parquet_file_path, engine='pyarrow', compression=compression, index=False)
             #delete csv file
             if clean: os.remove(csv_file_path)
 
