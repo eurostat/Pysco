@@ -18,7 +18,8 @@ def grid_tiling(
     y_origin = 0,
     crs = "",
     clean_output_folder = False,
-    input_delimiter = ","
+    input_file_delimiter = ",",
+    output_file_delimiter = ","
 ):
 
     #compute tile size, in geo unit
@@ -36,7 +37,7 @@ def grid_tiling(
 
     #open file with data to tile
     with open(input_file, 'r') as csvfile:
-        csvreader = csv.DictReader(csvfile, delimiter=input_delimiter)
+        csvreader = csv.DictReader(csvfile, delimiter=input_file_delimiter)
         csv_header = None
 
         #iterate through cells from the input CSV file
@@ -77,7 +78,7 @@ def grid_tiling(
             with open(file_path, 'a', newline='') as csvfile:
                 #writer
                 if csv_header==None: csv_header = get_csv_header(c)
-                writer = csv.DictWriter(csvfile, fieldnames=csv_header)
+                writer = csv.DictWriter(csvfile, fieldnames=csv_header, delimiter=output_file_delimiter)
                 #write header
                 if not file_exists: writer.writeheader()
                 #write cell data
