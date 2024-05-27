@@ -9,7 +9,7 @@ prepare = True
 transform = True
 aggregation = True
 tiling = True
-
+format = "parquet"
 
 #the working folder
 rep="/home/juju/gisco/grid_pop_c2021/"
@@ -138,7 +138,7 @@ def tiling(a):
             "-a",
             str(a),
             "-o",
-            rep+"tiled/"
+            rep+"tiled_"+format+"/"
             + str(a * 1000)
             + "m/",
             "-e",
