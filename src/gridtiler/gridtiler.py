@@ -17,7 +17,8 @@ def grid_tiling(
     x_origin = 0,
     y_origin = 0,
     crs = "",
-    clean_output_folder = True
+    clean_output_folder = False,
+    input_delimiter = ","
 ):
 
     #compute tile size, in geo unit
@@ -35,7 +36,7 @@ def grid_tiling(
 
     #open file with data to tile
     with open(input_file, 'r') as csvfile:
-        csvreader = csv.DictReader(csvfile)
+        csvreader = csv.DictReader(csvfile, delimiter=input_delimiter)
         csv_header = None
 
         #iterate through cells from the input CSV file
