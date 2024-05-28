@@ -17,4 +17,7 @@ def convert_parquet_compression(input_file_path, output_file_path, output_compre
     df.to_parquet(output_file_path, engine='pyarrow', compression=output_compression)
 
 
-convert_parquet_compression("/home/juju/workspace/gridviz/assets/parquet/Europe/pop_2018_5km.parquet", "/home/juju/workspace/gridviz/assets/parquet/Europe/pop_2018_5km_snappy.parquet")
+#convert_parquet_compression("/home/juju/workspace/gridviz/assets/parquet/Europe/pop_2018_10km.parquet", "/home/juju/workspace/gridviz/assets/parquet/Europe/pop_2018_10km_snappy.parquet")
+#convert_parquet_compression("/home/juju/workspace/gridviz/assets/parquet/Europe/pop_2018_20km.parquet", "/home/juju/workspace/gridviz/assets/parquet/Europe/pop_2018_20km_snappy.parquet")
+#convert_parquet_compression("/home/juju/workspace/gridviz/assets/parquet/Europe/pop_2018_50km.parquet", "/home/juju/workspace/gridviz/assets/parquet/Europe/pop_2018_50km_snappy.parquet")
+#convert_parquet_compression("/home/juju/workspace/gridviz/assets/parquet/Europe/pop_2018_100km.parquet", "/home/juju/workspace/gridviz/assets/parquet/Europe/pop_2018_100km_snappy.parquet")

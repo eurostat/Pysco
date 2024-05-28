@@ -7,7 +7,7 @@ sys.path.append('/home/juju/workspace/pyEx/src/')
 from gridtiler.gridtiler import grid_aggregation,grid_tiling
 
 compilation = False
-aggregation = True
+aggregation = False
 tiling = True
 
 gpkg_folder = '/home/juju/gisco/building_demography/out_partition/'
@@ -78,9 +78,9 @@ if aggregation:
 if tiling:
     for resolution in [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]:
         print("tiling for resolution", resolution)
-        
+
         #create output folder
-        out_folder = '/home/juju/workspace/BuildingDemography/pub/tiles/' + str(resolution)
+        out_folder = '/home/juju/workspace/BuildingDemography/pub/tiles_parquet/' + str(resolution)
         if not os.path.exists(folder): os.makedirs(folder)
 
         grid_tiling(
@@ -90,5 +90,6 @@ if tiling:
             #tile_size_cell = 128,
             x_origin = 2500000,
             y_origin = 1000000,
-            crs = "EPSG:3035"
+            crs = "EPSG:3035",
+            format = "parquet"
         )
