@@ -122,6 +122,8 @@ def building_demography_grid(buildings_loader,
                 #add new cell
                 cells.append(c)
 
+        print(datetime.now(), x_part, y_part, "Done")
+
         return cells
 
     #launch parallel computation   
