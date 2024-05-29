@@ -82,7 +82,7 @@ def formatBuildingAT(bu):
     keepOnlyGeometry(bu)
 
     #buildings heigth
-    if(h!=None and (h>250 or h<0)): h=1
+    if(h!=None and (h>300 or h<0)): h=1
     bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(h/3), 1)
 
     bu["residential"] = 1
