@@ -8,7 +8,6 @@ from utils.featureutils import loadFeatures,keepOnlyGeometry
 from utils.geomutils import average_z_coordinate
 
 #TODO
-# join population from 1000m resolution OR disaggregate 2021 population and then join
 # other countries: DK, SP, BE, SK, CZ, SI, FI... see eubc
 # FR NL date of creation
 # other years
