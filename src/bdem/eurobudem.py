@@ -9,8 +9,7 @@ from utils.geomutils import average_z_coordinate
 
 #TODO
 # other countries: DK, SP, BE, SK, CZ, SI, FI... see eubc
-# FR NL date of creation
-# other years
+# other years - AT, FR
 
 bbox = [4250000, 2750000, 4750000, 2750000] #AT
 #bbox = [3750000, 3250000, 4250000, 3250000] #NL
