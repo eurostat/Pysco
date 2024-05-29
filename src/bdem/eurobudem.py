@@ -32,6 +32,11 @@ clamp = lambda v:floor(v/file_size_m)*file_size_m
 def loadBuildings(bbox):
     buildings = []
 
+    #AT
+    bs = loadFeatures('/home/juju/geodata/AT/BEV/DLM_8000_BAUWERK_20230912_joined_3035.gpkg', bbox)
+    for bu in bs: formatBuildingAT(bu)
+    buildings += bs
+
     #NL
     bs = loadFeatures('/home/juju/geodata/NL/bu_integrated.gpkg', bbox)
     for bu in bs: formatBuildingNL(bu)
@@ -60,6 +65,29 @@ def loadBuildings(bbox):
     #TODO remove duplicates
 
     return buildings
+
+
+
+
+def formatBuildingAT(bu):
+
+    # AT - https://data.bev.gv.at/geonetwork/srv/metadata/c25dc7a7-bece-4962-8eae-c9177df1dc6b
+
+    #construction year
+    #date: BEFLIEGUNGSJAHR ?
+    h = bu["HOEHE_OBJEKT_MAX"]
+    #to get type, join with "GLOBALID_F" ? No type for commercial, indistrial, residential buildings.
+
+    keepOnlyGeometry(bu)
+
+    #buildings heigth
+    if(h!=None and (h>250 or h<0)): h=1
+    bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(h/3), 1)
+
+    bu["residential"] = 1
+    bu["activity"] = 0
+    bu["cultural_value"] = 0
+
 
 
 
