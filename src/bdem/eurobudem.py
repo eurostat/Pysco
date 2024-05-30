@@ -28,45 +28,46 @@ clamp = lambda v:floor(v/file_size_m)*file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
 
+countries = ["CZ","AT","NL","PL","FR","LU","IT"]
 
 
 def loadBuildings(bbox):
     buildings = []
 
-    #CZ
-    bs = loadFeatures('/home/juju/geodata/CZ/bu_3035.gpkg', bbox)
-    for bu in bs: formatBuildingCZ(bu)
-    buildings += bs
+    if "CZ" in countries:
+        bs = loadFeatures('/home/juju/geodata/CZ/bu_3035.gpkg', bbox)
+        for bu in bs: formatBuildingCZ(bu)
+        buildings += bs
 
-    #AT
-    bs = loadFeatures('/home/juju/geodata/AT/BEV/DLM_8000_BAUWERK_20230912_joined_3035.gpkg', bbox)
-    for bu in bs: formatBuildingAT(bu)
-    buildings += bs
+    if "AT" in countries:
+        bs = loadFeatures('/home/juju/geodata/AT/BEV/DLM_8000_BAUWERK_20230912_joined_3035.gpkg', bbox)
+        for bu in bs: formatBuildingAT(bu)
+        buildings += bs
 
-    #NL
-    bs = loadFeatures('/home/juju/geodata/NL/bu_integrated.gpkg', bbox)
-    for bu in bs: formatBuildingNL(bu)
-    buildings += bs
+    if "NL" in countries:
+        bs = loadFeatures('/home/juju/geodata/NL/bu_integrated.gpkg', bbox)
+        for bu in bs: formatBuildingNL(bu)
+        buildings += bs
 
-    #PL
-    bs = loadFeatures('/home/juju/geodata/PL/bdot10k/bu_bubd_bdot10k.gpkg', bbox)
-    for bu in bs: formatBuildingPL(bu)
-    buildings += bs
+    if "PL" in countries:
+        bs = loadFeatures('/home/juju/geodata/PL/bdot10k/bu_bubd_bdot10k.gpkg', bbox)
+        for bu in bs: formatBuildingPL(bu)
+        buildings += bs
 
-    #FR
-    bs = loadFeatures('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox)
-    for bu in bs: formatBuildingFR(bu)
-    buildings += bs
+    if "FR" in countries:
+        bs = loadFeatures('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox)
+        for bu in bs: formatBuildingFR(bu)
+        buildings += bs
 
-    #LU
-    bs = loadFeatures('/home/juju/geodata/LU/ACT/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', bbox)
-    for bu in bs: formatBuildingLU(bu)
-    buildings += bs
+    if "LU" in countries:
+        bs = loadFeatures('/home/juju/geodata/LU/ACT/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', bbox)
+        for bu in bs: formatBuildingLU(bu)
+        buildings += bs
 
-    #IT
-    bs = loadFeatures('/home/juju/geodata/IT/DBSN/dbsn.gpkg', bbox)
-    for bu in bs: formatBuildingIT(bu)
-    buildings += bs
+    if "IT" in countries:
+        bs = loadFeatures('/home/juju/geodata/IT/DBSN/dbsn.gpkg', bbox)
+        for bu in bs: formatBuildingIT(bu)
+        buildings += bs
 
     #TODO remove duplicates
 
