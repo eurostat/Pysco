@@ -120,11 +120,16 @@ def disaggregate_population_100m(x_500km_tile, y_500km_tile, nb_decimal = 2, cnt
     outf = fiona.open("/home/juju/gisco/grid_pop_100m/out_partition/pop_2021_100m_"+str(x_500km_tile)+"_"+str(y_500km_tile)+".gpkg", 'w', driver='GPKG', crs=CRS.from_epsg(3035), schema=schema)
     outf.writerecords(outd)
 
-
 #TODO parallel ?
 #define country list
 cnt_codes = ["FR", "NL", "PL", "IT", "LU"]
+"""""
 for x_500km_tile in range(3000000, 5500000, 500000):
     for y_500km_tile in range(1000000, 4000000, 500000):
         print(datetime.now(), x_500km_tile, y_500km_tile, "disaggregation ************")
         disaggregate_population_100m(x_500km_tile, y_500km_tile, cnt_codes=cnt_codes)
+"""""
+
+#AT
+disaggregate_population_100m(4000000, 2500000, cnt_codes=cnt_codes)
+disaggregate_population_100m(4500000, 2500000, cnt_codes=cnt_codes)
