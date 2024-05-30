@@ -6,8 +6,8 @@ import sys
 sys.path.append('/home/juju/workspace/pyEx/src/')
 from gridtiler.gridtiler import grid_aggregation,grid_tiling
 
-compilation = False
-aggregation = False
+compilation = True
+aggregation = True
 tiling = True
 
 gpkg_folder = '/home/juju/gisco/building_demography/out_partition/'
