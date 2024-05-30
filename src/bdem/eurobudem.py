@@ -37,7 +37,7 @@ def loadBuildings(bbox):
     bs = loadFeatures('/home/juju/geodata/CZ/bu_3035.gpkg', bbox)
     for bu in bs: formatBuildingCZ(bu)
     buildings += bs
-    '''
+
     #AT
     bs = loadFeatures('/home/juju/geodata/AT/BEV/DLM_8000_BAUWERK_20230912_joined_3035.gpkg', bbox)
     for bu in bs: formatBuildingAT(bu)
@@ -67,7 +67,7 @@ def loadBuildings(bbox):
     bs = loadFeatures('/home/juju/geodata/IT/DBSN/dbsn.gpkg', bbox)
     for bu in bs: formatBuildingIT(bu)
     buildings += bs
-    '''
+
     #TODO remove duplicates
 
     return buildings
