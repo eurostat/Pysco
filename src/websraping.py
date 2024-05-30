@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 import subprocess
 
 
+#download all resources from an atom feed
 def download_atom_links(atom_file, download_folder):
     # Parse the Atom feed
     feed = feedparser.parse(atom_file)
@@ -32,7 +33,7 @@ def download_atom_links(atom_file, download_folder):
 
 
 
-
+#download all a_href resources from a html page
 def download_links_from_html(html_file, download_folder):
     # Read the HTML file
     with open(html_file, 'r', encoding='utf-8') as file:
@@ -70,7 +71,7 @@ def download_links_from_html(html_file, download_folder):
 
 
 
-
+#load all *.xml files from a folder and compile them into a geopackage file
 def gml_to_geopackage(gml_folder, geopackage_file, target_epsg):
     # Create a list of all GML files in the directory
     gml_files = [os.path.join(gml_folder, f) for f in os.listdir(gml_folder) if f.endswith('.xml')]
@@ -108,7 +109,7 @@ def gml_to_geopackage(gml_folder, geopackage_file, target_epsg):
 
 
 # CZ
-gml_to_geopackage("/home/juju/geodata/CZ/downloads/", "/home/juju/geodata/CZ/bu.gpkg", 3035)
+#gml_to_geopackage("/home/juju/geodata/CZ/downloads/", "/home/juju/geodata/CZ/bu.gpkg", 3035)
 
 # CZ
 #download_links_from_html("/home/juju/geodata/CZ/services.cuzk.cz.html", "/home/juju/geodata/CZ/downloads/")
