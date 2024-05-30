@@ -27,7 +27,7 @@ num_processors_to_use = 6
 clamp = lambda v:floor(v/file_size_m)*file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
-
+#countries to cover
 countries = ["CZ","AT","NL","PL","FR","LU","IT"]
 
 
@@ -104,8 +104,9 @@ def formatBuildingAT(bu):
     if(h!=None and (h>300 or h<0)): h=1
     bu["floor_nb"] = 1 if h==None or isnan(h) else max(ceil(h/3), 1)
 
-    bu["residential"] = 1
-    bu["activity"] = 0
+    is_residential = bu['geometry'].buffer(-25).is_empty
+    bu["residential"] = 1 if is_residential else 0
+    bu["activity"] = 0 if is_residential else 1
     bu["cultural_value"] = 0
 
 
