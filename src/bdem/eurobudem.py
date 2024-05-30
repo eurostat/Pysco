@@ -32,6 +32,11 @@ clamp = lambda v:floor(v/file_size_m)*file_size_m
 def loadBuildings(bbox):
     buildings = []
 
+    #CZ
+    bs = loadFeatures('/home/juju/geodata/CZ/bu_3035.gpkg', bbox)
+    for bu in bs: formatBuildingCZ(bu)
+    buildings += bs
+
     #AT
     bs = loadFeatures('/home/juju/geodata/AT/BEV/DLM_8000_BAUWERK_20230912_joined_3035.gpkg', bbox)
     for bu in bs: formatBuildingAT(bu)
@@ -65,6 +70,20 @@ def loadBuildings(bbox):
     #TODO remove duplicates
 
     return buildings
+
+
+
+
+def formatBuildingCZ(bu):
+
+    keepOnlyGeometry(bu)
+
+    #buildings heigth
+    bu["floor_nb"] = 1
+
+    bu["residential"] = 1
+    bu["activity"] = 0
+    bu["cultural_value"] = 0
 
 
 
