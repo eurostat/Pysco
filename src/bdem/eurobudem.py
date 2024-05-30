@@ -8,7 +8,7 @@ from utils.featureutils import loadFeatures,keepOnlyGeometry
 from utils.geomutils import average_z_coordinate
 
 #TODO
-# other countries: DK, SP, BE, SK, CZ, SI, FI... see eubc
+# other countries: CZ, DK, SP, BE, SK, SI, FI... see eubc
 # other years - AT, FR
 
 #bbox = [4250000, 2750000, 4750000, 2750000] #AT
