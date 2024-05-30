@@ -3,6 +3,7 @@ import requests
 import feedparser
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+import subprocess
 
 
 def download_atom_links(atom_file, download_folder):
@@ -67,9 +68,50 @@ def download_links_from_html(html_file, download_folder):
         except requests.RequestException as e:
             print(f"Failed to download {url}: {e}")
 
-# Usage example
-download_links_from_html("/home/juju/geodata/CZ/services.cuzk.cz.html", "/home/juju/geodata/CZ/downloads/")
 
+
+
+def gml_to_geopackage(gml_folder, geopackage_file, target_epsg):
+    # Create a list of all GML files in the directory
+    gml_files = [os.path.join(gml_folder, f) for f in os.listdir(gml_folder) if f.endswith('.xml')]
+    
+    # Check if there are any GML files to process
+    if not gml_files:
+        print("No GML files found in the specified directory.")
+        return
+
+    # Define the command to convert GML to GeoPackage and reproject to the target EPSG
+    for i, gml_file in enumerate(gml_files):
+        if i == 0:
+            # For the first file, create a new GeoPackage
+            command = [
+                'ogr2ogr',
+                '-f', 'GPKG',
+                '-t_srs', f'EPSG:{target_epsg}',
+                geopackage_file,
+                gml_file
+            ]
+        else:
+            # For subsequent files, append to the existing GeoPackage
+            command = [
+                'ogr2ogr',
+                '-f', 'GPKG',
+                '-t_srs', f'EPSG:{target_epsg}',
+                '-append',
+                geopackage_file,
+                gml_file
+            ]
+        
+        # Run the command
+        subprocess.run(command, check=True)
+        print(f"Processed {gml_file} into {geopackage_file}")
+
+
+# CZ
+gml_to_geopackage("/home/juju/geodata/CZ/downloads/", "/home/juju/geodata/CZ/bu.gpkg", 3035)
+
+# CZ
+#download_links_from_html("/home/juju/geodata/CZ/services.cuzk.cz.html", "/home/juju/geodata/CZ/downloads/")
 
 # CZ BU.xml
 #download_atom_links("/home/juju/geodata/CZ/BU.xml", "/home/juju/geodata/CZ/BU_xml_downloads/")
