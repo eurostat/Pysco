@@ -80,7 +80,7 @@ if tiling:
         print("tiling for resolution", resolution)
         
         #create output folder
-        out_folder = '/home/juju/workspace/europop100m/pub/tiles/' + str(resolution)
+        out_folder = '/home/juju/workspace/europop100m/pub/tiles_parquet/' + str(resolution)
         if not os.path.exists(folder): os.makedirs(folder)
 
         grid_tiling(
@@ -90,5 +90,6 @@ if tiling:
             #tile_size_cell = 128,
             x_origin = 2500000,
             y_origin = 1000000,
-            crs = "EPSG:3035"
+            crs = "EPSG:3035",
+            format = "parquet"
         )
