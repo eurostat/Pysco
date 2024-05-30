@@ -11,6 +11,7 @@ from utils.geomutils import average_z_coordinate
 # other countries: CZ, DK, SP, BE, SK, SI, FI... see eubc
 # other years - AT, FR
 
+bbox = [4250000, 2750000, 4750000, 2750000] #CZ
 #bbox = [4250000, 2750000, 4750000, 2750000] #AT
 #bbox = [3750000, 3250000, 4250000, 3250000] #NL
 #bbox = [4750000, 2750000, 5250000, 3750000] #PL
@@ -36,7 +37,7 @@ def loadBuildings(bbox):
     bs = loadFeatures('/home/juju/geodata/CZ/bu_3035.gpkg', bbox)
     for bu in bs: formatBuildingCZ(bu)
     buildings += bs
-
+    '''
     #AT
     bs = loadFeatures('/home/juju/geodata/AT/BEV/DLM_8000_BAUWERK_20230912_joined_3035.gpkg', bbox)
     for bu in bs: formatBuildingAT(bu)
@@ -66,7 +67,7 @@ def loadBuildings(bbox):
     bs = loadFeatures('/home/juju/geodata/IT/DBSN/dbsn.gpkg', bbox)
     for bu in bs: formatBuildingIT(bu)
     buildings += bs
-
+    '''
     #TODO remove duplicates
 
     return buildings
