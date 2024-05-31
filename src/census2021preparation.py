@@ -89,8 +89,6 @@ if aggregation:
         gridtiler.grid_aggregation(rep+"EU_10000.csv", 10000, rep+"EU_"+str(a*10000)+'.csv', a)
 
 
-#TODO
-
 #tiling
 if tiling:
     for resolution in [1000, 2000, 5000, 10000, 20000, 50000, 100000]:
