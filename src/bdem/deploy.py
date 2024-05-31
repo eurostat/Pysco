@@ -2,9 +2,7 @@ import fiona
 import csv
 import os
 from datetime import datetime
-import sys
-sys.path.append('/home/juju/workspace/pyEx/src/')
-from gridtiler.gridtiler import grid_aggregation,grid_tiling
+from pygridmap import gridtiler
 
 compilation = True
 aggregation = True
@@ -63,13 +61,13 @@ if compilation:
 if aggregation:
     for a in [2,5,10]:
         print(datetime.now(), "aggregation to", a*100, "m")
-        grid_aggregation(folder+"100.csv", 100, folder+str(a*100)+'.csv', a)
+        gridtiler.grid_aggregation(folder+"100.csv", 100, folder+str(a*100)+'.csv', a)
     for a in [2,5,10]:
         print(datetime.now(), "aggregation to", a*1000, "m")
-        grid_aggregation(folder+"1000.csv", 1000, folder+str(a*1000)+'.csv', a)
+        gridtiler.grid_aggregation(folder+"1000.csv", 1000, folder+str(a*1000)+'.csv', a)
     for a in [2,5,10]:
         print(datetime.now(), "aggregation to", a*10000, "m")
-        grid_aggregation(folder+"10000.csv", 10000, folder+str(a*10000)+'.csv', a)
+        gridtiler.grid_aggregation(folder+"10000.csv", 10000, folder+str(a*10000)+'.csv', a)
 
 
 
@@ -83,7 +81,7 @@ if tiling:
         out_folder = '/home/juju/workspace/BuildingDemography/pub/tiles_parquet/' + str(resolution)
         if not os.path.exists(folder): os.makedirs(folder)
 
-        grid_tiling(
+        gridtiler.grid_tiling(
             folder+str(resolution)+'.csv',
             out_folder,
             resolution,

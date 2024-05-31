@@ -2,7 +2,6 @@ import fiona
 import csv
 import os
 from datetime import datetime
-import sys
 from pygridmap import gridtiler
 
 compilation = False
