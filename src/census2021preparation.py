@@ -1,9 +1,6 @@
 import pandas as pd
-import subprocess
 import os
-import sys
-sys.path.append('/home/juju/workspace/pyEx/src/')
-from gridtiler.gridtiler import grid_aggregation,grid_tiling,grid_transformation
+from pygridmap import gridtiler
 
 prepare = False
 transform = False
@@ -76,7 +73,7 @@ if transform:
         del c['SPATIAL']
         del c['cc']
     #transform
-    grid_transformation(rep+"EU.csv", fun, rep+"EU_1000.csv")
+    gridtiler.grid_transformation(rep+"EU.csv", fun, rep+"EU_1000.csv")
 
 
 
@@ -86,10 +83,10 @@ if transform:
 if aggregation:
     for a in [2,5,10]:
         print("aggregation to", a*1000, "m")
-        grid_aggregation(rep+"EU_1000.csv", 1000, rep+"EU_"+str(a*1000)+'.csv', a)
+        gridtiler.grid_aggregation(rep+"EU_1000.csv", 1000, rep+"EU_"+str(a*1000)+'.csv', a)
     for a in [2,5,10]:
         print("aggregation to", a*10000, "m")
-        grid_aggregation(rep+"EU_10000.csv", 10000, rep+"EU_"+str(a*10000)+'.csv', a)
+        gridtiler.grid_aggregation(rep+"EU_10000.csv", 10000, rep+"EU_"+str(a*10000)+'.csv', a)
 
 
 #TODO
@@ -103,7 +100,7 @@ if tiling:
         out_folder = rep+'/tiled_'+format+'/' + str(resolution)
         if not os.path.exists(out_folder): os.makedirs(out_folder)
 
-        grid_tiling(
+        gridtiler.grid_tiling(
             rep+"EU_"+str(resolution)+'.csv',
             out_folder,
             resolution,
