@@ -3,11 +3,10 @@ import csv
 import os
 from datetime import datetime
 import sys
-sys.path.append('/home/juju/workspace/pyEx/src/')
-from gridtiler.gridtiler import grid_aggregation,grid_tiling
+from pygridmap import gridtiler
 
-compilation = True
-aggregation = True
+compilation = False
+aggregation = False
 tiling = True
 
 gpkg_folder = '/home/juju/gisco/grid_pop_100m/out_partition/'
@@ -83,7 +82,7 @@ if tiling:
         out_folder = '/home/juju/workspace/europop100m/pub/tiles_parquet/' + str(resolution)
         if not os.path.exists(folder): os.makedirs(folder)
 
-        grid_tiling(
+        gridtiler.grid_tiling(
             folder+str(resolution)+'.csv',
             out_folder,
             resolution,
