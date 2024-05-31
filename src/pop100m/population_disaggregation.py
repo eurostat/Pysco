@@ -122,7 +122,7 @@ def disaggregate_population_100m(x_500km_tile, y_500km_tile, nb_decimal = 2, cnt
 
 #TODO parallel ?
 #define country list
-cnt_codes = ["FR", "NL", "PL", "IT", "LU", "AT"]
+cnt_codes = ["FR", "NL", "PL", "IT", "LU", "AT", "CZ"]
 """""
 for x_500km_tile in range(3000000, 5500000, 500000):
     for y_500km_tile in range(1000000, 4000000, 500000):
@@ -131,5 +131,10 @@ for x_500km_tile in range(3000000, 5500000, 500000):
 """""
 
 #AT
+#disaggregate_population_100m(4000000, 2500000, cnt_codes=cnt_codes)
+#disaggregate_population_100m(4500000, 2500000, cnt_codes=cnt_codes)
+#CZ
 disaggregate_population_100m(4000000, 2500000, cnt_codes=cnt_codes)
 disaggregate_population_100m(4500000, 2500000, cnt_codes=cnt_codes)
+disaggregate_population_100m(4000000, 3000000, cnt_codes=cnt_codes)
+disaggregate_population_100m(4500000, 3000000, cnt_codes=cnt_codes)
