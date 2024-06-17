@@ -63,5 +63,6 @@ if tiling:
             x_origin = 0,
             y_origin = 0,
             crs = "EPSG:3035",
-            format = "parquet"
+            format = "parquet",
+            file_extension="data"
         )
