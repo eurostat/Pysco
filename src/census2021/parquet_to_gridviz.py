@@ -9,7 +9,7 @@ def tr(c):
     print(c)
     #fid,GRD_ID,T,M,F,Y_LT15,Y_1564,Y_GE65,EMP,NAT,EU_OTH,OTH,SAME,CHG_IN,CHG_OUT
     del c["fid"]
-    for p in "T","M","F","Y_LT15","Y_1564","Y_GE65","EMP","NAT","EU_OTH","OTH,SAME","CHG_IN","CHG_OUT":
+    for p in "T","M","F","Y_LT15","Y_1564","Y_GE65","EMP","NAT","EU_OTH","OTH","SAME","CHG_IN","CHG_OUT":
         v = c[p]
         if v == "0": c[p] = ""
 
