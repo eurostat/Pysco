@@ -32,7 +32,7 @@ def transform_fun(c):
 
 #apply transform
 if transform:
-    print("Transform")
+    print("transform")
     gridtiler.grid_transformation(input_file=input_file, output_file=folder+"out/1000.csv", function=transform_fun)
 
 
