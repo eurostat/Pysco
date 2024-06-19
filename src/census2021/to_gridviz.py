@@ -2,22 +2,22 @@ from pygridmap import gridtiler
 from datetime import datetime
 import os
 
-transform = False
-aggregation = False
+transform = True
+aggregation = True
 tiling = True
 
 folder = "/home/juju/geodata/census/"
-input_file = folder + "csv_export.csv"
+input_file = folder + "gridviz20240613.csv"
 
 
 def transform_fun(c):
-    #fid,GRD_ID,T,M,F,Y_LT15,Y_1564,Y_GE65,EMP,NAT,EU_OTH,OTH,SAME,CHG_IN,CHG_OUT
+    #GRD_ID,T,M,F,Y_LT15,Y_1564,Y_GE65,EMP,NAT,EU_OTH,OTH,SAME,CHG_IN,CHG_OUT
 
     #filter out cells with no population
     t = c["T"]
-    if t=="0" or t=="": return False
+    if t=="0" or t=="" or t == None: return False
 
-    del c["fid"]
+    #del c["fid"]
 
     #get x and y
     a = c['GRD_ID'].split("N")[1].split("E")
@@ -31,7 +31,9 @@ def transform_fun(c):
         if v == "0": c[p] = ""
 
 #apply transform
-if transform: gridtiler.grid_transformation(input_file=input_file, output_file=folder+"out/1000.csv", function=transform_fun)
+if transform:
+    print("Transform")
+    gridtiler.grid_transformation(input_file=input_file, output_file=folder+"out/1000.csv", function=transform_fun)
 
 
 
@@ -63,6 +65,5 @@ if tiling:
             x_origin = 0,
             y_origin = 0,
             crs = "EPSG:3035",
-            format = "parquet",
-            file_extension="data"
+            format = "parquet"
         )
