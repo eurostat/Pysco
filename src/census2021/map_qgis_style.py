@@ -3,58 +3,40 @@ from qgis.core import (
     QgsVectorLayer,
     QgsRuleBasedRenderer,
     QgsMarkerSymbol,
-    QgsSymbolLayer,
     QgsSimpleMarkerSymbolLayer,
-    QgsFeature,
-    QgsGeometry
+    QgsProperty
 )
 from qgis.PyQt.QtGui import QColor
 
-def apply_custom_style(layer):
-    # Root rule
-    root_rule = QgsRuleBasedRenderer.Rule()
-
-    # Rule for _T < 100
-    rule_lt_100 = QgsRuleBasedRenderer.Rule()
-    rule_lt_100.setFilterExpression('\"_T\" < 100')
-    rule_lt_100.setSymbol(QgsMarkerSymbol.createSimple({
-        'name': 'circle',
-        'size': '300',  # size in map units (meters)
-        'color_border': 'transparent'
-    }))
-
-    # Rule for _T >= 100
-    rule_ge_100 = QgsRuleBasedRenderer.Rule()
-    rule_ge_100.setFilterExpression('\"_T\" >= 100')
-    rule_ge_100.setSymbol(QgsMarkerSymbol.createSimple({
-        'name': 'circle',
-        'size': '1200',  # size in map units (meters)
-        'color_border': 'transparent'
-    }))
-
-    # Apply color based on perc_
-    for rule in [rule_lt_100, rule_ge_100]:
-        symbol = rule.symbol()
-        for i in range(symbol.symbolLayerCount()):
-            layer = symbol.symbolLayer(i)
-            if isinstance(layer, QgsSimpleMarkerSymbolLayer):
-                # Blue fill for perc_ < 80
-                layer.setDataDefinedProperty(QgsSymbolLayer.PropertyFillColor, 
-                                             QgsProperty.fromExpression('if(\"perc_\" < 80, \'blue\', \'red\')'))
-
-    # Add rules to the root rule
-    root_rule.appendChild(rule_lt_100)
-    root_rule.appendChild(rule_ge_100)
-
-    # Create and apply the renderer
-    renderer = QgsRuleBasedRenderer(root_rule)
-    layer.setRenderer(renderer)
-
-    # Refresh the layer to apply changes
-    layer.triggerRepaint()
-
-# Load the layer (assuming it is already loaded in the QGIS project)
+# Get the layer by name
 layer = QgsProject.instance().mapLayersByName('grid_1km_point')[0]
 
-# Apply the custom style function
-apply_custom_style(layer)
+# Create the symbol
+symbol = QgsMarkerSymbol.createSimple({
+    'name': 'circle',
+    'color': '255,0,0,255',  # Red color (RGBA format)
+    'outline_color': '255,255,255,0',  # Transparent outline (RGBA format)
+    'size': '1000',  # Diameter in map units (CRS units)
+    'size_unit': 'MapUnit'
+})
+
+# Get the current renderer (assuming it's a rule-based renderer)
+renderer = layer.renderer()
+
+# Check if the renderer is rule-based
+if isinstance(renderer, QgsRuleBasedRenderer):
+    # Get the root rule
+    root_rule = renderer.rootRule()
+
+    # Iterate over each rule
+    for rule in root_rule.children():
+        # Set the symbol for each rule
+        rule.symbol().changeSymbolLayer(0, symbol.clone())
+
+    # Update the layer renderer
+    layer.setRenderer(renderer)
+    layer.triggerRepaint()  # Refresh the layer to apply changes
+
+    print("Style applied to 'grid_1km_point'")
+else:
+    print("Layer does not use a QgsRuleBasedRenderer")
