@@ -1,5 +1,6 @@
 import fiona
-from shapely.geometry import shape
+from shapely.geometry import shape, mapping
+from fiona.crs import CRS
 from rtree import index
 
 
@@ -68,3 +69,51 @@ def get_schema_from_feature(feature):
             schema['properties'][prop_name] = prop_type
 
     return schema
+
+
+
+
+
+def save_features_to_gpkg(fs, out_gpkg_file, crs_epsg="3035"):
+    """
+    Save a list of features with mixed geometry types (points, lines, etc.) 
+    as a GeoPackage file with separate layers for each geometry type.
+
+    Parameters:
+    - fs: List of dictionaries representing the features.
+    - out_gpkg_file: The output file path for the GeoPackage.
+    - crs_epsg: The EPSG code for the coordinate reference system (default is "3035").
+    """
+
+    # index features by geometry type
+    features_by_geometry = {}
+    for feature in fs:
+        #get geometry type
+        geom_type = feature['geometry'].__class__.__name__
+
+        #prepare index
+        if geom_type not in features_by_geometry: features_by_geometry[geom_type] = []
+
+        #add feature, structured to be saved
+        geom = feature.pop('geometry')
+        features_by_geometry[geom_type].append({
+                'geometry': mapping(geom),
+                'properties': feature
+            })
+
+    # save as gpkg, one layer per geometry type
+    crs = CRS.from_epsg(crs_epsg)
+    for geom_type, features in features_by_geometry.items():
+        #print(geom_type, len(features))
+
+        # make schema from first feature
+        f0 = features[0]
+        schema = {
+            'geometry': geom_type,
+            'properties': {k: type(v).__name__ for k, v in f0["properties"].items()}
+        }
+
+        # write features to layer
+        with fiona.open(out_gpkg_file, 'w', driver='GPKG', schema=schema, crs = crs, layer = geom_type.lower()) as layer:
+            layer.writerecords(features)
+
