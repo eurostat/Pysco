@@ -1,5 +1,11 @@
 import svgwrite
 import csv
+import cairosvg
+
+
+path_svg = '/home/juju/Bureau/map.svg'
+path_pdf = '/home/juju/Bureau/map.pdf'
+in_CSV = '/home/juju/gisco/grid_pop_c2021/EU_1000.csv'
 
 # A0 dimensions in millimeters (landscape)
 width_mm = 1189
@@ -12,7 +18,7 @@ viewBox_width = x_max - x_min
 viewBox_height = y_max - y_min
 
 # Create an SVG drawing object with A0 dimensions in landscape orientation
-dwg = svgwrite.Drawing('/home/juju/Bureau/map.svg', size=(f'{width_mm}mm', f'{height_mm}mm'))
+dwg = svgwrite.Drawing(path_svg, size=(f'{width_mm}mm', f'{height_mm}mm'))
 
 # Set the viewBox attribute to map the custom coordinates to the SVG canvas
 dwg.viewbox(x_min, y_min, viewBox_width, viewBox_height)
@@ -36,12 +42,11 @@ dwg.add(dwg.polygon(points=triangle_points, fill='red'))
 
 print("Load cell data")
 cells = []
-with open('/home/juju/geodata/census/csv_export.csv', mode='r', newline='') as file:
+with open(in_CSV, mode='r', newline='') as file:
     csv_reader = csv.DictReader(file)
 
     for row in csv_reader:
         if row['T'] == '0': continue
-        del row['fid']
         del row['M']
         del row['F']
         del row['EMP']
@@ -51,20 +56,10 @@ with open('/home/juju/geodata/census/csv_export.csv', mode='r', newline='') as f
         del row['SAME']
         del row['CHG_IN']
         del row['CHG_OUT']
-        id = row['GRD_ID']
-
-        #CRS3035RES1000mN1000000E1966000
-        id = id.replace("CRS3035RES1000mN", "")
-        del row['GRD_ID']
-        id = id.split("E")
-        row['y'] = int(id[0])
-        row['x'] = int(id[1])
-
         cells.append(row)
 
-
 print(len(cells))
-#print(cells[0])
+print(cells[0])
 
 #TODO rank by x,y
 
@@ -72,5 +67,8 @@ print("Draw cells")
 for cell in cells:
     dwg.add(dwg.circle(center=(cell['x'], cell['y']), r=500, fill='black'))
 
-print("Save")
+print("Save SVG")
 dwg.save()
+
+print("Save PDF")
+cairosvg.svg2pdf(url=path_svg, write_to=path_pdf)
