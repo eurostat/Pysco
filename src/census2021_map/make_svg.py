@@ -56,6 +56,9 @@ with open(in_CSV, mode='r', newline='') as file:
         del row['SAME']
         del row['CHG_IN']
         del row['CHG_OUT']
+        row['x'] = int(row['x'])
+        row['y'] = int(row['y'])
+        row['T'] = int(row['T'])
         cells.append(row)
 
 print(len(cells))
