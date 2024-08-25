@@ -18,10 +18,10 @@ dwg = svgwrite.Drawing('/home/juju/Bureau/map.svg', size=(f'{width_mm}mm', f'{he
 dwg.viewbox(x_min, y_min, viewBox_width, viewBox_height)
 
 # Set the background color to white
-dwg.add(dwg.rect(insert=(x_min, y_min), size=(viewBox_width, viewBox_height), fill='white'))
+#dwg.add(dwg.rect(insert=(x_min, y_min), size=(viewBox_width, viewBox_height), fill='white'))
 
 # Draw a yellow circle with a 10 cm (100 mm) radius at the center of the custom coordinate system
-dwg.add(dwg.circle(center=(5000000, 3000000), r=1000000, fill='blue'))
+#dwg.add(dwg.circle(center=(5000000, 3000000), r=1000000, fill='blue'))
 
 '''
 # Coordinates for a red triangle centered around the middle in the custom coordinate system
@@ -33,7 +33,8 @@ triangle_points = [
 dwg.add(dwg.polygon(points=triangle_points, fill='red'))
 '''
 
-#read CSV file
+
+print("Load cell data")
 cells = []
 with open('/home/juju/geodata/census/csv_export.csv', mode='r', newline='') as file:
     csv_reader = csv.DictReader(file)
@@ -63,13 +64,13 @@ with open('/home/juju/geodata/census/csv_export.csv', mode='r', newline='') as f
 
 
 print(len(cells))
-print(cells[0])
+#print(cells[0])
 
 #TODO rank by x,y
 
+print("Draw cells")
+for cell in cells:
+    dwg.add(dwg.circle(center=(cell['x'], cell['y']), r=500, fill='black'))
 
-
-# Save the SVG file
+print("Save")
 dwg.save()
-
-print("SVG file created successfully.")
