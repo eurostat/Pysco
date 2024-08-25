@@ -5,7 +5,8 @@ import cairosvg
 
 path_svg = '/home/juju/Bureau/map.svg'
 path_pdf = '/home/juju/Bureau/map.pdf'
-in_CSV = '/home/juju/gisco/grid_pop_c2021/EU_1000.csv'
+res = 1000
+in_CSV = '/home/juju/gisco/grid_pop_c2021/EU_' + str(res) + '.csv'
 
 # A0 dimensions in millimeters (landscape)
 width_mm = 1189
@@ -44,7 +45,6 @@ print("Load cell data")
 cells = []
 with open(in_CSV, mode='r', newline='') as file:
     csv_reader = csv.DictReader(file)
-
     for row in csv_reader:
         if row['T'] == '0' or row['T'] == '': continue
         del row['M']
@@ -68,10 +68,10 @@ print(cells[0])
 
 print("Draw cells")
 for cell in cells:
-    dwg.add(dwg.circle(center=(cell['x'], cell['y']), r=500, fill='black'))
+    dwg.add(dwg.circle(center=(cell['x'], cell['y']), r=res/2, fill='black'))
 
 print("Save SVG")
 dwg.save()
 
-print("Save PDF")
-cairosvg.svg2pdf(url=path_svg, write_to=path_pdf)
+#print("Save PDF")
+#cairosvg.svg2pdf(url=path_svg, write_to=path_pdf)
