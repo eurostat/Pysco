@@ -27,24 +27,39 @@ triangle_points = [
 ]
 dwg.add(dwg.polygon(points=triangle_points, fill='red'))
 
-
-# Initialize an empty list to store the dictionaries
+#read SCV file
 data_list = []
-
-# Open the CSV file
 with open('/home/juju/geodata/census/csv_export.csv', mode='r', newline='') as file:
-    # Create a DictReader object
     csv_reader = csv.DictReader(file)
-    
-    # Iterate through the rows and add each row's dictionary to the list
+
     for row in csv_reader:
-        #if row['T'] == 0: continue
+        if row['T'] == '0': continue
         del row['fid']
+        del row['M']
+        del row['F']
+        del row['EMP']
+        del row['NAT']
+        del row['EU_OTH']
+        del row['OTH']
+        del row['SAME']
+        del row['CHG_IN']
+        del row['CHG_OUT']
+        id = row['GRD_ID']
+
+        #CRS3035RES1000mN1000000E1966000
+        id = id.replace("CRS3035RES1000mN", "")
+        del row['GRD_ID']
+        id = id.split("E")
+        row['y'] = int(id[0])
+        row['x'] = int(id[1])
+
         data_list.append(row)
 
 
 print(len(data_list))
 print(data_list[0])
+
+#TODO rank by x,y
 
 
 
