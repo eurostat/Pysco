@@ -27,8 +27,8 @@ triangle_points = [
 ]
 dwg.add(dwg.polygon(points=triangle_points, fill='red'))
 
-#read SCV file
-data_list = []
+#read CSV file
+cells = []
 with open('/home/juju/geodata/census/csv_export.csv', mode='r', newline='') as file:
     csv_reader = csv.DictReader(file)
 
@@ -53,11 +53,11 @@ with open('/home/juju/geodata/census/csv_export.csv', mode='r', newline='') as f
         row['y'] = int(id[0])
         row['x'] = int(id[1])
 
-        data_list.append(row)
+        cells.append(row)
 
 
-print(len(data_list))
-print(data_list[0])
+print(len(cells))
+print(cells[0])
 
 #TODO rank by x,y
 
