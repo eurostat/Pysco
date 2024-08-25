@@ -47,6 +47,7 @@ with open(in_CSV, mode='r', newline='') as file:
 
     for row in csv_reader:
         if row['T'] == '0': continue
+        if row['T'] == '': continue
         del row['M']
         del row['F']
         del row['EMP']
