@@ -6,10 +6,8 @@ width_mm = 1189
 height_mm = 841
 
 # Custom coordinate system extents
-x_min, x_max = -500, 500
-y_min, y_max = -400, 400
-
-# Calculate the viewBox dimensions
+x_min, x_max = 2297000, 6817000
+y_min, y_max = 1442000, 5962000
 viewBox_width = x_max - x_min
 viewBox_height = y_max - y_min
 
@@ -23,8 +21,7 @@ dwg.viewbox(x_min, y_min, viewBox_width, viewBox_height)
 dwg.add(dwg.rect(insert=(x_min, y_min), size=(viewBox_width, viewBox_height), fill='white'))
 
 # Draw a yellow circle with a 10 cm (100 mm) radius at the center of the custom coordinate system
-circle_radius_mm = 100
-dwg.add(dwg.circle(center=(0, 0), r=circle_radius_mm, fill='yellow'))
+dwg.add(dwg.circle(center=(5000000, 3000000), r=1000000, fill='blue'))
 
 '''
 # Coordinates for a red triangle centered around the middle in the custom coordinate system
