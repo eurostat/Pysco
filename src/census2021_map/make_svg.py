@@ -5,8 +5,10 @@ import csv
 
 path_svg = '/home/juju/Bureau/map.svg'
 path_pdf = '/home/juju/Bureau/map.pdf'
-res = 5000
+res = 10000
 in_CSV = '/home/juju/gisco/grid_pop_c2021/EU_' + str(res) + '.csv'
+
+max_pop = res * 100
 
 # A0 dimensions in millimeters (landscape)
 width_mm = 1189
@@ -62,13 +64,33 @@ with open(in_CSV, mode='r', newline='') as file:
         cells.append(row)
 
 print(len(cells))
-#print(cells[0])
+print(cells[0])
 
 #TODO rank by x,y
 
 print("Draw cells")
+min_diameter = 0.2 / 1000 / scale
+max_diameter = res * 1.2
+#print(min_diameter, max_diameter)
 for cell in cells:
-    dwg.add(dwg.circle(center=(cell['x'], y_min + y_max - cell['y']), r=res/2, fill='black'))
+    t = cell['T']
+    t = t / max_pop
+    if t>1: t=1
+    t = pow(t, 0.23)
+    diameter = min_diameter + t * (max_diameter - min_diameter)
+
+    p0 = cell['Y_LT15']
+    p1 = cell['Y15-64']
+    p2 = cell['Y_GE65']
+    t = cell['T']
+    t_ = p0 + p1 + p2
+
+    if t != t_: col = "red"
+    else:
+        col = "black"
+        #TODO
+
+    dwg.add(dwg.circle(center=(cell['x'], y_min + y_max - cell['y']), r=diameter/2, fill=color))
 
 print("Save SVG", res)
 dwg.save()
