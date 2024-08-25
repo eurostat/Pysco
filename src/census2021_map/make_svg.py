@@ -85,10 +85,10 @@ for cell in cells:
     t = cell['T']
     t_ = p0 + p1 + p2
 
-    if t != t_: col = "red"
+    if t != t_: color = "red"
     else:
-        col = "black"
         #TODO
+        color = "black"
 
     dwg.add(dwg.circle(center=(cell['x'], y_min + y_max - cell['y']), r=diameter/2, fill=color))
 
