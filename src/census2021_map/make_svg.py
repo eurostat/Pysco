@@ -13,19 +13,22 @@ width_mm = 1189
 height_mm = 841
 
 # Custom coordinate system extents
-x_min, x_max = 1351000, 5444000
-y_min, y_max = 2435000, 6553000
-dx = x_max - x_min
-dy = y_max - y_min
+cx = 3700000
+cy = 3400000
+scale = 1/5000000
+width_m = width_mm / 1000 / scale
+height_m = height_mm / 1000 / scale
+x_min, x_max = cx - width_m/2, cx + width_m/2
+y_min, y_max = cy - height_m/2, cy + height_m/2
 
 # Create an SVG drawing object with A0 dimensions in landscape orientation
 dwg = svgwrite.Drawing(path_svg, size=(f'{width_mm}mm', f'{height_mm}mm'))
 
 # Set the viewBox attribute to map the custom coordinates to the SVG canvas
-dwg.viewbox(x_min, y_min, dx, dy)
+dwg.viewbox(x_min, y_min, width_m, height_m)
 
 # Set the background color to white
-#dwg.add(dwg.rect(insert=(x_min, y_min), size=(viewBox_width, viewBox_height), fill='white'))
+dwg.add(dwg.rect(insert=(x_min, y_min), size=(width_m, height_m), fill='#dfdfdf'))
 
 '''
 # Coordinates for a red triangle centered around the middle in the custom coordinate system
@@ -59,13 +62,13 @@ with open(in_CSV, mode='r', newline='') as file:
         cells.append(row)
 
 print(len(cells))
-print(cells[0])
+#print(cells[0])
 
 #TODO rank by x,y
 
 print("Draw cells")
 for cell in cells:
-    dwg.add(dwg.circle(center=(cell['x'], cell['y']), r=res/2, fill='black'))
+    dwg.add(dwg.circle(center=(cell['x'], y_min + y_max - cell['y']), r=res/2, fill='black'))
 
 print("Save SVG", res)
 dwg.save()
