@@ -5,27 +5,36 @@ import csv
 width_mm = 1189
 height_mm = 841
 
+# Custom coordinate system extents
+x_min, x_max = -500, 500
+y_min, y_max = -400, 400
+
+# Calculate the viewBox dimensions
+viewBox_width = x_max - x_min
+viewBox_height = y_max - y_min
+
 # Create an SVG drawing object with A0 dimensions in landscape orientation
 dwg = svgwrite.Drawing('/home/juju/Bureau/map.svg', size=(f'{width_mm}mm', f'{height_mm}mm'))
 
+# Set the viewBox attribute to map the custom coordinates to the SVG canvas
+dwg.viewbox(x_min, y_min, viewBox_width, viewBox_height)
+
 # Set the background color to white
-dwg.add(dwg.rect(insert=(0, 0), size=(f'{width_mm}mm', f'{height_mm}mm'), fill='white'))
+dwg.add(dwg.rect(insert=(x_min, y_min), size=(viewBox_width, viewBox_height), fill='white'))
 
-# Calculate positions for shapes to be centered
-center_x = width_mm / 2
-center_y = height_mm / 2
-
-# Draw a yellow circle with a 10 cm (100 mm) radius at the center
+# Draw a yellow circle with a 10 cm (100 mm) radius at the center of the custom coordinate system
 circle_radius_mm = 100
-dwg.add(dwg.circle(center=(center_x, center_y), r=f'{circle_radius_mm}mm', fill='yellow'))
+dwg.add(dwg.circle(center=(0, 0), r=circle_radius_mm, fill='yellow'))
 
-# Coordinates for a red triangle centered around the middle
+'''
+# Coordinates for a red triangle centered around the middle in the custom coordinate system
 triangle_points = [
-    (center_x, center_y - 100),  # Top point of the triangle
-    (center_x - 86.6, center_y + 50),  # Bottom left (forming an equilateral triangle)
-    (center_x + 86.6, center_y + 50)  # Bottom right
+    (0, -100),  # Top point of the triangle in custom coordinates
+    (-86.6, 50),  # Bottom left
+    (86.6, 50)  # Bottom right
 ]
 dwg.add(dwg.polygon(points=triangle_points, fill='red'))
+'''
 
 #read CSV file
 cells = []
