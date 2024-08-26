@@ -6,7 +6,7 @@ import csv
 path_svg = '/home/juju/Bureau/map.svg'
 path_pdf = '/home/juju/Bureau/map.pdf'
 res = 10000
-in_CSV = '/home/juju/gisco/grid_pop_c2021/EU_' + str(res) + '.csv'
+in_CSV = '/home/juju/geodata/census/out/ESTAT_Census_2021_V2_'+str(res)+'.csv'
 
 max_pop = res * 100
 
@@ -58,6 +58,11 @@ with open(in_CSV, mode='r', newline='') as file:
         del row['SAME']
         del row['CHG_IN']
         del row['CHG_OUT']
+        del row['NB']
+        del row['CONFIDENTIALSTATUS']
+        del row['POPULATED']
+        del row['LAND_SURFACE']
+
         row['x'] = int(row['x'])
         row['y'] = int(row['y'])
         row['T'] = int(row['T'])
@@ -80,7 +85,7 @@ for cell in cells:
     diameter = min_diameter + t * (max_diameter - min_diameter)
 
     p0 = int(cell['Y_LT15'])
-    p1 = int(cell['Y15-64'])
+    p1 = int(cell['Y1564'])
     p2 = int(cell['Y_GE65'])
     t = cell['T']
     t_ = p0 + p1 + p2
