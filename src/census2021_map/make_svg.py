@@ -5,7 +5,7 @@ import csv
 
 path_svg = '/home/juju/Bureau/map.svg'
 path_pdf = '/home/juju/Bureau/map.pdf'
-res = 10000
+res = 1000
 in_CSV = '/home/juju/geodata/census/out/ESTAT_Census_2021_V2_'+str(res)+'.csv'
 
 max_pop = res * 100
@@ -68,8 +68,8 @@ with open(in_CSV, mode='r', newline='') as file:
         row['T'] = int(row['T'])
         cells.append(row)
 
-print(len(cells))
-print(cells[0])
+print(len(cells), "cells loaded")
+#print(cells[0])
 
 #TODO rank by x,y
 
@@ -84,17 +84,14 @@ for cell in cells:
     t = pow(t, 0.23)
     diameter = min_diameter + t * (max_diameter - min_diameter)
 
-    p0 = int(cell['Y_LT15'])
-    p1 = int(cell['Y_1564'])
-    p2 = int(cell['Y_GE65'])
+    p0 = 0 if cell['Y_LT15']=="" else int(cell['Y_LT15'])
+    p1 = 0 if cell['Y_1564']=="" else int(cell['Y_1564'])
+    p2 = 0 if cell['Y_GE65']=="" else int(cell['Y_GE65'])
     t = cell['T']
     t_ = p0 + p1 + p2
-    print(t,t_)
 
-    if t != t_: color = "red"
-    else:
-        #TODO
-        color = "black"
+    if t_ == 0: color = "gray"
+    else: color = "blue"
 
     dwg.add(dwg.circle(center=(cell['x'], y_min + y_max - cell['y']), r=diameter/2, fill=color))
 
