@@ -81,7 +81,7 @@ max_diameter = res * 1.2
 
 col0, col1, col2 = "#4daf4a", "#377eb8", "#e41a1c"
 c0, c1, c2 = 0.15, 0.6, 0.25
-centerColor = "#999",
+centerColor = "#999"
 centerCoefficient = 0.25
 cc = centerCoefficient
 withMixedClasses = True
@@ -153,6 +153,8 @@ for cell in cells:
         else:
             print("aaa")
             color = "blue"
+
+    #print(color)
 
     dwg.add(dwg.circle(center=(cell['x'], y_min + y_max - cell['y']), r=diameter/2, fill=color))
 
