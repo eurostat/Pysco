@@ -16,10 +16,17 @@ height_mm = 841
 cx = 3700000
 cy = 3400000
 scale = 1/5000000
-width_m = width_mm / 1000 / scale
-height_m = height_mm / 1000 / scale
+width_m = width_mm / scale / 1000
+height_m = height_mm / scale / 1000
 x_min, x_max = cx - width_m/2, cx + width_m/2
 y_min, y_max = cy - height_m/2, cy + height_m/2
+
+
+# Create a group element with a transform to simulate a viewBox
+translate_x = -x_min
+translate_y = -y_min
+transform_str = f"scale({scale} {scale}) translate({translate_x} {translate_y})"
+
 
 
 min_diameter = 0.25 / 1000 / scale
@@ -57,27 +64,6 @@ def average_color(color1, color2):
     return rgb_to_hex(avg_rgb)
 
 
-
-
-# Create an SVG drawing object with A0 dimensions in landscape orientation
-dwg = svgwrite.Drawing(path_svg, size=(f'{width_mm}mm', f'{height_mm}mm'))
-# Set the viewBox attribute to map the custom coordinates to the SVG canvas
-dwg.viewbox(x_min, y_min, width_m, height_m)
-
-# Create group elements
-gCircles = dwg.g(id='circles')
-gBN = dwg.g(id='boundaries', stroke="#777", fill="none", stroke_width=1500, stroke_linecap="round", stroke_linejoin="round")
-
-dwg.add(gBN)
-dwg.add(gCircles)
-
-
-
-
-# Set the background color to white
-#dwg.add(dwg.rect(insert=(x_min, y_min), size=(width_m, height_m), fill='#dfdfdf'))
-
-
 print("Load cell data", res)
 cells = []
 with open(in_CSV, mode='r', newline='') as file:
@@ -108,6 +94,32 @@ print(len(cells), "cells loaded")
 
 print("Sort cells")
 cells.sort(key=lambda d: (-d['y'], d['x']))
+
+
+
+# Create an SVG drawing object with A0 dimensions in landscape orientation
+dwg = svgwrite.Drawing(path_svg, size=(f'{width_mm}mm', f'{height_mm}mm'))
+# Set the viewBox attribute to map the custom coordinates to the SVG canvas
+#dwg.viewbox(x_min, y_min, width_m, height_m)
+
+# Create group elements
+gCircles = dwg.g(id='circles', transform=transform_str)
+gBN = dwg.g(id='boundaries', transform=transform_str, stroke="#777", fill="none", stroke_width=1500, stroke_linecap="round", stroke_linejoin="round")
+# Create a group with a transform
+#g = dwg.g(id='transformed_group', transform=transform_str)
+
+dwg.add(gBN)
+dwg.add(gCircles)
+
+
+
+
+
+
+
+# Set the background color to white
+#dwg.add(dwg.rect(insert=(x_min, y_min), size=(width_m, height_m), fill='#dfdfdf'))
+
 
 print("Draw cells")
 
