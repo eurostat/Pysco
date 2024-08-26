@@ -29,7 +29,13 @@ def transform_fun(c):
     for p in "T","M","F","Y_LT15","Y_1564","Y_GE65","EMP","NAT","EU_OTH","OTH","SAME","CHG_IN","CHG_OUT":
         v = c[p]
         if v == "0": c[p] = ""
-    print(c)
+
+    c["NB"] = 1
+    #del c['CONFIDENTIALSTATUS']
+    #del c['POPULATED']
+    #del c['LAND_SURFACE']
+    #print(c)
+
 
 #apply transform
 if transform:
