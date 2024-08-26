@@ -1,14 +1,13 @@
 import svgwrite
 import csv
-#import cairosvg
+import geopandas as gpd
 
 
-path_svg = '/home/juju/Bureau/map.svg'
-path_pdf = '/home/juju/Bureau/map.pdf'
-res = 2000
+path_svg = '/home/juju/gisco/census_2021_map/map_age.svg'
+res = 5000
 in_CSV = '/home/juju/geodata/census/out/ESTAT_Census_2021_V2_'+str(res)+'.csv'
 
-max_pop = res * 100
+max_pop = res * 70
 
 # A0 dimensions in millimeters (landscape)
 width_mm = 1189
@@ -24,7 +23,7 @@ x_min, x_max = cx - width_m/2, cx + width_m/2
 y_min, y_max = cy - height_m/2, cy + height_m/2
 
 
-min_diameter = 0.1 / 1000 / scale
+min_diameter = 0.3 / 1000 / scale
 max_diameter = res * 1.6
 #print(min_diameter, max_diameter)
 
@@ -108,7 +107,8 @@ with open(in_CSV, mode='r', newline='') as file:
 print(len(cells), "cells loaded")
 #print(cells[0])
 
-#TODO rank by x,y
+print("Sort cells")
+cells.sort(key=lambda d: (-d['y'], d['x']))
 
 print("Draw cells")
 
@@ -189,8 +189,13 @@ for cell in cells:
 
     dwg.add(dwg.circle(center=(cell['x'], y_min + y_max - cell['y']), r=diameter/2, fill=color))
 
+
+
+# Load the GeoPackage file (replace 'your_geopackage.gpkg' with your file path)
+lines = gpd.read_file('/home/juju/gisco/census_2021_map/BN_3M_2021.gpkg')
+
+
+
+
 print("Save SVG", res)
 dwg.save()
-
-#print("Save PDF", res)
-#cairosvg.svg2pdf(url=path_svg, write_to=path_pdf)
