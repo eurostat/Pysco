@@ -100,14 +100,14 @@ print(len(cells), "cells loaded")
 
 print("Draw cells")
 
-min_diameter = 0.2 / 1000 / scale
+min_diameter = 0.3 / 1000 / scale
 max_diameter = res * 1.2
 #print(min_diameter, max_diameter)
 
 col0, col1, col2 = "#4daf4a", "#377eb8", "#e41a1c"
 c0, c1, c2 = 0.15, 0.6, 0.25
 centerColor = "#999"
-centerCoefficient = None
+centerCoefficient = 0.15
 cc = centerCoefficient
 withMixedClasses = True
 
