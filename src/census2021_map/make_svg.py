@@ -5,7 +5,7 @@ import csv
 
 path_svg = '/home/juju/Bureau/map.svg'
 path_pdf = '/home/juju/Bureau/map.pdf'
-res = 5000
+res = 2000
 in_CSV = '/home/juju/geodata/census/out/ESTAT_Census_2021_V2_'+str(res)+'.csv'
 
 max_pop = res * 100
@@ -22,6 +22,18 @@ width_m = width_mm / 1000 / scale
 height_m = height_mm / 1000 / scale
 x_min, x_max = cx - width_m/2, cx + width_m/2
 y_min, y_max = cy - height_m/2, cy + height_m/2
+
+
+min_diameter = 0.1 / 1000 / scale
+max_diameter = res * 1.6
+#print(min_diameter, max_diameter)
+
+col0, col1, col2 = "#4daf4a", "#377eb8", "#e41a1c"
+c0, c1, c2 = 0.15, 0.6, 0.25
+centerColor = "#999"
+centerCoefficient = 0.7
+cc = centerCoefficient
+withMixedClasses = True
 
 
 
@@ -100,16 +112,6 @@ print(len(cells), "cells loaded")
 
 print("Draw cells")
 
-min_diameter = 0.3 / 1000 / scale
-max_diameter = res * 1.2
-#print(min_diameter, max_diameter)
-
-col0, col1, col2 = "#4daf4a", "#377eb8", "#e41a1c"
-c0, c1, c2 = 0.15, 0.6, 0.25
-centerColor = "#999"
-centerCoefficient = 0.15
-cc = centerCoefficient
-withMixedClasses = True
 
 colm0 = average_color(col1,col2)
 colm1 = average_color(col0,col2)
