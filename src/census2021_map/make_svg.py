@@ -85,7 +85,7 @@ for cell in cells:
     diameter = min_diameter + t * (max_diameter - min_diameter)
 
     p0 = int(cell['Y_LT15'])
-    p1 = int(cell['Y1564'])
+    p1 = int(cell['Y_1564'])
     p2 = int(cell['Y_GE65'])
     t = cell['T']
     t_ = p0 + p1 + p2
