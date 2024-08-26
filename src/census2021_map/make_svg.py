@@ -1,13 +1,12 @@
 import svgwrite
 import csv
-import geopandas as gpd
-
+import fiona
 
 path_svg = '/home/juju/gisco/census_2021_map/map_age.svg'
 res = 5000
 in_CSV = '/home/juju/geodata/census/out/ESTAT_Census_2021_V2_'+str(res)+'.csv'
 
-max_pop = res * 70
+max_pop = res * 60
 
 # A0 dimensions in millimeters (landscape)
 width_mm = 1189
@@ -23,9 +22,10 @@ x_min, x_max = cx - width_m/2, cx + width_m/2
 y_min, y_max = cy - height_m/2, cy + height_m/2
 
 
-min_diameter = 0.3 / 1000 / scale
+min_diameter = 0.25 / 1000 / scale
 max_diameter = res * 1.6
 #print(min_diameter, max_diameter)
+power = 0.25
 
 col0, col1, col2 = "#4daf4a", "#377eb8", "#e41a1c"
 c0, c1, c2 = 0.15, 0.6, 0.25
@@ -122,7 +122,7 @@ for cell in cells:
     t = cell['T']
     t = t / max_pop
     if t>1: t=1
-    t = pow(t, 0.23)
+    t = pow(t, power)
     diameter = min_diameter + t * (max_diameter - min_diameter)
 
     p0 = 0 if cell['Y_LT15']=="" else int(cell['Y_LT15'])
@@ -190,11 +190,18 @@ for cell in cells:
     dwg.add(dwg.circle(center=(cell['x'], y_min + y_max - cell['y']), r=diameter/2, fill=color))
 
 
+# draw boundaries
+lines = fiona.open('/home/juju/gisco/census_2021_map/BN_3M_2021.gpkg') 
+for feature in lines:
 
-# Load the GeoPackage file (replace 'your_geopackage.gpkg' with your file path)
-lines = gpd.read_file('/home/juju/gisco/census_2021_map/BN_3M_2021.gpkg')
+    if feature['properties'].get("EU_FLAG") != 'T': continue
+    if feature['properties'].get("COAS_FLAG") == 'T': continue
+    if feature['properties'].get("LEVL_CODE") != 0: continue
 
-
+    geom = feature.geometry
+    for line in geom['coordinates']:
+        points = [ (x, y_min + y_max - y) for x, y in line]
+        dwg.add(dwg.polyline(points, stroke="#777", fill="none", stroke_width=1500, stroke_linecap="round", stroke_linejoin="round"))
 
 
 print("Save SVG", res)
