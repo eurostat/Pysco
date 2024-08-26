@@ -23,6 +23,31 @@ height_m = height_mm / 1000 / scale
 x_min, x_max = cx - width_m/2, cx + width_m/2
 y_min, y_max = cy - height_m/2, cy + height_m/2
 
+
+
+def average_color(color1, color2):
+    # Convert hex color to RGB tuple
+    def hex_to_rgb(hex_color):
+        hex_color = hex_color.lstrip('#')
+        return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+
+    # Convert RGB tuple to hex color
+    def rgb_to_hex(rgb_tuple):
+        return '#{:02x}{:02x}{:02x}'.format(*rgb_tuple)
+    
+    # Get RGB values from hex colors
+    rgb1 = hex_to_rgb(color1)
+    rgb2 = hex_to_rgb(color2)
+
+    # Calculate the average of each RGB component
+    avg_rgb = tuple((c1 + c2) // 2 for c1, c2 in zip(rgb1, rgb2))
+
+    # Convert the averaged RGB values back to a hex color
+    return rgb_to_hex(avg_rgb)
+
+
+
+
 # Create an SVG drawing object with A0 dimensions in landscape orientation
 dwg = svgwrite.Drawing(path_svg, size=(f'{width_mm}mm', f'{height_mm}mm'))
 
@@ -82,9 +107,13 @@ max_diameter = res * 1.2
 col0, col1, col2 = "#4daf4a", "#377eb8", "#e41a1c"
 c0, c1, c2 = 0.15, 0.6, 0.25
 centerColor = "#999"
-centerCoefficient = 0.25
+centerCoefficient = None
 cc = centerCoefficient
 withMixedClasses = True
+
+colm0 = average_color(col1,col2)
+colm1 = average_color(col0,col2)
+colm2 = average_color(col0,col1)
 
 
 for cell in cells:
@@ -133,21 +162,21 @@ for cell in cells:
         elif (s0 <= c0 and s1 >= c1 and s2 >= c2):
             #central class
             if cc != None and s0 > cc * c0: color = centerColor
-            elif withMixedClasses: color="gray" #return "m0"
+            elif withMixedClasses: color=colm0 #return "m0"
             else: color = col1 if s1>s2 else col2
         
         #middle class 1 - intersection class 0 and 1
         elif (s0 >= c0 and s1 <= c1 and s2 >= c2):
             #central class
             if cc != None and s1 > cc * c1: color = centerColor
-            elif withMixedClasses: color="gray" #return "m1"
+            elif withMixedClasses: color=colm1 #return "m1"
             else: color = col0 if s0>s2 else col2
         
         #middle class 2 - intersection class 0 and 1
         elif (s0 >= c0 and s1 >= c1 and s2 <= c2):
             #central class
             if cc != None and s2 > cc * c2: color = centerColor
-            elif withMixedClasses: color="gray" #return "m2"
+            elif withMixedClasses: color=colm2 #return "m2"
             else: color = col1 if s1>s0 else col0
 
         else:
