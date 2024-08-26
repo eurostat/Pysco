@@ -61,22 +61,21 @@ def average_color(color1, color2):
 
 # Create an SVG drawing object with A0 dimensions in landscape orientation
 dwg = svgwrite.Drawing(path_svg, size=(f'{width_mm}mm', f'{height_mm}mm'))
-
 # Set the viewBox attribute to map the custom coordinates to the SVG canvas
 dwg.viewbox(x_min, y_min, width_m, height_m)
 
+# Create group elements
+gCircles = dwg.g(id='circles')
+gBN = dwg.g(id='boundaries', stroke="#777", fill="none", stroke_width=1500, stroke_linecap="round", stroke_linejoin="round")
+
+dwg.add(gBN)
+dwg.add(gCircles)
+
+
+
+
 # Set the background color to white
 #dwg.add(dwg.rect(insert=(x_min, y_min), size=(width_m, height_m), fill='#dfdfdf'))
-
-'''
-# Coordinates for a red triangle centered around the middle in the custom coordinate system
-triangle_points = [
-    (0, -100),  # Top point of the triangle in custom coordinates
-    (-86.6, 50),  # Bottom left
-    (86.6, 50)  # Bottom right
-]
-dwg.add(dwg.polygon(points=triangle_points, fill='red'))
-'''
 
 
 print("Load cell data", res)
@@ -186,9 +185,7 @@ for cell in cells:
             color = "blue"
 
     #print(color)
-
-    dwg.add(dwg.circle(center=(cell['x'], y_min + y_max - cell['y']), r=diameter/2, fill=color))
-
+    gCircles.add(dwg.circle(center=(round(cell['x']+res/2), round(y_min + y_max - cell['y']+res/2)), r=round(diameter/2), fill=color))
 
 # draw boundaries
 lines = fiona.open('/home/juju/gisco/census_2021_map/BN_3M_2021.gpkg') 
@@ -200,8 +197,8 @@ for feature in lines:
 
     geom = feature.geometry
     for line in geom['coordinates']:
-        points = [ (x, y_min + y_max - y) for x, y in line]
-        dwg.add(dwg.polyline(points, stroke="#777", fill="none", stroke_width=1500, stroke_linecap="round", stroke_linejoin="round"))
+        points = [ (round(x), round(y_min + y_max - y)) for x, y in line]
+        gBN.add(dwg.polyline(points))
 
 
 print("Save SVG", res)
