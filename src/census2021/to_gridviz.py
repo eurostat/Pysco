@@ -3,11 +3,11 @@ from datetime import datetime
 import os
 
 transform = True
-aggregation = True
-tiling = True
+aggregation = False
+tiling = False
 
 folder = "/home/juju/geodata/census/"
-input_file = folder + "gridviz20240613.csv"
+input_file = folder + "ESTAT_Census_2021_V2_csv_export.csv"
 
 
 def transform_fun(c):
@@ -29,11 +29,12 @@ def transform_fun(c):
     for p in "T","M","F","Y_LT15","Y_1564","Y_GE65","EMP","NAT","EU_OTH","OTH","SAME","CHG_IN","CHG_OUT":
         v = c[p]
         if v == "0": c[p] = ""
+    print(c)
 
 #apply transform
 if transform:
     print("transform")
-    gridtiler.grid_transformation(input_file=input_file, output_file=folder+"out/1000.csv", function=transform_fun)
+    gridtiler.grid_transformation(input_file=input_file, output_file=folder+"out/ESTAT_Census_2021_V2_1000.csv", function=transform_fun)
 
 
 
@@ -41,10 +42,10 @@ if transform:
 if aggregation:
     for a in [2,5,10]:
         print(datetime.now(), "aggregation to", a*1000, "m")
-        gridtiler.grid_aggregation(input_file=folder+"out/1000.csv", resolution=1000, output_file=folder+"out/"+str(a*1000)+".csv", a=a)
+        gridtiler.grid_aggregation(input_file=folder+"out/ESTAT_Census_2021_V2_1000.csv", resolution=1000, output_file=folder+"out/ESTAT_Census_2021_V2_"+str(a*1000)+".csv", a=a)
     for a in [2,5,10]:
         print(datetime.now(), "aggregation to", a*10000, "m")
-        gridtiler.grid_aggregation(input_file=folder+"out/10000.csv", resolution=10000, output_file=folder+"out/"+str(a*10000)+".csv", a=a)
+        gridtiler.grid_aggregation(input_file=folder+"out/ESTAT_Census_2021_V2_10000.csv", resolution=10000, output_file=folder+"out/ESTAT_Census_2021_V2_"+str(a*10000)+".csv", a=a)
 
 
 

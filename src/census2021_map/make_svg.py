@@ -79,11 +79,12 @@ for cell in cells:
     t = pow(t, 0.23)
     diameter = min_diameter + t * (max_diameter - min_diameter)
 
-    p0 = cell['Y_LT15']
-    p1 = cell['Y15-64']
-    p2 = cell['Y_GE65']
+    p0 = int(cell['Y_LT15'])
+    p1 = int(cell['Y15-64'])
+    p2 = int(cell['Y_GE65'])
     t = cell['T']
     t_ = p0 + p1 + p2
+    print(t,t_)
 
     if t != t_: color = "red"
     else:
