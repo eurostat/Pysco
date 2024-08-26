@@ -2,8 +2,8 @@ from pygridmap import gridtiler
 from datetime import datetime
 import os
 
-transform = True
-aggregation = False
+transform = False
+aggregation = True
 tiling = False
 
 folder = "/home/juju/geodata/census/"
@@ -65,7 +65,7 @@ if tiling:
         if not os.path.exists(folder): os.makedirs(folder)
 
         gridtiler.grid_tiling(
-            folder+"out/"+str(resolution)+'.csv',
+            folder+"out/ESTAT_Census_2021_V2_"+str(resolution)+'.csv',
             out_folder,
             resolution,
             tile_size_cell = 256,
