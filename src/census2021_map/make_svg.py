@@ -5,7 +5,7 @@ import csv
 
 path_svg = '/home/juju/Bureau/map.svg'
 path_pdf = '/home/juju/Bureau/map.pdf'
-res = 1000
+res = 5000
 in_CSV = '/home/juju/geodata/census/out/ESTAT_Census_2021_V2_'+str(res)+'.csv'
 
 max_pop = res * 100
@@ -30,7 +30,7 @@ dwg = svgwrite.Drawing(path_svg, size=(f'{width_mm}mm', f'{height_mm}mm'))
 dwg.viewbox(x_min, y_min, width_m, height_m)
 
 # Set the background color to white
-dwg.add(dwg.rect(insert=(x_min, y_min), size=(width_m, height_m), fill='#dfdfdf'))
+#dwg.add(dwg.rect(insert=(x_min, y_min), size=(width_m, height_m), fill='#dfdfdf'))
 
 '''
 # Coordinates for a red triangle centered around the middle in the custom coordinate system
@@ -74,9 +74,18 @@ print(len(cells), "cells loaded")
 #TODO rank by x,y
 
 print("Draw cells")
+
 min_diameter = 0.2 / 1000 / scale
 max_diameter = res * 1.2
 #print(min_diameter, max_diameter)
+
+col0, col1, col2 = "#4daf4a", "#377eb8", "#e41a1c"
+c0, c1, c2 = 0.15, 0.6, 0.25
+centerColor = "#999",
+centerCoefficient = 0.25
+cc = centerCoefficient
+
+
 for cell in cells:
     t = cell['T']
     t = t / max_pop
@@ -88,10 +97,60 @@ for cell in cells:
     p1 = 0 if cell['Y_1564']=="" else int(cell['Y_1564'])
     p2 = 0 if cell['Y_GE65']=="" else int(cell['Y_GE65'])
     t = cell['T']
-    t_ = p0 + p1 + p2
+    tot = p0 + p1 + p2
 
-    if t_ == 0: color = "gray"
-    else: color = "blue"
+    if tot == 0: color = "gray"
+    else:
+        #compute shares
+        s0, s1, s2 = p0 / tot, p1 / tot, p2 / tot
+
+        color = "blue"
+
+        #class 0
+        if s0 >= c0 and s1 <= c1 and s2 <= c2:
+            #central class near class 0
+            if cc != None and (s2 - c2) * (c1 - cc * c1) >= (s1 - cc * c1) * (cc * c2 - c2):
+                color = centerColor
+            color = col0
+
+        #class 1
+        if s0 <= c0 and s1 >= c1 and s2 <= c2:
+            #central class near class 1
+            if cc != None and (s2 - c2) * (c0 - cc * c0) >= (s0 - cc * c0) * (cc * c2 - c2):
+                color = centerColor
+            color = col1
+        
+        #class 2
+        if s0 <= c0 and s1 <= c1 and s2 >= c2:
+            #central class near class 2
+            if cc != None and (s1 - c1) * (c0 - cc * c0) >= (s0 - cc * c0) * (cc * c1 - c1):
+                color = centerColor
+            color = col2
+        
+
+    '''
+        //middle class 0 - intersection class 1 and 2
+        if (s0 <= c0 && s1 >= c1 && s2 >= c2) {
+            //central class
+            if (cc != undefined && s0 > cc * c0) return "center"
+            if (withMixedClasses) return "m0"
+            return s1 > s2 ? "1" : "2"
+        }
+        //middle class 1 - intersection class 0 and 1
+        if (s0 >= c0 && s1 <= c1 && s2 >= c2) {
+            //central class
+            if (cc != undefined && s1 > cc * c1) return "center"
+            if (withMixedClasses) return "m1"
+            return s0 > s2 ? "0" : "2"
+        }
+        //middle class 2 - intersection class 0 and 1
+        if (s0 >= c0 && s1 >= c1 && s2 <= c2) {
+            //central class
+            if (cc != undefined && s2 > cc * c2) return "center"
+            if (withMixedClasses) return "m2"
+            return s1 > s0 ? "1" : "0"
+        }
+    '''
 
     dwg.add(dwg.circle(center=(cell['x'], y_min + y_max - cell['y']), r=diameter/2, fill=color))
 
