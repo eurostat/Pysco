@@ -18,7 +18,7 @@ max_diameter = res * 1.6
 power = 0.25
 
 col0, col1, col2 = "#4daf4a", "#377eb8", "#e41a1c"
-colm0 = "#ab606a", colm1 = "#ae7f30", colm2 = "#4f9685"
+colm0, colm1, colm2 = "#ab606a", "#ae7f30", "#4f9685"
 c0, c1, c2 = 0.15, 0.6, 0.25
 centerColor = "#999"
 centerCoefficient = 0.75
