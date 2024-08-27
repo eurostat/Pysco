@@ -4,28 +4,6 @@ import fiona
 
 
 
-def average_color(color1, color2):
-    # Convert hex color to RGB tuple
-    def hex_to_rgb(hex_color):
-        hex_color = hex_color.lstrip('#')
-        return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
-
-    # Convert RGB tuple to hex color
-    def rgb_to_hex(rgb_tuple):
-        return '#{:02x}{:02x}{:02x}'.format(*rgb_tuple)
-    
-    # Get RGB values from hex colors
-    rgb1 = hex_to_rgb(color1)
-    rgb2 = hex_to_rgb(color2)
-
-    # Calculate the average of each RGB component
-    avg_rgb = tuple((c1 + c2) // 2 for c1, c2 in zip(rgb1, rgb2))
-
-    # Convert the averaged RGB values back to a hex color
-    return rgb_to_hex(avg_rgb)
-
-
-
 res = 5000
 in_CSV = '/home/juju/geodata/census/out/ESTAT_Census_2021_V2_'+str(res)+'.csv'
 max_pop = res * 60
@@ -40,19 +18,12 @@ max_diameter = res * 1.6
 power = 0.25
 
 col0, col1, col2 = "#4daf4a", "#377eb8", "#e41a1c"
+colm0 = "#ab606a", colm1 = "#ae7f30", colm2 = "#4f9685"
 c0, c1, c2 = 0.15, 0.6, 0.25
 centerColor = "#999"
-centerCoefficient = 1
+centerCoefficient = 0.75
 cc = centerCoefficient
 withMixedClasses = True
-
-colm0 = average_color(col1,col2)
-colm1 = average_color(col0,col2)
-colm2 = average_color(col0,col1)
-
-
-
-
 
 
 def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
