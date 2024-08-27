@@ -49,11 +49,14 @@ for feature in layer:
     if cc=="BA": continue
     if cc=="AL": continue
     if cc=="ME": continue
+    if cc=="IS": continue
+    if cc=="MK": continue
+    if cc=="SJ": continue
     x, y = feature['geometry']['coordinates']
     name = feature['properties']['name']
     r1 = feature['properties']['r1']
     font_size=13 if r1<800 else 16
-    g.add(dwg.text(name, insert=(round(geoToPixX(x)), round(geoToPixY(y))), font_size=font_size))
+    g.add(dwg.text(name, insert=(5+round(geoToPixX(x)), -5+round(geoToPixY(y))), font_size=font_size))
     #g.add(dwg.text(name, insert=(width_px/2, height_px/2)))
 
 print("Save")
