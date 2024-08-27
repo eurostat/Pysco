@@ -196,13 +196,14 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
         #print(color)
         gCircles.add(dwg.circle(center=(round(cell['x']+res/2), round(y_min + y_max - cell['y']-res/2)), r=round(diameter/2), fill=color))
 
+
     # draw boundaries
-    lines = fiona.open('/home/juju/gisco/census_2021_map/BN_3M_2021.gpkg') 
+    lines = fiona.open('/home/juju/gisco/census_2021_map/BN_3M.gpkg') 
     for feature in lines:
 
         #if feature['properties'].get("EU_FLAG") != 'T': continue
         #if feature['properties'].get("COAS_FLAG") == 'T': continue
-        if feature['properties'].get("LEVL_CODE") != 0: continue
+        #if feature['properties'].get("LEVL_CODE") != 0: continue
 
         geom = feature.geometry
         for line in geom['coordinates']:
