@@ -8,13 +8,14 @@ font_name='Myriad'
 
 # transform for europe view
 # A0 dimensions in millimeters (landscape)
-scale = 1/5000000
-width_mm = 1189
-height_mm = 841
+scale = 1/4500000
+# A0 dimensions in millimeters
+width_mm = 841
+height_mm = 1189
 width_px = width_mm * 96 / 25.4
 height_px = height_mm * 96 / 25.4
 
-cx = 3700000
+cx = 4300000
 cy = 3400000
 width_m = width_mm / scale / 1000
 height_m = height_mm / scale / 1000
@@ -51,6 +52,7 @@ for feature in layer:
     if cc=="ME": continue
     if cc=="IS": continue
     if cc=="MK": continue
+    if cc=="FO": continue
     if cc=="SJ": continue
     x, y = feature['geometry']['coordinates']
     name = feature['properties']['name']
