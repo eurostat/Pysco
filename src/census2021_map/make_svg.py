@@ -201,9 +201,7 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
     lines = fiona.open('/home/juju/gisco/census_2021_map/BN_3M.gpkg') 
     for feature in lines:
 
-        #if feature['properties'].get("EU_FLAG") != 'T': continue
-        #if feature['properties'].get("COAS_FLAG") == 'T': continue
-        #if feature['properties'].get("LEVL_CODE") != 0: continue
+        if feature['properties'].get("EU_FLAG") == 'T' and feature['properties'].get("COAS_FLAG") == 'T': continue
 
         geom = feature.geometry
         for line in geom['coordinates']:

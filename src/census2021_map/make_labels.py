@@ -4,7 +4,7 @@ import fiona
 
 path_svg = '/home/juju/gisco/census_2021_map/map_age_labels.svg'
 gpkg_path = '/home/juju/gisco/census_2021_map/labels_filtered.gpkg'
-font_name='Myriad'
+font_name='Arial'
 
 # transform for europe view
 # A0 dimensions in millimeters (landscape)
