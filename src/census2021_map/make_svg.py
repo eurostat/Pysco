@@ -42,7 +42,7 @@ power = 0.25
 col0, col1, col2 = "#4daf4a", "#377eb8", "#e41a1c"
 c0, c1, c2 = 0.15, 0.6, 0.25
 centerColor = "#999"
-centerCoefficient = 0.7
+centerCoefficient = 1
 cc = centerCoefficient
 withMixedClasses = True
 
@@ -171,23 +171,26 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
             #middle class 0 - intersection class 1 and 2
             elif (s0 <= c0 and s1 >= c1 and s2 >= c2):
                 #central class
-                if cc != None and s0 > cc * c0: color = centerColor
-                elif withMixedClasses: color=colm0 #return "m0"
-                else: color = col1 if s1>s2 else col2
+                if cc != None and s0 > (cc) * c0: color = centerColor
+                else:
+                    if withMixedClasses: color=colm0
+                    else: color = col1 if s1>s2 else col2
             
-            #middle class 1 - intersection class 0 and 1
+            #middle class 1 - intersection class 0 and 2
             elif (s0 >= c0 and s1 <= c1 and s2 >= c2):
                 #central class
-                if cc != None and s1 > cc * c1: color = centerColor
-                elif withMixedClasses: color=colm1 #return "m1"
-                else: color = col0 if s0>s2 else col2
+                if cc != None and s1 > (cc) * c1: color = centerColor
+                else:
+                    if withMixedClasses: color=colm1
+                    else: color = col0 if s0>s2 else col2
             
             #middle class 2 - intersection class 0 and 1
             elif (s0 >= c0 and s1 >= c1 and s2 <= c2):
                 #central class
-                if cc != None and s2 > cc * c2: color = centerColor
-                elif withMixedClasses: color=colm2 #return "m2"
-                else: color = col1 if s1>s0 else col0
+                if cc != None and s2 > (cc) * c2: color = centerColor
+                else:
+                    if withMixedClasses: color=colm2
+                    else: color = col1 if s1>s0 else col0
 
             else:
                 print("aaa")
@@ -201,7 +204,7 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
     lines = fiona.open('/home/juju/gisco/census_2021_map/BN_3M.gpkg') 
     for feature in lines:
 
-        if feature['properties'].get("EU_FLAG") == 'T' and feature['properties'].get("COAS_FLAG") == 'T': continue
+        if (feature['properties'].get("EU_FLAG") == 'T' or feature['properties'].get("CNTR_CODE") == 'NO') and feature['properties'].get("COAS_FLAG") == 'T': continue
 
         geom = feature.geometry
         for line in geom['coordinates']:
