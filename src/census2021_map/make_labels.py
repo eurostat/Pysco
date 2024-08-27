@@ -1,19 +1,15 @@
 import svgwrite
-import csv
 import fiona
 
 
 
-path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg'
-res = 5000
-in_CSV = '/home/juju/geodata/census/out/ESTAT_Census_2021_V2_'+str(res)+'.csv'
-max_pop = res * 60
+path_svg = '/home/juju/gisco/census_2021_map/map_age_labels.svg'
+gpkg_path = '/home/juju/gisco/census_2021_map/labels_filtered.gpkg'
 
-
-scale = 1/5000000
 
 # transform for europe view
 # A0 dimensions in millimeters (landscape)
+scale = 1/5000000
 width_mm = 1189
 height_mm = 841
 cx = 3700000
@@ -25,50 +21,15 @@ y_min, y_max = cy - height_m/2, cy + height_m/2
 transform_str = f"scale({scale*1000*96/25.4} {scale*1000*96/25.4}) translate({-x_min} {-y_min})"
 
 
-# Create an SVG drawing object with A0 dimensions in landscape orientation
+
+layer = fiona.open(gpkg_path)
+
 dwg = svgwrite.Drawing(path_svg, size=(f'{width_mm}mm', f'{height_mm}mm'))
-# Set the viewBox attribute to map the custom coordinates to the SVG canvas
-#dwg.viewbox(x_min, y_min, width_m, height_m)
-#dwg.viewbox(0, 0, width_mm/1000*96/25.4, height_mm/1000*96/25.4)
 
 
-#style parameters
 
-min_diameter = 0.25 / 1000 / scale
-max_diameter = res * 1.6
-#print(min_diameter, max_diameter)
-power = 0.25
 
-col0, col1, col2 = "#4daf4a", "#377eb8", "#e41a1c"
-c0, c1, c2 = 0.15, 0.6, 0.25
-centerColor = "#999"
-centerCoefficient = 0.7
-cc = centerCoefficient
-withMixedClasses = True
 
-def average_color(color1, color2):
-    # Convert hex color to RGB tuple
-    def hex_to_rgb(hex_color):
-        hex_color = hex_color.lstrip('#')
-        return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
-
-    # Convert RGB tuple to hex color
-    def rgb_to_hex(rgb_tuple):
-        return '#{:02x}{:02x}{:02x}'.format(*rgb_tuple)
-    
-    # Get RGB values from hex colors
-    rgb1 = hex_to_rgb(color1)
-    rgb2 = hex_to_rgb(color2)
-
-    # Calculate the average of each RGB component
-    avg_rgb = tuple((c1 + c2) // 2 for c1, c2 in zip(rgb1, rgb2))
-
-    # Convert the averaged RGB values back to a hex color
-    return rgb_to_hex(avg_rgb)
-
-colm0 = average_color(col1,col2)
-colm1 = average_color(col0,col2)
-colm2 = average_color(col0,col1)
 
 
 
