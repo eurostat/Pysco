@@ -57,7 +57,7 @@ colm2 = average_color(col0,col1)
 
 def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
              width_mm = 841, height_mm = 1189,
-             cx = 4300000, cy = 3500000
+             cx = 4300000, cy = 3300000
              ):
 
     # transform for europe view

@@ -16,7 +16,7 @@ width_px = width_mm * 96 / 25.4
 height_px = height_mm * 96 / 25.4
 
 cx = 4300000
-cy = 3400000
+cy = 3300000
 width_m = width_mm / scale / 1000
 height_m = height_mm / scale / 1000
 x_min, x_max = cx - width_m/2, cx + width_m/2
@@ -30,8 +30,9 @@ dwg = svgwrite.Drawing(path_svg, size=(f'{width_px}px', f'{height_px}px'))
 
 
 # Create group elements
-g = dwg.g(id='boundaries', font_family=font_name, fill='black')
-#, transform=transform_str
+g = dwg.g(id='labels', font_family=font_name, fill='black')
+gh = dwg.g(id='labels_halo', font_family=font_name, fill='none', stroke="white", stroke_width="2")
+dwg.add(gh)
 dwg.add(g)
 
 def geoToPixX(xg):
@@ -58,7 +59,9 @@ for feature in layer:
     name = feature['properties']['name']
     r1 = feature['properties']['r1']
     font_size=13 if r1<800 else 16
-    g.add(dwg.text(name, insert=(5+round(geoToPixX(x)), -5+round(geoToPixY(y))), font_size=font_size))
+    label = dwg.text(name, insert=(5+round(geoToPixX(x)), -5+round(geoToPixY(y))), font_size=font_size)
+    g.add(label)
+    gh.add(label)
     #g.add(dwg.text(name, insert=(width_px/2, height_px/2)))
 
 print("Save")
