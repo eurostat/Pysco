@@ -79,19 +79,12 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
     cells.sort(key=lambda d: (-d['y'], d['x']))
 
 
-
-    # Create group elements
-    gCircles = dwg.g(id='circles', transform=transform_str)
-    gBN = dwg.g(id='boundaries', transform=transform_str, stroke="#777", fill="none", stroke_width=1500, stroke_linecap="round", stroke_linejoin="round")
-    dwg.add(gBN)
-    dwg.add(gCircles)
-
     # Set the background color to white
     #dwg.add(dwg.rect(insert=(x_min, y_min), size=(width_m, height_m), fill='#dfdfdf'))
 
 
     print("Draw cells")
-
+    gCircles = dwg.g(id='circles', transform=transform_str)
     for cell in cells:
         if cell['x']<x_min: continue
         if cell['x']>x_max: continue
@@ -172,16 +165,21 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
 
 
     # draw boundaries
+    gBN = dwg.g(id='boundaries', transform=transform_str, fill="none", stroke_width=1500, stroke_linecap="round", stroke_linejoin="round")
     lines = fiona.open('/home/juju/gisco/census_2021_map/BN_3M.gpkg') 
     for feature in lines:
 
-        if (feature['properties'].get("EU_FLAG") == 'T' or feature['properties'].get("CNTR_CODE") == 'NO') and feature['properties'].get("COAS_FLAG") == 'T': continue
+        #if (feature['properties'].get("EU_FLAG") == 'T' or feature['properties'].get("CNTR_CODE") == 'NO') and feature['properties'].get("COAS_FLAG") == 'T': continue
+        colstr = "#888" if feature['properties'].get("COAS_FLAG") == 'F' else "#cacaca"
 
         geom = feature.geometry
         for line in geom['coordinates']:
             points = [ (round(x), round(y_min + y_max - y)) for x, y in line]
-            gBN.add(dwg.polyline(points))
+            gBN.add(dwg.polyline(points, stroke=colstr))
 
+
+    dwg.add(gBN)
+    dwg.add(gCircles)
 
     print("Save SVG", res)
     dwg.save()
