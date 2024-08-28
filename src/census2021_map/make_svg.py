@@ -54,32 +54,32 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
     cells = []
     with open(in_CSV, mode='r', newline='') as file:
         csv_reader = csv.DictReader(file)
-        for row in csv_reader:
-            if row['T'] == '0' or row['T'] == '': continue
-            del row['M']
-            del row['F']
-            del row['EMP']
-            del row['NAT']
-            del row['EU_OTH']
-            del row['OTH']
-            del row['SAME']
-            del row['CHG_IN']
-            del row['CHG_OUT']
-            del row['NB']
-            del row['CONFIDENTIALSTATUS']
-            del row['POPULATED']
-            del row['LAND_SURFACE']
+        for cell in csv_reader:
+            if cell['T'] == '0' or cell['T'] == '': continue
+            del cell['M']
+            del cell['F']
+            del cell['EMP']
+            del cell['NAT']
+            del cell['EU_OTH']
+            del cell['OTH']
+            del cell['SAME']
+            del cell['CHG_IN']
+            del cell['CHG_OUT']
+            del cell['NB']
+            del cell['CONFIDENTIALSTATUS']
+            del cell['POPULATED']
+            del cell['LAND_SURFACE']
 
-            row['x'] = int(row['x'])
-            row['y'] = int(row['y'])
-            row['T'] = int(row['T'])
+            cell['x'] = int(cell['x'])
+            cell['y'] = int(cell['y'])
+            cell['T'] = int(cell['T'])
 
             cell['Y_LT15'] = 0 if cell['Y_LT15']=="" else int(cell['Y_LT15'])
             cell['Y_1564'] = 0 if cell['Y_1564']=="" else int(cell['Y_1564'])
             cell['Y_GE65'] = 0 if cell['Y_GE65']=="" else int(cell['Y_GE65'])
             cell["T_"] = cell['Y_LT15'] + cell['Y_1564'] + cell['Y_GE65']
 
-            cells.append(row)
+            cells.append(cell)
 
     print(len(cells), "cells loaded")
     #print(cells[0])
