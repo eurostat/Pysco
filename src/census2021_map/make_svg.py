@@ -107,7 +107,8 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
 
         #get color
         cl = classifier(cell)
-        color = colors[cl] if cl is not None else "black"
+        if cell['T_'] == 0 and cl is None: cl = "center"
+        color = colors[cl]
 
         #draw circle
         gCircles.add(dwg.circle(center=(round(cell['x']+res/2), round(y_min + y_max - cell['y']-res/2)), r=round(diameter/2), fill=color))
