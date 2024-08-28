@@ -19,8 +19,11 @@ power = 0.25
 
 col0, col1, col2 = "#4daf4a", "#377eb8", "#e41a1c"
 colm0, colm1, colm2 = "#ab606a", "#ae7f30", "#4f9685"
-c0, c1, c2 = 0.15, 0.6, 0.25
 centerColor = "#999"
+
+
+
+c0, c1, c2 = 0.15, 0.6, 0.25
 centerCoefficient = 0.25
 cc = 1-centerCoefficient
 withMixedClasses = True
@@ -104,11 +107,15 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
         if cell['y']<y_min: continue
         if cell['y']>y_max: continue
 
+        #compute diameter from total population
         t = cell['T']
         t = t / max_pop
         if t>1: t=1
         t = pow(t, power)
         diameter = min_diameter + t * (max_diameter - min_diameter)
+
+
+
 
         p0 = cell['Y_LT15']
         p1 = cell['Y_1564']
@@ -173,7 +180,18 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
                 print("aaa")
                 color = "blue"
 
-        #print(color)
+
+        #get color class
+        cl = classifier(cell)
+        if cl=="0": color = col0
+        elif cl=="1": color = col1
+        elif cl=="2": color = col2
+        elif cl=="m0": color = colm0
+        elif cl=="m1": color = colm1
+        elif cl=="m2": color = colm2
+        elif cl=="center": color = centerColor
+        else: print("Unexpected class", cl); color="red"
+
         gCircles.add(dwg.circle(center=(round(cell['x']+res/2), round(y_min + y_max - cell['y']-res/2)), r=round(diameter/2), fill=color))
 
 
