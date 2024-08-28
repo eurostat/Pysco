@@ -1,7 +1,7 @@
 import svgwrite
 import csv
 import fiona
-
+from trivariate import trivariate_classifier
 
 
 res = 5000
@@ -24,6 +24,9 @@ centerColor = "#999"
 centerCoefficient = 0.75
 cc = centerCoefficient
 withMixedClasses = True
+
+#TODO
+classifier = trivariate_classifier(['Y_LT15', 'Y_1564', 'Y_GE65'], lambda cell:cell["T_"])
 
 
 def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
@@ -70,6 +73,12 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
             row['x'] = int(row['x'])
             row['y'] = int(row['y'])
             row['T'] = int(row['T'])
+
+            cell['Y_LT15'] = 0 if cell['Y_LT15']=="" else int(cell['Y_LT15'])
+            cell['Y_1564'] = 0 if cell['Y_1564']=="" else int(cell['Y_1564'])
+            cell['Y_GE65'] = 0 if cell['Y_GE65']=="" else int(cell['Y_GE65'])
+            cell["T_"] = cell['Y_LT15'] + cell['Y_1564'] + cell['Y_GE65']
+
             cells.append(row)
 
     print(len(cells), "cells loaded")
@@ -97,9 +106,9 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
         t = pow(t, power)
         diameter = min_diameter + t * (max_diameter - min_diameter)
 
-        p0 = 0 if cell['Y_LT15']=="" else int(cell['Y_LT15'])
-        p1 = 0 if cell['Y_1564']=="" else int(cell['Y_1564'])
-        p2 = 0 if cell['Y_GE65']=="" else int(cell['Y_GE65'])
+        p0 = cell['Y_LT15']
+        p1 = cell['Y_1564']
+        p2 = cell['Y_GE65']
         t = cell['T']
         tot = p0 + p1 + p2
 
