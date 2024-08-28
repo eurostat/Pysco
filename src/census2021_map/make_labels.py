@@ -31,7 +31,7 @@ dwg = svgwrite.Drawing(path_svg, size=(f'{width_px}px', f'{height_px}px'))
 
 # Create group elements
 g = dwg.g(id='labels', font_family=font_name, fill='black')
-gh = dwg.g(id='labels_halo', font_family=font_name, fill='none', stroke="white", stroke_width="2")
+gh = dwg.g(id='labels_halo', font_family=font_name, fill='none', stroke="white", stroke_width="2.5")
 dwg.add(gh)
 dwg.add(g)
 
