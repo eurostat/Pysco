@@ -48,7 +48,7 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
 
 
 
-    print("Load cell data", res)
+    #print("Load cell data", res)
     cells = []
     with open(in_CSV, mode='r', newline='') as file:
         csv_reader = csv.DictReader(file)
@@ -79,10 +79,10 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
 
             cells.append(cell)
 
-    print(len(cells), "cells loaded")
+    #print(len(cells), "cells loaded")
     #print(cells[0])
 
-    print("Sort cells")
+    #print("Sort cells")
     cells.sort(key=lambda d: (-d['y'], d['x']))
 
 
@@ -90,7 +90,7 @@ def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
     #dwg.add(dwg.rect(insert=(x_min, y_min), size=(width_m, height_m), fill='#dfdfdf'))
 
 
-    print("Draw cells")
+    #print("Draw cells")
     gCircles = dwg.g(id='circles', transform=transform_str)
     for cell in cells:
         if cell['x']<x_min: continue

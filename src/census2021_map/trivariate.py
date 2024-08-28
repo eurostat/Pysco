@@ -18,8 +18,7 @@ def trivariate_classifier(properties, total_function, opts=None):
     # Set to 0 or None for not showing any central class. Set to 1 for a central class that contains the mixed classes
     cc = 1 - opts['centerCoefficient'] if 'centerCoefficient' in opts else None
 
-    print(c0,c1,c2,with_mixed_classes, cc)
-
+    #print(c0,c1,c2,with_mixed_classes, cc)
 
     # The output classifier method
     def fun(c):
@@ -79,6 +78,7 @@ def trivariate_classifier(properties, total_function, opts=None):
             return "1" if s1 > s0 else "0"
 
         # Should not happen
+        print(s0,s1,s2)
         return "unknown"
 
     # Attach information to output function
