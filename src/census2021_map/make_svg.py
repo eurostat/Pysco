@@ -21,12 +21,16 @@ col0, col1, col2 = "#4daf4a", "#377eb8", "#e41a1c"
 colm0, colm1, colm2 = "#ab606a", "#ae7f30", "#4f9685"
 c0, c1, c2 = 0.15, 0.6, 0.25
 centerColor = "#999"
-centerCoefficient = 0.75
-cc = centerCoefficient
+centerCoefficient = 0.25
+cc = 1-centerCoefficient
 withMixedClasses = True
 
 #TODO
-classifier = trivariate_classifier(['Y_LT15', 'Y_1564', 'Y_GE65'], lambda cell:cell["T_"])
+classifier = trivariate_classifier(
+    ['Y_LT15', 'Y_1564', 'Y_GE65'],
+    lambda cell:cell["T_"],
+    {'center': [0.15, 0.6, 0.25], 'centerCoefficient': 0.25}
+    )
 
 
 def make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_EUR.svg',
