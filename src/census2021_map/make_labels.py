@@ -58,7 +58,7 @@ for feature in layer:
     x, y = feature['geometry']['coordinates']
     name = feature['properties']['name']
     r1 = feature['properties']['r1']
-    font_size=13 if r1<800 else 16
+    font_size="13pt" if r1<800 else "16pt" #check that - maybe should be in pixel unit ?
     label = dwg.text(name, insert=(5+round(geoToPixX(x)), -5+round(geoToPixY(y))), font_size=font_size)
     g.add(label)
     gh.add(label)
