@@ -140,7 +140,7 @@ print("Make europe map")
 make_map()
 
 print("Make CY map")
-make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_CY.svg', width_mm = 40, height_mm = 30, cx = 6418385, cy = 1628693)
+make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_CY.svg', width_mm = 50, height_mm = 40, cx = 6438000, cy = 1678693)
 print("Make Canaries map")
 make_map(path_svg = '/home/juju/gisco/census_2021_map/map_age_cana.svg', width_mm = 120, height_mm = 60, cx = 1805783, cy = 1020991)
 print("Make Madeira map")
