@@ -32,12 +32,15 @@ def process1(population_grid):
     cells_ = {}
 
     for i, c in enumerate(cells):
+        pop = c["properties"]["T"]
+        if pop == 0: continue
         geom = shape(c["geometry"])
-        #pt = geom.centroid
+        pt = geom.centroid
         #print(pt)
         #geom = shape(feature["geometry"])  # Convert to Shapely geometry
-        spatial_index.insert(i, geom.bounds)  # Insert into spatial index
-        cells_[i] = c  # Store cell in a dictionary
+        spatial_index.insert(i, geom.bounds)
+        cells_[i] = {"pop":pop, "geom":pt}
+        #print(cells_[i])
 
 
     # Perform spatial index search
@@ -48,5 +51,4 @@ def process1(population_grid):
     print(datetime.now(), "Done.")
 
 process1(population_grid)
-
 
