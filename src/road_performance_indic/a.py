@@ -6,6 +6,7 @@ import concurrent.futures
 import fiona
 import fiona.transform
 from shapely.geometry import shape, mapping
+from rtree import index
 
 
 tomtom = "/home/juju/geodata/tomtom/tomtom_202312.gpkg"
@@ -23,12 +24,26 @@ def process1(population_grid):
     cells = fiona.open(population_grid, layer="census2021")
     print(datetime.now(), len(cells), "cells loaded")
 
-    for c in cells:
+    print(datetime.now(), "index cells...")
+
+    # Initialize R-tree spatial index
+    spatial_index = index.Index()
+    # Dictionary to store geometries
+    cells_ = {}
+
+    for i, c in enumerate(cells):
         geom = shape(c["geometry"])
-        centroid = geom.centroid
-        c["geometry"] = mapping(centroid)
+        #pt = geom.centroid
+        #print(pt)
+        #geom = shape(feature["geometry"])  # Convert to Shapely geometry
+        spatial_index.insert(i, geom.bounds)  # Insert into spatial index
+        cells_[i] = c  # Store cell in a dictionary
 
 
+    # Perform spatial index search
+    #possible_matches = list(spatial_index.intersection(search_point.buffer(search_radius_deg).bounds))
+    # Filter exact matches (since R-tree works with bounding boxes)
+    #matching_points = [geometries[i] for i in possible_matches if geometries[i].distance(search_point) <= search_radius_deg]
 
 
 process1(population_grid)
