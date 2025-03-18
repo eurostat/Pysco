@@ -8,19 +8,21 @@ import fiona.transform
 from shapely.geometry import shape, mapping
 from rtree import index
 import csv
-
-
 #from utils.featureutils import loadFeatures
 
+# bbox - set to None to compute on the entire space
+bbox = (3750000, 2720000, 3960000, 2970000)
 
+
+# population grid
 population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
 
+# tomtom road network
 tomtom = "/home/juju/geodata/tomtom/tomtom_202312.gpkg"
 tomtom_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/2021/nw.gpkg', 'r', driver='GPKG', bbox=bbox),
 
-output_csv = "/home/juju/gisco/road_transport_performance/indicator1.csv"
-
-bbox = (3750000, 2720000, 3960000, 2970000)
+# output CSV
+output_csv = "/home/juju/gisco/road_transport_performance/nearby_population_2021.csv"
 
 
 # population straight. Load population grid. Turn into points. Make spatial index.
@@ -68,19 +70,20 @@ def process1(population_grid, layer="census2021", only_populated_cells=True, bbo
         close_cells = list(spatial_index.intersection((x-radius_m, y-radius_m, x+radius_m, y+radius_m)))
 
         #compute population total
-        tot = 0
+        pop_tot = 0
         for i2 in close_cells:
             c2 = cells_[i2]
             dx = x-c2["x"]
             dy = y-c2["y"]
+
             #too far: skip
             if dx*dx+dy*dy>radius_m_s :continue
 
             #sum population
-            tot += c2["pop"]
+            pop_tot += c2["pop"]
 
         #store output data
-        output.append({pop:tot,"GRD_ID":c["GRD_ID"]})
+        output.append({"pop":pop_tot,"GRD_ID":c["GRD_ID"]})
 
     #free memory
     del spatial_index
