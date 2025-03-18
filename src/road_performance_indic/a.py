@@ -45,6 +45,7 @@ def process1(population_grid):
     # Filter exact matches (since R-tree works with bounding boxes)
     #matching_points = [geometries[i] for i in possible_matches if geometries[i].distance(search_point) <= search_radius_deg]
 
+    print(datetime.now(), "Done.")
 
 process1(population_grid)
 
