@@ -22,11 +22,12 @@ tomtom = "/home/juju/geodata/tomtom/tomtom_202312.gpkg"
 tomtom_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/2021/nw.gpkg', 'r', driver='GPKG', bbox=bbox),
 
 # output CSV
-output_csv = "/home/juju/gisco/road_transport_performance/nearby_population_2021.csv"
+nearby_population_csv = "/home/juju/gisco/road_transport_performance/nearby_population_2021.csv"
+accessible_population_csv = "/home/juju/gisco/road_transport_performance/accessible_population_2021.csv"
 
 
 # population straight. Load population grid. Turn into points. Make spatial index.
-def process1(population_grid, layer="census2021", only_populated_cells=True, bbox=None, radius_m = 120000):
+def compute_nearby_population(population_grid, output_csv, layer="census2021", only_populated_cells=True, bbox=None, radius_m = 120000):
 
     print(datetime.now(), "Loading population grid...", population_grid)
     gpkg = fiona.open(population_grid, 'r', driver='GPKG')
@@ -90,12 +91,12 @@ def process1(population_grid, layer="census2021", only_populated_cells=True, bbo
     del cells_
 
     print("Save as CSV")
-    file = open(output_csv, mode="w", newline="", encoding="utf-8")
+    file = open(nearby_population_csv, mode="w", newline="", encoding="utf-8")
     writer = csv.DictWriter(file, fieldnames=output[0].keys())
     writer.writeheader()
     writer.writerows(output)
 
     print(datetime.now(), "Done.")
 
-process1(population_grid, bbox=bbox)
+compute_nearby_population(population_grid, nearby_population_csv, bbox=bbox)
 
