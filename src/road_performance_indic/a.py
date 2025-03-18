@@ -11,7 +11,7 @@ import csv
 #from utils.featureutils import loadFeatures
 
 # bbox - set to None to compute on the entire space
-bbox = (3750000, 2720000, 3960000, 2970000)
+#bbox = (3750000, 2720000, 3960000, 2970000)
 
 
 # population grid
