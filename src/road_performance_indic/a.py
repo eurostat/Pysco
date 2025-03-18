@@ -36,21 +36,16 @@ def compute_nearby_population(population_grid, output_csv, layer="census2021", o
     print(datetime.now(), len(cells), "cells loaded")
 
     print(datetime.now(), "index cells...")
-
-    # Initialize R-tree spatial index
     spatial_index = index.Index()
-    # Dictionary to store geometries
     cells_ = {}
 
-    # make index
+    # feed index
     for i, c in enumerate(cells):
         c = c[1]
         pop = c["properties"]["T"]
         if only_populated_cells and pop == 0: continue
         geom = shape(c["geometry"])
         pt = geom.centroid
-        #print(pt)
-        #geom = shape(feature["geometry"])  # Convert to Shapely geometry
         spatial_index.insert(i, geom.bounds)
         cells_[i] = {"pop":pop, "x":pt.x, "y":pt.y, "GRD_ID": c["properties"]["GRD_ID"]}
 
