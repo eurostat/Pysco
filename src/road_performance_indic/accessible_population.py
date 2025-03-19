@@ -11,9 +11,8 @@ from rtree import index
 import csv
 #from utils.featureutils import loadFeatures
 
-
 # bbox - set to None to compute on the entire space
-bbox = None #(3750000, 2720000, 3960000, 2970000)
+bbox = (3750000, 2720000, 3960000, 2970000)
 
 
 # population grid
@@ -24,12 +23,10 @@ tomtom = "/home/juju/geodata/tomtom/tomtom_202312.gpkg"
 tomtom_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/2021/nw.gpkg', 'r', driver='GPKG', bbox=bbox),
 
 # output CSV
-nearby_population_csv = "/home/juju/gisco/road_transport_performance/nearby_population_2021.csv"
 accessible_population_csv = "/home/juju/gisco/road_transport_performance/accessible_population_2021.csv"
 
 
-# population straight. Load population grid. Turn into points. Make spatial index.
-def compute_nearby_population(population_grid, layer, nearby_population_csv, only_populated_cells=True, bbox=None, radius_m = 120000):
+def compute_accessible_population(population_grid, layer, nearby_population_csv, only_populated_cells=True, bbox=None, radius_m = 120000):
 
     print(datetime.now(), "Loading population grid...", population_grid)
     gpkg = fiona.open(population_grid, 'r', driver='GPKG')
