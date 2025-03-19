@@ -11,7 +11,7 @@ import csv
 #from utils.featureutils import loadFeatures
 
 # bbox - set to None to compute on the entire space
-bbox = None #(3750000, 2720000, 3960000, 2970000)
+bbox = (3750000, 2720000, 3960000, 2970000)
 
 
 # population grid
@@ -55,9 +55,8 @@ def compute_nearby_population(population_grid, layer, nearby_population_csv, onl
     radius_m_s = radius_m * radius_m
 
     print(datetime.now(), "compute indicator for each cell...")
-    output = []
-    for i in cells_:
-        c = cells_[i]
+
+    def compute_cell_indicator(c):
         x=c["x"]
         y=c["y"]
 
@@ -77,8 +76,12 @@ def compute_nearby_population(population_grid, layer, nearby_population_csv, onl
             #sum population
             pop_tot += c2["pop"]
 
-        #store output data
-        output.append({"pop":pop_tot,"GRD_ID":c["GRD_ID"]})
+        return {"pop":pop_tot,"GRD_ID":c["GRD_ID"]}
+
+    #compute, not in parallel
+    output = []
+    for i in cells_: output.append(compute_cell_indicator(cells_[i]))
+
 
     #free memory
     del spatial_index
