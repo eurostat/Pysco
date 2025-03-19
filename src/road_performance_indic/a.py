@@ -27,12 +27,12 @@ accessible_population_csv = "/home/juju/gisco/road_transport_performance/accessi
 
 
 # population straight. Load population grid. Turn into points. Make spatial index.
-def compute_nearby_population(population_grid, output_csv, layer="census2021", only_populated_cells=True, bbox=None, radius_m = 120000):
+def compute_nearby_population(population_grid, layer, nearby_population_csv, only_populated_cells=True, bbox=None, radius_m = 120000):
 
     print(datetime.now(), "Loading population grid...", population_grid)
     gpkg = fiona.open(population_grid, 'r', driver='GPKG')
-    # SQL ? , where="T>0"
-    cells = list(gpkg.items(bbox=bbox,layer=layer))
+    where = "T > 0" if only_populated_cells else None
+    cells = list(gpkg.items(bbox=bbox, layer=layer, where=where))
 
     print(datetime.now(), len(cells), "cells loaded")
 
@@ -43,12 +43,10 @@ def compute_nearby_population(population_grid, output_csv, layer="census2021", o
     # feed index
     for i, c in enumerate(cells):
         c = c[1]
-        pop = c["properties"]["T"]
-        if only_populated_cells and pop == 0: continue
         geom = shape(c["geometry"])
         pt = geom.centroid
         spatial_index.insert(i, geom.bounds)
-        cells_[i] = {"pop":pop, "x":pt.x, "y":pt.y, "GRD_ID": c["properties"]["GRD_ID"]}
+        cells_[i] = {"pop":c["properties"]["T"], "x":pt.x, "y":pt.y, "GRD_ID": c["properties"]["GRD_ID"]}
 
     #free memory
     del cells
@@ -94,5 +92,6 @@ def compute_nearby_population(population_grid, output_csv, layer="census2021", o
 
     print(datetime.now(), "Done.")
 
-compute_nearby_population(population_grid, nearby_population_csv, bbox=bbox)
+#
+compute_nearby_population(population_grid, "census2021", nearby_population_csv, bbox=bbox)
 
