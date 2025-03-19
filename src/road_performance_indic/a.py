@@ -3,6 +3,7 @@ import geopandas as gpd
 from datetime import datetime
 import networkx as nx
 import concurrent.futures
+import threading
 import fiona
 import fiona.transform
 from shapely.geometry import shape, mapping
@@ -56,13 +57,15 @@ def compute_nearby_population(population_grid, layer, nearby_population_csv, onl
 
     print(datetime.now(), "compute indicator for each cell...")
 
-    def compute_cell_indicator(i):
-        c = cells_[i]
+    #lock = threading.Lock()
+    def compute_cell_indicator(c):
         x=c["x"]
         y=c["y"]
 
         #get close cells using spatial index
-        close_cells = list(spatial_index.intersection((x-radius_m, y-radius_m, x+radius_m, y+radius_m)))
+        close_cells = None
+        with lock:
+            close_cells = list(spatial_index.intersection((x-radius_m, y-radius_m, x+radius_m, y+radius_m)))
 
         #compute population total
         pop_tot = 0
@@ -77,15 +80,15 @@ def compute_nearby_population(population_grid, layer, nearby_population_csv, onl
             #sum population
             pop_tot += c2["pop"]
 
-        return {"pop":pop_tot,"GRD_ID":c["GRD_ID"]}
+        return { "pop":pop_tot, "GRD_ID":c["GRD_ID"] }
 
     #compute, not in parallel
-    output = []
-    for i in cells_: output.append(compute_cell_indicator(i))
+    #output = []
+    #for c in cells_.values(): output.append(compute_cell_indicator(c))
 
     # Run in parallel
-    #with concurrent.futures.ProcessPoolExecutor() as executor:
-    #    results = list(executor.map(compute_cell_indicator, cells_))
+    executor = concurrent.futures.ProcessPoolExecutor()
+    output = list(executor.map(compute_cell_indicator, cells_.values()))
 
     print(datetime.now(), "Free memory")
     del spatial_index
