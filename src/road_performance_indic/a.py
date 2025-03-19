@@ -56,7 +56,8 @@ def compute_nearby_population(population_grid, layer, nearby_population_csv, onl
 
     print(datetime.now(), "compute indicator for each cell...")
 
-    def compute_cell_indicator(c):
+    def compute_cell_indicator(i):
+        c = cells_[i]
         x=c["x"]
         y=c["y"]
 
@@ -80,10 +81,13 @@ def compute_nearby_population(population_grid, layer, nearby_population_csv, onl
 
     #compute, not in parallel
     output = []
-    for i in cells_: output.append(compute_cell_indicator(cells_[i]))
+    for i in cells_: output.append(compute_cell_indicator(i))
 
+    # Run in parallel
+    #with concurrent.futures.ProcessPoolExecutor() as executor:
+    #    results = list(executor.map(compute_cell_indicator, cells_))
 
-    #free memory
+    print(datetime.now(), "Free memory")
     del spatial_index
     del cells_
 
