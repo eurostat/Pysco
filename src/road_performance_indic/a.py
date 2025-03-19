@@ -31,6 +31,7 @@ def compute_nearby_population(population_grid, output_csv, layer="census2021", o
 
     print(datetime.now(), "Loading population grid...", population_grid)
     gpkg = fiona.open(population_grid, 'r', driver='GPKG')
+    # SQL ? , where="T>0"
     cells = list(gpkg.items(bbox=bbox,layer=layer))
 
     print(datetime.now(), len(cells), "cells loaded")
@@ -85,7 +86,7 @@ def compute_nearby_population(population_grid, output_csv, layer="census2021", o
     del spatial_index
     del cells_
 
-    print("Save as CSV")
+    print(datetime.now(), "Save as CSV")
     file = open(nearby_population_csv, mode="w", newline="", encoding="utf-8")
     writer = csv.DictWriter(file, fieldnames=output[0].keys())
     writer.writeheader()
