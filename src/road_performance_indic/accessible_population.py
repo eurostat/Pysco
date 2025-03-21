@@ -26,6 +26,7 @@ tomtom_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/2021/nw.gp
 accessible_population_csv = "/home/juju/gisco/road_transport_performance/accessible_population_2021.csv"
 
 
+
 def compute_accessible_population(population_grid, layer, nearby_population_csv, only_populated_cells=True, bbox=None, radius_m = 120000):
 
     print(datetime.now(), "Loading population grid...", population_grid)
