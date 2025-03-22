@@ -85,6 +85,7 @@ def compute_nearby_population(population_grid, layer, nearby_population_csv, onl
     #executor = concurrent.futures.ThreadPoolExecutor()
     #output = list(executor.map(compute_cell_indicator, cells))
 
+
     print(datetime.now(), "free memory")
     del spatial_index
     del cells
