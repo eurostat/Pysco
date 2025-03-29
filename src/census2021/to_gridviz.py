@@ -10,6 +10,7 @@ folder = "/home/juju/geodata/census/"
 input_file = folder + "ESTAT_Census_2021_V2_csv_export.csv"
 
 
+
 def transform_fun(c):
     #GRD_ID,T,M,F,Y_LT15,Y_1564,Y_GE65,EMP,NAT,EU_OTH,OTH,SAME,CHG_IN,CHG_OUT
 
