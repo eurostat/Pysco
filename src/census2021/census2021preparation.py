@@ -8,6 +8,7 @@ aggregation = False
 tiling = True
 format = "parquet"
 
+
 #the working folder
 rep="/home/juju/gisco/grid_pop_c2021/"
 
