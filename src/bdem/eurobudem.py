@@ -250,9 +250,8 @@ def loadBuildings(bbox):
         bs = loadFeatures(cnt.path, bbox)
         for bu in bs: cnt.formatFun(bu)
         buildings += bs
-
-    return buildings
     #TODO remove duplicates
+    return buildings
 
 
 
