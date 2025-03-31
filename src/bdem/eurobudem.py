@@ -231,8 +231,8 @@ def formatBuildingFR(bu):
 
 
 
-cnts = []
-cnts.append(CountryCase("LU", '/home/juju/geodata/LU/ACT/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', formatBuildingLU))
+countries = []
+countries.append(CountryCase("LU", '/home/juju/geodata/LU/ACT/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', formatBuildingLU))
 #cnts.append(CountryCase("CZ", '/home/juju/geodata/CZ/bu_3035.gpkg', formatBuildingCZ))
 #cnts.append(CountryCase("AT", '/home/juju/geodata/AT/BEV/DLM_8000_BAUWERK_20230912_joined_3035.gpkg', formatBuildingAT))
 #cnts.append(CountryCase("NL", '/home/juju/geodata/NL/bu_integrated.gpkg', formatBuildingNL))
@@ -246,7 +246,7 @@ cnts.append(CountryCase("LU", '/home/juju/geodata/LU/ACT/BDLTC_SHP/BATI/BATIMENT
 
 def loadBuildings(bbox):
     buildings = []
-    for cnt in cnts:
+    for cnt in countries:
         bs = loadFeatures(cnt.path, bbox)
         for bu in bs: cnt.formatFun(bu)
         buildings += bs
