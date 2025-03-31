@@ -11,13 +11,15 @@ from utils.geomutils import average_z_coordinate
 # other countries: CZ, DK, SP, BE, SK, SI, FI... see eubc
 # other years - AT, FR
 
-bbox = [4250000, 2750000, 4750000, 3250000] #CZ
+#bbox = [4250000, 2750000, 4750000, 3250000] #CZ
 #bbox = [4250000, 2750000, 4750000, 2750000] #AT
 #bbox = [3750000, 3250000, 4250000, 3250000] #NL
 #bbox = [4750000, 2750000, 5250000, 3750000] #PL
 #bbox = [4250000, 1250000, 5250000, 2750000] #IT
-#bbox = [4267541, 2749532, 4267541, 3250000] #LU
+bbox = [4267541, 2749532, 4267541, 3250000] #LU
 #bbox = [3000000, 2000000, 4413621, 3462995] #FR
+
+
 
 grid_resolution = 100
 file_size_m = 500000
@@ -27,8 +29,6 @@ num_processors_to_use = 7
 clamp = lambda v:floor(v/file_size_m)*file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
-#countries to cover
-countries = ["CZ","AT","NL","PL","FR","LU","IT"]
 
 class CountryCase:
   def __init__(self, code, path, formatFun):
@@ -233,51 +233,25 @@ def formatBuildingFR(bu):
 
 cnts = []
 cnts.append(CountryCase("LU", '/home/juju/geodata/LU/ACT/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', formatBuildingLU))
-# use that !
+#cnts.append(CountryCase("CZ", '/home/juju/geodata/CZ/bu_3035.gpkg', formatBuildingCZ))
+#cnts.append(CountryCase("AT", '/home/juju/geodata/AT/BEV/DLM_8000_BAUWERK_20230912_joined_3035.gpkg', formatBuildingAT))
+#cnts.append(CountryCase("NL", '/home/juju/geodata/NL/bu_integrated.gpkg', formatBuildingNL))
+#cnts.append(CountryCase("PL", '/home/juju/geodata/PL/bdot10k/bu_bubd_bdot10k.gpkg', formatBuildingPL))
+#cnts.append(CountryCase("FR", '/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', formatBuildingFR))
+#cnts.append(CountryCase("IT", '/home/juju/geodata/IT/DBSN/dbsn.gpkg', formatBuildingIT))
+
+
+
 
 
 def loadBuildings(bbox):
     buildings = []
-
-    if "CZ" in countries:
-        bs = loadFeatures('/home/juju/geodata/CZ/bu_3035.gpkg', bbox)
-        for bu in bs: formatBuildingCZ(bu)
-        buildings += bs
-
-    if "AT" in countries:
-        bs = loadFeatures('/home/juju/geodata/AT/BEV/DLM_8000_BAUWERK_20230912_joined_3035.gpkg', bbox)
-        for bu in bs: formatBuildingAT(bu)
-        buildings += bs
-
-    if "NL" in countries:
-        bs = loadFeatures('/home/juju/geodata/NL/bu_integrated.gpkg', bbox)
-        for bu in bs: formatBuildingNL(bu)
-        buildings += bs
-
-    if "PL" in countries:
-        bs = loadFeatures('/home/juju/geodata/PL/bdot10k/bu_bubd_bdot10k.gpkg', bbox)
-        for bu in bs: formatBuildingPL(bu)
-        buildings += bs
-
-    if "FR" in countries:
-        bs = loadFeatures('/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', bbox)
-        for bu in bs: formatBuildingFR(bu)
-        buildings += bs
-
-    if "LU" in countries:
-        bs = loadFeatures('/home/juju/geodata/LU/ACT/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', bbox)
-        for bu in bs: formatBuildingLU(bu)
-        buildings += bs
-
-    if "IT" in countries:
-        bs = loadFeatures('/home/juju/geodata/IT/DBSN/dbsn.gpkg', bbox)
-        for bu in bs: formatBuildingIT(bu)
+    for cnt in cnts:
+        bs = loadFeatures(cnt.path, bbox)
+        for bu in bs: cnt.formatFun(bu)
         buildings += bs
 
     #TODO remove duplicates
-
-    return buildings
-
 
 
 
