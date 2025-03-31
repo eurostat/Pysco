@@ -17,3 +17,5 @@ extract_attributes_from_other_tags(rn, ['maxspeed', 'lanes', 'oneway', 'smoothne
 print(datetime.now(), "save")
 rn.to_file(out_file, driver="GPKG")
 
+
+
