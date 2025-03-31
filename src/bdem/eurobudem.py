@@ -3,7 +3,8 @@ from building_demography import building_demography_grid
 import rasterio
 
 import sys
-sys.path.append('/home/juju/workspace/pyEx/src/')
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import loadFeatures,keepOnlyGeometry
 from utils.geomutils import average_z_coordinate
 
@@ -230,15 +231,14 @@ def formatBuildingFR(bu):
 
 
 
-
 countries = []
-countries.append(CountryCase("LU", '/home/juju/geodata/LU/ACT/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', formatBuildingLU))
-#cnts.append(CountryCase("CZ", '/home/juju/geodata/CZ/bu_3035.gpkg', formatBuildingCZ))
-#cnts.append(CountryCase("AT", '/home/juju/geodata/AT/BEV/DLM_8000_BAUWERK_20230912_joined_3035.gpkg', formatBuildingAT))
-#cnts.append(CountryCase("NL", '/home/juju/geodata/NL/bu_integrated.gpkg', formatBuildingNL))
-#cnts.append(CountryCase("PL", '/home/juju/geodata/PL/bdot10k/bu_bubd_bdot10k.gpkg', formatBuildingPL))
-#cnts.append(CountryCase("FR", '/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', formatBuildingFR))
-#cnts.append(CountryCase("IT", '/home/juju/geodata/IT/DBSN/dbsn.gpkg', formatBuildingIT))
+countries.append(CountryCase("LU", '/home/juju/geodata/LU/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', formatBuildingLU))
+#countries.append(CountryCase("CZ", '/home/juju/geodata/CZ/bu_3035.gpkg', formatBuildingCZ))
+#countries.append(CountryCase("AT", '/home/juju/geodata/AT/BEV/DLM_8000_BAUWERK_20230912_joined_3035.gpkg', formatBuildingAT))
+#countries.append(CountryCase("NL", '/home/juju/geodata/NL/bu_integrated.gpkg', formatBuildingNL))
+#countries.append(CountryCase("PL", '/home/juju/geodata/PL/bdot10k/bu_bubd_bdot10k.gpkg', formatBuildingPL))
+#countries.append(CountryCase("FR", '/home/juju/geodata/FR/BD_TOPO/BATI/batiment_3035.gpkg', formatBuildingFR))
+#countries.append(CountryCase("IT", '/home/juju/geodata/IT/DBSN/dbsn.gpkg', formatBuildingIT))
 
 
 

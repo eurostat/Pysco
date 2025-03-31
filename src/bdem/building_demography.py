@@ -4,8 +4,10 @@ from shapely.geometry import Polygon,box,shape,mapping
 from datetime import datetime
 import concurrent.futures
 
+
 import sys
-sys.path.append('/home/juju/workspace/pyEx/src/')
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.utils import cartesian_product_comp
 from utils.featureutils import spatialIndex,get_schema_from_feature
 
