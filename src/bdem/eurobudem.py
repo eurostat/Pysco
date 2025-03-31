@@ -247,10 +247,15 @@ countries.append(CountryCase("LU", '/home/juju/geodata/LU/BDLTC_SHP/BATI/BATIMEN
 def loadBuildings(bbox):
     buildings = []
     for cnt in countries:
+        print(cnt.code)
         bs = loadFeatures(cnt.path, bbox)
+        print(len(bs))
         for bu in bs: cnt.formatFun(bu)
+        print(len(bs))
         buildings += bs
+        print("aaa", len(buildings))
 
+    return buildings
     #TODO remove duplicates
 
 
