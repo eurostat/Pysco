@@ -10,7 +10,7 @@ from utils.featureutils import loadFeatures, keep_attributes, get_schema_from_fe
 
 
 
-def disaggregate_population_100m(x_500km_tile, y_500km_tile, nb_decimal = 2):
+def disaggregate_population_100m(x_500km_tile, y_500km_tile, nb_decimal = 2, cnt_codes = []):
 
     input_budem_file = "/home/juju/gisco/building_demography/out_partition/eurobudem_100m_"+str(x_500km_tile)+"_"+str(y_500km_tile)+".gpkg"
     if not os.path.isfile(input_budem_file): return
@@ -36,8 +36,8 @@ def disaggregate_population_100m(x_500km_tile, y_500km_tile, nb_decimal = 2):
     eps = 0.1
     pop_grid = loadFeatures("/home/juju/geodata/gisco/grids/grid_1km_surf.gpkg", bbox=[x_500km_tile+eps, y_500km_tile+eps, x_500km_tile+500000-eps, y_500km_tile+500000-eps])
     print(datetime.now(), x_500km_tile, y_500km_tile, len(pop_grid), "pop cells loaded")
-    #pop_grid = [pc for pc in pop_grid] #if pc["NUTS2021_0"] in cnt_codes
-    #print(datetime.now(), x_500km_tile, y_500km_tile, len(pop_grid), "pop cells, after filtering on " + str(cnt_codes))
+    pop_grid = [pc for pc in pop_grid if pc["NUTS2021_0"] in cnt_codes]
+    print(datetime.now(), x_500km_tile, y_500km_tile, len(pop_grid), "pop cells, after filtering on " + str(cnt_codes))
 
     #filter population cell data
     for c1000 in pop_grid:
@@ -122,10 +122,12 @@ def disaggregate_population_100m(x_500km_tile, y_500km_tile, nb_decimal = 2):
     outf.writerecords(outd)
 
 #TODO parallel ?
+#define country list
+cnt_codes = ["FR", "NL", "PL", "IT", "LU", "AT", "CZ"]
 for x_500km_tile in range(3000000, 5500000, 500000):
     for y_500km_tile in range(1000000, 4000000, 500000):
         print(datetime.now(), x_500km_tile, y_500km_tile, "disaggregation ************")
-        disaggregate_population_100m(x_500km_tile, y_500km_tile)
+        disaggregate_population_100m(x_500km_tile, y_500km_tile, cnt_codes=cnt_codes)
 
 #AT
 #disaggregate_population_100m(4000000, 2500000, cnt_codes=cnt_codes)
