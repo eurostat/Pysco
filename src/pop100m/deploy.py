@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from pygridmap import gridtiler
 
-compilation = True
+compilation = False
 aggregation = True
 tiling = True
 
@@ -61,13 +61,13 @@ if compilation:
 if aggregation:
     for a in [2,5,10]:
         print(datetime.now(), "aggregation to", a*100, "m")
-        grid_aggregation(folder+"100.csv", 100, folder+str(a*100)+'.csv', a)
+        gridtiler.grid_aggregation(folder+"100.csv", 100, folder+str(a*100)+'.csv', a)
     for a in [2,5,10]:
         print(datetime.now(), "aggregation to", a*1000, "m")
-        grid_aggregation(folder+"1000.csv", 1000, folder+str(a*1000)+'.csv', a)
+        gridtiler.grid_aggregation(folder+"1000.csv", 1000, folder+str(a*1000)+'.csv', a)
     for a in [2,5,10]:
         print(datetime.now(), "aggregation to", a*10000, "m")
-        grid_aggregation(folder+"10000.csv", 10000, folder+str(a*10000)+'.csv', a)
+        gridtiler.grid_aggregation(folder+"10000.csv", 10000, folder+str(a*10000)+'.csv', a)
 
 
 
