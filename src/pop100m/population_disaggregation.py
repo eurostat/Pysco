@@ -36,7 +36,7 @@ def disaggregate_population_100m(x_500km_tile, y_500km_tile, nb_decimal = 2, cnt
     eps = 0.1
     pop_grid = loadFeatures("/home/juju/geodata/gisco/grids/grid_1km_surf.gpkg", bbox=[x_500km_tile+eps, y_500km_tile+eps, x_500km_tile+500000-eps, y_500km_tile+500000-eps])
     print(datetime.now(), x_500km_tile, y_500km_tile, len(pop_grid), "pop cells loaded")
-    for pc in pop_grid: print(pc["NUTS2021_0"])
+    #filter to keep only the ones in the specified countries
     pop_grid = [pc for pc in pop_grid if bool(set(pc["NUTS2021_0"].split("-")) & set(cnt_codes)) ]
     print(datetime.now(), x_500km_tile, y_500km_tile, len(pop_grid), "pop cells, after filtering on " + str(cnt_codes))
 
