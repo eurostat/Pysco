@@ -5,7 +5,7 @@ NL
 3 sources:
 https://www.kadaster.nl/zakelijk/registraties/basisregistraties/bag
 https://docs.3dbag.nl/en/ for the building height
-top10nl_Compleet for the building type
+top10nl_Compleet for the building type https://service.pdok.nl/brt/topnl/atom/top10nl.xml
 
 compute height in 3dbag as: b3_height_lod12 = abs("b3_volume_lod22" / $area)
 join baglight__pand with 3dbag_pand to get volumes (3dbag pand b3_volume_lod12). For that, create suitable identifier(s), with NL.IMBANG.Pand. prefix, to join.

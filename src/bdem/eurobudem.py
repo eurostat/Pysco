@@ -232,11 +232,11 @@ def formatBuildingFR(bu):
 
 
 countries = []
-#countries.append(CountryCase("LU", '/home/juju/geodata/LU/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', formatBuildingLU))
-countries.append(CountryCase("FR", '/home/juju/geodata/FR/BD_TOPO/BDT_3-4_GPKG_LAMB93_FXX-ED2024-09-15/BATI/batiment_3035___.gpkg', formatBuildingFR))
+countries.append(CountryCase("LU", '/home/juju/geodata/LU/BDLTC_SHP/BATI/BATIMENT_3035.gpkg', formatBuildingLU))
+countries.append(CountryCase("FR", '/home/juju/geodata/FR/BD_TOPO/BDT_3-4_GPKG_LAMB93_FXX-ED2024-09-15/BATI/batiment_3035.gpkg', formatBuildingFR))
+#countries.append(CountryCase("NL", '/home/juju/geodata/NL/bu_integrated.gpkg', formatBuildingNL))
 #countries.append(CountryCase("CZ", '/home/juju/geodata/CZ/bu_3035.gpkg', formatBuildingCZ))
 #countries.append(CountryCase("AT", '/home/juju/geodata/AT/BEV/DLM_8000_BAUWERK_20230912_joined_3035.gpkg', formatBuildingAT))
-#countries.append(CountryCase("NL", '/home/juju/geodata/NL/bu_integrated.gpkg', formatBuildingNL))
 #countries.append(CountryCase("PL", '/home/juju/geodata/PL/bdot10k/bu_bubd_bdot10k.gpkg', formatBuildingPL))
 #countries.append(CountryCase("IT", '/home/juju/geodata/IT/DBSN/dbsn.gpkg', formatBuildingIT))
 
