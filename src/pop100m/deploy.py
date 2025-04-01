@@ -5,7 +5,7 @@ from datetime import datetime
 from pygridmap import gridtiler
 
 compilation = False
-aggregation = True
+aggregation = False
 tiling = True
 
 gpkg_folder = '/home/juju/gisco/grid_pop_100m/out_partition/'
