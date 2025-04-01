@@ -2,7 +2,8 @@ import geopandas as gpd
 from accessibility_grid import accessibility_grid
 
 import sys
-sys.path.append('/home/juju/workspace/pyEx/src/')
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.ome2utils import ome2_duration
 from utils.osmutils import osm_duration
 

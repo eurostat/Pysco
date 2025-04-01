@@ -4,7 +4,8 @@ from datetime import datetime
 import os
 
 import sys
-sys.path.append('/home/juju/workspace/pyEx/src/')
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import loadFeatures, keep_attributes, get_schema_from_feature
 
 

@@ -3,7 +3,8 @@ from datetime import datetime
 from shapely import Point
 
 import sys
-sys.path.append('/home/juju/workspace/pyEx/src/')
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.netutils import node_coordinate,graph_from_geodataframe
 from utils.ome2utils import ome2_filter_road_links
 from utils.geomutils import decompose_line
