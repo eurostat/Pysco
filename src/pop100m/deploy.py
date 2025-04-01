@@ -4,8 +4,8 @@ import os
 from datetime import datetime
 from pygridmap import gridtiler
 
-compilation = False
-aggregation = False
+compilation = True
+aggregation = True
 tiling = True
 
 gpkg_folder = '/home/juju/gisco/grid_pop_100m/out_partition/'
