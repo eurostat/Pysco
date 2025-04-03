@@ -36,6 +36,36 @@ print(len(cells), "cells loaded")
 
 print("Run validation cell by cell...")
 
+
+
+#function to check the categories sum up to the total population
+def check_categrories_total(cell, categories, categories_label):
+    t = cell["T"]
+
+    #check if any value of the categories is confidential
+    ci = False
+    for cat in categories:
+        if cell[cat+"_CI"] == 0: continue
+        ci = True
+        break
+
+    #sum categories
+    sum = 0
+    for cat in categories:
+        v = cell[cat]
+        if v==None or v==-9999: continue
+        sum += v
+
+    #if the sum is equal to the total, then it is OK
+    if sum==t: return
+
+    #if any of the values is confidential and the sum is lower than the total, then it is OK
+    if ci and sum<t: return
+
+    return categories_label + "_sum_T=" + str(t) + "_" + str(sum)
+
+
+
 for c in cells:
     t = c['T']
 
