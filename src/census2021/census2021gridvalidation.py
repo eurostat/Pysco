@@ -104,15 +104,23 @@ def validation(cells, rules, file_name):
             if v==1 and t<=0: err_codes.append("POPULATED_T_inconsistency_POPULATED="+str(v)+"_T="+str(t))
             if v==0 and t>0: err_codes.append("POPULATED_T_inconsistency_POPULATED="+str(v)+"_T="+str(t))
 
-        #check valid population values
-        #TODO neg values - none values
-        if "pop_values" in rules:
+        #check valid population values: not none
+        if "pop_values_none" in rules:
+            for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
+                v = c[att]
+                if v != None: continue
+                if att=="EMP": continue
+                err_codes.append(att+"_none_value="+str(v))
+
+        #check valid population values: not negative
+        if "pop_values_non_neg" in rules:
             for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
                 v = c[att]
                 if v==-9999: continue
-                if v!=None and v>=0: continue
-                if att=="EMP" and v==None: continue
-                err_codes.append(att+"_negative="+str(v))
+                if v==None: continue
+                if v>=0: continue
+                err_codes.append(att+"_negative_value="+str(v))
+
 
         #check EMP <= T
         if "emp_smaller_than_pop" in rules:
@@ -152,9 +160,13 @@ def validation(cells, rules, file_name):
 
 
 
+#list of rules
 rules = ["ci_val", "ci_consis", "populated_val", "populated_consis", "pop_values",
          "emp_smaller_than_pop", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
+
 for rule in rules:
     print(rule)
     validation(cells, [rule], "errors_"+rule)
 
+#all combined
+validation(cells, rules, "errors")
