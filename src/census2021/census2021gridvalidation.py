@@ -44,8 +44,8 @@ for c in cells:
     #check CI_XXX values
     for att in [ 'T_CI', 'M_CI', 'F_CI', 'Y_LT15_CI', 'Y_1564_CI', 'Y_GE65_CI', 'EMP_CI', 'NAT_CI', 'EU_OTH_CI', 'OTH_CI', 'SAME_CI', 'CHG_IN_CI', 'CHG_OUT_CI']:
         ci = c[att]
-        if v==None or v==-9999: continue
-        err_codes.append(att+"_value="+str(v))
+        if ci==None or ci==-9999: continue
+        err_codes.append(att+"_value="+str(ci))
 
     #check consitency CI_XXX and XXX
     for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
