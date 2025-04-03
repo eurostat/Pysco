@@ -116,7 +116,7 @@ for c in cells:
 
     #errors detected
     if len(err_codes) > 0:
-        err = {'GRD_ID':c['GRD_ID'], 'nb_errors': len(err_codes), 'errors': ",".join(err_codes)}
+        err = {'GRD_ID':c['GRD_ID'], 'nb_errors': 0+len(err_codes), 'errors': ",".join(err_codes)}
         errors.append(err)
 
 print(len(errors), "errors found")

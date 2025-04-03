@@ -112,8 +112,6 @@ def save_features_to_gpkg(fs, out_gpkg_file, crs_epsg="3035"):
             'properties': {k: type(v).__name__ for k, v in f0["properties"].items()}
         }
 
-        print(schema)
-
         # write features to layer
         with fiona.open(out_gpkg_file, 'w', driver='GPKG', schema=schema, crs = crs, layer = geom_type.lower()) as layer:
             layer.writerecords(features)
