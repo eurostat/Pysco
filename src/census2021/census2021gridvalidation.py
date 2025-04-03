@@ -119,7 +119,6 @@ def validation(cells, rules, file_name):
                 if v==-9999: continue
                 if v==None: continue
                 if v>=0: continue
-                print("******************", v)
                 err_codes.append(att+"_negative_value="+str(v))
 
 
