@@ -2,7 +2,7 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.featureutils import loadFeatures,get_schema_from_feature
+from utils.featureutils import loadFeatures
 from utils.csvutils import save_as_csv
 from utils.gridutils import csv_grid_to_geopackage
 
