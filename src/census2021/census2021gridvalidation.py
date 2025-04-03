@@ -105,6 +105,7 @@ def validation(cells, rules, file_name):
             if v==0 and t>0: err_codes.append("POPULATED_T_inconsistency_POPULATED="+str(v)+"_T="+str(t))
 
         #check valid population values
+        #TODO neg values - none values
         if "pop_values" in rules:
             for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
                 v = c[att]
