@@ -7,7 +7,7 @@ from utils.csvutils import save_as_csv
 from utils.gridutils import grid_to_geopackage
 
 grid_path = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
-bbox = None #[4200000, 2700000, 4560000, 3450000] #LU
+bbox = [4200000, 2700000, 4560000, 3450000] #LU
 output_folder = "/home/juju/gisco/census_2021_validation/"
 
 #prepare output
@@ -39,7 +39,7 @@ print("Run validation cell by cell...")
 
 
 #function to check the categories sum up to the total population
-def check_categrories_total(cell, categories, categories_label, errors):
+def check_categrories_total(cell, categories, categories_label, err_codes):
     t = cell["T"]
 
     #check if any value of the categories is confidential
@@ -63,7 +63,8 @@ def check_categrories_total(cell, categories, categories_label, errors):
     if ci and sum<t: return
 
     #report error
-    errors.append(categories_label + "_sum_T=" + str(t) + "_" + str(sum))
+    err = categories_label + "_sum_T=" + str(t) + "_SUM=" + str(sum)
+    err_codes.append(err)
 
 
 
@@ -110,10 +111,10 @@ for c in cells:
         err_codes.append("EMP_T_inconsistency_EMP="+str(emp)+"_T="+str(t))
 
     #check categories sum up to total
-    check_categrories_total(c, ['M', 'F'], "SEX", errors)
-    check_categrories_total(c, ['Y_LT15', 'Y_1564', 'Y_GE65'], "AGE", errors)
-    check_categrories_total(c, ['NAT', 'EU_OTH', 'OTH'], "CNTBIRTH", errors)
-    check_categrories_total(c, ['SAME', 'CHG_IN', 'CHG_OUT'], "RESCHANGE", errors)
+    check_categrories_total(c, ['M', 'F'], "SEX", err_codes)
+    check_categrories_total(c, ['Y_LT15', 'Y_1564', 'Y_GE65'], "AGE", err_codes)
+    check_categrories_total(c, ['NAT', 'EU_OTH', 'OTH'], "CNTBIRTH", err_codes)
+    check_categrories_total(c, ['SAME', 'CHG_IN', 'CHG_OUT'], "RESCHANGE", err_codes)
 
     #errors detected
     if len(err_codes) > 0:
@@ -125,7 +126,7 @@ print(len(errors), "errors found")
 if len(errors)>0:
 
     #sort errors
-    #errors = sorted(errors, key=lambda c: c["errors"])
+    errors = sorted(errors, key=lambda c: c["errors"])
 
     print("Save to ", output_folder + "errors.csv")
     save_as_csv(output_folder + "errors.csv", errors)
