@@ -39,7 +39,7 @@ print("Run validation cell by cell...")
 
 
 #function to check the categories sum up to the total population
-def check_categrories_total(cell, categories, categories_label):
+def check_categrories_total(cell, categories, categories_label, errors):
     t = cell["T"]
 
     #check if any value of the categories is confidential
@@ -62,7 +62,8 @@ def check_categrories_total(cell, categories, categories_label):
     #if any of the values is confidential and the sum is lower than the total, then it is OK
     if ci and sum<t: return
 
-    return categories_label + "_sum_T=" + str(t) + "_" + str(sum)
+    #report error
+    errors.append(categories_label + "_sum_T=" + str(t) + "_" + str(sum))
 
 
 
@@ -109,10 +110,10 @@ for c in cells:
         err_codes.append("EMP_T_inconsistency_EMP="+str(emp)+"_T="+str(t))
 
     #check categories sum up to total
-    check_categrories_total(c, ['M', 'F'], "SEX")
-    check_categrories_total(c, ['Y_LT15', 'Y_1564', 'Y_GE65'], "AGE")
-    check_categrories_total(c, ['NAT', 'EU_OTH', 'OTH'], "CNTBIRTH")
-    check_categrories_total(c, ['SAME', 'CHG_IN', 'CHG_OUT'], "RESCHANGE")
+    check_categrories_total(c, ['M', 'F'], "SEX", errors)
+    check_categrories_total(c, ['Y_LT15', 'Y_1564', 'Y_GE65'], "AGE", errors)
+    check_categrories_total(c, ['NAT', 'EU_OTH', 'OTH'], "CNTBIRTH", errors)
+    check_categrories_total(c, ['SAME', 'CHG_IN', 'CHG_OUT'], "RESCHANGE", errors)
 
     #errors detected
     if len(err_codes) > 0:
