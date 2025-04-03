@@ -7,7 +7,7 @@ from utils.csvutils import save_as_csv
 from utils.gridutils import csv_grid_to_geopackage
 
 grid_path = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
-bbox = [4200000, 2700000, 4560000, 3450000] #LU
+bbox = None #[4200000, 2700000, 4560000, 3450000] #LU
 output_folder = "/home/juju/gisco/census_2021_validation/"
 
 #prepare output
@@ -42,7 +42,8 @@ for c in cells:
     #check CI_XXX values
     for att in [ 'T_CI', 'M_CI', 'F_CI', 'Y_LT15_CI', 'Y_1564_CI', 'Y_GE65_CI', 'EMP_CI', 'NAT_CI', 'EU_OTH_CI', 'OTH_CI', 'SAME_CI', 'CHG_IN_CI', 'CHG_OUT_CI']:
         ci = c[att]
-        if ci==None or ci==-9999: continue
+        if ci==None: continue
+        if ci==-9999: continue
         err_codes.append(att+"_value="+str(ci))
 
     #check consitency CI_XXX and XXX
@@ -57,7 +58,6 @@ for c in cells:
     att = 'POPULATED'
     v = c[att]
     if v != 0 and v != 1: err_codes.append(att+"_value="+str(v))
-
     #check consitency POPULATED and T
     if v==1 and c['T']<=0: err_codes.append("POPULATED_T_inconsistency="+str(v)+"_"+str(c['T']))
     if v==0 and c['T']>0: err_codes.append("POPULATED_T_inconsistency="+str(v)+"_"+str(c['T']))
@@ -65,7 +65,8 @@ for c in cells:
     #check valid population values
     for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
         v = c[att]
-        if v == None or v>=0 or v==-9999: continue
+        if v==-9999: continue
+        if v!=None and v>=0: continue
         err_codes.append(att+"_neg="+str(v))
 
     #check categrories sum up to total

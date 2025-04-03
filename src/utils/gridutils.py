@@ -22,7 +22,6 @@ def csv_grid_to_geopackage(csv_grid_path, gpkg_grid_path, geom="surf"):
         data = list(reader)
 
     for c in data:
-
         #make grid cell geometry
         [x, y] = get_cell_xy_from_id(c['GRD_ID'])
         grid_resolution = 1000
