@@ -161,7 +161,7 @@ def validation(cells, rules, file_name):
 
 
 #list of rules
-rules = ["ci_val", "ci_consis", "populated_val", "populated_consis", "pop_values",
+rules = ["ci_val", "ci_consis", "populated_val", "populated_consis", "pop_values_none", "pop_values_non_neg",
          "emp_smaller_than_pop", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
 
 for rule in rules:
