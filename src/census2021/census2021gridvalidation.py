@@ -8,7 +8,7 @@ from utils.geomutils import average_z_coordinate
 from utils.csvutils import save_as_csv
 
 
-bbox = [4200000, 2700000, 4560000, 3450000] #LU
+bbox = None #[4200000, 2700000, 4560000, 3450000] #LU
 grid_path = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
 output_folder = "/home/juju/gisco/census_2021_validation/"
 os.makedirs(output_folder, exist_ok=True)
