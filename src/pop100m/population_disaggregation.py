@@ -7,6 +7,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import loadFeatures, keep_attributes, get_schema_from_feature
+from utils.gridutils import get_cell_xy_from_id
 
 
 
@@ -25,9 +26,9 @@ def disaggregate_population_100m(x_500km_tile, y_500km_tile, nb_decimal = 2, cnt
     for c100 in budem_grid:
         keep_attributes(c100, ["GRD_ID", "residential_floor_area"])
         #extract LLC position
-        a = c100['GRD_ID'].split('mN')[1].split('E')
-        c100['X_LLC'] = int(a[1])
-        c100['Y_LLC'] = int(a[0])
+        [x, y] = get_cell_xy_from_id(c['GRD_ID'])
+        c100['X_LLC'] = x
+        c100['Y_LLC'] = y
         #initialise population
         c100['TOT_P_2021'] = 0.0
 
