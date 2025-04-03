@@ -74,7 +74,7 @@ def validation(cells, rules, file_name):
 
         err_codes = []
 
-        #check CI_XXX values
+        #check CI_XXX values: should be either None or -9999
         if "ci_val" in rules:
             for att in [ 'T_CI', 'M_CI', 'F_CI', 'Y_LT15_CI', 'Y_1564_CI', 'Y_GE65_CI', 'EMP_CI', 'NAT_CI', 'EU_OTH_CI', 'OTH_CI', 'SAME_CI', 'CHG_IN_CI', 'CHG_OUT_CI']:
                 ci = c[att]
@@ -119,6 +119,7 @@ def validation(cells, rules, file_name):
                 if v==-9999: continue
                 if v==None: continue
                 if v>=0: continue
+                print("******************", v)
                 err_codes.append(att+"_negative_value="+str(v))
 
 
