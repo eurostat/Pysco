@@ -4,7 +4,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import loadFeatures
 from utils.csvutils import save_as_csv
-from utils.gridutils import csv_grid_to_geopackage
+from utils.gridutils import grid_to_geopackage
 
 grid_path = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
 bbox = [4200000, 2700000, 4560000, 3450000] #LU
@@ -128,6 +128,6 @@ if len(errors)>0:
     save_as_csv(output_folder + "errors.csv", errors)
 
     print("Save to ", output_folder + "errors.gpkg")
-    csv_grid_to_geopackage(output_folder + "errors.csv", output_folder + "errors.gpkg")
+    grid_to_geopackage(errors, output_folder + "errors.gpkg")
 
 
