@@ -46,7 +46,7 @@ for c in cells:
     for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
         v = c[att]
         if v == None: continue
-        if v<0: err_codes.append(att+"neg="+str(v))
+        if v<0 and v!=-9999: err_codes.append(att+"neg="+str(v))
 
     #errors detected
     if len(err_codes) > 0:
@@ -69,3 +69,4 @@ def save_as_csv(csv_filename, data):
         writer.writerows(data)
 
 save_as_csv(out_filename, errors)
+
