@@ -142,9 +142,9 @@ def validation(cells, rules, file_name):
         errors = sorted(errors, key=lambda c: c["errors"])
 
         print("Save to ", output_folder + file_name + ".csv")
-        save_as_csv(output_folder + "errors.csv", errors)
+        save_as_csv(output_folder + file_name + ".csv", errors)
 
-        print("Save to ", output_folder + "errors.gpkg")
+        print("Save to ", output_folder + file_name + ".gpkg")
         grid_to_geopackage(errors, output_folder + file_name +".gpkg")
 
 
