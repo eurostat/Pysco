@@ -49,6 +49,9 @@ for c in cells:
         if v==None or v==-9999: continue
         err_codes.append(att+"_value="+str(v))
 
+    #check consitency CI_XXX and XXX
+    #TODO
+
     #check POPULATED values
     att = 'POPULATED'
     v = c[att]
@@ -63,6 +66,9 @@ for c in cells:
         v = c[att]
         if v == None or v>=0 or v==-9999: continue
         err_codes.append(att+"_neg="+str(v))
+
+    #check categrories sum up to total
+    #TODO
 
     #errors detected
     if len(err_codes) > 0:
