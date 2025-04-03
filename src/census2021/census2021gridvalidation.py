@@ -1,4 +1,8 @@
 import csv
+import fiona
+from fiona.crs import CRS
+from shapely.geometry import Polygon,box,shape,mapping
+
 
 import sys
 import os
@@ -52,7 +56,7 @@ for c in cells:
         v = c[att]
         ci = c[att+"_CI"]
         if ci==-9999 and v==-9999: continue
-        if ci==None and v>=0: continue
+        if ci==None and v !=None and v>=0: continue
         err_codes.append(att+"_CI_inconsistency_ci="+str(ci)+"_value="+str(v))
 
     #check POPULATED values
@@ -92,16 +96,18 @@ def csv_grid_to_geopackage(csv_grid_path, gpkg_grid_path, geom="surf"):
         reader = csv.DictReader(file)
         data = list(reader)
 
-    for row in data:
-        print(row)
-
+    for p in data:
         #make cell
-        c = {"type":"Feature", "properties":{}}
-        p = c["properties"]
+        c = {"type":"Feature", "properties":p}
+
+        #grid_id to x,y
+        a = p['GRD_ID'].split("N")[1].split("E")
+        x = int(a[1])
+        y = int(a[0])
 
         #make grid cell geometry
+        grid_resolution = 1000
         cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
-        #cell geometry
         c["geometry"] = mapping(cell_geometry)
 
     schema = get_schema_from_feature(cells[0])
