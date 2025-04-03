@@ -67,71 +67,92 @@ def check_categrories_total(cell, categories, categories_label, err_codes):
     err_codes.append(err)
 
 
+def validation(cells, rules, file_name):
 
-for c in cells:
-    t = c['T']
+    for c in cells:
+        t = c['T']
 
-    err_codes = []
+        err_codes = []
 
-    #check CI_XXX values
-    for att in [ 'T_CI', 'M_CI', 'F_CI', 'Y_LT15_CI', 'Y_1564_CI', 'Y_GE65_CI', 'EMP_CI', 'NAT_CI', 'EU_OTH_CI', 'OTH_CI', 'SAME_CI', 'CHG_IN_CI', 'CHG_OUT_CI']:
-        ci = c[att]
-        if ci==None: continue
-        if ci==-9999: continue
-        err_codes.append(att+"_value="+str(ci))
+        #check CI_XXX values
+        if "ci_val" in rules:
+            for att in [ 'T_CI', 'M_CI', 'F_CI', 'Y_LT15_CI', 'Y_1564_CI', 'Y_GE65_CI', 'EMP_CI', 'NAT_CI', 'EU_OTH_CI', 'OTH_CI', 'SAME_CI', 'CHG_IN_CI', 'CHG_OUT_CI']:
+                ci = c[att]
+                if ci==None: continue
+                if ci==-9999: continue
+                err_codes.append(att+"_value="+str(ci))
 
-    #check consitency CI_XXX and XXX
-    for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
-        v = c[att]
-        ci = c[att+"_CI"]
-        if ci==-9999 and v==-9999: continue
-        if ci==None and v !=None and v>=0: continue
-        if att=="EMP" and ci==None and v==None: continue
-        err_codes.append(att+"_CI_inconsistency_ci="+str(ci)+"_value="+str(v))
+        #check consitency CI_XXX and XXX
+        if "ci_consis" in rules:
+            for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
+                v = c[att]
+                ci = c[att+"_CI"]
+                if ci==-9999 and v==-9999: continue
+                if ci==None and v !=None and v>=0: continue
+                if att=="EMP" and ci==None and v==None: continue
+                err_codes.append(att+"_CI_inconsistency_ci="+str(ci)+"_value="+str(v))
 
-    #check POPULATED values
-    att = 'POPULATED'
-    v = c[att]
-    if v != 0 and v != 1: err_codes.append(att+"_value="+str(v))
-    #check consitency POPULATED and T
-    if v==1 and t<=0: err_codes.append("POPULATED_T_inconsistency_POPULATED="+str(v)+"_T="+str(t))
-    if v==0 and t>0: err_codes.append("POPULATED_T_inconsistency_POPULATED="+str(v)+"_T="+str(t))
+        #check POPULATED values
+        if "populated_val" in rules:
+            v = c['POPULATED']
+            if v != 0 and v != 1: err_codes.append("POPULATED_value="+str(v))
 
-    #check valid population values
-    for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
-        v = c[att]
-        if v==-9999: continue
-        if v!=None and v>=0: continue
-        if att=="EMP" and v==None: continue
-        err_codes.append(att+"_negative="+str(v))
+        #check consitency POPULATED and T
+        if "populated_consis" in rules:
+            att = 'POPULATED'
+            v = c['POPULATED']
+            if v==1 and t<=0: err_codes.append("POPULATED_T_inconsistency_POPULATED="+str(v)+"_T="+str(t))
+            if v==0 and t>0: err_codes.append("POPULATED_T_inconsistency_POPULATED="+str(v)+"_T="+str(t))
 
-    #check EMP <= T
-    emp = c['EMP']
-    if(t != None and emp != None and emp>t):
-        err_codes.append("EMP_T_inconsistency_EMP="+str(emp)+"_T="+str(t))
+        #check valid population values
+        if "pop_values" in rules:
+            for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
+                v = c[att]
+                if v==-9999: continue
+                if v!=None and v>=0: continue
+                if att=="EMP" and v==None: continue
+                err_codes.append(att+"_negative="+str(v))
 
-    #check categories sum up to total
-    check_categrories_total(c, ['M', 'F'], "SEX", err_codes)
-    check_categrories_total(c, ['Y_LT15', 'Y_1564', 'Y_GE65'], "AGE", err_codes)
-    check_categrories_total(c, ['NAT', 'EU_OTH', 'OTH'], "CNTBIRTH", err_codes)
-    check_categrories_total(c, ['SAME', 'CHG_IN', 'CHG_OUT'], "RESCHANGE", err_codes)
+        #check EMP <= T
+        if "emp_smaller_than_pop" in rules:
+            emp = c['EMP']
+            if(t != None and emp != None and emp>t):
+                err_codes.append("EMP_T_inconsistency_EMP="+str(emp)+"_T="+str(t))
 
-    #errors detected
-    if len(err_codes) > 0:
-        di = {'GRD_ID':c['GRD_ID'], 'nb_errors': 0+len(err_codes), 'errors': ",".join(err_codes)}
-        errors.append(di)
+        #check categories sum up to total
+        if "cat_sum_sex" in rules:
+            check_categrories_total(c, ['M', 'F'], "SEX", err_codes)
+        if "cat_sum_age" in rules:
+            check_categrories_total(c, ['Y_LT15', 'Y_1564', 'Y_GE65'], "AGE", err_codes)
+        if "cat_sum_cntbirth" in rules:
+            check_categrories_total(c, ['NAT', 'EU_OTH', 'OTH'], "CNTBIRTH", err_codes)
+        if "cat_sum_reschange" in rules:
+            check_categrories_total(c, ['SAME', 'CHG_IN', 'CHG_OUT'], "RESCHANGE", err_codes)
 
-print(len(errors), "errors found")
+        #errors detected
+        if len(err_codes) > 0:
+            di = {'GRD_ID':c['GRD_ID'], 'nb_errors': 0+len(err_codes), 'errors': ",".join(err_codes)}
+            errors.append(di)
 
-if len(errors)>0:
+    print(len(errors), "errors found")
 
-    #sort errors
-    errors = sorted(errors, key=lambda c: c["errors"])
+    if len(errors)>0:
 
-    print("Save to ", output_folder + "errors.csv")
-    save_as_csv(output_folder + "errors.csv", errors)
+        #sort errors
+        errors = sorted(errors, key=lambda c: c["errors"])
 
-    print("Save to ", output_folder + "errors.gpkg")
-    grid_to_geopackage(errors, output_folder + "errors.gpkg")
+        print("Save to ", output_folder + file_name + ".csv")
+        save_as_csv(output_folder + "errors.csv", errors)
 
+        print("Save to ", output_folder + "errors.gpkg")
+        grid_to_geopackage(errors, output_folder + file_name +".gpkg")
+
+
+
+
+
+rules = ["ci_val", "ci_consis", "populated_val", "populated_consis", "pop_values", "emp_smaller_than_pop", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
+for rule in rules:
+    print(rule)
+    validation(cells, [rule], "errors_"+rule)
 
