@@ -72,13 +72,16 @@ for c in cells:
 
     #errors detected
     if len(err_codes) > 0:
-        err = {'GRD_ID':c['GRD_ID'], 'code':err_codes}
+        err = {'GRD_ID':c['GRD_ID'], 'errors': ",".join(err_codes)}
         errors.append(err)
+
 
 
 print(len(errors), "errors found")
 
 if len(errors)>0:
+    #sort by error
+    errors = sorted(errors, key=lambda x: x["errors"])
     out_filename = output_folder + "errors.csv"
     print("Save to ", out_filename)
     save_as_csv(out_filename, errors)
