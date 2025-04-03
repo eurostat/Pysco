@@ -1,15 +1,10 @@
-import csv
-import fiona
-from fiona.crs import CRS
-from shapely.geometry import Polygon,box,shape,mapping
-
 
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import loadFeatures,get_schema_from_feature
 from utils.csvutils import save_as_csv
-
+from utils.gridutils import csv_grid_to_geopackage
 
 grid_path = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
 bbox = [4200000, 2700000, 4560000, 3450000] #LU
@@ -80,43 +75,6 @@ for c in cells:
     if len(err_codes) > 0:
         err = {'GRD_ID':c['GRD_ID'], 'errors': ",".join(err_codes)}
         errors.append(err)
-
-
-
-
-
-
-#TODO move
-def csv_grid_to_geopackage(csv_grid_path, gpkg_grid_path, geom="surf"):
-
-    #load csv
-    data = None
-    with open(csv_grid_path, mode="r", newline="") as file:
-        reader = csv.DictReader(file)
-        data = list(reader)
-
-    for p in data:
-        #make cell
-        c = {"type":"Feature", "properties":p}
-
-        #grid_id to x,y
-        a = p['GRD_ID'].split("N")[1].split("E")
-        x = int(a[1])
-        y = int(a[0])
-
-        #make grid cell geometry
-        grid_resolution = 1000
-        cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
-        c["geometry"] = mapping(cell_geometry)
-
-    schema = get_schema_from_feature(cells[0])
-    out = fiona.open(gpkg_grid_path, 'w', driver='GPKG', crs=CRS.from_epsg(3035), schema=schema)
-    out.writerecords(cells)
-
-
-
-
-
 
 print(len(errors), "errors found")
 
