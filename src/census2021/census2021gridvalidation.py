@@ -5,6 +5,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import loadFeatures,keepOnlyGeometry
 from utils.geomutils import average_z_coordinate
+from utils.csvutils import save_as_csv
 
 
 bbox = [4200000, 2700000, 4560000, 3450000] #LU
@@ -56,17 +57,8 @@ for c in cells:
 
 print(len(errors), "errors found")
 
-
-out_filename = output_folder + "errors.csv"
-print("save to ", out_filename)
-
-
-def save_as_csv(csv_filename, data):
-    with open(csv_filename, mode="w", newline="") as file:
-        fieldnames = data[0].keys()
-        writer = csv.DictWriter(file, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(data)
-
-save_as_csv(out_filename, errors)
+if len(errors)>0:
+    out_filename = output_folder + "errors.csv"
+    print("Save to ", out_filename)
+    save_as_csv(out_filename, errors)
 
