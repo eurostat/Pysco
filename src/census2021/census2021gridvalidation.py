@@ -12,7 +12,6 @@ output_folder = "/home/juju/gisco/census_2021_validation/"
 
 #prepare output
 os.makedirs(output_folder, exist_ok=True)
-errors = []
 
 print("Load grid cells from", grid_path)
 cells = loadFeatures(grid_path, bbox)
@@ -69,6 +68,7 @@ def check_categrories_total(cell, categories, categories_label, err_codes):
 
 def validation(cells, rules, file_name):
 
+    errors = []
     for c in cells:
         t = c['T']
 
