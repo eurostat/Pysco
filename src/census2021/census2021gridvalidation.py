@@ -54,7 +54,7 @@ for c in cells:
         ci = c[att+"_CI"]
         if ci==-9999 and v==-9999: continue
         if ci==None and v !=None and v>=0: continue
-        if att=="EMP" and ci==None and v=="None": continue
+        if att=="EMP" and ci==None and v==None: continue
         err_codes.append(att+"_CI_inconsistency_ci="+str(ci)+"_value="+str(v))
 
     #check POPULATED values
@@ -84,7 +84,7 @@ for c in cells:
 
     #errors detected
     if len(err_codes) > 0:
-        err = {'GRD_ID':c['GRD_ID'], 'errors': ",".join(err_codes)}
+        err = {'GRD_ID':c['GRD_ID'], 'nb_errors': len(err_codes), 'errors': ",".join(err_codes)}
         errors.append(err)
 
 print(len(errors), "errors found")
