@@ -7,7 +7,7 @@ from utils.csvutils import save_as_csv
 from utils.gridutils import grid_to_geopackage
 
 grid_path = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
-bbox = [4200000, 2700000, 4560000, 3450000] #LU
+bbox = None #[4200000, 2700000, 4560000, 3450000] #LU
 output_folder = "/home/juju/gisco/census_2021_validation/"
 
 #prepare output
@@ -151,7 +151,8 @@ def validation(cells, rules, file_name):
 
 
 
-rules = ["ci_val", "ci_consis", "populated_val", "populated_consis", "pop_values", "emp_smaller_than_pop", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
+rules = ["ci_val", "ci_consis", "populated_val", "populated_consis", "pop_values",
+         "emp_smaller_than_pop", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
 for rule in rules:
     print(rule)
     validation(cells, [rule], "errors_"+rule)
