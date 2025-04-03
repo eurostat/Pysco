@@ -54,6 +54,7 @@ for c in cells:
         ci = c[att+"_CI"]
         if ci==-9999 and v==-9999: continue
         if ci==None and v !=None and v>=0: continue
+        if att=="EMP" and ci==None and v=="None": continue
         err_codes.append(att+"_CI_inconsistency_ci="+str(ci)+"_value="+str(v))
 
     #check POPULATED values
@@ -69,6 +70,7 @@ for c in cells:
         v = c[att]
         if v==-9999: continue
         if v!=None and v>=0: continue
+        if att=="EMP" and v==None: continue
         err_codes.append(att+"_negative="+str(v))
 
     #check EMP <= T
