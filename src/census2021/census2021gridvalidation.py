@@ -7,7 +7,7 @@ from utils.csvutils import save_as_csv
 from utils.gridutils import csv_grid_to_geopackage
 
 grid_path = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
-bbox = None #[4200000, 2700000, 4560000, 3450000] #LU
+bbox = [4200000, 2700000, 4560000, 3450000] #LU
 output_folder = "/home/juju/gisco/census_2021_validation/"
 
 #prepare output
