@@ -108,9 +108,11 @@ for c in cells:
     if(t != None and emp != None and emp>t):
         err_codes.append("EMP_T_inconsistency_EMP="+str(emp)+"_T="+str(t))
 
-
     #check categories sum up to total
-    #TODO
+    check_categrories_total(c, ['M', 'F'], "SEX")
+    check_categrories_total(c, ['Y_LT15', 'Y_1564', 'Y_GE65'], "AGE")
+    check_categrories_total(c, ['NAT', 'EU_OTH', 'OTH'], "CNTBIRTH")
+    check_categrories_total(c, ['SAME', 'CHG_IN', 'CHG_OUT'], "RESCHANGE")
 
     #errors detected
     if len(err_codes) > 0:
