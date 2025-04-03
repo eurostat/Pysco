@@ -43,11 +43,26 @@ print("Run validation cell by cell...")
 for c in cells:
     err_codes = []
 
+    #check CI_XXX values
+    for att in [ 'T_CI', 'M_CI', 'F_CI', 'Y_LT15_CI', 'Y_1564_CI', 'Y_GE65_CI', 'EMP_CI', 'NAT_CI', 'EU_OTH_CI', 'OTH_CI', 'SAME_CI', 'CHG_IN_CI', 'CHG_OUT_CI']:
+        v = c[att]
+        if v==None or v==-9999: continue
+        err_codes.append(att+"_value="+str(v))
+
+    #check POPULATED values
+    att = 'POPULATED'
+    v = c[att]
+    if v != 0 and v != 1: err_codes.append(att+"_value="+str(v))
+
+    #check consitency POPULATED and T
+    if v==1 and c['T']<=0: err_codes.append("POPULATED_T_inconsistency="+str(v)+"_"+str(c['T']))
+    if v==0 and c['T']>0: err_codes.append("POPULATED_T_inconsistency="+str(v)+"_"+str(c['T']))
+
     #check valid population values
     for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
         v = c[att]
-        if v == None: continue
-        if v<0 and v!=-9999: err_codes.append(att+"neg="+str(v))
+        if v == None or v>=0 or v==-9999: continue
+        err_codes.append(att+"_neg="+str(v))
 
     #errors detected
     if len(err_codes) > 0:
