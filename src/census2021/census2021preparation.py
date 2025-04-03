@@ -1,6 +1,11 @@
 import pandas as pd
-import os
 from pygridmap import gridtiler
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.gridutils import get_cell_xy_from_id
+
 
 prepare = False
 transform = False
@@ -68,9 +73,9 @@ if prepare:
 if transform:
     print("transform")
     def fun(c):
-        a = c['SPATIAL'].split("N")[1].split("E")
-        c["x"] = int(a[1])
-        c["y"] = int(a[0])
+        [x, y] = get_cell_xy_from_id(c['SPATIAL'])
+        c["x"] = x
+        c["y"] = y
         del c['SPATIAL']
         del c['cc']
     #transform

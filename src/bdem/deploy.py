@@ -4,6 +4,12 @@ import os
 from datetime import datetime
 from pygridmap import gridtiler
 
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.gridutils import get_cell_xy_from_id
+
+
 compilation = True
 aggregation = True
 tiling = True
@@ -41,9 +47,9 @@ if compilation:
                     properties = { key: value for key, value in feature['properties'].items() }
 
                     #grid_id to x,y
-                    a = properties['GRD_ID'].split("N")[1].split("E")
-                    properties["x"] = int(a[1])
-                    properties["y"] = int(a[0])
+                    [x,y] = get_cell_xy_from_id(properties['GRD_ID'])
+                    properties["x"] = x
+                    properties["y"] = y
                     del properties['GRD_ID']
 
                     #create writer and write header if not already done

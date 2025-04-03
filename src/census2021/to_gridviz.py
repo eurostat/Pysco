@@ -1,6 +1,10 @@
 from pygridmap import gridtiler
 from datetime import datetime
+
+import sys
 import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.gridutils import get_cell_xy_from_id
 
 transform = False
 aggregation = True
@@ -20,9 +24,9 @@ def transform_fun(c):
     #del c["fid"]
 
     #get x and y
-    a = c['GRD_ID'].split("N")[1].split("E")
-    c["x"] = int(a[1])
-    c["y"] = int(a[0])
+    [x, y] = get_cell_xy_from_id(c['GRD_ID'])
+    c["x"] = x
+    c["y"] = y
     del c['GRD_ID']
 
     #remove zeros
