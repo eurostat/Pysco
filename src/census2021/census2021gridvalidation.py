@@ -37,6 +37,8 @@ print(len(cells), "cells loaded")
 print("Run validation cell by cell...")
 
 for c in cells:
+    t = c['T']
+
     err_codes = []
 
     #check CI_XXX values
@@ -59,17 +61,23 @@ for c in cells:
     v = c[att]
     if v != 0 and v != 1: err_codes.append(att+"_value="+str(v))
     #check consitency POPULATED and T
-    if v==1 and c['T']<=0: err_codes.append("POPULATED_T_inconsistency="+str(v)+"_"+str(c['T']))
-    if v==0 and c['T']>0: err_codes.append("POPULATED_T_inconsistency="+str(v)+"_"+str(c['T']))
+    if v==1 and t<=0: err_codes.append("POPULATED_T_inconsistency_POPULATED="+str(v)+"_T="+str(t))
+    if v==0 and t>0: err_codes.append("POPULATED_T_inconsistency_POPULATED="+str(v)+"_T="+str(t))
 
     #check valid population values
     for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
         v = c[att]
         if v==-9999: continue
         if v!=None and v>=0: continue
-        err_codes.append(att+"_neg="+str(v))
+        err_codes.append(att+"_negative="+str(v))
 
-    #check categrories sum up to total
+    #check EMP <= T
+    emp = c['EMP']
+    if(t != None and emp != None and emp>t):
+        err_codes.append("EMP_T_inconsistency_EMP="+str(emp)+"_T="+str(t))
+
+
+    #check categories sum up to total
     #TODO
 
     #errors detected
