@@ -26,7 +26,9 @@ def csv_grid_to_geopackage(csv_grid_path, gpkg_grid_path, geom="surf"):
         #make grid cell geometry
         [x, y] = get_cell_xy_from_id(c['GRD_ID'])
         grid_resolution = 1000
-        c["geometry"] = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
+        c['geometry'] = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
+
+        print(c)
 
         #save as gpkg
         save_features_to_gpkg(data, gpkg_grid_path)
