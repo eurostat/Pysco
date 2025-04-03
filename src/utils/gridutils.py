@@ -7,6 +7,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import save_features_to_gpkg, get_schema_from_feature
 
 
+def get_cell_xy_from_id(id):
+    a = id.split("N")[1].split("E")
+    return [int(a[1]), int(a[0])]
+
+
+
 def csv_grid_to_geopackage(csv_grid_path, gpkg_grid_path, geom="surf"):
 
     #load csv
@@ -17,14 +23,11 @@ def csv_grid_to_geopackage(csv_grid_path, gpkg_grid_path, geom="surf"):
 
     for c in data:
 
-        #grid_id to x,y
-        a = c['GRD_ID'].split("N")[1].split("E")
-        x = int(a[1])
-        y = int(a[0])
-
         #make grid cell geometry
+        [x, y] = get_cell_xy_from_id(c['GRD_ID'])
         grid_resolution = 1000
         c["geometry"] = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
 
+        #save as gpkg
         save_features_to_gpkg(data, gpkg_grid_path)
 
