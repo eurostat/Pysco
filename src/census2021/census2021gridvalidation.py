@@ -6,19 +6,23 @@ from utils.featureutils import loadFeatures
 from utils.csvutils import save_as_csv
 from utils.gridutils import grid_to_geopackage
 
+# input gpkg file to validate
 grid_path = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
-bbox = None #[4200000, 2700000, 4560000, 3450000] #LU
-output_folder = "/home/juju/gisco/census_2021_validation/"
 
-#prepare output
+#output folder where to store the validation reports
+output_folder = "/home/juju/gisco/census_2021_validation/"
 os.makedirs(output_folder, exist_ok=True)
+
+# bounding box to focus on. Set to None for entire check
+bbox = None #[4200000, 2700000, 4560000, 3450000] #LU
+
 
 print("Load grid cells from", grid_path)
 cells = loadFeatures(grid_path, bbox)
 print(len(cells), "cells loaded")
 
 
-#(['geometry', 'GRD_ID', 'T',
+# 'GRD_ID', 'T',
 # 'M', 'F', 
 # 'Y_LT15', 'Y_1564', 'Y_GE65', 
 # 'EMP', 
@@ -31,9 +35,7 @@ print(len(cells), "cells loaded")
 # 'Y_LT15_CI', 'Y_1564_CI', 'Y_GE65_CI', 
 # 'EMP_CI', 
 # 'NAT_CI', 'EU_OTH_CI', 'OTH_CI', 
-# 'SAME_CI', 'CHG_IN_CI', 'CHG_OUT_CI'])
-
-print("Run validation cell by cell...")
+# 'SAME_CI', 'CHG_IN_CI', 'CHG_OUT_CI'
 
 
 #function to check the categories sum up to the total population
@@ -47,31 +49,36 @@ def check_categrories_total(cell, categories, categories_label, err_codes):
         ci = True
         break
 
-    #sum categories
+    #sum population figures by category
     sum = 0
     for cat in categories:
         v = cell[cat]
         if v==None or v==-9999: continue
         sum += v
 
-    #if the sum is equal to the total, then it is OK
+    #if the sum is equal to the total, then OK
     if sum==t: return
 
-    #if any of the values is confidential and the sum is lower than the total, then it is OK
-    if ci and sum<t: return
+    #if any of the values is confidential and the sum is lower than the total, then OK
+    if ci and sum<=t: return
 
     #report error
     err = categories_label + "_sum_T=" + str(t) + "_SUM=" + str(sum)
     err_codes.append(err)
 
 
+#run validation of cells
 def validation(cells, rules, file_name):
 
+    #output errors
     errors = []
-    for c in cells:
-        t = c['T']
 
+    for c in cells:
+        #list of error codes for the cell
         err_codes = []
+
+        #get total population
+        t = c['T']
 
         #check CI_XXX values: should be either None (non confidential) or -9999 (confidencial)
         #data items on total population shall not be reported as confidential;
@@ -165,10 +172,13 @@ def validation(cells, rules, file_name):
 
 
 
+print("Run validation cell by cell...")
+
 #list of rules
 rules = ["ci_val", "ci_consis", "populated_val", "populated_consis", "pop_values_none", "pop_values_non_neg",
          "emp_smaller_than_pop", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
 
+#one file per validation rule
 for rule in rules:
     print(rule)
     validation(cells, [rule], "errors_"+rule)
