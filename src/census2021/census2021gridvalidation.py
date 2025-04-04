@@ -73,14 +73,13 @@ def validation(cells, rules, file_name):
 
         err_codes = []
 
-        #TODO data items on total population shall not be reported as confidential;
-
         #check CI_XXX values: should be either None (non confidential) or -9999 (confidencial)
+        #data items on total population shall not be reported as confidential;
         if "ci_val" in rules:
             for att in [ 'T_CI', 'M_CI', 'F_CI', 'Y_LT15_CI', 'Y_1564_CI', 'Y_GE65_CI', 'EMP_CI', 'NAT_CI', 'EU_OTH_CI', 'OTH_CI', 'SAME_CI', 'CHG_IN_CI', 'CHG_OUT_CI']:
                 ci = c[att]
                 if ci==None: continue
-                if ci==-9999: continue
+                if ci==-9999 and att!='T_CI': continue
                 err_codes.append(att+"_value="+str(ci))
 
         #check consitency CI_XXX and XXX
@@ -93,7 +92,7 @@ def validation(cells, rules, file_name):
                 #non confidential
                 if ci==None and v!=-9999: continue
                 #EMP special case, for FR and DE
-                if att=="EMP" and ci==None and v==None: continue
+                #if att=="EMP" and ci==None and v==None: continue
                 err_codes.append(att+"_CI_inconsistency_ci="+str(ci)+"_value="+str(v))
 
         #check POPULATED values
@@ -115,7 +114,7 @@ def validation(cells, rules, file_name):
             for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
                 v = c[att]
                 if v != None: continue
-                if att=="EMP": continue
+                #if att=="EMP": continue
                 err_codes.append(att+"_none_value="+str(v))
 
         #check valid population values: not negative

@@ -1,0 +1,32 @@
+
+
+* Checks on the values of the confidentiality fields: CI_XXX values should be either None (non confidential) or -9999 (confidencial). data items on total population shall not be reported as confidential
+Report code: ci_val
+
+* Checks the consistency between the confidential field CI_XXX and a corresponding population field XXX.
+When the figure is confidential, both fields should be set to -9999
+When the figure is not confidential, CI_XXX should be set to None and XXX different from -9999
+Report code: ci_consis
+
+* Check values of POPULATED. Should be either 0 or 1.
+Report code: populated_val
+
+# Check consitency between POPULATED and T
+Data items on total population with an observed value other than ‘0’ shall be marked with the flag ‘populated’
+Data items on total population with an observed value ‘0’ shall not be marked with the flag ‘populated’.
+Report code: populated_consis
+
+* Check population values are not None
+Report code: pop_values_none
+
+* Check population values are not negative
+Report code: pop_values_non_neg
+
+* Check EMP is less or equal to T
+Report code: emp_smaller_than_pop
+
+* Check population figure by category sum up to T
+In case one or several of the category values is confidential, it checks the sum is less that T.
+Report codes: cat_sum_sex, cat_sum_age, cat_sum_cntbirth, cat_sum_reschange
+
+
