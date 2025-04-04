@@ -101,6 +101,7 @@ def validation(cells, rules, file_name):
             v = c['POPULATED']
             if v != 0 and v != 1: err_codes.append("POPULATED_value="+str(v))
 
+
         #check consitency POPULATED and T
         if "populated_consis" in rules:
             p = c['POPULATED']
