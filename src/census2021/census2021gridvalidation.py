@@ -19,7 +19,7 @@ bbox = None #[4200000, 2700000, 4560000, 3450000] #LU
 
 
 print(datetime.now(), "Load grid cells from", grid_path)
-cells = loadFeatures(grid_path, bbox)
+cells = loadFeatures(grid_path, bbox, load_geometry=False)
 print(datetime.now(), len(cells), "cells loaded")
 
 
