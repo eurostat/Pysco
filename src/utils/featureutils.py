@@ -5,13 +5,14 @@ from rtree import index
 
 
 #load features from a file, as a list of features - each feature is a simple dictionnary
-def loadFeatures(file, bbox=None, layer=None, where=None):
+def loadFeatures(file, bbox=None, layer=None, where=None, load_geometry=True):
     features = []
     gpkg = fiona.open(file, 'r')
     data = list(gpkg.items(bbox=bbox,layer=layer, where=where))
     for d in data:
         d = d[1]
-        f = { "geometry": shape(d['geometry']) }
+        f = {}
+        if load_geometry: f["geometry"] = shape(d['geometry'])
         properties = d['properties']
         for key, value in properties.items(): f[key] = value
         features.append(f)
