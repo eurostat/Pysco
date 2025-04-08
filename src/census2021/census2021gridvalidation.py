@@ -1,5 +1,7 @@
 import sys
 import os
+from datetime import datetime
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import loadFeatures
 from utils.csvutils import save_as_csv
@@ -16,9 +18,9 @@ os.makedirs(output_folder, exist_ok=True)
 bbox = None #[4200000, 2700000, 4560000, 3450000] #LU
 
 
-print("Load grid cells from", grid_path)
+print(datetime.now(), "Load grid cells from", grid_path)
 cells = loadFeatures(grid_path, bbox)
-print(len(cells), "cells loaded")
+print(datetime.now(), len(cells), "cells loaded")
 
 
 # 'GRD_ID', 'T',
@@ -154,24 +156,24 @@ def validation(cells, rules, file_name):
             di = {'GRD_ID':c['GRD_ID'], 'nb_errors': 0+len(err_codes), 'errors': ",".join(err_codes)}
             errors.append(di)
 
-    print(len(errors), "errors found")
+    print(datetime.now(), len(errors), "errors found")
 
     if len(errors)>0:
 
         #sort errors
         errors = sorted(errors, key=lambda c: c["errors"])
 
-        print("Save to ", output_folder + file_name + ".csv")
+        print(datetime.now(), "Save to ", output_folder + file_name + ".csv")
         save_as_csv(output_folder + file_name + ".csv", errors)
 
-        print("Save to ", output_folder + file_name + ".gpkg")
+        print(datetime.now(), "Save to ", output_folder + file_name + ".gpkg")
         grid_to_geopackage(errors, output_folder + file_name +".gpkg")
 
 
 
 
 
-print("Run validation cell by cell...")
+print(datetime.now(), "Run validation cell by cell...")
 
 #list of rules
 rules = ["ci_val", "ci_consis", "populated_val", "populated_consis", "pop_values_none", "pop_values_non_neg",
@@ -179,7 +181,7 @@ rules = ["ci_val", "ci_consis", "populated_val", "populated_consis", "pop_values
 
 #one file per validation rule
 for rule in rules:
-    print(rule)
+    print(datetime.now(), rule)
     validation(cells, [rule], "errors_"+rule)
 
 #all combined
