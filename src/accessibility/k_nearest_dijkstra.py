@@ -189,6 +189,8 @@ if __name__ == "__main__":
 
 
 
+
+
 gpkg_path = "my_network.gpkg"
 layer_name = "roads"
 
@@ -198,3 +200,10 @@ print(len(graph), "nodes")
 
 result = multi_source_k_nearest_dijkstra(graph, sources=my_sources, k=3, with_paths=True)
 
+export_dijkstra_results_to_gpkg(
+    result,
+    output_path="dijkstra_result.gpkg",
+    crs="EPSG:4326",
+    k=3,
+    with_paths=True
+)
