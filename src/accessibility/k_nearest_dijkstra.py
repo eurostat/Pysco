@@ -68,7 +68,7 @@ if __name__ == "__main__":
     }
 
     source_nodes = ['A', 'E', 'F']
-    result_without_paths = multi_source_k_nearest_dijkstra(graph, source_nodes, k=3, with_paths=False)
+    result_without_paths = multi_source_k_nearest_dijkstra(graph, source_nodes, k=3, with_paths=True)
     for node, entries in result_without_paths.items():
         print(f"{node}:")
         for e in entries:
