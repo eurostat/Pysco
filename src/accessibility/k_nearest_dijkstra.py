@@ -119,10 +119,9 @@ def build_graph_from_gpkg(gpkg_path, layer_name, speed_attr='speed', direction_a
 
 
 
-
 def export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3, with_paths=True):
     """
-    Export the Dijkstra result to a GeoPackage point layer.
+    Export the Dijkstra result to a GeoPackage: a point layer for graph nodes and (optionally) a line layer for paths.
 
     :param result: Result dict from multi_source_k_nearest_dijkstra()
     :param output_path: Path to output GeoPackage file
@@ -130,14 +129,15 @@ def export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3, w
     :param k: Number of nearest sources stored per node
     :param with_paths: Whether the result includes paths to convert
     """
-    records = []
+    point_records = []
+    path_records = []
 
     for node_id, entries in result.items():
         x_str, y_str = node_id.split('_')
         x, y = float(x_str), float(y_str)
         geom = Point(x, y)
 
-        record = {
+        point_record = {
             'node_id': node_id,
             'geometry': geom
         }
@@ -145,23 +145,38 @@ def export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3, w
         for i in range(k):
             if i < len(entries):
                 entry = entries[i]
-                record[f'source_{i+1}'] = entry['source']
-                record[f'dist_{i+1}'] = entry['distance']
+                point_record[f'source_{i+1}'] = entry['source']
+                point_record[f'dist_{i+1}'] = entry['distance']
                 if with_paths:
-                    path_str = '->'.join(entry['path'])  # or WKT lines if desired
-                    record[f'path_{i+1}'] = path_str
+                    path_str = '->'.join(entry['path'])
+                    point_record[f'path_{i+1}'] = path_str
+
+                    # Build path LineString geometry
+                    path_coords = [tuple(map(float, p.split('_'))) for p in entry['path']]
+                    line_geom = LineString(path_coords)
+                    path_records.append({
+                        'from_node': entry['source'],
+                        'to_node': node_id,
+                        'distance': entry['distance'],
+                        'geometry': line_geom
+                    })
             else:
-                record[f'source_{i+1}'] = None
-                record[f'dist_{i+1}'] = None
+                point_record[f'source_{i+1}'] = None
+                point_record[f'dist_{i+1}'] = None
                 if with_paths:
-                    record[f'path_{i+1}'] = None
+                    point_record[f'path_{i+1}'] = None
 
-        records.append(record)
+        point_records.append(point_record)
 
-    gdf = gpd.GeoDataFrame(records, crs=crs)
-    gdf.to_file(output_path, driver='GPKG', layer='dijkstra_result')
-    print(f"Result exported to {output_path}")
+    # Build GeoDataFrames
+    points_gdf = gpd.GeoDataFrame(point_records, crs=crs)
+    points_gdf.to_file(output_path, driver='GPKG', layer='dijkstra_nodes')
 
+    if with_paths and path_records:
+        paths_gdf = gpd.GeoDataFrame(path_records, crs=crs)
+        paths_gdf.to_file(output_path, driver='GPKG', layer='dijkstra_paths')
+
+    print(f"Results exported to {output_path} (nodes & paths).")
 
 
 
@@ -202,7 +217,7 @@ result = multi_source_k_nearest_dijkstra(graph, sources=my_sources, k=3, with_pa
 
 export_dijkstra_results_to_gpkg(
     result,
-    output_path="dijkstra_result.gpkg",
+    output_path="dijkstra_results.gpkg",
     crs="EPSG:4326",
     k=3,
     with_paths=True
