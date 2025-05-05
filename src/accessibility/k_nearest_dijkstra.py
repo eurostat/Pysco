@@ -107,6 +107,7 @@ if __name__ == "__main__":
     }
 
     source_nodes = ['A', 'E', 'F']
+    print("multi_source_k_nearest_dijkstra")
     k_nearest_result = multi_source_k_nearest_dijkstra(graph, source_nodes, k=3)
 
     for node, nearest_sources in k_nearest_result.items():
@@ -114,20 +115,8 @@ if __name__ == "__main__":
 
 
 
-
-
-# Example usage
-if __name__ == "__main__":
-    graph = {
-        'A': [('B', 5), ('C', 10)],
-        'B': [('C', 3), ('D', 9)],
-        'C': [('D', 1)],
-        'D': [],
-        'E': [('D', 2)],
-        'F': [('C', 4)]
-    }
-
     source_nodes = ['A', 'E', 'F']
+    print("multi_source_k_nearest_dijkstra_with_paths")
     k_nearest_result = multi_source_k_nearest_dijkstra_with_paths(graph, source_nodes, k=3)
 
     for node, nearest_sources in k_nearest_result.items():
