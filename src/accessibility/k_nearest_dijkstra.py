@@ -1,4 +1,10 @@
 import heapq
+import geopandas as gpd
+from shapely.geometry import LineString, Point
+from collections import defaultdict
+
+
+
 
 def multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
     """
@@ -56,6 +62,112 @@ def multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 
 
 
+
+
+
+
+def build_graph_from_gpkg(gpkg_path, layer_name, speed_attr='speed', direction_attr='direction'):
+    """
+    Build a directed graph from a road network stored in a GeoPackage.
+
+    :param gpkg_path: Path to the GeoPackage file
+    :param layer_name: Name of the layer containing the roads
+    :param speed_attr: Name of the attribute field containing driving speed (in km/h)
+    :param direction_attr: Name of the attribute field containing driving direction ('both', 'oneway')
+    :return: graph (adjacency list: {node_id: [(neighbor_node_id, travel_time)]})
+    """
+    roads = gpd.read_file(gpkg_path, layer=layer_name)
+    graph = defaultdict(list)
+
+    def node_id(point):
+        """Create a unique node id from a Point geometry."""
+        return f"{point.x:.6f}_{point.y:.6f}"
+
+    for _, row in roads.iterrows():
+        geom = row.geometry
+        if not isinstance(geom, LineString):
+            continue  # skip invalid geometry
+
+        coords = list(geom.coords)
+        speed = row[speed_attr]  # in km/h
+        direction = row[direction_attr] if direction_attr in row else 'both'
+
+        for i in range(len(coords) - 1):
+            p1 = Point(coords[i])
+            p2 = Point(coords[i+1])
+
+            n1 = node_id(p1)
+            n2 = node_id(p2)
+
+            segment_length_m = p1.distance(p2) * 100000
+            travel_time_hr = (segment_length_m / 1000) / speed  # hours
+
+            # Add directed edge(s)
+            if direction in ('both', 'forward'):
+                graph[n1].append((n2, travel_time_hr))
+            if direction in ('both', 'backward'):
+                graph[n2].append((n1, travel_time_hr))
+
+            # If one-way (assume 'oneway' means forward)
+            if direction == 'oneway':
+                graph[n1].append((n2, travel_time_hr))
+
+    return graph
+
+
+
+
+
+
+
+def export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3, with_paths=True):
+    """
+    Export the Dijkstra result to a GeoPackage point layer.
+
+    :param result: Result dict from multi_source_k_nearest_dijkstra()
+    :param output_path: Path to output GeoPackage file
+    :param crs: Coordinate Reference System (e.g. "EPSG:4326")
+    :param k: Number of nearest sources stored per node
+    :param with_paths: Whether the result includes paths to convert
+    """
+    records = []
+
+    for node_id, entries in result.items():
+        x_str, y_str = node_id.split('_')
+        x, y = float(x_str), float(y_str)
+        geom = Point(x, y)
+
+        record = {
+            'node_id': node_id,
+            'geometry': geom
+        }
+
+        for i in range(k):
+            if i < len(entries):
+                entry = entries[i]
+                record[f'source_{i+1}'] = entry['source']
+                record[f'dist_{i+1}'] = entry['distance']
+                if with_paths:
+                    path_str = '->'.join(entry['path'])  # or WKT lines if desired
+                    record[f'path_{i+1}'] = path_str
+            else:
+                record[f'source_{i+1}'] = None
+                record[f'dist_{i+1}'] = None
+                if with_paths:
+                    record[f'path_{i+1}'] = None
+
+        records.append(record)
+
+    gdf = gpd.GeoDataFrame(records, crs=crs)
+    gdf.to_file(output_path, driver='GPKG', layer='dijkstra_result')
+    print(f"Result exported to {output_path}")
+
+
+
+
+
+
+
 # Example usage
 if __name__ == "__main__":
     graph = {
@@ -74,4 +186,15 @@ if __name__ == "__main__":
         for e in entries:
             print(f"  {e}")
 
+
+
+
+gpkg_path = "my_network.gpkg"
+layer_name = "roads"
+
+graph = build_graph_from_gpkg(gpkg_path, layer_name, speed_attr='speed_kmh', direction_attr='direction')
+print(len(graph), "nodes")
+
+
+result = multi_source_k_nearest_dijkstra(graph, sources=my_sources, k=3, with_paths=True)
 
