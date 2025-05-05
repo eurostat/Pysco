@@ -1,65 +1,25 @@
 import heapq
 
-def multi_source_k_nearest_dijkstra(graph, sources, k=3):
+def multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
     """
-    Computes the k nearest sources and their distances to each node.
+    Computes the k nearest sources, their distances, and optionally paths to each node.
 
     :param graph: A dictionary representing the adjacency list of the graph.
     :param sources: A list of source node ids.
     :param k: Number of nearest sources to track.
-    :return: A dictionary mapping each node to a sorted list of (distance, source_id)
-    """
-    result = {node: [] for node in graph}
-    priority_queue = []
-
-    # Initialize all sources
-    for source in sources:
-        heapq.heappush(priority_queue, (0, source, source))  # (distance, current_node, origin_source)
-
-    while priority_queue:
-        current_distance, current_node, origin = heapq.heappop(priority_queue)
-
-        # Check if we've already found k closest sources for this node
-        current_sources = [src for _, src in result[current_node]]
-        if origin in current_sources:
-            continue  # Don't add duplicate source to the same node
-
-        if len(result[current_node]) >= k:
-            continue
-
-        # Record this source and distance
-        heapq.heappush(result[current_node], (current_distance, origin))
-
-        # Visit neighbors
-        for neighbor, weight in graph[current_node]:
-            distance = current_distance + weight
-            heapq.heappush(priority_queue, (distance, neighbor, origin))
-
-    # Sort lists by distance for each node
-    for node in result:
-        result[node].sort()
-
-    return result
-
-
-
-
-def multi_source_k_nearest_dijkstra_with_paths(graph, sources, k=3):
-    """
-    Computes the k nearest sources, their distances, and paths to each node.
-
-    :param graph: A dictionary representing the adjacency list of the graph.
-    :param sources: A list of source node ids.
-    :param k: Number of nearest sources to track.
+    :param with_paths: Whether to track and return the paths.
     :return: A dictionary mapping each node to a sorted list of 
-             {'distance': d, 'source': s, 'path': [sequence of nodes]}
+             {'distance': d, 'source': s, 'path': [sequence of nodes]} if with_paths,
+             or {'distance': d, 'source': s} if not.
     """
+
     result = {node: [] for node in graph}
     priority_queue = []
 
     # Initialize all sources
     for source in sources:
-        heapq.heappush(priority_queue, (0, source, source, [source]))  # (distance, current_node, origin_source, path)
+        path = [source] if with_paths else None
+        heapq.heappush(priority_queue, (0, source, source, path))  # (distance, current_node, origin_source, path)
 
     while priority_queue:
         current_distance, current_node, origin, path = heapq.heappop(priority_queue)
@@ -72,26 +32,27 @@ def multi_source_k_nearest_dijkstra_with_paths(graph, sources, k=3):
         if len(result[current_node]) >= k:
             continue
 
-        # Record this source, distance, and path
-        result[current_node].append({
+        # Record this source, distance, and optional path
+        entry = {
             'distance': current_distance,
-            'source': origin,
-            'path': path
-        })
+            'source': origin
+        }
+        if with_paths:
+            entry['path'] = path
+
+        result[current_node].append(entry)
 
         # Visit neighbors
         for neighbor, weight in graph[current_node]:
             distance = current_distance + weight
-            heapq.heappush(priority_queue, (distance, neighbor, origin, path + [neighbor]))
+            next_path = path + [neighbor] if with_paths else None
+            heapq.heappush(priority_queue, (distance, neighbor, origin, next_path))
 
     # Sort lists by distance for each node
     for node in result:
         result[node].sort(key=lambda x: x['distance'])
 
     return result
-
-
-
 
 
 
@@ -107,33 +68,10 @@ if __name__ == "__main__":
     }
 
     source_nodes = ['A', 'E', 'F']
-    print("********** multi_source_k_nearest_dijkstra")
-    k_nearest_result = multi_source_k_nearest_dijkstra(graph, source_nodes, k=2)
-
-    for node, nearest_sources in k_nearest_result.items():
-        print(f"Node {node}: {nearest_sources}")
-
-
-
-    source_nodes = ['A', 'E', 'F']
-    print("********** multi_source_k_nearest_dijkstra_with_paths")
-    k_nearest_result = multi_source_k_nearest_dijkstra_with_paths(graph, source_nodes, k=2)
-
-    for node, nearest_sources in k_nearest_result.items():
-        print(f"Node {node}:")
-        for entry in nearest_sources:
-            print(f"  From {entry['source']}: distance = {entry['distance']}, path = {entry['path']}")
-
-
-
-
-
-
-
-
-
-
-
-
+    result_without_paths = multi_source_k_nearest_dijkstra(graph, source_nodes, k=3, with_paths=False)
+    for node, entries in result_without_paths.items():
+        print(f"{node}:")
+        for e in entries:
+            print(f"  {e}")
 
 
