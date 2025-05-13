@@ -26,7 +26,7 @@ result = multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with
 graph = None
 
 print(datetime.now(), "save outputs")
-export_dijkstra_results_to_gpkg(result, "/home/juju/Bureau/test/", crs="EPSG:3035", k=k, with_paths=with_paths)
+export_dijkstra_results_to_gpkg(result, "/home/juju/Bureau/output.gpkg", crs="EPSG:3035", k=k, with_paths=with_paths)
 
 print(datetime.now(), "Done")
 
