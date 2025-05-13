@@ -184,8 +184,6 @@ def export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3, w
         paths_gdf = gpd.GeoDataFrame(path_records, crs=crs)
         paths_gdf.to_file(output_path, driver='GPKG', layer='dijkstra_paths')
 
-    print(f"Results exported to {output_path} (nodes & paths).")
-
 
 
 """
