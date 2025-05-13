@@ -5,6 +5,7 @@ import random
 
 k=3
 with_paths = False
+nb_sources = 1
 
 tomtom = "/home/juju/geodata/tomtom/tomtom_202312.gpkg"
 bbox = (4034000, 2946000, 4053000, 2958000)
@@ -19,7 +20,7 @@ graph = build_graph_from_gpkg(tomtom, "nw", bbox)
 
 print(datetime.now(), "select sources, as random nodes")
 nodids = list(graph.keys())
-sources = random.sample(nodids, 30)
+sources = random.sample(nodids, nb_sources)
 
 print(datetime.now(), "compute accessiblity")
 result = multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=with_paths)
