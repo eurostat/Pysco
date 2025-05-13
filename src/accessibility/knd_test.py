@@ -4,7 +4,7 @@ from datetime import datetime
 import random
 
 k=3
-with_paths = True
+with_paths = False
 
 tomtom = "/home/juju/geodata/tomtom/tomtom_202312.gpkg"
 bbox = (4034000, 2946000, 4053000, 2958000)
