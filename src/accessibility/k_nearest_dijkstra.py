@@ -66,12 +66,13 @@ def multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 
 
 
-def build_graph_from_gpkg(gpkg_path, layer_name, bbox=bbox, speed_attr='speed', direction_attr='direction'):
+def build_graph_from_gpkg(gpkg_path, layer_name, bbox=None, speed_ms_fun=lambda f:10, direction_attr='direction'):
     """
     Build a directed graph from a road network stored in a GeoPackage.
 
     :param gpkg_path: Path to the GeoPackage file
     :param layer_name: Name of the layer containing the roads
+    :param bbox: The bbox for the data to load.
     :param speed_attr: Name of the attribute field containing driving speed (in km/h)
     :param direction_attr: Name of the attribute field containing driving direction ('both', 'oneway')
     :return: graph (adjacency list: {node_id: [(neighbor_node_id, travel_time)]})
@@ -83,34 +84,34 @@ def build_graph_from_gpkg(gpkg_path, layer_name, bbox=bbox, speed_attr='speed', 
         """Create a unique node id from a Point geometry."""
         return f"{point.x:.6f}_{point.y:.6f}"
 
-    for _, row in roads.iterrows():
-        geom = row.geometry
+    for _, f in roads.iterrows():
+        geom = f.geometry
         if not isinstance(geom, LineString):
             continue  # skip invalid geometry
 
         coords = list(geom.coords)
-        speed = row[speed_attr]  # in km/h
-        direction = row[direction_attr] if direction_attr in row else 'both'
+        speed_ms = speed_ms_fun(f)
+        direction = f[direction_attr] if direction_attr in f else 'both'
 
         for i in range(len(coords) - 1):
             p1 = Point(coords[i])
             p2 = Point(coords[i+1])
 
+            segment_length_m = p1.distance(p2)
+            weight = segment_length_m / speed_ms
+
             n1 = node_id(p1)
             n2 = node_id(p2)
 
-            segment_length_m = p1.distance(p2) * 100000
-            travel_time_hr = (segment_length_m / 1000) / speed  # hours
-
             # Add directed edge(s)
             if direction in ('both', 'forward'):
-                graph[n1].append((n2, travel_time_hr))
+                graph[n1].append((n2, weight))
             if direction in ('both', 'backward'):
-                graph[n2].append((n1, travel_time_hr))
+                graph[n2].append((n1, weight))
 
             # If one-way (assume 'oneway' means forward)
             if direction == 'oneway':
-                graph[n1].append((n2, travel_time_hr))
+                graph[n1].append((n2, weight))
 
     return graph
 
