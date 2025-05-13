@@ -66,7 +66,7 @@ def multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 
 
 
-def build_graph_from_gpkg(gpkg_path, layer_name, bbox=None, speed_ms_fun=lambda f:10, direction_attr='direction'):
+def build_graph_from_gpkg(gpkg_path, layer_name, bbox=None, speed_ms_fun=lambda f:10, direction_fun=lambda f:"both"):
     """
     Build a directed graph from a road network stored in a GeoPackage.
 
@@ -91,7 +91,7 @@ def build_graph_from_gpkg(gpkg_path, layer_name, bbox=None, speed_ms_fun=lambda 
 
         coords = list(geom.coords)
         speed_ms = speed_ms_fun(f)
-        direction = f[direction_attr] if direction_attr in f else 'both'
+        direction = direction_fun(f)
 
         for i in range(len(coords) - 1):
             p1 = Point(coords[i])
