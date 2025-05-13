@@ -16,12 +16,9 @@ print(datetime.now(), "make graph")
 graph = build_graph_from_gpkg(tomtom, "nw", bbox)
 #print(graph)
 
+print(datetime.now(), "select sources, as random nodes")
 nodids = list(graph.keys())
 sources = random.sample(nodids, 30)
-print(sources)
-
-
-exit()
 
 print(datetime.now(), "compute accessiblity")
 out = multi_source_k_nearest_dijkstra(graph=graph, k=3, sources=sources, with_paths=False)
