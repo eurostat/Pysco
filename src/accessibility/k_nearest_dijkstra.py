@@ -66,7 +66,7 @@ def multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 
 
 
-def build_graph_from_gpkg(gpkg_path, layer_name, speed_attr='speed', direction_attr='direction'):
+def build_graph_from_gpkg(gpkg_path, layer_name, bbox=bbox, speed_attr='speed', direction_attr='direction'):
     """
     Build a directed graph from a road network stored in a GeoPackage.
 
@@ -76,7 +76,7 @@ def build_graph_from_gpkg(gpkg_path, layer_name, speed_attr='speed', direction_a
     :param direction_attr: Name of the attribute field containing driving direction ('both', 'oneway')
     :return: graph (adjacency list: {node_id: [(neighbor_node_id, travel_time)]})
     """
-    roads = gpd.read_file(gpkg_path, layer=layer_name)
+    roads = gpd.read_file(gpkg_path, layer=layer_name, bbox=bbox)
     graph = defaultdict(list)
 
     def node_id(point):
