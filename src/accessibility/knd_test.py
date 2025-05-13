@@ -3,7 +3,8 @@ from k_nearest_dijkstra import build_graph_from_gpkg, multi_source_k_nearest_dij
 from datetime import datetime
 import random
 
-
+k=3
+with_paths = False
 
 tomtom = "/home/juju/geodata/tomtom/tomtom_202312.gpkg"
 bbox = (4034000, 2946000, 4053000, 2958000)
@@ -21,10 +22,11 @@ nodids = list(graph.keys())
 sources = random.sample(nodids, 30)
 
 print(datetime.now(), "compute accessiblity")
-result = multi_source_k_nearest_dijkstra(graph=graph, k=3, sources=sources, with_paths=False)
+result = multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=with_paths)
+graph = None
 
 print(datetime.now(), "save outputs")
-export_dijkstra_results_to_gpkg(result, "/home/juju/Bureau/test/", crs="EPSG:3035", k=3, with_paths=False)
+export_dijkstra_results_to_gpkg(result, "/home/juju/Bureau/test/", crs="EPSG:3035", k=k, with_paths=with_paths)
 
 print(datetime.now(), "Done")
 
