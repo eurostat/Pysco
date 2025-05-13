@@ -16,7 +16,7 @@ print(datetime.now(), "make graph")
 graph = build_graph_from_gpkg(tomtom, "nw", bbox)
 #print(graph)
 
-nodids = graph.keys()
+nodids = list(graph.keys())
 sources = random.sample(nodids, 30)
 print(sources)
 
