@@ -1,6 +1,7 @@
 #import geopandas as gpd
 from k_nearest_dijkstra import build_graph_from_gpkg, multi_source_k_nearest_dijkstra
 from datetime import datetime
+import random
 
 
 
@@ -16,7 +17,9 @@ graph = build_graph_from_gpkg(tomtom, "nw", bbox)
 #print(graph)
 
 nodids = graph.keys()
-print(nodids)
+sources = random.sample(nodids, 30)
+print(sources)
+
 
 exit()
 
