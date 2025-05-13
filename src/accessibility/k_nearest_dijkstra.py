@@ -154,6 +154,13 @@ def export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3, w
 
                     # Build path LineString geometry
                     path_coords = [tuple(map(float, p.split('_'))) for p in entry['path']]
+
+                    nb = len(path_coords)
+                    if(nb==1): continue
+                    if(nb==0):
+                        print("error")
+                        continue
+
                     line_geom = LineString(path_coords)
                     path_records.append({
                         'from_node': entry['source'],
