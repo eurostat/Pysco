@@ -9,7 +9,7 @@ with_paths = False
 nb_sources = 10
 
 pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/basic_services/healthcare_2023_3035.gpkg', bbox=bbox)
-road_network_loader = lambda bbox: gpd.read_file("/home/juju/geodata/tomtom/tomtom_202312.gpkg", bbox=bbox),
+road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/tomtom_202312.gpkg', bbox=bbox)
 weight_function = lambda feature, length : -1 if feature.KPH==0 else 1.1*length/feature.KPH*3.6,
 
 bbox = box(4034000, 2946000, 4053000, 2958000)
@@ -24,7 +24,7 @@ print(len(pois))
 
 print(datetime.now(), "load road sections")
 roads = road_network_loader(bbox)
-print(len(roads), "sections loaded")
+print(len(roads))
 
 print(datetime.now(), "make graph")
 graph = graph_adjacency_list_from_geodataframe(roads)
