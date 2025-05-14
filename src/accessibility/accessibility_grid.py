@@ -8,7 +8,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.utils import cartesian_product_comp
-from utils.netutils import graph_from_geodataframe,nodes_spatial_index,distance_to_node
+from utils.netutils import graph_from_geodataframe, nodes_spatial_index, distance_to_node
 
 def accessibility_grid(pois_loader,
                        road_network_loader,
