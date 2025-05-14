@@ -5,11 +5,11 @@ import random
 
 k=3
 with_paths = False
-nb_sources = 100
+nb_sources = 10
 
 tomtom = "/home/juju/geodata/tomtom/tomtom_202312.gpkg"
-#bbox = (4034000, 2946000, 4053000, 2958000)
-bbox = (4000000, 2500000, 4500000, 3000000)
+bbox = (4034000, 2946000, 4053000, 2958000)
+#bbox = (4000000, 2500000, 4500000, 3000000)
 
 #data = gpd.read_file(tomtom, bbox=bbox)
 #print(len(data))
