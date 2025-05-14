@@ -1,5 +1,5 @@
 #import geopandas as gpd
-from k_nearest_dijkstra import build_graph_from_gpkg, multi_source_k_nearest_dijkstra, export_dijkstra_results_to_gpkg
+from accessibility.accessiblity_grid_k_nearest_dijkstra import build_graph_from_gpkg, multi_source_k_nearest_dijkstra, export_dijkstra_results_to_gpkg
 from datetime import datetime
 import random
 
