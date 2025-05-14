@@ -20,6 +20,7 @@ def distance(node1, node2):
     [x2,y2] = node_coordinate(node2)
     return math.hypot(x1-x2,y1-y2)
 
+
 # make graph from linear features
 def graph_from_geodataframe(gdf, weight = lambda feature:feature.geometry.length, coord_simp=round, edge_fun = None, detailled=False):
     graph = nx.Graph()

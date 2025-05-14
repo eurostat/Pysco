@@ -64,33 +64,30 @@ def multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 
 
 
-
-
-def build_graph_from_gpkg(gpkg_path, layer_name, bbox=None, speed_ms_fun=lambda f:10, direction_fun=lambda f:"both"):
+# make graph from linear features
+#TODO
+#def (gdf, weight = lambda feature:feature.geometry.length, coord_simp=round, detailled=False):
+def graph_adjacency_list_from_geodataframe(gdf, weight = lambda feature,sl:sl, direction_fun=lambda feature:"both"):
     """
     Build a directed graph from a road network stored in a GeoPackage.
 
-    :param gpkg_path: Path to the GeoPackage file
-    :param layer_name: Name of the layer containing the roads
-    :param bbox: The bbox for the data to load.
-    :param speed_attr: Name of the attribute field containing driving speed (in km/h)
-    :param direction_attr: Name of the attribute field containing driving direction ('both', 'oneway')
+    :param gdf: geodataframe containing the road sections, with linear geometry
+    :param weight: function returning a segment weight, based on the feature and the segment length
+    :param direction_fun: return section direction ('both', 'oneway')
     :return: graph (adjacency list: {node_id: [(neighbor_node_id, travel_time)]})
     """
-    roads = gpd.read_file(gpkg_path, layer=layer_name, bbox=bbox)
     graph = defaultdict(list)
 
     def node_id(point):
         """Create a unique node id from a Point geometry."""
         return f"{point.x:.6f}_{point.y:.6f}"
 
-    for _, f in roads.iterrows():
+    for _, f in gdf.iterrows():
         geom = f.geometry
         if not isinstance(geom, LineString):
             continue  # skip invalid geometry
 
         coords = list(geom.coords)
-        speed_ms = speed_ms_fun(f)
         direction = direction_fun(f)
 
         for i in range(len(coords) - 1):
@@ -98,20 +95,20 @@ def build_graph_from_gpkg(gpkg_path, layer_name, bbox=None, speed_ms_fun=lambda 
             p2 = Point(coords[i+1])
 
             segment_length_m = p1.distance(p2)
-            weight = segment_length_m / speed_ms
+            w = weight(f, segment_length_m)
 
             n1 = node_id(p1)
             n2 = node_id(p2)
 
             # Add directed edge(s)
             if direction in ('both', 'forward'):
-                graph[n1].append((n2, weight))
+                graph[n1].append((n2, w))
             if direction in ('both', 'backward'):
-                graph[n2].append((n1, weight))
+                graph[n2].append((n1, w))
 
             # If one-way (assume 'oneway' means forward)
             if direction == 'oneway':
-                graph[n1].append((n2, weight))
+                graph[n1].append((n2, w))
 
     return graph
 
