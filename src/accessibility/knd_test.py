@@ -1,6 +1,6 @@
 import geopandas as gpd
 from shapely.geometry import box,Polygon
-from accessiblity_grid_k_nearest_dijkstra import graph_adjacency_list_from_geodataframe, multi_source_k_nearest_dijkstra, export_dijkstra_results_to_gpkg
+from accessiblity_grid_k_nearest_dijkstra import graph_adjacency_list_from_geodataframe, multi_source_k_nearest_dijkstra
 from datetime import datetime
 #import random
 
@@ -29,83 +29,91 @@ weight_function = lambda feature, length : -1 if feature.KPH==0 else 1.1*length/
 cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 cell_network_max_distance = -1
 
-[x_part,y_part] = [4036000, 2948000]
 partition_size = 10000
 extention_buffer = 2000
-#[x_part,y_part] = [4000000, 2500000]
 #partition_size = 100000
 #extention_buffer = 50000
 
 
-#partition extended bbox
-extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
-#data = gpd.read_file(tomtom, bbox=bbox)
-#print(len(data))
+def proceed_partition(xy):
+    [x_part,y_part] = xy
 
-print(datetime.now(), "load road sections")
-roads = road_network_loader(extended_bbox)
-print(len(roads))
 
-print(datetime.now(), "make graph")
-graph = graph_adjacency_list_from_geodataframe(roads)
-del roads
-print(len(graph.keys()), "nodes")
+    #partition extended bbox
+    extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
-print(datetime.now(),"load POIs")
-pois = pois_loader(extended_bbox)
-print(len(pois))
+    #data = gpd.read_file(tomtom, bbox=bbox)
+    #print(len(data))
 
-print(datetime.now(), "get source nodes")
-idx = nodes_spatial_index_adjacendy_list(graph)
-nodes_ = list(graph.keys())
-sources = []
-for iii, poi in pois.iterrows():
-    n = nodes_[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
-    sources.append(n)
-del pois
-print(len(sources))
+    print(datetime.now(), "load road sections")
+    roads = road_network_loader(extended_bbox)
+    print(len(roads))
 
-print(datetime.now(), "compute accessiblity")
-result = multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=with_paths)
-del graph
+    print(datetime.now(), "make graph")
+    graph = graph_adjacency_list_from_geodataframe(roads)
+    del roads
+    print(len(graph.keys()), "nodes")
 
-print
-print(datetime.now(), x_part, y_part, "extract cell accessibility data")
-cell_geometries = [] #the cell geometries
-grd_ids = [] #the cell identifiers
-costs = [] #the costs - an array of arrays
-for _ in range(k): costs.append([])
-distances_to_node = [] #the cell center distance to its graph node
+    print(datetime.now(),"load POIs")
+    pois = pois_loader(extended_bbox)
+    print(len(pois))
 
-#go through cells
-r2 = grid_resolution / 2
-for x in range(x_part, x_part+partition_size, grid_resolution):
-    for y in range(y_part, y_part+partition_size, grid_resolution):
+    print(datetime.now(), "get source nodes")
+    idx = nodes_spatial_index_adjacendy_list(graph)
+    nodes_ = list(graph.keys())
+    sources = []
+    for iii, poi in pois.iterrows():
+        n = nodes_[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
+        sources.append(n)
+    del pois
+    print(len(sources))
 
-        #get cell node
-        n = nodes_[next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1))]
+    print(datetime.now(), "compute accessiblity")
+    result = multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=with_paths)
+    del graph
 
-        #compute distance to network and skip if too far
-        dtn = round(distance_to_node(n,x+r2,y+r2))
-        if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
+    print
+    print(datetime.now(), x_part, y_part, "extract cell accessibility data")
+    cell_geometries = [] #the cell geometries
+    grd_ids = [] #the cell identifiers
+    costs = [] #the costs - an array of arrays
+    for _ in range(k): costs.append([])
+    distances_to_node = [] #the cell center distance to its graph node
 
-        #store distance cell center/node
-        distances_to_node.append(dtn)
+    #go through cells
+    r2 = grid_resolution / 2
+    for x in range(x_part, x_part+partition_size, grid_resolution):
+        for y in range(y_part, y_part+partition_size, grid_resolution):
 
-        #store costs
-        cs = result[n]
-        for kk in range(k): costs[kk].append(round(cs[kk]['cost']/60))
+            #get cell node
+            n = nodes_[next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1))]
 
-        #store cell id
-        grd_ids.append(cell_id_fun(x,y))
+            #compute distance to network and skip if too far
+            dtn = round(distance_to_node(n,x+r2,y+r2))
+            if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
-        #store grid cell geometry
-        cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
-        cell_geometries.append(cell_geometry)
+            #store distance cell center/node
+            distances_to_node.append(dtn)
 
-# [cell_geometries, grd_ids, costs, distances_to_node]
+            #store costs
+            cs = result[n]
+            for kk in range(k): costs[kk].append(round(cs[kk]['cost']/60))
 
+            #store cell id
+            grd_ids.append(cell_id_fun(x,y))
+
+            #store grid cell geometry
+            cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
+            cell_geometries.append(cell_geometry)
+
+    return [cell_geometries, grd_ids, costs, distances_to_node]
+
+
+
+
+[cell_geometries, grd_ids, costs, distances_to_node] = proceed_partition([4036000, 2948000])
+#proceed_partition([4000000, 2500000])
 
 #make output geodataframe
 data = {}
@@ -132,8 +140,8 @@ if(save_parquet):
     out.to_parquet(out_folder+out_file+".parquet")
 
 
-print(datetime.now(), "save outputs")
-export_dijkstra_results_to_gpkg(result, out_folder + "output.gpkg", crs=crs, k=k, with_paths=with_paths)
+#print(datetime.now(), "save outputs")
+#export_dijkstra_results_to_gpkg(result, out_folder + "output.gpkg", crs=crs, k=k, with_paths=with_paths)
 
 print(datetime.now(), "Done")
 
