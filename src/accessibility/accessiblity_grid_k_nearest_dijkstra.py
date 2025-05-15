@@ -4,10 +4,12 @@ from datetime import datetime
 import heapq
 from shapely.geometry import LineString, Point
 from collections import defaultdict
+import concurrent.futures
 
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.utils import cartesian_product_comp
 from utils.netutils import nodes_spatial_index_adjacendy_list, distance_to_node
 
 
@@ -123,8 +125,6 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
 
 
 
-
-
 def ___export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3, with_paths=True):
     """
     Export the Dijkstra result to a GeoPackage: a point layer for graph nodes and (optionally) a line layer for paths.
@@ -195,33 +195,6 @@ def ___export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3
 
 
 
-k=5
-with_paths = False
-grid_resolution = 100
-
-save_GPKG = True
-save_CSV = False
-save_parquet = False
-out_folder = "/home/juju/Bureau/"
-crs="EPSG:3035"
-out_file = "grid"
-
-
-pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/basic_services/healthcare_2023_3035.gpkg', bbox=bbox)
-road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/tomtom_202312.gpkg', bbox=bbox)
-weight_function = lambda feature, length : -1 if feature.KPH==0 else 1.1*length/feature.KPH*3.6,
-
-cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
-cell_network_max_distance = grid_resolution * 1.5
-
-partition_size = 10000
-extention_buffer = 60000
-#partition_size = 100000
-#extention_buffer = 60000
-
-
-
-
 def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        road_network_loader,
                        weight_function,
@@ -276,7 +249,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         print(len(sources))
 
         print(datetime.now(),x_part,y_part, "compute accessiblity")
-        result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=with_paths)
+        result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
         del graph
 
         print
@@ -316,32 +289,54 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         return [cell_geometries, grd_ids, costs, distances_to_node]
 
 
+    #launch parallel computation   
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
+        partitions = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
+        tasks_to_do = {executor.submit(proceed_partition, partition): partition for partition in partitions}
 
+        #out data
+        cell_geometries = []
+        grd_ids = []
+        costs = []
+        for _ in range(k): costs.append([])
+        distances_to_node = []
 
-    [cell_geometries, grd_ids, costs, distances_to_node] = proceed_partition([4036000, 2948000])
-    #proceed_partition([4000000, 2500000])
+        # merge task outputs
+        for task_output in concurrent.futures.as_completed(tasks_to_do):
+            out = task_output.result()
+            if(out==None): continue
+            cell_geometries += out[0]
+            grd_ids += out[1]
+            costs_ = out[2]
+            for kk in range(k): costs[kk].append(costs_[kk])
+            distances_to_node += out[3]
 
-    #make output geodataframe
-    data = {}
-    data['geometry'] = cell_geometries
-    data['GRD_ID'] = grd_ids
-    for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
-    data['distance_to_node'] = distances_to_node
-    out = gpd.GeoDataFrame(data)
+        print(datetime.now(), len(cell_geometries), "cells")
 
-    #save output
+        #[cell_geometries, grd_ids, costs, distances_to_node] = proceed_partition([4036000, 2948000])
+        #proceed_partition([4000000, 2500000])
 
-    if(save_GPKG):
-        print(datetime.now(), "save as GPKG")
-        out.crs = crs
-        out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
+        #make output geodataframe
+        data = {}
+        data['geometry'] = cell_geometries
+        data['GRD_ID'] = grd_ids
+        for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
+        data['distance_to_node'] = distances_to_node
+        out = gpd.GeoDataFrame(data)
 
-    if(save_CSV or save_parquet): out = out.drop(columns=['geometry'])
+        #save output
 
-    if(save_CSV):
-        print(datetime.now(), "save as CSV")
-        out.to_csv(out_folder+out_file+".csv", index=False)
-    if(save_parquet):
-        print(datetime.now(), "save as parquet")
-        out.to_parquet(out_folder+out_file+".parquet")
+        if(save_GPKG):
+            print(datetime.now(), "save as GPKG")
+            out.crs = crs
+            out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
+
+        if(save_CSV or save_parquet): out = out.drop(columns=['geometry'])
+
+        if(save_CSV):
+            print(datetime.now(), "save as CSV")
+            out.to_csv(out_folder+out_file+".csv", index=False)
+        if(save_parquet):
+            print(datetime.now(), "save as parquet")
+            out.to_parquet(out_folder+out_file+".parquet")
 
