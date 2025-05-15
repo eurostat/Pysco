@@ -85,16 +85,16 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
         n = nodes_[next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1))]
 
         #compute distance to network and skip if too far
-        d = round(distance_to_node(n,x,y))
-        if cell_network_max_distance>0 and d>= cell_network_max_distance: continue
+        dtn = round(distance_to_node(n,x,y))
+        if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
+
+        #store distance cell center/node
+        distances_to_node.append(dtn)
 
         #store durations
         #TODO
         d = 0#round(duration[n]/60)
         durations.append(d)
-
-        #store distance cell center/node
-        distances_to_node.append(d)
 
         #store cell id
         grd_ids.append(cell_id_fun(x,y))
