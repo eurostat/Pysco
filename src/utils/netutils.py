@@ -101,7 +101,7 @@ def nodes_spatial_index(graph):
 
 
 def nodes_spatial_index_adjacendy_list(graph):
-    nodes = graph.keys()
+    nodes = list(graph.keys())
 
     idx = index.Index()
     for i in range(len(nodes)):

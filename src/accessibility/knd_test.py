@@ -7,7 +7,7 @@ from datetime import datetime
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.netutils import nodes_spatial_index
+from utils.netutils import nodes_spatial_index_adjacendy_list
 
 
 k=3
@@ -38,10 +38,10 @@ del roads
 print(len(graph.keys()), "nodes")
 
 #make list of nodes
-nodes_ = graph.keys()
+nodes_ = list(graph.keys())
 
 #make nodes spatial index
-idx = nodes_spatial_index(graph)
+idx = nodes_spatial_index_adjacendy_list(graph)
 
 #get POI nodes
 sources = []
