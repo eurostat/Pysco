@@ -10,10 +10,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.netutils import nodes_spatial_index_adjacendy_list, distance_to_node
 
 
-k=3
+k=5
 with_paths = False
 nb_sources = 10
-grid_resolution = 1000
+grid_resolution = 100
 
 save_GPKG = True
 save_CSV = False
@@ -68,13 +68,12 @@ print(datetime.now(), "compute accessiblity")
 result = multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=with_paths)
 del graph
 
-
-
+print
 print(datetime.now(), x_part, y_part, "extract cell accessibility data")
 cell_geometries = [] #the cell geometries
 grd_ids = [] #the cell identifiers
 costs = [] #the costs - an array of arrays
-for k in range(k): costs.append([])
+for _ in range(k): costs.append([])
 distances_to_node = [] #the cell center distance to its graph node
 
 #go through cells
@@ -110,7 +109,7 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
 data = {}
 data['geometry'] = cell_geometries
 data['GRD_ID'] = grd_ids
-#for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
+for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
 data['distance_to_node'] = distances_to_node
 out = gpd.GeoDataFrame(data)
 
