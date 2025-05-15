@@ -24,8 +24,8 @@ cell_network_max_distance = -1
 
 [x_part,y_part] = [4034000, 2946000]
 #extended_bbox = (4000000, 2500000, 4500000, 3000000)
-partition_size = 20000
-extention_buffer = 30000
+partition_size = 10000
+extention_buffer = 2000
 
 #partition extended bbox
 extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
