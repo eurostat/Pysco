@@ -1,6 +1,5 @@
 import geopandas as gpd
 from shapely.geometry import box,Polygon
-from accessiblity_grid_k_nearest_dijkstra import graph_adjacency_list_from_geodataframe, multi_source_k_nearest_dijkstra
 from datetime import datetime
 import heapq
 from shapely.geometry import LineString, Point
@@ -14,7 +13,7 @@ from utils.netutils import nodes_spatial_index_adjacendy_list, distance_to_node
 
 
 
-def multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
+def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
     """
     Computes the k nearest sources, their costs, and optionally paths to each node.
 
@@ -75,7 +74,7 @@ def multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 # make graph from linear features
 #TODO
 #def (gdf, weight = lambda feature:feature.geometry.length, coord_simp=round, detailled=False):
-def graph_adjacency_list_from_geodataframe(gdf, weight = lambda feature,sl:sl, direction_fun=lambda feature:"both"):
+def ___graph_adjacency_list_from_geodataframe(gdf, weight = lambda feature,sl:sl, direction_fun=lambda feature:"both"):
     """
     Build a directed graph from a road network stored in a GeoPackage.
 
@@ -125,7 +124,7 @@ def graph_adjacency_list_from_geodataframe(gdf, weight = lambda feature,sl:sl, d
 
 
 
-def export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3, with_paths=True):
+def ___export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3, with_paths=True):
     """
     Export the Dijkstra result to a GeoPackage: a point layer for graph nodes and (optionally) a line layer for paths.
 
@@ -195,6 +194,10 @@ def export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3, w
 
 
 
+
+
+
+
 k=5
 with_paths = False
 grid_resolution = 100
@@ -236,7 +239,7 @@ def proceed_partition(xy):
     print(len(roads))
 
     print(datetime.now(),x_part,y_part, "make graph")
-    graph = graph_adjacency_list_from_geodataframe(roads)
+    graph = ___graph_adjacency_list_from_geodataframe(roads)
     del roads
     print(len(graph.keys()), "nodes")
 
@@ -255,7 +258,7 @@ def proceed_partition(xy):
     print(len(sources))
 
     print(datetime.now(),x_part,y_part, "compute accessiblity")
-    result = multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=with_paths)
+    result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=with_paths)
     del graph
 
     print
