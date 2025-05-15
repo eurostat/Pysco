@@ -94,7 +94,7 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
 
         #store costs
         cs = result[n]
-        for k in range(k): costs[k].append(round(cs[k]['cost']/60))
+        for kk in range(k): costs[kk].append(round(cs[kk]['cost']/60))
 
         #store cell id
         grd_ids.append(cell_id_fun(x,y))
@@ -110,7 +110,7 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
 data = {}
 data['geometry'] = cell_geometries
 data['GRD_ID'] = grd_ids
-for k in range(k): data['duration_'+str(k+1)] = costs[k]
+#for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
 data['distance_to_node'] = distances_to_node
 out = gpd.GeoDataFrame(data)
 
