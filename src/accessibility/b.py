@@ -1,9 +1,9 @@
 import geopandas as gpd
 from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra
 
+ 
 
-
-
+bbox = [4030000, 2940000, 4080000, 2960000]
 grid_resolution = 100
 
 accessiblity_grid_k_nearest_dijkstra(
@@ -11,7 +11,7 @@ accessiblity_grid_k_nearest_dijkstra(
     road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/tomtom_202312.gpkg', bbox=bbox),
     weight_function = lambda feature, length : -1 if feature.KPH==0 else 1.1*length/feature.KPH*3.6,
     k=5,
-    #bbox = None,
+    bbox = bbox,
     out_folder = "/home/juju/Bureau/",
     out_file = "grid",
     cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
