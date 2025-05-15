@@ -193,30 +193,6 @@ def ___export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3
 
 
 
-def accessiblity_grid_k_nearest_dijkstra(pois_loader,
-                       road_network_loader,
-                       weight_function,
-                       bbox,
-                       out_folder,
-                       out_file,
-                       cell_id_fun=lambda x,y:str(x)+"_"+str(y),
-                       grid_resolution=1000,
-                       cell_network_max_distance=-1,
-                       partition_size = 100000,
-                       extention_buffer = 30000,
-                       detailled = False,
-                       crs = 'EPSG:3035',
-                       num_processors_to_use = 1,
-                       save_GPKG = True,
-                       save_CSV = False,
-                       save_parquet = False
-                       ):
-
-    #TODO
-    pass
-
-
-
 
 k=5
 with_paths = False
@@ -241,6 +217,32 @@ partition_size = 10000
 extention_buffer = 60000
 #partition_size = 100000
 #extention_buffer = 60000
+
+
+
+
+def accessiblity_grid_k_nearest_dijkstra(pois_loader,
+                       road_network_loader,
+                       weight_function,
+                       bbox,
+                       out_folder,
+                       out_file,
+                       cell_id_fun=lambda x,y:str(x)+"_"+str(y),
+                       grid_resolution=1000,
+                       cell_network_max_distance=-1,
+                       partition_size = 100000,
+                       extention_buffer = 30000,
+                       detailled = False,
+                       crs = 'EPSG:3035',
+                       num_processors_to_use = 1,
+                       save_GPKG = True,
+                       save_CSV = False,
+                       save_parquet = False
+                       ):
+
+    #TODO
+    pass
+
 
 
 
@@ -346,10 +348,4 @@ if(save_CSV):
 if(save_parquet):
     print(datetime.now(), "save as parquet")
     out.to_parquet(out_folder+out_file+".parquet")
-
-
-#print(datetime.now(), "save outputs")
-#export_dijkstra_results_to_gpkg(result, out_folder + "output.gpkg", crs=crs, k=k, with_paths=with_paths)
-
-print(datetime.now(), "Done")
 
