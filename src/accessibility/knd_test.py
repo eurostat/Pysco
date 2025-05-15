@@ -37,26 +37,15 @@ graph = graph_adjacency_list_from_geodataframe(roads)
 del roads
 print(len(graph.keys()), "nodes")
 
-#make list of nodes
-nodes_ = list(graph.keys())
-
-#make nodes spatial index
+print(datetime.now(), "get source nodes")
 idx = nodes_spatial_index_adjacendy_list(graph)
-
-#get POI nodes
+nodes_ = list(graph.keys())
 sources = []
 for iii, poi in pois.iterrows():
     n = nodes_[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
     sources.append(n)
-del pois
-del nodes_
-
-#print(datetime.now(), "select sources, as random nodes")
-#nodids = list(graph.keys())
-#sources = random.sample(nodids, nb_sources)
-
-print(sources)
-
+del pois, nodes_, idx
+print(len(sources))
 
 print(datetime.now(), "compute accessiblity")
 result = multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=with_paths)
