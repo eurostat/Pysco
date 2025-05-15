@@ -30,11 +30,11 @@ cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"
 cell_network_max_distance = -1
 
 [x_part,y_part] = [4036000, 2948000]
-#extended_bbox = (4000000, 2500000, 4500000, 3000000)
-#partition_size = 10000
-#extention_buffer = 2000
-partition_size = 100000
-extention_buffer = 50000
+partition_size = 10000
+extention_buffer = 2000
+#[x_part,y_part] = [4000000, 2500000]
+#partition_size = 100000
+#extention_buffer = 50000
 
 
 #partition extended bbox
