@@ -73,7 +73,8 @@ del graph
 print(datetime.now(), x_part, y_part, "extract cell accessibility data")
 cell_geometries = [] #the cell geometries
 grd_ids = [] #the cell identifiers
-costs = [] #the durations
+costs = [] #the costs - an array of arrays
+for k in range(k): costs.append([])
 distances_to_node = [] #the cell center distance to its graph node
 
 #go through cells
@@ -92,11 +93,8 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
         distances_to_node.append(dtn)
 
         #store costs
-        costs = result[n]
-        #TODO
-        print(costs)
-        d = 0#round(duration[n]/60)
-        costs.append(d)
+        cs = result[n]
+        for k in range(k): costs[k].append(round(cs[k]['cost']/60))
 
         #store cell id
         grd_ids.append(cell_id_fun(x,y))
@@ -109,7 +107,12 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
 
 
 #make output geodataframe
-out = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids, 'cost': costs, "distance_to_node": distances_to_node })
+data = {}
+data['geometry'] = cell_geometries
+data['GRD_ID'] = grd_ids
+for k in range(k): data['duration_'+str(k+1)] = costs[k]
+data['distance_to_node'] = distances_to_node
+out = gpd.GeoDataFrame(data)
 
 #save output
 
