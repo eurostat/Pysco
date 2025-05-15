@@ -73,7 +73,7 @@ del graph
 print(datetime.now(), x_part, y_part, "extract cell accessibility data")
 cell_geometries = [] #the cell geometries
 grd_ids = [] #the cell identifiers
-durations = [] #the durations
+costs = [] #the durations
 distances_to_node = [] #the cell center distance to its graph node
 
 #go through cells
@@ -85,16 +85,18 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
         n = nodes_[next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1))]
 
         #compute distance to network and skip if too far
-        dtn = round(distance_to_node(n,x,y))
+        dtn = round(distance_to_node(n,x+r2,y+r2))
         if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
         #store distance cell center/node
         distances_to_node.append(dtn)
 
-        #store durations
+        #store costs
+        costs = result[n]
         #TODO
+        print(costs)
         d = 0#round(duration[n]/60)
-        durations.append(d)
+        costs.append(d)
 
         #store cell id
         grd_ids.append(cell_id_fun(x,y))
@@ -103,11 +105,11 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
         cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
         cell_geometries.append(cell_geometry)
 
-# [cell_geometries, grd_ids, durations, distances_to_node]
+# [cell_geometries, grd_ids, costs, distances_to_node]
 
 
 #make output geodataframe
-out = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids, 'duration': durations, "distance_to_node": distances_to_node })
+out = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids, 'cost': costs, "distance_to_node": distances_to_node })
 
 #save output
 

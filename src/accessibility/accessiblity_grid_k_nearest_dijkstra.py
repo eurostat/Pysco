@@ -8,15 +8,15 @@ from collections import defaultdict
 
 def multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
     """
-    Computes the k nearest sources, their distances, and optionally paths to each node.
+    Computes the k nearest sources, their costs, and optionally paths to each node.
 
     :param graph: A dictionary representing the adjacency list of the graph.
     :param sources: A list of source node ids.
     :param k: Number of nearest sources to track.
     :param with_paths: Whether to track and return the paths.
     :return: A dictionary mapping each node to a sorted list of 
-             {'distance': d, 'source': s, 'path': [sequence of nodes]} if with_paths,
-             or {'distance': d, 'source': s} if not.
+             {'cost': c, 'source': s, 'path': [sequence of nodes]} if with_paths,
+             or {'cost': c, 'source': s} if not.
     """
 
     result = {node: [] for node in graph}
@@ -25,10 +25,10 @@ def multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
     # Initialize all sources
     for source in sources:
         path = [source] if with_paths else None
-        heapq.heappush(priority_queue, (0, source, source, path))  # (distance, current_node, origin_source, path)
+        heapq.heappush(priority_queue, (0, source, source, path))  # (cost, current_node, origin_source, path)
 
     while priority_queue:
-        current_distance, current_node, origin, path = heapq.heappop(priority_queue)
+        current_cost, current_node, origin, path = heapq.heappop(priority_queue)
 
         # Check if we've already found k closest sources for this node
         current_sources = [entry['source'] for entry in result[current_node]]
@@ -38,9 +38,9 @@ def multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
         if len(result[current_node]) >= k:
             continue
 
-        # Record this source, distance, and optional path
+        # Record this source, cost, and optional path
         entry = {
-            'distance': current_distance,
+            'cost': current_cost,
             'source': origin
         }
         if with_paths:
@@ -50,13 +50,13 @@ def multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 
         # Visit neighbors
         for neighbor, weight in graph[current_node]:
-            distance = current_distance + weight
+            cost = current_cost + weight
             next_path = path + [neighbor] if with_paths else None
-            heapq.heappush(priority_queue, (distance, neighbor, origin, next_path))
+            heapq.heappush(priority_queue, (cost, neighbor, origin, next_path))
 
-    # Sort lists by distance for each node
+    # Sort lists by cost for each node
     for node in result:
-        result[node].sort(key=lambda x: x['distance'])
+        result[node].sort(key=lambda x: x['cost'])
 
     return result
 
@@ -144,7 +144,7 @@ def export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3, w
             if i < len(entries):
                 entry = entries[i]
                 point_record[f'source_{i+1}'] = entry['source']
-                point_record[f'dist_{i+1}'] = entry['distance']
+                point_record[f'dist_{i+1}'] = entry['cost']
                 if with_paths:
                     path_str = '->'.join(entry['path'])
                     point_record[f'path_{i+1}'] = path_str
@@ -162,7 +162,7 @@ def export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3, w
                     path_records.append({
                         'from_node': entry['source'],
                         'to_node': node_id,
-                        'distance': entry['distance'],
+                        'cost': entry['cost'],
                         'geometry': line_geom
                     })
             else:

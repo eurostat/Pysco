@@ -92,7 +92,7 @@ def accessibility_grid(pois_loader,
                 n = nodes_[next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1))]
 
                 #compute distance to network and skip if too far
-                dtn = round(distance_to_node(n,x,y))
+                dtn = round(distance_to_node(n,x+r2,y+r2))
                 if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
                 #store distance cell center/node
