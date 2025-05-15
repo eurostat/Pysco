@@ -15,6 +15,14 @@ with_paths = False
 nb_sources = 10
 grid_resolution = 1000
 
+save_GPKG = True
+save_CSV = False
+save_parquet = False
+out_folder = "/home/juju/Bureau/"
+crs="EPSG:3035"
+out_file = "grid"
+
+
 pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/basic_services/healthcare_2023_3035.gpkg', bbox=bbox)
 road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/tomtom_202312.gpkg', bbox=bbox)
 weight_function = lambda feature, length : -1 if feature.KPH==0 else 1.1*length/feature.KPH*3.6,
@@ -22,7 +30,7 @@ weight_function = lambda feature, length : -1 if feature.KPH==0 else 1.1*length/
 cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 cell_network_max_distance = -1
 
-[x_part,y_part] = [4034000, 2946000]
+[x_part,y_part] = [4036000, 2948000]
 #extended_bbox = (4000000, 2500000, 4500000, 3000000)
 partition_size = 10000
 extention_buffer = 2000
@@ -98,11 +106,28 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
 # [cell_geometries, grd_ids, durations, distances_to_node]
 
 
+#make output geodataframe
+out = gpd.GeoDataFrame({'geometry': cell_geometries, 'GRD_ID': grd_ids, 'duration': durations, "distance_to_node": distances_to_node })
 
+#save output
+
+if(save_GPKG):
+    print(datetime.now(), "save as GPKG")
+    out.crs = crs
+    out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
+
+if(save_CSV or save_parquet): out = out.drop(columns=['geometry'])
+
+if(save_CSV):
+    print(datetime.now(), "save as CSV")
+    out.to_csv(out_folder+out_file+".csv", index=False)
+if(save_parquet):
+    print(datetime.now(), "save as parquet")
+    out.to_parquet(out_folder+out_file+".parquet")
 
 
 print(datetime.now(), "save outputs")
-export_dijkstra_results_to_gpkg(result, "/home/juju/Bureau/output.gpkg", crs="EPSG:3035", k=k, with_paths=with_paths)
+export_dijkstra_results_to_gpkg(result, out_folder + "output.gpkg", crs=crs, k=k, with_paths=with_paths)
 
 print(datetime.now(), "Done")
 
