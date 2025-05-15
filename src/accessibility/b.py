@@ -3,7 +3,7 @@ from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dij
 
  
 
-bbox = [4030000, 2940000, 4080000, 2960000]
+bbox = [4030000, 2940000, 4050000, 2960000]
 grid_resolution = 100
 
 accessiblity_grid_k_nearest_dijkstra(
@@ -18,7 +18,7 @@ accessiblity_grid_k_nearest_dijkstra(
     grid_resolution= grid_resolution,
     cell_network_max_distance= grid_resolution * 1.5,
     partition_size = 100000,
-    extention_buffer = 60000,
+    extention_buffer = 0,
     detailled = False, #TODO
     crs = 'EPSG:3035',
     num_processors_to_use = 1,
