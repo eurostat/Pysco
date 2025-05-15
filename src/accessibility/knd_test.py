@@ -46,20 +46,20 @@ def proceed_partition(xy):
     #data = gpd.read_file(tomtom, bbox=bbox)
     #print(len(data))
 
-    print(datetime.now(), "load road sections")
+    print(datetime.now(),x_part,y_part, "load road sections")
     roads = road_network_loader(extended_bbox)
     print(len(roads))
 
-    print(datetime.now(), "make graph")
+    print(datetime.now(),x_part,y_part, "make graph")
     graph = graph_adjacency_list_from_geodataframe(roads)
     del roads
     print(len(graph.keys()), "nodes")
 
-    print(datetime.now(),"load POIs")
+    print(datetime.now(),x_part,y_part, "load POIs")
     pois = pois_loader(extended_bbox)
     print(len(pois))
 
-    print(datetime.now(), "get source nodes")
+    print(datetime.now(),x_part,y_part, "get source nodes")
     idx = nodes_spatial_index_adjacendy_list(graph)
     nodes_ = list(graph.keys())
     sources = []
@@ -69,7 +69,7 @@ def proceed_partition(xy):
     del pois
     print(len(sources))
 
-    print(datetime.now(), "compute accessiblity")
+    print(datetime.now(),x_part,y_part, "compute accessiblity")
     result = multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=with_paths)
     del graph
 
