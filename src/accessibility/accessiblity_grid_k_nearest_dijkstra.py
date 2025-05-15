@@ -74,7 +74,7 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 # make graph from linear features
 #TODO
 #def (gdf, weight = lambda feature:feature.geometry.length, coord_simp=round, detailled=False):
-def ___graph_adjacency_list_from_geodataframe(gdf, weight = lambda feature,sl:sl, direction_fun=lambda feature:"both"):
+def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,sl:sl, direction_fun=lambda feature:"both"):
     """
     Build a directed graph from a road network stored in a GeoPackage.
 
@@ -102,7 +102,8 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight = lambda feature,sl:sl
             p2 = Point(coords[i+1])
 
             segment_length_m = p1.distance(p2)
-            w = weight(f, segment_length_m)
+            w = weight_fun(f, segment_length_m)
+            if w<0: continue
 
             n1 = node_id(p1)
             n2 = node_id(p2)
@@ -224,6 +225,7 @@ extention_buffer = 60000
 def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        road_network_loader,
                        weight_function,
+                       k,
                        bbox,
                        out_folder,
                        out_file,
@@ -232,7 +234,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        cell_network_max_distance=-1,
                        partition_size = 100000,
                        extention_buffer = 30000,
-                       detailled = False,
+                       detailled = False, #TODO
                        crs = 'EPSG:3035',
                        num_processors_to_use = 1,
                        save_GPKG = True,
@@ -240,112 +242,106 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        save_parquet = False
                        ):
 
-    #TODO
-    pass
+    def proceed_partition(xy):
+        [x_part,y_part] = xy
+
+
+        #partition extended bbox
+        extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
+
+        #data = gpd.read_file(tomtom, bbox=bbox)
+        #print(len(data))
+
+        print(datetime.now(),x_part,y_part, "load road sections")
+        roads = road_network_loader(extended_bbox)
+        print(len(roads))
+
+        print(datetime.now(),x_part,y_part, "make graph")
+        graph = ___graph_adjacency_list_from_geodataframe(roads, weight_fun=weight_function)
+        del roads
+        print(len(graph.keys()), "nodes")
+
+        print(datetime.now(),x_part,y_part, "load POIs")
+        pois = pois_loader(extended_bbox)
+        print(len(pois))
+
+        print(datetime.now(),x_part,y_part, "get source nodes")
+        idx = nodes_spatial_index_adjacendy_list(graph)
+        nodes_ = list(graph.keys())
+        sources = []
+        for iii, poi in pois.iterrows():
+            n = nodes_[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
+            sources.append(n)
+        del pois
+        print(len(sources))
+
+        print(datetime.now(),x_part,y_part, "compute accessiblity")
+        result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=with_paths)
+        del graph
+
+        print
+        print(datetime.now(), x_part, y_part, "extract cell accessibility data")
+        cell_geometries = [] #the cell geometries
+        grd_ids = [] #the cell identifiers
+        costs = [] #the costs - an array of arrays
+        for _ in range(k): costs.append([])
+        distances_to_node = [] #the cell center distance to its graph node
+
+        #go through cells
+        r2 = grid_resolution / 2
+        for x in range(x_part, x_part+partition_size, grid_resolution):
+            for y in range(y_part, y_part+partition_size, grid_resolution):
+
+                #get cell node
+                n = nodes_[next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1))]
+
+                #compute distance to network and skip if too far
+                dtn = round(distance_to_node(n,x+r2,y+r2))
+                if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
+
+                #store distance cell center/node
+                distances_to_node.append(dtn)
+
+                #store costs
+                cs = result[n]
+                for kk in range(k): costs[kk].append(round(cs[kk]['cost']/60))
+
+                #store cell id
+                grd_ids.append(cell_id_fun(x,y))
+
+                #store grid cell geometry
+                cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
+                cell_geometries.append(cell_geometry)
+
+        return [cell_geometries, grd_ids, costs, distances_to_node]
 
 
 
 
-def proceed_partition(xy):
-    [x_part,y_part] = xy
+    [cell_geometries, grd_ids, costs, distances_to_node] = proceed_partition([4036000, 2948000])
+    #proceed_partition([4000000, 2500000])
 
+    #make output geodataframe
+    data = {}
+    data['geometry'] = cell_geometries
+    data['GRD_ID'] = grd_ids
+    for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
+    data['distance_to_node'] = distances_to_node
+    out = gpd.GeoDataFrame(data)
 
-    #partition extended bbox
-    extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
+    #save output
 
-    #data = gpd.read_file(tomtom, bbox=bbox)
-    #print(len(data))
+    if(save_GPKG):
+        print(datetime.now(), "save as GPKG")
+        out.crs = crs
+        out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
 
-    print(datetime.now(),x_part,y_part, "load road sections")
-    roads = road_network_loader(extended_bbox)
-    print(len(roads))
+    if(save_CSV or save_parquet): out = out.drop(columns=['geometry'])
 
-    print(datetime.now(),x_part,y_part, "make graph")
-    graph = ___graph_adjacency_list_from_geodataframe(roads)
-    del roads
-    print(len(graph.keys()), "nodes")
-
-    print(datetime.now(),x_part,y_part, "load POIs")
-    pois = pois_loader(extended_bbox)
-    print(len(pois))
-
-    print(datetime.now(),x_part,y_part, "get source nodes")
-    idx = nodes_spatial_index_adjacendy_list(graph)
-    nodes_ = list(graph.keys())
-    sources = []
-    for iii, poi in pois.iterrows():
-        n = nodes_[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
-        sources.append(n)
-    del pois
-    print(len(sources))
-
-    print(datetime.now(),x_part,y_part, "compute accessiblity")
-    result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=with_paths)
-    del graph
-
-    print
-    print(datetime.now(), x_part, y_part, "extract cell accessibility data")
-    cell_geometries = [] #the cell geometries
-    grd_ids = [] #the cell identifiers
-    costs = [] #the costs - an array of arrays
-    for _ in range(k): costs.append([])
-    distances_to_node = [] #the cell center distance to its graph node
-
-    #go through cells
-    r2 = grid_resolution / 2
-    for x in range(x_part, x_part+partition_size, grid_resolution):
-        for y in range(y_part, y_part+partition_size, grid_resolution):
-
-            #get cell node
-            n = nodes_[next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1))]
-
-            #compute distance to network and skip if too far
-            dtn = round(distance_to_node(n,x+r2,y+r2))
-            if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
-
-            #store distance cell center/node
-            distances_to_node.append(dtn)
-
-            #store costs
-            cs = result[n]
-            for kk in range(k): costs[kk].append(round(cs[kk]['cost']/60))
-
-            #store cell id
-            grd_ids.append(cell_id_fun(x,y))
-
-            #store grid cell geometry
-            cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
-            cell_geometries.append(cell_geometry)
-
-    return [cell_geometries, grd_ids, costs, distances_to_node]
-
-
-
-
-[cell_geometries, grd_ids, costs, distances_to_node] = proceed_partition([4036000, 2948000])
-#proceed_partition([4000000, 2500000])
-
-#make output geodataframe
-data = {}
-data['geometry'] = cell_geometries
-data['GRD_ID'] = grd_ids
-for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
-data['distance_to_node'] = distances_to_node
-out = gpd.GeoDataFrame(data)
-
-#save output
-
-if(save_GPKG):
-    print(datetime.now(), "save as GPKG")
-    out.crs = crs
-    out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
-
-if(save_CSV or save_parquet): out = out.drop(columns=['geometry'])
-
-if(save_CSV):
-    print(datetime.now(), "save as CSV")
-    out.to_csv(out_folder+out_file+".csv", index=False)
-if(save_parquet):
-    print(datetime.now(), "save as parquet")
-    out.to_parquet(out_folder+out_file+".parquet")
+    if(save_CSV):
+        print(datetime.now(), "save as CSV")
+        out.to_csv(out_folder+out_file+".csv", index=False)
+    if(save_parquet):
+        print(datetime.now(), "save as parquet")
+        out.to_parquet(out_folder+out_file+".parquet")
 
