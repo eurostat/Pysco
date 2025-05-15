@@ -17,7 +17,7 @@ accessiblity_grid_k_nearest_dijkstra(
     cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
     grid_resolution= grid_resolution,
     cell_network_max_distance= grid_resolution * 1.5,
-    partition_size = 100000,
+    partition_size = 20000,
     extention_buffer = 0,
     detailled = False, #TODO
     crs = 'EPSG:3035',

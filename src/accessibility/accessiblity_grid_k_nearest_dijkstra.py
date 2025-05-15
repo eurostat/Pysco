@@ -272,12 +272,16 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                 dtn = round(distance_to_node(n,x+r2,y+r2))
                 if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
-                #store distance cell center/node
-                distances_to_node.append(dtn)
+                #get costs
+                cs = result[n]
 
                 #store costs
-                cs = result[n]
-                for kk in range(k): costs[kk].append(round(cs[kk]['cost']/60))
+                for kk in range(k):
+                    if kk>=len(cs): costs[kk].append(-1)
+                    else: costs[kk].append(round(cs[kk]['cost']/60))
+
+                #store distance cell center/node
+                distances_to_node.append(dtn)
 
                 #store cell id
                 grd_ids.append(cell_id_fun(x,y))
@@ -308,7 +312,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
             cell_geometries += out[0]
             grd_ids += out[1]
             costs_ = out[2]
-            for kk in range(k): costs[kk].append(costs_[kk])
+            for kk in range(k): costs[kk] += costs_[kk]
             distances_to_node += out[3]
 
         print(datetime.now(), len(cell_geometries), "cells")
