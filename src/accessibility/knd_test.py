@@ -2,7 +2,13 @@ import geopandas as gpd
 from shapely.geometry import box
 from accessiblity_grid_k_nearest_dijkstra import graph_adjacency_list_from_geodataframe, multi_source_k_nearest_dijkstra, export_dijkstra_results_to_gpkg
 from datetime import datetime
-import random
+#import random
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.netutils import nodes_spatial_index
+
 
 k=3
 with_paths = False
@@ -31,10 +37,26 @@ graph = graph_adjacency_list_from_geodataframe(roads)
 del roads
 print(len(graph.keys()), "nodes")
 
+#make list of nodes
+nodes_ = graph.keys()
 
-print(datetime.now(), "select sources, as random nodes")
-nodids = list(graph.keys())
-sources = random.sample(nodids, nb_sources)
+#make nodes spatial index
+idx = nodes_spatial_index(graph)
+
+#get POI nodes
+sources = []
+for iii, poi in pois.iterrows():
+    n = nodes_[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
+    sources.append(n)
+del pois
+del nodes_
+
+#print(datetime.now(), "select sources, as random nodes")
+#nodids = list(graph.keys())
+#sources = random.sample(nodids, nb_sources)
+
+print(sources)
+
 
 print(datetime.now(), "compute accessiblity")
 result = multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=with_paths)

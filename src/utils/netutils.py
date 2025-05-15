@@ -99,6 +99,19 @@ def nodes_spatial_index(graph):
     return idx
 
 
+
+def nodes_spatial_index_adjacendy_list(graph):
+    nodes = graph.keys()
+
+    idx = index.Index()
+    for i in range(len(nodes)):
+        node = nodes[i]
+        [x,y] = node_coordinate(node)
+        idx.insert(i, (x,y,x,y))
+    return idx
+
+
+
 def a_star_euclidian_dist(n1, n2):
     [x1, y1] = node_coordinate(n1)
     [x2, y2] = node_coordinate(n2)
