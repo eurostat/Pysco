@@ -12,7 +12,6 @@ from utils.netutils import nodes_spatial_index_adjacendy_list, distance_to_node
 
 k=5
 with_paths = False
-nb_sources = 10
 grid_resolution = 100
 
 save_GPKG = True
