@@ -27,7 +27,7 @@ road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/tomt
 weight_function = lambda feature, length : -1 if feature.KPH==0 else 1.1*length/feature.KPH*3.6,
 
 cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
-cell_network_max_distance = -1
+cell_network_max_distance = grid_resolution * 1.5
 
 partition_size = 10000
 extention_buffer = 2000
