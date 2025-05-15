@@ -193,7 +193,7 @@ def ___export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3
 
 
 
-def accessibility_grid(pois_loader,
+def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        road_network_loader,
                        weight_function,
                        bbox,
