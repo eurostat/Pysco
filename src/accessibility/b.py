@@ -5,7 +5,7 @@ from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dij
 #luxembourg
 #bbox = [4030000, 2940000, 4050000, 2960000]
 #marseille
-bbox = [3900000, 2200000, 3900000, 2200000]
+bbox = [3900000, 2200000, 4000000, 2300000]
 
 grid_resolution = 100
 
