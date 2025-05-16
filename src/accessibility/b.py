@@ -14,9 +14,7 @@ bbox = [3900000, 2400000, 4000000, 2500000]
 
 grid_resolution = 100
 
-''''
-
-
+'''
 Traceback (most recent call last):
   File "/home/juju/workspace/pyex/src/accessibility/b.py", line 15, in <module>
     accessiblity_grid_k_nearest_dijkstra(
@@ -35,7 +33,7 @@ Traceback (most recent call last):
     #get cell node
                ^^^^
 StopIteration
-''''
+'''
 
 
 accessiblity_grid_k_nearest_dijkstra(
