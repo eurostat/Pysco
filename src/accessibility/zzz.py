@@ -5,9 +5,9 @@ from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dij
 #luxembourg
 #bbox = [4030000, 2940000, 4050000, 2960000]
 #marseille
-bbox = [3900000, 2200000, 4000000, 2300000]
+#bbox = [3900000, 2200000, 4000000, 2300000]
 #big
-#bbox = [3500000, 2000000, 4000000, 2500000]
+bbox = [3500000, 2000000, 4000000, 2500000]
 
 #test
 #bbox = [3800000, 2300000, 4000000, 2500000]
@@ -31,7 +31,7 @@ accessiblity_grid_k_nearest_dijkstra(
     extention_buffer = 60000,
     #detailled = False, #TODO
     crs = 'EPSG:3035',
-    num_processors_to_use = 4,
+    num_processors_to_use = 8,
     save_GPKG = True,
     save_CSV = False,
     save_parquet = False
