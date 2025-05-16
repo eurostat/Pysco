@@ -3,37 +3,16 @@ from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dij
 
  
 #luxembourg
-#bbox = [4030000, 2940000, 4050000, 2960000]
+bbox = [4030000, 2940000, 4050000, 2960000]
 #marseille
 #bbox = [3900000, 2200000, 4000000, 2300000]
 #big
 #bbox = [3500000, 2000000, 4000000, 2500000]
 
 #test
-bbox = [3800000, 2300000, 4000000, 2500000]
+#bbox = [3800000, 2300000, 4000000, 2500000]
 
 grid_resolution = 100
-
-'''
-Traceback (most recent call last):
-  File "/home/juju/workspace/pyex/src/accessibility/b.py", line 15, in <module>
-    accessiblity_grid_k_nearest_dijkstra(
-  File "/home/juju/workspace/pyex/src/accessibility/accessiblity_grid_k_nearest_dijkstra.py", line 316, in accessiblity_grid_k_nearest_dijkstra
-    # merge task outputs
-              ^^^^^^^^^^^
-  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 449, in result
-    return self.__get_result()
-           ^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
-    raise self._exception
-  File "/usr/lib/python3.12/concurrent/futures/thread.py", line 58, in run
-    result = self.fn(*self.args, **self.kwargs)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/juju/workspace/pyex/src/accessibility/accessiblity_grid_k_nearest_dijkstra.py", line 275, in proceed_partition
-    #get cell node
-               ^^^^
-StopIteration
-'''
 
 
 accessiblity_grid_k_nearest_dijkstra(
@@ -48,8 +27,8 @@ accessiblity_grid_k_nearest_dijkstra(
     cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
     grid_resolution= grid_resolution,
     cell_network_max_distance= grid_resolution * 1.5,
-    partition_size = 100000,
-    extention_buffer = 60000,
+    partition_size = 10000,
+    extention_buffer = 10000,
     #detailled = False, #TODO
     crs = 'EPSG:3035',
     num_processors_to_use = 3,

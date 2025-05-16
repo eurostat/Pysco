@@ -257,9 +257,8 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
 
         print(datetime.now(),x_part,y_part, "compute accessiblity")
         result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
-        del graph
+        del graph, sources
 
-        print
         print(datetime.now(), x_part, y_part, "extract cell accessibility data")
         cell_geometries = [] #the cell geometries
         grd_ids = [] #the cell identifiers
@@ -298,6 +297,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                 cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
                 cell_geometries.append(cell_geometry)
 
+        del result, idx, nodes_
         return [cell_geometries, grd_ids, costs, distances_to_node]
 
 
@@ -306,14 +306,16 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         partitions = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
         tasks_to_do = {executor.submit(proceed_partition, partition): partition for partition in partitions}
 
-        #out data
+        print(datetime.now(), "launch tasks (nb=", len(partitions, ") and collect outputs"))
+
+        # out data
         cell_geometries = []
         grd_ids = []
         costs = []
         for _ in range(k): costs.append([])
         distances_to_node = []
 
-        # merge task outputs
+        # launch tasks and collect outputs
         for task_output in concurrent.futures.as_completed(tasks_to_do):
             out = task_output.result()
             if(out==None): continue
