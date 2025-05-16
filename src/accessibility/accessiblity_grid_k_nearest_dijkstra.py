@@ -302,11 +302,10 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
 
 
     #launch parallel computation   
+    partitions = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
+    print(datetime.now(), "launch tasks ( nb =", len(partitions), ") and collect outputs")
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
-        partitions = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
         tasks_to_do = {executor.submit(proceed_partition, partition): partition for partition in partitions}
-
-        print(datetime.now(), "launch tasks (nb=", len(partitions, ") and collect outputs"))
 
         # out data
         cell_geometries = []
