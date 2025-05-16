@@ -7,12 +7,14 @@ from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dij
 #marseille
 #bbox = [3900000, 2200000, 4000000, 2300000]
 #big
-bbox = [3500000, 2000000, 4000000, 2500000]
+#bbox = [3500000, 2000000, 4000000, 2500000]
+
+#test
+bbox = [3900000, 2400000, 4000000, 2500000]
 
 grid_resolution = 100
 
-
-test 3900000 2400000
+''''
 
 
 Traceback (most recent call last):
@@ -33,6 +35,7 @@ Traceback (most recent call last):
     #get cell node
                ^^^^
 StopIteration
+''''
 
 
 accessiblity_grid_k_nearest_dijkstra(
