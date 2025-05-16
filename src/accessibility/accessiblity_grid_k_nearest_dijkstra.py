@@ -74,9 +74,9 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 
 
 # make graph from linear features
-#TODO
-#def (gdf, weight = lambda feature:feature.geometry.length, coord_simp=round, detailled=False):
-def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,sl:sl, direction_fun=lambda feature:"both"):
+#TODO detailled
+#TODO coord_simp
+def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,sl:sl, direction_fun=lambda feature:"both", coord_simp=round, detailled=False):
     """
     Build a directed graph from a road network stored in a GeoPackage.
 
@@ -98,6 +98,8 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
 
         coords = list(geom.coords)
         direction = direction_fun(f)
+
+        #TODO detailled
 
         for i in range(len(coords) - 1):
             p1 = Point(coords[i])
@@ -197,17 +199,19 @@ def ___export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3
 
 def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        road_network_loader,
-                       weight_function,
-                       k,
                        bbox,
                        out_folder,
                        out_file,
+                       k = 3,
+                       weight_function = lambda feature,sl:sl,
+                       direction_fun=lambda feature:"both",
                        cell_id_fun=lambda x,y:str(x)+"_"+str(y),
                        grid_resolution=1000,
                        cell_network_max_distance=-1,
                        partition_size = 100000,
                        extention_buffer = 30000,
-                       detailled = False, #TODO
+                       #TODO add that
+                       detailled = False,
                        crs = 'EPSG:3035',
                        num_processors_to_use = 1,
                        save_GPKG = True,
@@ -230,7 +234,8 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         print(len(roads))
 
         print(datetime.now(),x_part,y_part, "make graph")
-        graph = ___graph_adjacency_list_from_geodataframe(roads, weight_fun=weight_function)
+        graph = ___graph_adjacency_list_from_geodataframe(roads, weight_fun=weight_function, direction_fun=direction_fun)
+        #TODO return snappable nodes
         del roads
         print(len(graph.keys()), "nodes")
 
@@ -239,6 +244,8 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         print(len(pois))
 
         print(datetime.now(),x_part,y_part, "get source nodes")
+        #TODO check how to speed up that
+        #TODO should be only snappable nodes
         idx = nodes_spatial_index_adjacendy_list(graph)
         nodes_ = list(graph.keys())
         sources = []
@@ -266,6 +273,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
             for y in range(y_part, y_part+partition_size, grid_resolution):
 
                 #get cell node
+                #TODO should be a snappable node
                 n = nodes_[next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1))]
 
                 #compute distance to network and skip if too far
