@@ -74,7 +74,6 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 
 
 # make graph from linear features
-#TODO detailled
 #TODO coord_simp
 def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,sl:sl, direction_fun=lambda feature:"both", coord_simp=round, detailled=False):
     """
@@ -92,18 +91,43 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
         return f"{point.x:.6f}_{point.y:.6f}"
 
     for _, f in gdf.iterrows():
+
+        #get feature geometry
         geom = f.geometry
-        if not isinstance(geom, LineString):
-            continue  # skip invalid geometry
+        if not isinstance(geom, LineString): continue
 
         coords = list(geom.coords)
         direction = direction_fun(f)
 
-        #TODO detailled
+        if detailled:
+            # detailled decomposition: one graph node per line vertex
 
-        for i in range(len(coords) - 1):
-            p1 = Point(coords[i])
-            p2 = Point(coords[i+1])
+            p1 = Point(coords[0])
+            for i in range(len(coords) - 1):
+                p2 = Point(coords[i+1])
+
+                segment_length_m = p1.distance(p2)
+                w = weight_fun(f, segment_length_m)
+                if w<0: continue
+
+                n1 = node_id(p1)
+                n2 = node_id(p2)
+
+                # Add directed edge(s)
+                if direction in ('both', 'forward'):
+                    graph[n1].append((n2, w))
+                if direction in ('both', 'backward'):
+                    graph[n2].append((n1, w))
+
+                # If one-way (assume 'oneway' means forward)
+                if direction == 'oneway':
+                    graph[n1].append((n2, w))
+
+                p1 = p2
+        else:
+            # not detailled: a single edge between first and last line points
+            p1 = Point(coords[0])
+            p2 = Point(coords[len(coords)-1])
 
             segment_length_m = p1.distance(p2)
             w = weight_fun(f, segment_length_m)
@@ -121,6 +145,7 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
             # If one-way (assume 'oneway' means forward)
             if direction == 'oneway':
                 graph[n1].append((n2, w))
+
 
     return graph
 
@@ -210,7 +235,6 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        cell_network_max_distance=-1,
                        partition_size = 100000,
                        extention_buffer = 30000,
-                       #TODO add that
                        detailled = False,
                        crs = 'EPSG:3035',
                        num_processors_to_use = 1,
@@ -234,7 +258,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         print(datetime.now(),x_part,y_part, len(roads), "road sections loaded")
 
         print(datetime.now(),x_part,y_part, "make graph")
-        graph = ___graph_adjacency_list_from_geodataframe(roads, weight_fun=weight_function, direction_fun=direction_fun)
+        graph = ___graph_adjacency_list_from_geodataframe(roads, weight_fun=weight_function, direction_fun=direction_fun, detailled=detailled)
         #TODO return snappable nodes
         del roads
         print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes")
