@@ -273,7 +273,9 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
 
                 #get cell node
                 #TODO should be a snappable node
-                n = nodes_[next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1))]
+                ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
+                if ni_ == None: continue
+                n = nodes_[ni_]
 
                 #compute distance to network and skip if too far
                 dtn = round(distance_to_node(n,x+r2,y+r2))
