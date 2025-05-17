@@ -231,17 +231,17 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
 
         print(datetime.now(),x_part,y_part, "load road sections")
         roads = road_network_loader(extended_bbox)
-        print(len(roads))
+        print(datetime.now(),x_part,y_part, len(roads), "road sections loaded")
 
         print(datetime.now(),x_part,y_part, "make graph")
         graph = ___graph_adjacency_list_from_geodataframe(roads, weight_fun=weight_function, direction_fun=direction_fun)
         #TODO return snappable nodes
         del roads
-        print(len(graph.keys()), "nodes")
+        print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes")
 
         print(datetime.now(),x_part,y_part, "load POIs")
         pois = pois_loader(extended_bbox)
-        print(len(pois))
+        print(datetime.now(),x_part,y_part, len(pois), "POIs loaded")
 
         print(datetime.now(),x_part,y_part, "get source nodes")
         #TODO check how to speed up that
@@ -253,7 +253,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
             n = nodes_[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
             sources.append(n)
         del pois
-        print(len(sources))
+        print(datetime.now(),x_part,y_part, len(sources), "source nodes found")
 
         print(datetime.now(),x_part,y_part, "compute accessiblity")
         result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
