@@ -80,7 +80,7 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
 
     :param gdf: geodataframe containing the road sections, with linear geometry
     :param weight: function returning a segment weight, based on the feature and the segment length
-    :param direction_fun: return section direction ('both', 'oneway')
+    :param direction_fun: return section direction ('both', 'oneway', 'forward', 'backward')
     :return: graph (adjacency list: {node_id: [(neighbor_node_id, travel_time)]})
     """
     graph = defaultdict(list)
@@ -222,9 +222,6 @@ def ___export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3
 
 
 
-
-
-
 def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        road_network_loader,
                        bbox,
@@ -232,7 +229,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        out_file,
                        k = 3,
                        weight_function = lambda feature,sl:sl,
-                       direction_fun=lambda feature:"both",
+                       direction_fun=lambda feature:"both", #('both', 'oneway', 'forward', 'backward')
                        cell_id_fun=lambda x,y:str(x)+"_"+str(y),
                        grid_resolution=1000,
                        cell_network_max_distance=-1,
