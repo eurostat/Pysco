@@ -125,9 +125,9 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
                     graph[n2].append((n1, w))
                 if direction == 'forward' or  direction == 'oneway':
                     graph[n1].append((n2, w))
-                    graph[n2].append()
+                    if graph[n2] == None: graph[n2] = []
                 if direction == 'backward':
-                    graph[n1].append()
+                    if graph[n1] == None: graph[n1] = []
                     graph[n2].append((n1, w))
 
                 # next segment
