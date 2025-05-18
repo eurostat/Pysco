@@ -3,9 +3,9 @@ from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dij
 
  
 #luxembourg
-bbox = [4030000, 2940000, 4050000, 2960000]
+#bbox = [4030000, 2940000, 4050000, 2960000]
 #marseille
-#bbox = [3900000, 2200000, 4000000, 2300000]
+bbox = [3900000, 2200000, 4000000, 2300000]
 #big
 #bbox = [3500000, 2000000, 4000000, 2500000]
 
@@ -27,8 +27,8 @@ accessiblity_grid_k_nearest_dijkstra(
     cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
     grid_resolution= grid_resolution,
     cell_network_max_distance= grid_resolution * 1.5,
-    partition_size = 20000,
-    extention_buffer = 10000,
+    partition_size = 100000,
+    extention_buffer = 20000,
     detailled = True,
     crs = 'EPSG:3035',
     num_processors_to_use = 8,
