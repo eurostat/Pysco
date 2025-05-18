@@ -88,8 +88,7 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
     def node_id(point):
         """Create a unique node id from a Point geometry."""
         return str(coord_simp(point.x)) +'_'+ str(coord_simp(point.y))
-
-        #return f"{point.x:.nf}_{point.y:.6f}"
+        #return f"{point.x:.6f}_{point.y:.6f}"
 
     for _, f in gdf.iterrows():
 
@@ -120,14 +119,16 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
                 if w<0: continue
 
                 # Add directed edge(s)
-                if direction in ('both', 'forward'):
+                # (assume 'oneway' means forward)
+                if direction == 'both':
                     graph[n1].append((n2, w))
-                if direction in ('both', 'backward'):
                     graph[n2].append((n1, w))
-
-                # If one-way (assume 'oneway' means forward)
-                if direction == 'oneway':
+                if direction == 'forward' or  direction == 'oneway':
                     graph[n1].append((n2, w))
+                    graph[n2].append()
+                if direction == 'backward':
+                    graph[n1].append()
+                    graph[n2].append((n1, w))
 
                 # next segment
                 p1 = p2
@@ -154,7 +155,6 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
                 # If one-way (assume 'oneway' means forward)
                 if direction == 'oneway':
                     graph[n1].append((n2, w))
-
 
     return graph
 

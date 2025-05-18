@@ -25,7 +25,8 @@ def direction_fun(feature):
 
 
 '''
-multi level:
+TODO handle multi level network
+
 F_ELEV
 T_ELEV
 
