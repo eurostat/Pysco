@@ -24,6 +24,18 @@ def direction_fun(feature):
     return None
 
 
+'''
+multi level:
+F_ELEV
+T_ELEV
+
+0 = niveau du sol
+1, 2 = ponts, passages supérieurs
+-1, -2 = tunnels, passages inférieurs
+'''
+
+
+
 accessiblity_grid_k_nearest_dijkstra(
     pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/basic_services/education_2023_3035.gpkg', bbox=bbox),
     road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/tomtom_202312.gpkg', bbox=bbox).query("ONEWAY != 'N'"),
@@ -32,7 +44,7 @@ accessiblity_grid_k_nearest_dijkstra(
     out_file = "grid_education",
     k = 3,
     weight_function = lambda feature, length : -1 if feature.KPH==0 else 1.1*length/feature.KPH*3.6,
-    #direction_fun = direction_fun,
+    direction_fun = direction_fun,
     cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
     grid_resolution= grid_resolution,
     cell_network_max_distance= grid_resolution * 1.5,
