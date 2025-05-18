@@ -91,6 +91,7 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
         #return f"{point.x:.6f}_{point.y:.6f}"
 
     # function to return a unique identifier
+    #TODO
     '''
     id_ = 0
     def next_id_i():
