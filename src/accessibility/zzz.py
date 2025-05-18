@@ -29,7 +29,7 @@ accessiblity_grid_k_nearest_dijkstra(
     cell_network_max_distance= grid_resolution * 1.5,
     partition_size = 20000,
     extention_buffer = 10000,
-    detailled = False,
+    detailled = True,
     crs = 'EPSG:3035',
     num_processors_to_use = 8,
     save_GPKG = True,

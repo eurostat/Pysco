@@ -74,7 +74,6 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 
 
 # make graph from linear features
-#TODO coord_simp
 def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,sl:sl, direction_fun=lambda feature:"both", coord_simp=round, detailled=False):
     """
     Build a directed graph from a road network stored in a GeoPackage.
@@ -88,7 +87,9 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
 
     def node_id(point):
         """Create a unique node id from a Point geometry."""
-        return f"{point.x:.6f}_{point.y:.6f}"
+        return str(coord_simp(point.x)) +'_'+ str(coord_simp(point.y))
+
+        #return f"{point.x:.nf}_{point.y:.6f}"
 
     for _, f in gdf.iterrows():
 
@@ -124,10 +125,12 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
                     graph[n1].append((n2, w))
 
                 p1 = p2
+                #TODO check both nodes are not the same ?
         else:
             # not detailled: a single edge between first and last line points
             p1 = Point(coords[0])
-            p2 = Point(coords[len(coords)-1])
+            p2 = Point(coords[-1])
+            #TODO check both nodes are not the same ?
 
             segment_length_m = p1.distance(p2)
             w = weight_fun(f, segment_length_m)
