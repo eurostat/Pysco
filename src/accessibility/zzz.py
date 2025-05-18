@@ -32,7 +32,7 @@ accessiblity_grid_k_nearest_dijkstra(
     out_file = "grid_education",
     k = 3,
     weight_function = lambda feature, length : -1 if feature.KPH==0 else 1.1*length/feature.KPH*3.6,
-    direction_fun = direction_fun,
+    #direction_fun = direction_fun,
     cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
     grid_resolution= grid_resolution,
     cell_network_max_distance= grid_resolution * 1.5,
