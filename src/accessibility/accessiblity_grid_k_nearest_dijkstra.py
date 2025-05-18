@@ -72,7 +72,6 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 
 
 
-
 # make graph from linear features
 def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,sl:sl, direction_fun=lambda feature:"both", coord_simp=round, detailled=False):
     """
@@ -92,10 +91,13 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
         #return f"{point.x:.6f}_{point.y:.6f}"
 
     # function to return a unique identifier
+    '''
     id_ = 0
     def next_id_i():
+        global id_
         id_ += 1
         return id_
+    '''
 
     for _, f in gdf.iterrows():
 
@@ -116,7 +118,7 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
             nb = len(coords) - 1
             for i in range(nb):
                 p2 = Point(coords[i+1])
-                n2 = node_id(p2) if i==nb else next_id_i()
+                n2 = node_id(p2) # if i==nb else next_id_i()
 
                 # may happen
                 if n1==n2: continue
