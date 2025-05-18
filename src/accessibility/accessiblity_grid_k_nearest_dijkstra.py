@@ -259,10 +259,6 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         roads = road_network_loader(extended_bbox)
         print(datetime.now(),x_part,y_part, len(roads), "road sections loaded")
 
-        for col in roads.columns:
-            print(col)
-
-
         print(datetime.now(),x_part,y_part, "make graph")
         graph = ___graph_adjacency_list_from_geodataframe(roads, weight_fun=weight_function, direction_fun=direction_fun, detailled=detailled)
         #TODO return snappable nodes
