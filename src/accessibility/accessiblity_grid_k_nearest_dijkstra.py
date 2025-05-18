@@ -106,15 +106,18 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
             # detailled decomposition: one graph node per line vertex
 
             p1 = Point(coords[0])
+            n1 = node_id(p1)
             for i in range(len(coords) - 1):
                 p2 = Point(coords[i+1])
+                n2 = node_id(p2)
 
+                # may happen
+                if n1==n2: continue
+
+                #get segment weight
                 segment_length_m = p1.distance(p2)
                 w = weight_fun(f, segment_length_m)
                 if w<0: continue
-
-                n1 = node_id(p1)
-                n2 = node_id(p2)
 
                 # Add directed edge(s)
                 if direction in ('both', 'forward'):
@@ -126,30 +129,31 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
                 if direction == 'oneway':
                     graph[n1].append((n2, w))
 
+                # next segment
                 p1 = p2
-                #TODO check both nodes are not the same ?
+                n1 = n2
         else:
             # not detailled: a single edge between first and last line points
             p1 = Point(coords[0])
-            p2 = Point(coords[-1])
-            #TODO check both nodes are not the same ?
-
-            segment_length_m = geom.length
-            w = weight_fun(f, segment_length_m)
-            if w<0: continue
-
             n1 = node_id(p1)
+            p2 = Point(coords[-1])
             n2 = node_id(p2)
 
-            # Add directed edge(s)
-            if direction in ('both', 'forward'):
-                graph[n1].append((n2, w))
-            if direction in ('both', 'backward'):
-                graph[n2].append((n1, w))
+            if n1 != n2:
 
-            # If one-way (assume 'oneway' means forward)
-            if direction == 'oneway':
-                graph[n1].append((n2, w))
+                segment_length_m = geom.length
+                w = weight_fun(f, segment_length_m)
+                if w<0: continue
+
+                # Add directed edge(s)
+                if direction in ('both', 'forward'):
+                    graph[n1].append((n2, w))
+                if direction in ('both', 'backward'):
+                    graph[n2].append((n1, w))
+
+                # If one-way (assume 'oneway' means forward)
+                if direction == 'oneway':
+                    graph[n1].append((n2, w))
 
 
     return graph
