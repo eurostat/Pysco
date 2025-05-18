@@ -85,10 +85,17 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
     """
     graph = defaultdict(list)
 
+    # function to build node id based on its coordinates
     def node_id(point):
         """Create a unique node id from a Point geometry."""
         return str(coord_simp(point.x)) +'_'+ str(coord_simp(point.y))
         #return f"{point.x:.6f}_{point.y:.6f}"
+
+    # function to return a unique identifier
+    id_ = 0
+    def next_id_i():
+        id_ += 1
+        return id_
 
     for _, f in gdf.iterrows():
 
@@ -106,9 +113,10 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
 
             p1 = Point(coords[0])
             n1 = node_id(p1)
-            for i in range(len(coords) - 1):
+            nb = len(coords) - 1
+            for i in range(nb):
                 p2 = Point(coords[i+1])
-                n2 = node_id(p2)
+                n2 = node_id(p2) if i==nb else next_id_i()
 
                 # may happen
                 if n1==n2: continue
