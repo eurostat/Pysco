@@ -93,12 +93,14 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
 
     for _, f in gdf.iterrows():
 
+        #get driving direction
+        direction = direction_fun(f)
+        if direction == None: continue
+
         #get feature geometry
         geom = f.geometry
         if not isinstance(geom, LineString): continue
-
         coords = list(geom.coords)
-        direction = direction_fun(f)
 
         if detailled:
             # detailled decomposition: one graph node per line vertex
@@ -132,7 +134,7 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
             p2 = Point(coords[-1])
             #TODO check both nodes are not the same ?
 
-            segment_length_m = p1.distance(p2)
+            segment_length_m = geom.length
             w = weight_fun(f, segment_length_m)
             if w<0: continue
 
