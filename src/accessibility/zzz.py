@@ -25,6 +25,7 @@ def direction_fun(feature):
 #TODO fix parallelism
 #TODO améliorer le where
 #TODO vitesse dans les 2 sens
+#TODO snappable sections
 
 '''
 TODO handle multi level network

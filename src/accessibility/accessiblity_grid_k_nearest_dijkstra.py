@@ -73,7 +73,13 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 
 
 # make graph from linear features
-def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,sl:sl, direction_fun=lambda feature:"both", coord_simp=round, detailled=False):
+def ___graph_adjacency_list_from_geodataframe(gdf,
+                                              weight_fun = lambda feature,sl:sl,
+                                              direction_fun=lambda feature:"both",
+                                              coord_simp=round,
+                                              detailled=False,
+                                              initial_node_level_fun=None,
+                                              final_node_level_fun=None):
     """
     Build a directed graph from a road network stored in a GeoPackage.
 
@@ -90,16 +96,6 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
         return str(coord_simp(point.x)) +'_'+ str(coord_simp(point.y))
         #return f"{point.x:.6f}_{point.y:.6f}"
 
-    # function to return a unique identifier
-    #TODO
-    '''
-    id_ = 0
-    def next_id_i():
-        global id_
-        id_ += 1
-        return id_
-    '''
-
     for _, f in gdf.iterrows():
 
         #get driving direction
@@ -111,15 +107,23 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
         if not isinstance(geom, LineString): continue
         coords = list(geom.coords)
 
+        #code for initial and final node levels
+        ini_node_level = "" if initial_node_level_fun == None else "_" + initial_node_level_fun(f)
+        fin_node_level = "" if final_node_level_fun == None else "_" + final_node_level_fun(f)
+
         if detailled:
             # detailled decomposition: one graph node per line vertex
 
             p1 = Point(coords[0])
-            n1 = node_id(p1)
+            n1 = node_id(p1) + ini_node_level
             nb = len(coords) - 1
             for i in range(nb):
                 p2 = Point(coords[i+1])
-                n2 = node_id(p2) # if i==nb else next_id_i()
+                n2 = node_id(p2)
+
+                #add node code part for levels
+                if i==nb: n2 += fin_node_level # for the last node, add the final node level code
+                else: n2 += ini_node_level+fin_node_level # for vertex nodes, add both initial and final node codes
 
                 # may happen
                 if n1==n2: continue
@@ -147,9 +151,9 @@ def ___graph_adjacency_list_from_geodataframe(gdf, weight_fun = lambda feature,s
         else:
             # not detailled: a single edge between first and last line points
             p1 = Point(coords[0])
-            n1 = node_id(p1)
+            n1 = node_id(p1) + ini_node_level
             p2 = Point(coords[-1])
-            n2 = node_id(p2)
+            n2 = node_id(p2) + fin_node_level
 
             if n1 != n2:
 
