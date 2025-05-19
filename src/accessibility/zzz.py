@@ -24,6 +24,8 @@ def direction_fun(feature):
     return None
 
 
+#TODO fix parallelism
+
 '''
 TODO handle multi level network
 
@@ -42,7 +44,7 @@ accessiblity_grid_k_nearest_dijkstra(
     road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/tomtom_202312.gpkg', bbox=bbox).query("ONEWAY != 'N'"),
     bbox = bbox,
     out_folder = "/home/juju/Bureau/",
-    out_file = "grid_education",
+    out_file = "grid",
     k = 3,
     weight_function = lambda feature, length : -1 if feature.KPH==0 else 1.1*length/feature.KPH*3.6,
     direction_fun = direction_fun,
@@ -53,7 +55,7 @@ accessiblity_grid_k_nearest_dijkstra(
     extention_buffer = 30000,
     detailled = True,
     crs = 'EPSG:3035',
-    num_processors_to_use = 8,
+    num_processors_to_use = 1,
     save_GPKG = True,
     save_CSV = False,
     save_parquet = False
