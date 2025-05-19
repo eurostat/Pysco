@@ -27,18 +27,6 @@ def direction_fun(feature):
 #TODO vitesse dans les 2 sens
 #TODO snappable sections
 
-'''
-TODO handle multi level network
-
-F_ELEV
-T_ELEV
-
-0 = niveau du sol
-1, 2 = ponts, passages supérieurs
--1, -2 = tunnels, passages inférieurs
-'''
-
-
 
 accessiblity_grid_k_nearest_dijkstra(
     pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/basic_services/education_2023_3035.gpkg', bbox=bbox),
