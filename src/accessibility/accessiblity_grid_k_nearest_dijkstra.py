@@ -255,6 +255,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        partition_size = 100000,
                        extention_buffer = 30000,
                        detailled = False,
+                       duration_simplification = None,
                        crs = 'EPSG:3035',
                        num_processors_to_use = 1,
                        save_GPKG = True,
@@ -375,11 +376,10 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         #[cell_geometries, grd_ids, costs, distances_to_node] = proceed_partition([4036000, 2948000])
         #proceed_partition([4000000, 2500000])
 
-        simp_fun = round
-
         #make output geodataframe
         data = { 'geometry':cell_geometries, 'GRD_ID':grd_ids, 'distance_to_node':distances_to_node }
         for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
+
         # compute average duration and simplify duration values
         averages = []
         for i in range(len(data['geometry'])):
@@ -389,9 +389,11 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                 dur = data['duration_'+str(kk+1)][i]
                 sum += dur
                 # simplify duration values
-                data['duration_'+str(kk+1)][i] = simp_fun(dur)
-            # store average
-            averages.append(simp_fun(sum/k))
+                if duration_simplification != None: data['duration_'+str(kk+1)][i] = duration_simplification(dur)
+            # store average value, simplified if necessary
+            sum = sum/k
+            if duration_simplification != None: sum = duration_simplification(sum)
+            averages.append(sum)
         data['duration_average_'+str(k)] = averages
 
         # make geodataframe
