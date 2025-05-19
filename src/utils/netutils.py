@@ -91,12 +91,15 @@ def nodes_spatial_index(graph):
     nodes = []
     for node in graph.nodes(): nodes.append(node)
 
-    #TODO make it faster, see other function below
-    idx = index.Index()
+    # prepare list of elements to add
+    items = []
     for i in range(graph.number_of_nodes()):
         node = nodes[i]
         [x,y] = node_coordinate(node)
-        idx.insert(i, (x,y,x,y))
+        items.append((i, (x,y,x,y), None))
+
+    # build index
+    idx = index.Index(((i, box, obj) for i, box, obj in items))
     return idx
 
 

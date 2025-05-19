@@ -27,7 +27,6 @@ def direction_fun(feature):
 #TODO améliorer le where
 #TODO vitesse dans les 2 sens
 #TODO add average
-#TODO improve spatial index speed
 
 '''
 TODO handle multi level network
