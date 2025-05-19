@@ -23,10 +23,8 @@ def direction_fun(feature):
 
 
 #TODO fix parallelism
-#TODO duration minutes rounding
 #TODO améliorer le where
 #TODO vitesse dans les 2 sens
-#TODO add average
 
 '''
 TODO handle multi level network
