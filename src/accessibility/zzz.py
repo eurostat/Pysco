@@ -54,7 +54,7 @@ accessiblity_grid_k_nearest_dijkstra(
     partition_size = 20000,
     extention_buffer = 30000,
     detailled = True,
-    duration_simplification_fun = None,
+    duration_simplification_fun = lambda x:round(x,1),
     crs = 'EPSG:3035',
     num_processors_to_use = 1,
     save_GPKG = True,
