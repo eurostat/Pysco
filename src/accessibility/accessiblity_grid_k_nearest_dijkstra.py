@@ -331,7 +331,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                 #store costs
                 for kk in range(k):
                     if kk>=len(cs): costs[kk].append(-1)
-                    else: costs[kk].append(round(cs[kk]['cost']/60))
+                    else: costs[kk].append(cs[kk]['cost']/60)
 
                 #store distance cell center/node
                 distances_to_node.append(dtn)
@@ -375,9 +375,20 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         #[cell_geometries, grd_ids, costs, distances_to_node] = proceed_partition([4036000, 2948000])
         #proceed_partition([4000000, 2500000])
 
+        simp_fun = round
+
         #make output geodataframe
         data = { 'geometry':cell_geometries, 'GRD_ID':grd_ids, 'distance_to_node':distances_to_node }
         for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
+        # compute average duration and simplify duration values
+        for dd in data:
+            #compute average
+            sum = 0
+            for kk in range(k): sum += data['duration_'+str(kk+1)]
+            data['duration_average_'+k] = simp_fun(sum/k)
+            #simplify duration values
+            for kk in range(k): data['duration_'+str(kk+1)] = simp_fun( data['duration_'+str(kk+1)] )
+        # make geodataframe
         out = gpd.GeoDataFrame(data)
 
         #save output
