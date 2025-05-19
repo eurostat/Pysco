@@ -286,10 +286,12 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         pois = pois_loader(extended_bbox)
         print(datetime.now(),x_part,y_part, len(pois), "POIs loaded")
 
-        print(datetime.now(),x_part,y_part, "get source nodes")
+        print(datetime.now(),x_part,y_part, "build nodes spatial index")
         #TODO check how to speed up that
         #TODO should be only snappable nodes
         idx = nodes_spatial_index_adjacendy_list(graph)
+
+        print(datetime.now(),x_part,y_part, "get source nodes")
         nodes_ = list(graph.keys())
         sources = []
         for iii, poi in pois.iterrows():

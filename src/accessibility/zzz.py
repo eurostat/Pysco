@@ -27,6 +27,7 @@ def direction_fun(feature):
 #TODO améliorer le where
 #TODO vitesse dans les 2 sens
 #TODO add average
+#TODO improve spatial index speed
 
 '''
 TODO handle multi level network
@@ -55,7 +56,7 @@ accessiblity_grid_k_nearest_dijkstra(
     cell_network_max_distance= grid_resolution * 1.5,
     partition_size = 20000,
     extention_buffer = 30000,
-    detailled = False,
+    detailled = True,
     crs = 'EPSG:3035',
     num_processors_to_use = 1,
     save_GPKG = True,
