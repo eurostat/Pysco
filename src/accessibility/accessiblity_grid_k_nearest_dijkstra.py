@@ -255,7 +255,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        partition_size = 100000,
                        extention_buffer = 30000,
                        detailled = False,
-                       duration_simplification = None,
+                       duration_simplification_fun = None,
                        crs = 'EPSG:3035',
                        num_processors_to_use = 1,
                        save_GPKG = True,
@@ -389,10 +389,10 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                 dur = data['duration_'+str(kk+1)][i]
                 sum += dur
                 # simplify duration values
-                if duration_simplification != None: data['duration_'+str(kk+1)][i] = duration_simplification(dur)
+                if duration_simplification_fun != None: data['duration_'+str(kk+1)][i] = duration_simplification_fun(dur)
             # store average value, simplified if necessary
             sum = sum/k
-            if duration_simplification != None: sum = duration_simplification(sum)
+            if duration_simplification_fun != None: sum = duration_simplification_fun(sum)
             averages.append(sum)
         data['duration_average_'+str(k)] = averages
 
