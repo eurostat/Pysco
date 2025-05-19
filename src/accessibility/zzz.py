@@ -22,10 +22,10 @@ def direction_fun(feature):
     return None
 
 
-#TODO fix parallelism
-#TODO améliorer le where
-#TODO vitesse dans les 2 sens
 #TODO snappable sections
+#TODO améliorer le where
+#TODO fix parallelism
+#TODO vitesse dans les 2 sens
 
 
 accessiblity_grid_k_nearest_dijkstra(
