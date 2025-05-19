@@ -4,8 +4,6 @@ from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dij
  
 #luxembourg
 bbox = [4030000, 2940000, 4050000, 2960000]
-#marseille
-#bbox = [3900000, 2200000, 4000000, 2300000]
 #big
 #bbox = [3500000, 2000000, 4000000, 2500000]
 
@@ -26,6 +24,9 @@ def direction_fun(feature):
 
 #TODO fix parallelism
 #TODO duration minutes rounding
+#TODO améliorer le where
+#TODO vitesse dans les 2 sens
+#TODO add average
 
 '''
 TODO handle multi level network
@@ -54,7 +55,7 @@ accessiblity_grid_k_nearest_dijkstra(
     cell_network_max_distance= grid_resolution * 1.5,
     partition_size = 20000,
     extention_buffer = 30000,
-    detailled = True,
+    detailled = False,
     crs = 'EPSG:3035',
     num_processors_to_use = 1,
     save_GPKG = True,
