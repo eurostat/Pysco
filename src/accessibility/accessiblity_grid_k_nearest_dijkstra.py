@@ -253,6 +253,8 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        k = 3,
                        weight_function = lambda feature,sl:sl,
                        direction_fun=lambda feature:"both", #('both', 'oneway', 'forward', 'backward')
+                       initial_node_level_fun=None,
+                       final_node_level_fun=None,
                        cell_id_fun=lambda x,y:str(x)+"_"+str(y),
                        grid_resolution=1000,
                        cell_network_max_distance=-1,
@@ -271,19 +273,21 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
     def proceed_partition(xy):
         [x_part,y_part] = xy
 
-
         #partition extended bbox
         extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
-
-        #data = gpd.read_file(tomtom, bbox=bbox)
-        #print(len(data))
 
         print(datetime.now(),x_part,y_part, "load road sections")
         roads = road_network_loader(extended_bbox)
         print(datetime.now(),x_part,y_part, len(roads), "road sections loaded")
 
         print(datetime.now(),x_part,y_part, "make graph")
-        graph = ___graph_adjacency_list_from_geodataframe(roads, weight_fun=weight_function, direction_fun=direction_fun, detailled=detailled)
+        graph = ___graph_adjacency_list_from_geodataframe(roads,
+                                                          weight_fun=weight_function,
+                                                          direction_fun=direction_fun,
+                                                          detailled=detailled,
+                                                          initial_node_level_fun=initial_node_level_fun,
+                                                          final_node_level_fun=final_node_level_fun)
+
         #TODO return snappable nodes
         del roads
         print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes")
