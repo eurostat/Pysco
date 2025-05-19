@@ -111,26 +111,19 @@ def ___graph_adjacency_list_from_geodataframe(gdf,
         ini_node_level = "" if initial_node_level_fun == None else "_" + str(initial_node_level_fun(f))
         fin_node_level = "" if final_node_level_fun == None else "_" + str(final_node_level_fun(f))
 
-        print(ini_node_level, fin_node_level)
-
         if detailled:
             # detailled decomposition: one graph node per line vertex
 
             p1 = Point(coords[0])
             n1 = node_id(p1) + ini_node_level
-            #print(n1)
             nb = len(coords) - 1
             for i in range(nb):
                 p2 = Point(coords[i+1])
                 n2 = node_id(p2)
 
-                if i==nb: print("aaaaa !")
-
                 #add node code part for levels
-                if i==nb: n2 += fin_node_level # for the last node, add the final node level code
+                if i==nb-1: n2 += fin_node_level # for the last node, add the final node level code
                 else: n2 += ini_node_level+fin_node_level # for vertex nodes, add both initial and final node codes
-
-                #print(n2)
 
                 # may happen
                 if n1==n2: continue
