@@ -263,6 +263,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        save_parquet = False
                        ):
 
+    # function to launch in parallel for each partition
     def proceed_partition(xy):
         [x_part,y_part] = xy
 
