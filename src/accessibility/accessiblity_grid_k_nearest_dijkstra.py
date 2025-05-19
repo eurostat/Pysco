@@ -376,11 +376,8 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         #proceed_partition([4000000, 2500000])
 
         #make output geodataframe
-        data = {}
-        data['geometry'] = cell_geometries
-        data['GRD_ID'] = grd_ids
+        data = { 'geometry':cell_geometries, 'GRD_ID':grd_ids, 'distance_to_node':distances_to_node }
         for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
-        data['distance_to_node'] = distances_to_node
         out = gpd.GeoDataFrame(data)
 
         #save output
