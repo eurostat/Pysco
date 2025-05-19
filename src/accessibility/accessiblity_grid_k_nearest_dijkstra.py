@@ -381,17 +381,23 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         data = { 'geometry':cell_geometries, 'GRD_ID':grd_ids, 'distance_to_node':distances_to_node }
         for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
         # compute average duration and simplify duration values
-        for dd in data:
-            #compute average
+        averages = []
+        for i in range(len(data['geometry'])):
+            # compute average
             sum = 0
-            for kk in range(k): sum += data['duration_'+str(kk+1)]
-            data['duration_average_'+k] = simp_fun(sum/k)
-            #simplify duration values
-            for kk in range(k): data['duration_'+str(kk+1)] = simp_fun( data['duration_'+str(kk+1)] )
+            for kk in range(k):
+                dur = data['duration_'+str(kk+1)][i]
+                sum += dur
+                # simplify duration values
+                data['duration_'+str(kk+1)][i] = simp_fun(dur)
+            # store average
+            averages.append(simp_fun(sum/k))
+        data['duration_average_'+str(k)] = averages
+
         # make geodataframe
         out = gpd.GeoDataFrame(data)
 
-        #save output
+        # save output
 
         if(save_GPKG):
             print(datetime.now(), "save as GPKG")
