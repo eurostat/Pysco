@@ -374,9 +374,14 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
 
         # launch tasks and collect outputs
         for task_output in concurrent.futures.as_completed(tasks_to_do):
+            # get task result
             out = task_output.result()
+
+            # skip if empty result
             if out==None : continue
             if len(out[0])==0: continue
+
+            # combine results
             cell_geometries += out[0]
             grd_ids += out[1]
             costs_ = out[2]
@@ -384,9 +389,6 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
             distances_to_node += out[3]
 
         print(datetime.now(), len(cell_geometries), "cells")
-
-        #[cell_geometries, grd_ids, costs, distances_to_node] = proceed_partition([4036000, 2948000])
-        #proceed_partition([4000000, 2500000])
 
         #make output geodataframe
         data = { 'geometry':cell_geometries, 'GRD_ID':grd_ids, 'distance_to_node':distances_to_node }
