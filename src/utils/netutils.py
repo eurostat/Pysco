@@ -93,6 +93,8 @@ def nodes_spatial_index(graph):
     nodes = []
     for node in graph.nodes(): nodes.append(node)
 
+    if graph.number_of_nodes() == 0: return index.Index()
+
     # prepare list of elements to add
     items = []
     for i in range(graph.number_of_nodes()):
@@ -108,6 +110,8 @@ def nodes_spatial_index(graph):
 
 def nodes_spatial_index_adjacendy_list(graph):
     nodes = list(graph.keys())
+
+    if len(nodes) == 0: return index.Index()
 
     # prepare list of elements to add
     items = []

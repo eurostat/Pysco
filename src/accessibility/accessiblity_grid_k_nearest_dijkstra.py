@@ -279,6 +279,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         print(datetime.now(),x_part,y_part, "load road sections")
         roads = road_network_loader(extended_bbox)
         print(datetime.now(),x_part,y_part, len(roads), "road sections loaded")
+        if(len(roads)==0): return
 
         print(datetime.now(),x_part,y_part, "make graph")
         graph = ___graph_adjacency_list_from_geodataframe(roads,
@@ -291,10 +292,12 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         #TODO return snappable nodes
         del roads
         print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes")
+        if(len(graph.keys())==0): return
 
         print(datetime.now(),x_part,y_part, "load POIs")
         pois = pois_loader(extended_bbox)
         print(datetime.now(),x_part,y_part, len(pois), "POIs loaded")
+        if(len(pois)==0): return
 
         print(datetime.now(),x_part,y_part, "build nodes spatial index")
         #TODO should be only snappable nodes
@@ -308,6 +311,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
             sources.append(n)
         del pois
         print(datetime.now(),x_part,y_part, len(sources), "source nodes found")
+        if(len(sources)==0): return
 
         print(datetime.now(),x_part,y_part, "compute accessiblity")
         result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)

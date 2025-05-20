@@ -26,6 +26,7 @@ def direction_fun(feature):
 #TODO améliorer le where
 #TODO fix parallelism
 #TODO vitesse dans les 2 sens
+#TODO test with partition size = 250km ?
 
 
 accessiblity_grid_k_nearest_dijkstra(
