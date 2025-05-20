@@ -5,6 +5,8 @@ import heapq
 from shapely.geometry import LineString, Point
 from collections import defaultdict
 import concurrent.futures
+from multiprocessing import Pool
+
 
 import sys
 import os
@@ -262,6 +264,115 @@ def ___export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3
 
 
 
+def pp(xy):
+    print(xy)
+    [x,y]=xy
+    return x+y
+
+
+
+# function to launch in parallel for each partition
+def proceed_partition(data):
+    [x_part,y_part] = data['xy']
+    #data['']
+
+    #partition extended bbox
+    extention_buffer = data['extention_buffer']
+    partition_size = data['partition_size']
+    extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
+
+    print(datetime.now(),x_part,y_part, "load road sections")
+    roads = data['road_network_loader'](extended_bbox)
+    print(datetime.now(),x_part,y_part, len(roads), "road sections loaded")
+    if(len(roads)==0): return
+
+    print(datetime.now(),x_part,y_part, "make graph")
+    graph_ = ___graph_adjacency_list_from_geodataframe(roads,
+                                                        weight_fun = data['weight_function'],
+                                                        direction_fun = data['direction_fun'],
+                                                        is_not_snappable_fun = data['is_not_snappable_fun'],
+                                                        detailled = data['detailled'],
+                                                        initial_node_level_fun = data['initial_node_level_fun'],
+                                                        final_node_level_fun = data['final_node_level_fun'])
+    graph = graph_['graph']
+    snappable_nodes = graph_['snappable_nodes']
+    del graph_, roads
+    print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
+    if(len(graph.keys())==0): return
+    if(len(snappable_nodes)==0): return
+
+    print(datetime.now(),x_part,y_part, "load POIs")
+    pois = data['pois_loader'](extended_bbox)
+    print(datetime.now(),x_part,y_part, len(pois), "POIs loaded")
+    if(len(pois)==0): return
+
+    print(datetime.now(),x_part,y_part, "build nodes spatial index")
+    idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
+
+    print(datetime.now(),x_part,y_part, "get source nodes")
+    sources = []
+    for iii, poi in pois.iterrows():
+        n = snappable_nodes[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
+        sources.append(n)
+    del pois
+    print(datetime.now(),x_part,y_part, len(sources), "source nodes found")
+    if(len(sources)==0): return
+
+    print(datetime.now(),x_part,y_part, "compute accessiblity")
+    k = data['k']
+    result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
+    del graph, sources
+
+    print(datetime.now(), x_part, y_part, "extract cell accessibility data")
+    cell_geometries = [] #the cell geometries
+    grd_ids = [] #the cell identifiers
+    costs = [] #the costs - an array of arrays
+    for _ in range(k): costs.append([])
+    distances_to_node = [] #the cell center distance to its graph node
+
+    #go through cells
+    grid_resolution = data['grid_resolution']
+    cell_network_max_distance = data['cell_network_max_distance']
+    r2 = grid_resolution / 2
+    for x in range(x_part, x_part+partition_size, grid_resolution):
+        for y in range(y_part, y_part+partition_size, grid_resolution):
+
+            #get cell node
+            ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
+            if ni_ == None: continue
+            n = snappable_nodes[ni_]
+
+            #compute distance to network and skip if too far
+            dtn = round(distance_to_node(n,x+r2,y+r2))
+            if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
+
+            #get costs
+            cs = result[n]
+
+            #store costs
+            for kk in range(k):
+                if kk>=len(cs): costs[kk].append(-1)
+                else: costs[kk].append(cs[kk]['cost']/60)
+
+            #store distance cell center/node
+            distances_to_node.append(dtn)
+
+            #store cell id
+            grd_ids.append(data['cell_id_fun'](x,y))
+
+            #store grid cell geometry
+            cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
+            cell_geometries.append(cell_geometry)
+
+    print(datetime.now(), x_part, y_part, len(cell_geometries), "cells created")
+
+    del result, idx, snappable_nodes
+    return [cell_geometries, grd_ids, costs, distances_to_node]
+
+
+
+
+
 
 def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        road_network_loader,
@@ -288,104 +399,33 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        save_parquet = False
                        ):
 
-    # function to launch in parallel for each partition
-    def proceed_partition(xy):
-        [x_part,y_part] = xy
-
-        #partition extended bbox
-        extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
-
-        print(datetime.now(),x_part,y_part, "load road sections")
-        roads = road_network_loader(extended_bbox)
-        print(datetime.now(),x_part,y_part, len(roads), "road sections loaded")
-        if(len(roads)==0): return
-
-        print(datetime.now(),x_part,y_part, "make graph")
-        graph_ = ___graph_adjacency_list_from_geodataframe(roads,
-                                                          weight_fun=weight_function,
-                                                          direction_fun=direction_fun,
-                                                          is_not_snappable_fun=is_not_snappable_fun,
-                                                          detailled=detailled,
-                                                          initial_node_level_fun=initial_node_level_fun,
-                                                          final_node_level_fun=final_node_level_fun)
-        graph = graph_['graph']
-        snappable_nodes = graph_['snappable_nodes']
-        del graph_, roads
-        print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
-        if(len(graph.keys())==0): return
-        if(len(snappable_nodes)==0): return
-
-        print(datetime.now(),x_part,y_part, "load POIs")
-        pois = pois_loader(extended_bbox)
-        print(datetime.now(),x_part,y_part, len(pois), "POIs loaded")
-        if(len(pois)==0): return
-
-        print(datetime.now(),x_part,y_part, "build nodes spatial index")
-        idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
-
-        print(datetime.now(),x_part,y_part, "get source nodes")
-        sources = []
-        for iii, poi in pois.iterrows():
-            n = snappable_nodes[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
-            sources.append(n)
-        del pois
-        print(datetime.now(),x_part,y_part, len(sources), "source nodes found")
-        if(len(sources)==0): return
-
-        print(datetime.now(),x_part,y_part, "compute accessiblity")
-        result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
-        del graph, sources
-
-        print(datetime.now(), x_part, y_part, "extract cell accessibility data")
-        cell_geometries = [] #the cell geometries
-        grd_ids = [] #the cell identifiers
-        costs = [] #the costs - an array of arrays
-        for _ in range(k): costs.append([])
-        distances_to_node = [] #the cell center distance to its graph node
-
-        #go through cells
-        r2 = grid_resolution / 2
-        for x in range(x_part, x_part+partition_size, grid_resolution):
-            for y in range(y_part, y_part+partition_size, grid_resolution):
-
-                #get cell node
-                ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
-                if ni_ == None: continue
-                n = snappable_nodes[ni_]
-
-                #compute distance to network and skip if too far
-                dtn = round(distance_to_node(n,x+r2,y+r2))
-                if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
-
-                #get costs
-                cs = result[n]
-
-                #store costs
-                for kk in range(k):
-                    if kk>=len(cs): costs[kk].append(-1)
-                    else: costs[kk].append(cs[kk]['cost']/60)
-
-                #store distance cell center/node
-                distances_to_node.append(dtn)
-
-                #store cell id
-                grd_ids.append(cell_id_fun(x,y))
-
-                #store grid cell geometry
-                cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
-                cell_geometries.append(cell_geometry)
-
-        print(datetime.now(), x_part, y_part, len(cell_geometries), "cells created")
-
-        del result, idx, snappable_nodes
-        return [cell_geometries, grd_ids, costs, distances_to_node]
-
-
     #launch parallel computation   
-    partitions = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
-    print(datetime.now(), "launch tasks ( nb =", len(partitions), ") and collect outputs")
+    datas = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
+    datas = [
+        { 'xy':xy,
+            'pois_loader' : pois_loader,
+            'road_network_loader' : road_network_loader,
+            'k' : k,
+            'weight_function' : weight_function,
+            'direction_fun' : direction_fun,
+            'is_not_snappable_fun' : is_not_snappable_fun,
+            'initial_node_level_fun' : initial_node_level_fun,
+            'final_node_level_fun' : final_node_level_fun,
+            'cell_id_fun' : cell_id_fun,
+            'grid_resolution' : grid_resolution,
+            'cell_network_max_distance' : cell_network_max_distance,
+            'detailled' : detailled,
+         }
+        for xy in datas
+        ]
+    print(datetime.now(), "launch tasks ( nb =", len(datas), ") and collect outputs")
+
+    #out = Pool(4).map(pp, partitions)
+    #print(out)
+    #return
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
-        tasks_to_do = {executor.submit(proceed_partition, partition): partition for partition in partitions}
+        tasks_to_do = { executor.submit(proceed_partition, data): data for data in datas }
 
         # out data
         cell_geometries = []
