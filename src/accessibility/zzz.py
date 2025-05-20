@@ -77,7 +77,7 @@ accessiblity_grid_k_nearest_dijkstra(
     detailled = True,
     duration_simplification_fun = lambda x:round(x,1),
     crs = 'EPSG:3035',
-    num_processors_to_use = 4,
+    num_processors_to_use = 8,
     save_GPKG = True,
     save_CSV = False,
     save_parquet = False
