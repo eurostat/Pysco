@@ -76,6 +76,7 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 def ___graph_adjacency_list_from_geodataframe(gdf,
                                               weight_fun = lambda feature,sl:sl,
                                               direction_fun=lambda feature:"both",
+                                              is_not_snappable_fun = None,
                                               coord_simp=round,
                                               detailled=False,
                                               initial_node_level_fun=None,
@@ -88,7 +89,9 @@ def ___graph_adjacency_list_from_geodataframe(gdf,
     :param direction_fun: return section direction ('both', 'oneway', 'forward', 'backward')
     :return: graph (adjacency list: {node_id: [(neighbor_node_id, travel_time)]})
     """
+
     graph = defaultdict(list)
+    snappable_nodes = set()
 
     # function to build node id based on its coordinates
     def node_id(point):
@@ -98,28 +101,33 @@ def ___graph_adjacency_list_from_geodataframe(gdf,
 
     for _, f in gdf.iterrows():
 
-        #get driving direction
+        # get driving direction
         direction = direction_fun(f)
         if direction == None: continue
 
-        #get feature geometry
+        # get feature geometry
         geom = f.geometry
         if not isinstance(geom, LineString): continue
         coords = list(geom.coords)
 
-        #code for initial and final node levels
+        # code for initial and final node levels
         ini_node_level = "" if initial_node_level_fun == None else "_" + str(initial_node_level_fun(f))
         fin_node_level = "" if final_node_level_fun == None else "_" + str(final_node_level_fun(f))
+
+        #
+        is_snappable = True if is_not_snappable_fun==None else not is_not_snappable_fun(f)
 
         if detailled:
             # detailled decomposition: one graph node per line vertex
 
             p1 = Point(coords[0])
             n1 = node_id(p1) + ini_node_level
+            if is_snappable: snappable_nodes.add(n1)
             nb = len(coords) - 1
             for i in range(nb):
                 p2 = Point(coords[i+1])
                 n2 = node_id(p2)
+                if is_snappable: snappable_nodes.add(n2)
 
                 #add node code part for levels
                 if i==nb-1: n2 += fin_node_level # for the last node, add the final node level code
@@ -152,8 +160,10 @@ def ___graph_adjacency_list_from_geodataframe(gdf,
             # not detailled: a single edge between first and last line points
             p1 = Point(coords[0])
             n1 = node_id(p1) + ini_node_level
+            if is_snappable: snappable_nodes.add(n1)
             p2 = Point(coords[-1])
             n2 = node_id(p2) + fin_node_level
+            if is_snappable: snappable_nodes.add(n2)
 
             if n1 != n2:
 
@@ -173,7 +183,8 @@ def ___graph_adjacency_list_from_geodataframe(gdf,
                     if graph[n1] == None: graph[n1] = []
                     graph[n2].append((n1, w))
 
-    return graph
+
+    return { 'graph':graph, 'snappable_nodes':list(snappable_nodes) }
 
 
 
@@ -253,6 +264,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        k = 3,
                        weight_function = lambda feature,sl:sl,
                        direction_fun=lambda feature:"both", #('both', 'oneway', 'forward', 'backward')
+                       is_not_snappable_fun = None,
                        initial_node_level_fun=None,
                        final_node_level_fun=None,
                        cell_id_fun=lambda x,y:str(x)+"_"+str(y),
@@ -282,14 +294,17 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         if(len(roads)==0): return
 
         print(datetime.now(),x_part,y_part, "make graph")
-        graph = ___graph_adjacency_list_from_geodataframe(roads,
+        graph_ = ___graph_adjacency_list_from_geodataframe(roads,
                                                           weight_fun=weight_function,
                                                           direction_fun=direction_fun,
+                                                          is_not_snappable_fun=is_not_snappable_fun,
                                                           detailled=detailled,
                                                           initial_node_level_fun=initial_node_level_fun,
                                                           final_node_level_fun=final_node_level_fun)
-
-        #TODO return snappable nodes
+        graph = graph_['graph']
+        snappable_nodes = graph_['snappable_nodes']
+        del graph_
+        print(len(snappable_nodes), graph.keys())
         del roads
         print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes")
         if(len(graph.keys())==0): return
