@@ -310,11 +310,10 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                                                           final_node_level_fun=final_node_level_fun)
         graph = graph_['graph']
         snappable_nodes = graph_['snappable_nodes']
-        del graph_
-        print(len(snappable_nodes), len(graph.keys()))
-        del roads
-        print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes")
+        del graph_, roads
+        print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
         if(len(graph.keys())==0): return
+        if(len(snappable_nodes)==0): return
 
         print(datetime.now(),x_part,y_part, "load POIs")
         pois = pois_loader(extended_bbox)
@@ -322,8 +321,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         if(len(pois)==0): return
 
         print(datetime.now(),x_part,y_part, "build nodes spatial index")
-        #TODO should be only snappable nodes
-        idx = nodes_spatial_index_adjacendy_list(graph)
+        idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
         print(datetime.now(),x_part,y_part, "get source nodes")
         nodes_ = list(graph.keys())
@@ -352,7 +350,6 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
             for y in range(y_part, y_part+partition_size, grid_resolution):
 
                 #get cell node
-                #TODO should be a snappable node
                 ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
                 if ni_ == None: continue
                 n = nodes_[ni_]

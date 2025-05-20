@@ -108,9 +108,7 @@ def nodes_spatial_index(graph):
 
 
 
-def nodes_spatial_index_adjacendy_list(graph):
-    nodes = list(graph.keys())
-
+def nodes_spatial_index_adjacendy_list(nodes):
     if len(nodes) == 0: return index.Index()
 
     # prepare list of elements to add
