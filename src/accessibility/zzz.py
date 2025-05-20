@@ -26,7 +26,7 @@ def direction_fun(feature):
 #TODO improve data loading: use fiona to load only necessary features, with the where ?
 #TODO handle case when speed depends on driving direction
 
-
+'''
 accessiblity_grid_k_nearest_dijkstra(
     pois_loader = lambda bbox: gpd.read_file('/home/juju/geodata/gisco/basic_services/education_2023_3035.gpkg', bbox=bbox),
     road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/tomtom_202312.gpkg', bbox=bbox).query("ONEWAY != 'N'"),
@@ -52,6 +52,7 @@ accessiblity_grid_k_nearest_dijkstra(
     save_CSV = False,
     save_parquet = False
 )
+'''
 
 
 
@@ -71,7 +72,7 @@ accessiblity_grid_k_nearest_dijkstra(
     cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
     grid_resolution= grid_resolution,
     cell_network_max_distance= grid_resolution * 1.5,
-    partition_size = 250000,
+    partition_size = 100000,
     extention_buffer = 60000,
     detailled = True,
     duration_simplification_fun = lambda x:round(x,1),
