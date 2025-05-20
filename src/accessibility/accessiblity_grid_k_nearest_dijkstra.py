@@ -353,6 +353,8 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                 cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
                 cell_geometries.append(cell_geometry)
 
+        print(datetime.now(), x_part, y_part, len(cell_geometries), "cells created")
+
         del result, idx, nodes_
         return [cell_geometries, grd_ids, costs, distances_to_node]
 
@@ -373,7 +375,8 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         # launch tasks and collect outputs
         for task_output in concurrent.futures.as_completed(tasks_to_do):
             out = task_output.result()
-            if(out==None): continue
+            if out==None : continue
+            if len(out[0])==0: continue
             cell_geometries += out[0]
             grd_ids += out[1]
             costs_ = out[2]
