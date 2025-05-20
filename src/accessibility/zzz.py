@@ -22,8 +22,6 @@ def direction_fun(feature):
     return None
 
 
-#TODO snappable sections
-#TODO node indexing: remove node list nodes_ ?
 #TODO améliorer le where
 #TODO fix parallelism
 #TODO vitesse dans les 2 sens
