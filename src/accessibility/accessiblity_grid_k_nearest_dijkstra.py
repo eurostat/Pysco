@@ -402,7 +402,10 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
     #launch parallel computation   
     datas = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
     datas = [
-        { 'xy':xy,
+        {
+            'xy' : xy,
+            'extention_buffer' : extention_buffer,
+            'partition_size' : partition_size,
             'pois_loader' : pois_loader,
             'road_network_loader' : road_network_loader,
             'k' : k,
