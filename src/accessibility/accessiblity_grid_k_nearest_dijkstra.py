@@ -120,14 +120,16 @@ def ___graph_adjacency_list_from_geodataframe(gdf,
         if detailled:
             # detailled decomposition: one graph node per line vertex
 
+            # make first node
             p1 = Point(coords[0])
             n1 = node_id(p1) + ini_node_level
-            if is_snappable: snappable_nodes.add(n1)
+
             nb = len(coords) - 1
             for i in range(nb):
+
+                # make next node
                 p2 = Point(coords[i+1])
                 n2 = node_id(p2)
-                if is_snappable: snappable_nodes.add(n2)
 
                 #add node code part for levels
                 if i==nb-1: n2 += fin_node_level # for the last node, add the final node level code
@@ -153,6 +155,9 @@ def ___graph_adjacency_list_from_geodataframe(gdf,
                     if graph[n1] == None: graph[n1] = []
                     graph[n2].append((n1, w))
 
+                # collect snappable nodes
+                if is_snappable: snappable_nodes.update([n1, n2])
+
                 # next segment
                 p1 = p2
                 n1 = n2
@@ -160,10 +165,9 @@ def ___graph_adjacency_list_from_geodataframe(gdf,
             # not detailled: a single edge between first and last line points
             p1 = Point(coords[0])
             n1 = node_id(p1) + ini_node_level
-            if is_snappable: snappable_nodes.add(n1)
+
             p2 = Point(coords[-1])
             n2 = node_id(p2) + fin_node_level
-            if is_snappable: snappable_nodes.add(n2)
 
             if n1 != n2:
 
@@ -182,6 +186,9 @@ def ___graph_adjacency_list_from_geodataframe(gdf,
                 if direction == 'backward':
                     if graph[n1] == None: graph[n1] = []
                     graph[n2].append((n1, w))
+
+                # collect snappable nodes
+                if is_snappable: snappable_nodes.update([n1, n2])
 
 
     return { 'graph':graph, 'snappable_nodes':list(snappable_nodes) }
@@ -304,7 +311,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         graph = graph_['graph']
         snappable_nodes = graph_['snappable_nodes']
         del graph_
-        print(len(snappable_nodes), graph.keys())
+        print(len(snappable_nodes), len(graph.keys()))
         del roads
         print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes")
         if(len(graph.keys())==0): return
