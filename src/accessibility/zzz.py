@@ -38,7 +38,7 @@ accessiblity_grid_k_nearest_dijkstra(
     k = 3,
     weight_function = lambda feature, length : -1 if feature.KPH==0 else 1.1*length/feature.KPH*3.6,
     direction_fun = direction_fun,
-    #is_not_snappable_fun = lambda f: f.RAMP==1 or f.FOW==5 or (f.FOW==1 and f.FRC==0), # exclude highways and highway ramps
+    is_not_snappable_fun = lambda f: f.RAMP==1 or f.FOW==5 or (f.FOW==1 and f.FRC==0), # exclude highways and highway ramps
     initial_node_level_fun = lambda f:f.F_ELEV,
     final_node_level_fun = lambda f:f.T_ELEV,
     cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
