@@ -22,9 +22,9 @@ def direction_fun(feature):
     return None
 
 
-#TODO améliorer le where
 #TODO fix parallelism
-#TODO vitesse dans les 2 sens
+#TODO improve data loading: use fiona to load only necessary features, with the where ?
+#TODO handle case when speed depends on driving direction
 
 
 accessiblity_grid_k_nearest_dijkstra(
