@@ -116,10 +116,10 @@ def nodes_spatial_index_adjacendy_list(nodes):
     for i in range(len(nodes)):
         node = nodes[i]
         [x,y] = node_coordinate(node)
-        items.append((i, (x,y,x,y), node))
+        items.append((i, (x,y,x,y)))
 
     # build index
-    idx = index.Index(((i, box, obj) for i, box, obj in items))
+    idx = index.Index(((i, box) for i, box in items))
     return idx
 
 
