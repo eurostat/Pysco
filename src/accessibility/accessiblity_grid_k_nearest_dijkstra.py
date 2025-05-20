@@ -324,10 +324,9 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
         print(datetime.now(),x_part,y_part, "get source nodes")
-        nodes_ = snappable_nodes #list(graph.keys())
         sources = []
         for iii, poi in pois.iterrows():
-            n = nodes_[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
+            n = snappable_nodes[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
             sources.append(n)
         del pois
         print(datetime.now(),x_part,y_part, len(sources), "source nodes found")
@@ -352,7 +351,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                 #get cell node
                 ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
                 if ni_ == None: continue
-                n = nodes_[ni_]
+                n = snappable_nodes[ni_]
 
                 #compute distance to network and skip if too far
                 dtn = round(distance_to_node(n,x+r2,y+r2))
@@ -378,7 +377,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
 
         print(datetime.now(), x_part, y_part, len(cell_geometries), "cells created")
 
-        del result, idx, nodes_
+        del result, idx, snappable_nodes
         return [cell_geometries, grd_ids, costs, distances_to_node]
 
 

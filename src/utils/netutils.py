@@ -109,17 +109,14 @@ def nodes_spatial_index(graph):
 
 
 def nodes_spatial_index_adjacendy_list(nodes):
-    if len(nodes) == 0: return index.Index()
-
-    # prepare list of elements to add
-    items = []
-    for i in range(len(nodes)):
-        node = nodes[i]
-        [x,y] = node_coordinate(node)
-        items.append((i, (x,y,x,y)))
+    if not nodes:
+        return index.Index()
 
     # build index
-    idx = index.Index(((i, box) for i, box in items))
+    idx = index.Index(
+        ( (i, (x, y, x, y), None) for i, node in enumerate(nodes)
+          for x, y in [node_coordinate(node)] )
+    )
     return idx
 
 
