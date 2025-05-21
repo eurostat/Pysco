@@ -418,7 +418,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
     print(datetime.now(), "launch tasks ( nb =", len(datas), ") and collect outputs")
 
 
-    out = Pool(1).map(proceed_partition, datas)
+    out = Pool(10).map(proceed_partition, datas)
     #print(out)
     return
 
