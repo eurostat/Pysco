@@ -1,5 +1,5 @@
 import geopandas as gpd
-from shapely.geometry import box,Polygon
+from shapely.geometry import Polygon
 from datetime import datetime
 import heapq
 from shapely.geometry import LineString, Point, shape
@@ -271,7 +271,7 @@ def parallel_process(params):
     #partition extended bbox
     extention_buffer = params['extention_buffer']
     partition_size = params['partition_size']
-    extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
+    extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
     print(datetime.now(),x_part,y_part, "make graph")
     roads = params['road_network_loader'](extended_bbox)
