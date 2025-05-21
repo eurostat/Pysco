@@ -18,7 +18,7 @@ bbox = [3500000, 2000000, 4000000, 2500000]
 #test
 #bbox = [3800000, 2300000, 3900000, 2400000]
 #cnetral europe
-bbox = [ 2787491, 1774226, 5565799, 3423689 ]
+bbox = [ 2500000, 1500000, 5500000, 3500000 ]
 
 
 file_size_m = 500000
@@ -61,7 +61,7 @@ for service in ["education"]: #, "healthcare"]:
             accessiblity_grid_k_nearest_dijkstra(
                 pois_loader = pois_loader,
                 road_network_loader = road_network_loader,
-                bbox = bbox,
+                bbox = [x, y, x+file_size_m, y+file_size_m],
                 out_folder = out_folder,
                 out_file = out_file,
                 k = 3,
