@@ -44,11 +44,11 @@ accessiblity_grid_k_nearest_dijkstra(
     grid_resolution= grid_resolution,
     cell_network_max_distance= grid_resolution * 1.5,
     partition_size = 5000,
-    extention_buffer = 5000,
+    extention_buffer = 2000,
     detailled = True,
     duration_simplification_fun = lambda x:round(x,1),
     crs = 'EPSG:3035',
-    num_processors_to_use = 1,
+    num_processors_to_use = 10,
     save_GPKG = True,
     save_CSV = False,
     save_parquet = False

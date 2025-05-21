@@ -264,12 +264,6 @@ def ___export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3
 
 
 
-def pp(xy):
-    print(xy)
-    [x,y]=xy
-    return x+y
-
-
 
 # function to launch in parallel for each partition
 def proceed_partition(data):
@@ -423,9 +417,10 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         ]
     print(datetime.now(), "launch tasks ( nb =", len(datas), ") and collect outputs")
 
-    #out = Pool(4).map(pp, partitions)
+
+    out = Pool(1).map(proceed_partition, datas)
     #print(out)
-    #return
+    return
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
         tasks_to_do = { executor.submit(proceed_partition, data): data for data in datas }
