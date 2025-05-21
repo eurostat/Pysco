@@ -266,28 +266,27 @@ def ___export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3
 
 
 # function to launch in parallel for each partition
-def proceed_partition(data):
-    [x_part,y_part] = data['xy']
-    #data['']
+def parallel_process(params):
+    [ x_part, y_part ] = params['xy']
 
     #partition extended bbox
-    extention_buffer = data['extention_buffer']
-    partition_size = data['partition_size']
+    extention_buffer = params['extention_buffer']
+    partition_size = params['partition_size']
     extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
     print(datetime.now(),x_part,y_part, "load road sections")
-    roads = data['road_network_loader'](extended_bbox)
+    roads = params['road_network_loader'](extended_bbox)
     print(datetime.now(),x_part,y_part, len(roads), "road sections loaded")
     if(len(roads)==0): return
 
     print(datetime.now(),x_part,y_part, "make graph")
     graph_ = ___graph_adjacency_list_from_geodataframe(roads,
-                                                        weight_fun = data['weight_function'],
-                                                        direction_fun = data['direction_fun'],
-                                                        is_not_snappable_fun = data['is_not_snappable_fun'],
-                                                        detailled = data['detailled'],
-                                                        initial_node_level_fun = data['initial_node_level_fun'],
-                                                        final_node_level_fun = data['final_node_level_fun'])
+                                                        weight_fun = params['weight_function'],
+                                                        direction_fun = params['direction_fun'],
+                                                        is_not_snappable_fun = params['is_not_snappable_fun'],
+                                                        detailled = params['detailled'],
+                                                        initial_node_level_fun = params['initial_node_level_fun'],
+                                                        final_node_level_fun = params['final_node_level_fun'])
     graph = graph_['graph']
     snappable_nodes = graph_['snappable_nodes']
     del graph_, roads
@@ -296,7 +295,7 @@ def proceed_partition(data):
     if(len(snappable_nodes)==0): return
 
     print(datetime.now(),x_part,y_part, "load POIs")
-    pois = data['pois_loader'](extended_bbox)
+    pois = params['pois_loader'](extended_bbox)
     print(datetime.now(),x_part,y_part, len(pois), "POIs loaded")
     if(len(pois)==0): return
 
@@ -313,7 +312,7 @@ def proceed_partition(data):
     if(len(sources)==0): return
 
     print(datetime.now(),x_part,y_part, "compute accessiblity")
-    k = data['k']
+    k = params['k']
     result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
     del graph, sources
 
@@ -325,8 +324,8 @@ def proceed_partition(data):
     distances_to_node = [] #the cell center distance to its graph node
 
     #go through cells
-    grid_resolution = data['grid_resolution']
-    cell_network_max_distance = data['cell_network_max_distance']
+    grid_resolution = params['grid_resolution']
+    cell_network_max_distance = params['cell_network_max_distance']
     r2 = grid_resolution / 2
     for x in range(x_part, x_part+partition_size, grid_resolution):
         for y in range(y_part, y_part+partition_size, grid_resolution):
@@ -352,7 +351,7 @@ def proceed_partition(data):
             distances_to_node.append(dtn)
 
             #store cell id
-            grd_ids.append(data['cell_id_fun'](x,y))
+            grd_ids.append(params['cell_id_fun'](x,y))
 
             #store grid cell geometry
             cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
@@ -394,8 +393,8 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        ):
 
     #launch parallel computation   
-    datas = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
-    datas = [
+    processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
+    processes_params = [
         {
             'xy' : xy,
             'extention_buffer' : extention_buffer,
@@ -413,17 +412,78 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
             'cell_network_max_distance' : cell_network_max_distance,
             'detailled' : detailled,
          }
-        for xy in datas
+        for xy in processes_params
         ]
-    print(datetime.now(), "launch tasks ( nb =", len(datas), ") and collect outputs")
+
+    print(datetime.now(), "launch", len(processes_params), "parallel processes on", num_processors_to_use, "processor(s)")
+    outputs = Pool(num_processors_to_use).map(parallel_process, processes_params)
+
+    print(datetime.now(), "combine", len(outputs), "outputs")
+    cell_geometries = []
+    grd_ids = []
+    costs = []
+    for _ in range(k): costs.append([])
+    distances_to_node = []
+
+    for out in outputs:
+        # skip if empty result
+        if out==None : continue
+        if len(out[0])==0: continue
+
+        # combine results
+        cell_geometries += out[0]
+        grd_ids += out[1]
+        costs_ = out[2]
+        for kk in range(k): costs[kk] += costs_[kk]
+        distances_to_node += out[3]
+
+    print(datetime.now(), len(cell_geometries), "cells")
+
+    #make output geodataframe
+    data = { 'geometry':cell_geometries, 'GRD_ID':grd_ids, 'distance_to_node':distances_to_node }
+    for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
+
+    # compute average duration and simplify duration values
+    averages = []
+    for i in range(len(data['geometry'])):
+        # compute average
+        sum = 0
+        for kk in range(k):
+            dur = data['duration_'+str(kk+1)][i]
+            sum += dur
+            # simplify duration values
+            if duration_simplification_fun != None: data['duration_'+str(kk+1)][i] = duration_simplification_fun(dur)
+        # store average value, simplified if necessary
+        sum = sum/k
+        if duration_simplification_fun != None: sum = duration_simplification_fun(sum)
+        averages.append(sum)
+    data['duration_average_'+str(k)] = averages
+
+    # make geodataframe
+    out = gpd.GeoDataFrame(data)
+
+    # save output
+
+    if(save_GPKG):
+        print(datetime.now(), "save as GPKG")
+        out.crs = crs
+        out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
+
+    if(save_CSV or save_parquet): out = out.drop(columns=['geometry'])
+
+    if(save_CSV):
+        print(datetime.now(), "save as CSV")
+        out.to_csv(out_folder+out_file+".csv", index=False)
+    if(save_parquet):
+        print(datetime.now(), "save as parquet")
+        out.to_parquet(out_folder+out_file+".parquet")
 
 
-    out = Pool(10).map(proceed_partition, datas)
-    #print(out)
+
     return
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=num_processors_to_use) as executor:
-        tasks_to_do = { executor.submit(proceed_partition, data): data for data in datas }
+        tasks_to_do = { executor.submit(parallel_process, data): data for data in processes_params }
 
         # out data
         cell_geometries = []
