@@ -45,7 +45,7 @@ for service in ["education"]: #, "healthcare"
     def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_2023_3035.gpkg", bbox=bbox)
     def weight_function(feature, length): return -1 if feature['properties']['KPH']==0 else 1.1*length/feature['properties']['KPH']*3.6
     def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
-    def is_not_snappable_fun(f): return f['properties']['FOW'] in [1,10,12,6]
+    def is_not_snappable_fun(f): return f['properties']['FOW'] in [1,10,12,6] or f['properties']['FREEWAY'] == 1
     def initial_node_level_fun(f): return f['properties']['F_ELEV']
     def final_node_level_fun(f): return f['properties']['T_ELEV']
     def duration_simplification_fun(x): return round(x,1)
