@@ -3,7 +3,7 @@ from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dij
 
 
 #luxembourg
-bbox = [4030000, 2940000, 4050000, 2960000]
+bbox = [4030000, 2930000, 4060000, 2970000]
 #big
 #bbox = [3500000, 2000000, 4000000, 2500000]
 
@@ -13,6 +13,10 @@ bbox = [4030000, 2940000, 4050000, 2960000]
 grid_resolution = 100
 
 
+#TODO improve data loading: use fiona iterator through necessary features, with the where - no loading necesary?
+#TODO handle case when speed depends on driving direction
+
+
 def direction_fun(feature):
     d = feature.ONEWAY
     if d==None or d=="": return 'both'
@@ -20,11 +24,6 @@ def direction_fun(feature):
     if d=="TF": return 'backward'
     print("Unexpected driving direction: ", d)
     return None
-
-
-#TODO fix parallelism
-#TODO improve data loading: use fiona iterator through necessary features, with the where - no loading necesary?
-#TODO handle case when speed depends on driving direction
 
 def pois_loader(bbox): return gpd.read_file('/home/juju/geodata/gisco/basic_services/healthcare_2023_3035.gpkg', bbox=bbox)
 def road_network_loader(bbox): return gpd.read_file('/home/juju/geodata/tomtom/tomtom_202312.gpkg', bbox=bbox).query("ONEWAY != 'N'")
@@ -56,7 +55,7 @@ accessiblity_grid_k_nearest_dijkstra(
     detailled = True,
     duration_simplification_fun = duration_simplification_fun,
     crs = 'EPSG:3035',
-    num_processors_to_use = 8,
+    num_processors_to_use = 1,
     save_GPKG = True,
     save_CSV = False,
     save_parquet = False
