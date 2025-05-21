@@ -74,6 +74,6 @@ for service in ["education"]: #, "healthcare"
         num_processors_to_use = num_processors_to_use,
         save_GPKG = True,
         save_CSV = False,
-        save_parquet = False
+        save_parquet = True
     )
 
