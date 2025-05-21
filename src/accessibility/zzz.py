@@ -1,9 +1,43 @@
 import geopandas as gpd
 from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra
+import fiona
+from fiona.env import Env
+from shapely.geometry import shape, box
+
+def iter_features(filepath, layername=None, bbox=None, where=None):
+    """
+    :param bbox: Tuple (minx, miny, maxx, maxy) pour filtrer géographiquement
+    :param where: Clause SQL WHERE (ex : "population > 1000")
+    :return: Itérateur sur les features filtrées
+    """
+    with fiona.open(filepath, layer=layername) as src:
+        for fid, feature in src.items(bbox=bbox, where=where):
+            yield feature
+
+    '''
+    with Env():
+        with fiona.open(filepath, layer=layername) as src:
+            bbox_geom = box(*bbox) if bbox else None
+
+            for feature in src:
+                geom = shape(feature['geometry'])
+                if bbox_geom and not geom.intersects(bbox_geom): continue
+                if where:
+                    try:
+                        if not eval(where, {}, feature['properties']): continue
+                    except Exception as e:
+                        print(f"Erreur dans la clause WHERE : {e}")
+                        continue
+                yield feature
+'''
+
+#for feat in iter_features("data.gpkg", "villes", bbox=(2.0, 48.0, 3.0, 49.0), where="population > 1000"):
+#    print(feat['properties']['nom'], feat['properties']['population'])
 
 
 #luxembourg
-bbox = [4030000, 2930000, 4060000, 2970000]
+bbox = [4030000, 2930000, 4060000, 2960000]
+bbox_ = (4030000, 2930000, 4060000, 2970000)
 #big
 #bbox = [3500000, 2000000, 4000000, 2500000]
 
@@ -25,8 +59,10 @@ def direction_fun(feature):
     print("Unexpected driving direction: ", d)
     return None
 
+#def road_network_loader(bbox): return gpd.read_file('/home/juju/geodata/tomtom/tomtom_202312.gpkg', bbox=bbox).query("ONEWAY != 'N'")
+def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_202312.gpkg", bbox=bbox_)
+#gpd.read_file('/home/juju/geodata/tomtom/tomtom_202312.gpkg', bbox=bbox).query("ONEWAY != 'N'")
 def pois_loader(bbox): return gpd.read_file('/home/juju/geodata/gisco/basic_services/healthcare_2023_3035.gpkg', bbox=bbox)
-def road_network_loader(bbox): return gpd.read_file('/home/juju/geodata/tomtom/tomtom_202312.gpkg', bbox=bbox).query("ONEWAY != 'N'")
 def weight_function(feature, length): return -1 if feature.KPH==0 else 1.1*length/feature.KPH*3.6
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 def is_not_snappable_fun(f): return f.RAMP==1 or f.FOW==5 or (f.FOW==1 and f.FRC==0)
@@ -50,7 +86,7 @@ accessiblity_grid_k_nearest_dijkstra(
     cell_id_fun = cell_id_fun,
     grid_resolution= grid_resolution,
     cell_network_max_distance= grid_resolution * 1.5,
-    partition_size = 10000,
+    partition_size = 30000,
     extention_buffer = 10000,
     detailled = True,
     duration_simplification_fun = duration_simplification_fun,
