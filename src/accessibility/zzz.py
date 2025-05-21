@@ -1,17 +1,11 @@
-from math import ceil,isnan,floor
+from math import floor
 from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra
-import fiona
 
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.featureutils import iter_features
 
-def iter_features(filepath, layername=None, bbox=None, where=None):
-    """
-    :param bbox: Tuple (minx, miny, maxx, maxy) pour filtrer géographiquement
-    :param where: Clause SQL WHERE (ex : "population > 1000")
-    :return: Itérateur sur les features filtrées
-    """
-    with fiona.open(filepath, layer=layername) as src:
-        for fid, feature in src.items(bbox=bbox, where=where):
-            yield feature
 
 
 #TODO handle case when speed depends on driving direction
@@ -23,6 +17,8 @@ def iter_features(filepath, layername=None, bbox=None, where=None):
 bbox = [3500000, 2000000, 4000000, 2500000]
 #test
 #bbox = [3800000, 2300000, 3900000, 2400000]
+#cnetral europe
+bbox = [ 2787491, 1774226, 5565799, 3423689 ]
 
 
 file_size_m = 500000
@@ -31,11 +27,10 @@ out_folder = '/home/juju/gisco/accessibility/out_partition/'
 clamp = lambda v:floor(v/file_size_m)*file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
-
 num_processors_to_use = 6
 grid_resolution = 100
 
-for service in ["education", "healthcare"]:
+for service in ["education"]: #, "healthcare"]:
 
     #launch process for each tile file
     for x in range(xmin, xmax+1, file_size_m):
@@ -62,7 +57,6 @@ for service in ["education", "healthcare"]:
             def initial_node_level_fun(f): return f['properties']['F_ELEV']
             def final_node_level_fun(f): return f['properties']['T_ELEV']
             def duration_simplification_fun(x): return round(x,1)
-
 
             accessiblity_grid_k_nearest_dijkstra(
                 pois_loader = pois_loader,

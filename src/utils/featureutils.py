@@ -117,3 +117,13 @@ def save_features_to_gpkg(fs, out_gpkg_file, crs_epsg="3035"):
         with fiona.open(out_gpkg_file, 'w', driver='GPKG', schema=schema, crs = crs, layer = geom_type.lower()) as layer:
             layer.writerecords(features)
 
+
+def iter_features(filepath, layername=None, bbox=None, where=None):
+    """
+    :param bbox: Tuple (minx, miny, maxx, maxy) pour filtrer géographiquement
+    :param where: Clause SQL WHERE (ex : "population > 1000")
+    :return: Itérateur sur les features filtrées
+    """
+    with fiona.open(filepath, layer=layername) as src:
+        for fid, feature in src.items(bbox=bbox, where=where):
+            yield feature
