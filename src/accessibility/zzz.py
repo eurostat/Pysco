@@ -59,15 +59,14 @@ accessiblity_grid_k_nearest_dijkstra(
     cell_id_fun = cell_id_fun,
     grid_resolution= grid_resolution,
     cell_network_max_distance= grid_resolution * 1.5,
-    partition_size = 250000,
+    partition_size = 125000,
     extention_buffer = 60000,
     detailled = True,
     duration_simplification_fun = duration_simplification_fun,
     crs = 'EPSG:3035',
-    num_processors_to_use = 2,
+    num_processors_to_use = 8,
     save_GPKG = True,
     save_CSV = False,
     save_parquet = False
 )
-
 
