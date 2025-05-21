@@ -37,7 +37,7 @@ for service in ["education"]: #, "healthcare"]:
         for y in range(ymin, ymax+1, file_size_m):
             print(x,y)
 
-            out_file = "euroaccess_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y),
+            out_file = "euroaccess_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y)
             partition_size = 125000
             extention_buffer = 20000 if service=="education" else 60000
 
