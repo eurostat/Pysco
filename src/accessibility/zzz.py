@@ -13,21 +13,17 @@ def iter_features(filepath, layername=None, bbox=None, where=None):
             yield feature
 
 
+#TODO handle case when speed depends on driving direction
 
 
 #luxembourg
-bbox = [4030000, 2930000, 4060000, 2960000]
+#bbox = [4030000, 2930000, 4060000, 2960000]
 #big
-#bbox = [3500000, 2000000, 4000000, 2500000]
-
+bbox = [3500000, 2000000, 4000000, 2500000]
 #test
 #bbox = [3800000, 2300000, 3900000, 2400000]
 
 grid_resolution = 100
-
-
-#TODO improve data loading: use fiona iterator through necessary features, with the where - no loading necesary?
-#TODO handle case when speed depends on driving direction
 
 
 def direction_fun(feature):
@@ -63,8 +59,8 @@ accessiblity_grid_k_nearest_dijkstra(
     cell_id_fun = cell_id_fun,
     grid_resolution= grid_resolution,
     cell_network_max_distance= grid_resolution * 1.5,
-    partition_size = 10000,
-    extention_buffer = 10000,
+    partition_size = 100000,
+    extention_buffer = 60000,
     detailled = True,
     duration_simplification_fun = duration_simplification_fun,
     crs = 'EPSG:3035',
