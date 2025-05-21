@@ -2,7 +2,7 @@ import geopandas as gpd
 from shapely.geometry import box,Polygon
 from datetime import datetime
 import heapq
-from shapely.geometry import LineString, Point
+from shapely.geometry import LineString, Point, shape
 from collections import defaultdict
 #import concurrent.futures
 from multiprocessing import Pool
@@ -74,7 +74,7 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 
 
 # make graph from linear features
-def ___graph_adjacency_list_from_geodataframe(gdf,
+def ___graph_adjacency_list_from_geodataframe(sections_iterator,
                                               weight_fun = lambda feature,sl:sl,
                                               direction_fun=lambda feature:"both",
                                               is_not_snappable_fun = None,
@@ -100,14 +100,14 @@ def ___graph_adjacency_list_from_geodataframe(gdf,
         return str(coord_simp(point.x)) +'_'+ str(coord_simp(point.y))
         #return f"{point.x:.6f}_{point.y:.6f}"
 
-    for _, f in gdf.iterrows():
+    for f in sections_iterator:
 
         # get driving direction
         direction = direction_fun(f)
         if direction == None: continue
 
         # get feature geometry
-        geom = f.geometry
+        geom = shape(f['geometry'])
         if not isinstance(geom, LineString): continue
         coords = list(geom.coords)
 
@@ -273,12 +273,8 @@ def parallel_process(params):
     partition_size = params['partition_size']
     extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
-    print(datetime.now(),x_part,y_part, "load road sections")
-    roads = params['road_network_loader'](extended_bbox)
-    print(datetime.now(),x_part,y_part, len(roads), "road sections loaded")
-    if(len(roads)==0): return
-
     print(datetime.now(),x_part,y_part, "make graph")
+    roads = params['road_network_loader'](extended_bbox)
     graph_ = ___graph_adjacency_list_from_geodataframe(roads,
                                                         weight_fun = params['weight_function'],
                                                         direction_fun = params['direction_fun'],
@@ -293,18 +289,15 @@ def parallel_process(params):
     if(len(graph.keys())==0): return
     if(len(snappable_nodes)==0): return
 
-    print(datetime.now(),x_part,y_part, "load POIs")
-    pois = params['pois_loader'](extended_bbox)
-    print(datetime.now(),x_part,y_part, len(pois), "POIs loaded")
-    if(len(pois)==0): return
-
     print(datetime.now(),x_part,y_part, "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
     print(datetime.now(),x_part,y_part, "get source nodes")
+    pois = params['pois_loader'](extended_bbox)
     sources = []
-    for iii, poi in pois.iterrows():
-        n = snappable_nodes[next(idx.nearest((poi.geometry.x, poi.geometry.y, poi.geometry.x, poi.geometry.y), 1))]
+    for poi in pois:
+        g = shape(poi['geometry'])
+        n = snappable_nodes[next(idx.nearest((g.x, g.y, g.x, g.y), 1))]
         sources.append(n)
     del pois
     print(datetime.now(),x_part,y_part, len(sources), "source nodes found")
