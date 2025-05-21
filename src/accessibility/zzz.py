@@ -19,17 +19,17 @@ def iter_features(filepath, layername=None, bbox=None, where=None):
 #luxembourg
 #bbox = [4030000, 2930000, 4060000, 2960000]
 #big
-#bbox = [3500000, 2000000, 4000000, 2500000]
+bbox = [3500000, 2000000, 4000000, 2500000]
 #test
-bbox = [3800000, 2300000, 3900000, 2400000]
+#bbox = [3800000, 2300000, 3900000, 2400000]
 
 
 num_processors_to_use = 6
 grid_resolution = 100
 
-for service in ["education"]: #, "healthcare"
+for service in ["education", "healthcare"]:
 
-    out_file = "grid" #+ service
+    out_file = "grid_" + service
     partition_size = 125000
     extention_buffer = 20000 if service=="education" else 60000
 
