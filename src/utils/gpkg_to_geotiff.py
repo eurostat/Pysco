@@ -67,7 +67,6 @@ def gpkg_grid_to_geotiff(
 
     print(f"Raster size: {width} x {height} cells")
 
-
     # Prepare raster bands
     band_arrays = {
         attr: np.full((height, width), nodata_value, dtype=np.float32)
@@ -124,10 +123,10 @@ def gpkg_grid_to_geotiff(
 # for testing
 gpkg_grid_to_geotiff(
         [
-            "/home/juju/gisco/accessibility/out_partition_healthcare/euroaccess_healthcare_100m_2500000_3000000.gpkg"
+            "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_3000000.gpkg",
+            "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_2500000.gpkg"
         ],
         "/home/juju/gisco/accessibility/test.tif",
     #attributes=["duration_1", "duration_average_3"],
-
 )
 
