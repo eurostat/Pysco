@@ -26,11 +26,10 @@ def gpkg_grid_to_geotiff(
     - nodata_value (numeric): Nodata value for empty pixels. Default is -9999.
     """
 
-    print("Get grid resolution")
     resolution = None
     with fiona.open(input_gpkgs[0]) as src:
-        for feat in src:
-            id = feat['properties'][grid_id_field]
+        for f in src:
+            id = f['properties'][grid_id_field]
             id = id.split("RES")[1]
             id = id.split("m")[0]
             resolution = int(id)
@@ -38,7 +37,6 @@ def gpkg_grid_to_geotiff(
     print(f"Grid resolution: {resolution}")
 
     if bbox is None:
-        print("Get gpkg bbox")
         minx = None; miny = None; maxx = None; maxy = None
         for gpkg in input_gpkgs:
             with fiona.open(gpkg) as src:
@@ -53,9 +51,10 @@ def gpkg_grid_to_geotiff(
 
     # Determine attributes to export
     if attributes is None:
-        print("Get attributes")
-        #TODO get attributes from first cell
-        #attributes = [key for key in all_features[0][1].keys() if key != grid_id_field]
+        with fiona.open(input_gpkgs[0]) as src:
+            for f in src:
+                attributes = [key for key in f['properties'].keys() if key != grid_id_field]
+                break
         print(f"Attributes to export: {attributes}")
 
 
@@ -128,7 +127,7 @@ gpkg_grid_to_geotiff(
             "/home/juju/gisco/accessibility/out_partition_healthcare/euroaccess_healthcare_100m_2500000_3000000.gpkg"
         ],
         "/home/juju/gisco/accessibility/test.tif",
-    attributes=["duration_1", "duration_average_3"],
+    #attributes=["duration_1", "duration_average_3"],
 
 )
 
