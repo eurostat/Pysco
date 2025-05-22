@@ -83,18 +83,21 @@ def gpkg_grid_to_geotiff(
             elif crs != src.crs:
                 raise ValueError("All input GeoPackages must have the same CRS.")
 
-            for feat in src:
-                #TODO get position from cell ID intead of geometry.
-                geom = shape(feat['geometry'])
-                props = feat['properties']
+            for f in src:
+                p = f['properties']
+                id = p[grid_id_field]
+                #CRS3035RES100mN2361200E3848300
+                id = id.split("N")[1].split("E")
+                x = int(id[1])
+                y = int(id[0])
 
-                col = int((geom.bounds[0] - minx) / resolution)
-                row = int((maxy - geom.bounds[1]) / resolution)
+                col = int((x - minx) / resolution)
+                row = int((maxy - y) / resolution)
 
-                for attr in attributes:
-                    value = props.get(attr)
+                for a in attributes:
+                    value = p.get(a)
                     if value is not None:
-                        band_arrays[attr][row, col] = value
+                        band_arrays[a][row, col] = value
 
     # Write to GeoTIFF
     print(f"Writing GeoTIFF to {output_tiff}")
@@ -123,8 +126,8 @@ def gpkg_grid_to_geotiff(
 # for testing
 gpkg_grid_to_geotiff(
         [
-            "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_3000000.gpkg",
-            "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_2500000.gpkg"
+            "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_2000000.gpkg",
+            "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_1500000.gpkg"
         ],
         "/home/juju/gisco/accessibility/test.tif",
     #attributes=["duration_1", "duration_average_3"],
