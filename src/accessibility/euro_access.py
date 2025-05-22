@@ -16,10 +16,10 @@ from utils.featureutils import iter_features
 #luxembourg
 #bbox = [4030000, 2930000, 4060000, 2960000]
 #big
-bbox = [3500000, 2000000, 4000000, 2500000]
+#bbox = [3500000, 2000000, 4000000, 2500000]
 #test
 #bbox = [3800000, 2300000, 3900000, 2400000]
-#cnetral europe
+#central europe
 bbox = [ 1000000, 500000, 6000000, 5500000 ]
 
 
