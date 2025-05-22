@@ -32,7 +32,7 @@ clamp = lambda v:floor(v/file_size_m)*file_size_m
 num_processors_to_use = 6
 grid_resolution = 100
 
-for service in ["education"]: #, "healthcare"]:
+for service in ["healthcare"]: #, "education"]:
 
     #launch process for each tile file
     for x in range(xmin, xmax+1, file_size_m):
