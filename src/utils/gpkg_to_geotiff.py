@@ -14,7 +14,6 @@ def gpkg_grid_to_geotiff(
     bbox=None,
     attributes=None,
     grid_id_field='GRD_ID',
-    extent=None,
     nodata_value=-9999
 ):
     """
@@ -25,7 +24,6 @@ def gpkg_grid_to_geotiff(
     - output_tiff (str): Output GeoTIFF file path.
     - grid_id_field (str): Name of the grid cell ID field. Defaults to 'GRD_ID'.
     - attributes (list of str): Attributes to export into GeoTIFF bands. If None, all attributes except the grid ID are used.
-    - extent (tuple): Optional geographical extent (minx, miny, maxx, maxy). If None, computed from all gpkg files.
     - nodata_value (numeric): Nodata value for empty pixels. Default is -9999.
     """
 
@@ -115,5 +113,10 @@ gpkg_grid_to_geotiff(
             "/home/juju/gisco/accessibility/out_partition_healthcare/euroaccess_healthcare_100m_2500000_3000000.gpkg"
         ],
         "/home/juju/gisco/accessibility/test.tif"
+
+    resolution=100,
+    bbox=[2500000,3000000,3000000,3500000],
+    attributes=["duration_1", "duration_average_3"],
+
 )
 
