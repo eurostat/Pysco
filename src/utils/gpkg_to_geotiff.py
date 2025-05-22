@@ -3,14 +3,17 @@ import rasterio
 from rasterio.transform import from_origin
 from shapely.geometry import shape, box
 import numpy as np
+from math import ceil
 #import os
 #from collections import defaultdict
 
 def gpkg_grid_to_geotiff(
     input_gpkgs,
     output_tiff,
-    grid_id_field='GRD_ID',
+    resolution=None,
+    bbox=None,
     attributes=None,
+    grid_id_field='GRD_ID',
     extent=None,
     nodata_value=-9999
 ):
@@ -26,58 +29,35 @@ def gpkg_grid_to_geotiff(
     - nodata_value (numeric): Nodata value for empty pixels. Default is -9999.
     """
 
-    print("Collecting features and computing grid layout...")
+    if bbox is None:
+        print("Get gpkg bbox")
+        #TODO get bbox of each file. merge bboxes.
+        print(f"Bbox: {bbox}")
 
-    # Collect all features and metadata
-    all_features = []
-    crs = None
-    cell_width = cell_height = None
-    all_bounds = []
-
-    for gpkg in input_gpkgs:
-        with fiona.open(gpkg) as src:
-            if crs is None:
-                crs = src.crs
-            elif crs != src.crs:
-                raise ValueError("All input GeoPackages must have the same CRS.")
-
-            for feat in src:
-                geom = shape(feat['geometry'])
-                props = feat['properties']
-
-                if cell_width is None:
-                    bounds = geom.bounds
-                    cell_width = bounds[2] - bounds[0]
-                    cell_height = bounds[3] - bounds[1]
-
-                all_features.append((geom, props))
-                all_bounds.append(geom.bounds)
-
-    if not all_features:
-        raise ValueError("No features found in the provided GeoPackage files.")
+    if resolution is None:
+        print("Get grid resolution")
+        #TODO get first file, first cell id and get resolution from it
+        print(f"Grid resolution: {resolution}")
 
     # Determine attributes to export
     if attributes is None:
-        attributes = [key for key in all_features[0][1].keys() if key != grid_id_field]
+        print("Get attributes")
+        #TODO get attributes from first cell
+        #attributes = [key for key in all_features[0][1].keys() if key != grid_id_field]
+        print(f"Attributes to export: {attributes}")
 
-    print(f"Attributes to export: {attributes}")
 
-    # Compute raster extent
-    if extent is None:
-        minxs, minys, maxxs, maxys = zip(*all_bounds)
-        extent = (min(minxs), min(minys), max(maxxs), max(maxys))
-
-    print(f"Raster extent: {extent}")
+    print("Collecting features and computing grid layout...")
 
     # Compute raster dimensions
-    minx, miny, maxx, maxy = extent
-    width = int(round((maxx - minx) / cell_width))
-    height = int(round((maxy - miny) / cell_height))
+    [minx, miny, maxx, maxy] = bbox
+    width = int(ceil((maxx - minx) / resolution))
+    height = int(ceil((maxy - miny) / resolution))
 
     print(f"Raster size: {width} x {height} cells")
 
     # Define transform
-    transform = from_origin(minx, maxy, cell_width, cell_height)
+    transform = from_origin(minx, maxy, resolution, resolution)
 
     # Prepare raster bands
     band_arrays = {
@@ -87,15 +67,26 @@ def gpkg_grid_to_geotiff(
 
     print("Populating raster bands...")
 
-    # Populate raster bands
-    for geom, props in all_features:
-        col = int((geom.bounds[0] - minx) / cell_width)
-        row = int((maxy - geom.bounds[1]) / cell_height)
+    crs = None
+    for gpkg in input_gpkgs:
+        with fiona.open(gpkg) as src:
+            if crs is None:
+                crs = src.crs
+            elif crs != src.crs:
+                raise ValueError("All input GeoPackages must have the same CRS.")
 
-        for attr in attributes:
-            value = props.get(attr)
-            if value is not None:
-                band_arrays[attr][row, col] = value
+            for feat in src:
+                #TODO get position from cell ID intead of geometry.
+                geom = shape(feat['geometry'])
+                props = feat['properties']
+
+                col = int((geom.bounds[0] - minx) / resolution)
+                row = int((maxy - geom.bounds[1]) / resolution)
+
+                for attr in attributes:
+                    value = props.get(attr)
+                    if value is not None:
+                        band_arrays[attr][row, col] = value
 
     # Write to GeoTIFF
     print(f"Writing GeoTIFF to {output_tiff}")
