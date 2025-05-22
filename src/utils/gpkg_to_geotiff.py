@@ -10,7 +10,6 @@ from math import ceil
 def gpkg_grid_to_geotiff(
     input_gpkgs,
     output_tiff,
-    resolution=None,
     bbox=None,
     attributes=None,
     grid_id_field='GRD_ID',
@@ -27,15 +26,21 @@ def gpkg_grid_to_geotiff(
     - nodata_value (numeric): Nodata value for empty pixels. Default is -9999.
     """
 
+    print("Get grid resolution")
+    resolution = None
+    with fiona.open(input_gpkgs[0]) as src:
+        for feat in src:
+            id = feat['properties'][grid_id_field]
+            id = id.split("RES")[1]
+            id = id.split("m")[0]
+            resolution = int(id)
+            break
+    print(f"Grid resolution: {resolution}")
+
     if bbox is None:
         print("Get gpkg bbox")
         #TODO get bbox of each file. merge bboxes.
         print(f"Bbox: {bbox}")
-
-    if resolution is None:
-        print("Get grid resolution")
-        #TODO get first file, first cell id and get resolution from it
-        print(f"Grid resolution: {resolution}")
 
     # Determine attributes to export
     if attributes is None:
@@ -113,7 +118,6 @@ gpkg_grid_to_geotiff(
             "/home/juju/gisco/accessibility/out_partition_healthcare/euroaccess_healthcare_100m_2500000_3000000.gpkg"
         ],
         "/home/juju/gisco/accessibility/test.tif",
-    resolution=100,
     bbox=[2500000,3000000,3000000,3500000],
     attributes=["duration_1", "duration_average_3"],
 
