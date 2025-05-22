@@ -37,10 +37,12 @@ def gpkg_grid_to_geotiff(
             break
     print(f"Grid resolution: {resolution}")
 
-    if bbox is None:
-        print("Get gpkg bbox")
-        #TODO get bbox of each file. merge bboxes.
-        print(f"Bbox: {bbox}")
+    #if bbox is None:
+    print("Get gpkg bbox")
+    for gpkg in input_gpkgs:
+        with fiona.open(gpkg) as src:
+            print(src.bounds)
+    print(f"Bbox: {bbox}")
 
     # Determine attributes to export
     if attributes is None:
