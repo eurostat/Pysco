@@ -7,7 +7,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
 
 
-
+#TODO ferry
+#TODO school: exclude some...
 #TODO handle case when speed depends on driving direction
 
 
@@ -18,7 +19,7 @@ bbox = [3500000, 2000000, 4000000, 2500000]
 #test
 #bbox = [3800000, 2300000, 3900000, 2400000]
 #cnetral europe
-bbox = [ 2500000, 1000000, 6000000, 5500000 ]
+bbox = [ 1000000, 500000, 6000000, 5500000 ]
 
 
 file_size_m = 500000
@@ -40,7 +41,7 @@ for service in ["education"]: #, "healthcare"]:
             out_file = "euroaccess_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y)
 
             if os.path.isfile(out_folder + out_file + ".gpkg"):
-                print("File exists!")
+                print("Already done")
                 continue
 
             partition_size = 125000
