@@ -1,11 +1,10 @@
-
-
 import fiona
 import rasterio
 from rasterio.transform import from_origin
 from shapely.geometry import shape, box
 import numpy as np
-import os
+#import os
+#from collections import defaultdict
 
 def gpkg_grid_to_geotiff(
     input_gpkgs,
@@ -26,8 +25,6 @@ def gpkg_grid_to_geotiff(
     - extent (tuple): Optional geographical extent (minx, miny, maxx, maxy). If None, computed from all gpkg files.
     - nodata_value (numeric): Nodata value for empty pixels. Default is -9999.
     """
-
-    from collections import defaultdict
 
     print("Collecting features and computing grid layout...")
 
@@ -118,4 +115,15 @@ def gpkg_grid_to_geotiff(
         for idx, attr in enumerate(attributes, start=1):
             dst.write(band_arrays[attr], idx)
             dst.set_band_description(idx, attr)
+
+
+
+
+gpkg_grid_to_geotiff(
+        [
+            "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_4500000_5000000.gpkg",
+            "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_4500000_4500000.gpkg"
+        ],
+        "/home/juju/gisco/accessibility/test.tif"
+)
 
