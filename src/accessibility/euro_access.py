@@ -44,7 +44,7 @@ for service in ["education", "healthcare"]:
             out_file = "euroaccess_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y)
 
             if os.path.isfile(out_folder2 + out_file + ".gpkg"):
-                print("Already done")
+                print(out_file, "already produced")
                 continue
 
             partition_size = 125000
