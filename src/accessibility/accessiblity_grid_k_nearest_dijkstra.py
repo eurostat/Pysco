@@ -431,7 +431,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
 
     print(datetime.now(), len(cell_geometries), "cells")
 
-    if len(cell_geometries) == 0: return
+    #if len(cell_geometries) == 0: return
 
     #make output geodataframe
     data = { 'geometry':cell_geometries, 'GRD_ID':grd_ids, 'distance_to_node':distances_to_node }
