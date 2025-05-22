@@ -37,12 +37,19 @@ def gpkg_grid_to_geotiff(
             break
     print(f"Grid resolution: {resolution}")
 
-    #if bbox is None:
-    print("Get gpkg bbox")
-    for gpkg in input_gpkgs:
-        with fiona.open(gpkg) as src:
-            print(src.bounds)
-    print(f"Bbox: {bbox}")
+    if bbox is None:
+        print("Get gpkg bbox")
+        minx = None; miny = None; maxx = None; maxy = None
+        for gpkg in input_gpkgs:
+            with fiona.open(gpkg) as src:
+                (x,y,x_,y_) = src.bounds
+                if minx is None or x<minx: minx = x
+                if miny is None or y<miny: miny = y
+                if maxx is None or x_<maxx: maxx = x_
+                if maxy is None or y_<maxy: maxy = y_
+        bbox = [minx-resolution, miny-resolution, maxx+resolution, maxy+resolution]
+        print(f"Bbox: {bbox}")
+
 
     # Determine attributes to export
     if attributes is None:
@@ -61,8 +68,6 @@ def gpkg_grid_to_geotiff(
 
     print(f"Raster size: {width} x {height} cells")
 
-    # Define transform
-    transform = from_origin(minx, maxy, resolution, resolution)
 
     # Prepare raster bands
     band_arrays = {
@@ -96,6 +101,9 @@ def gpkg_grid_to_geotiff(
     # Write to GeoTIFF
     print(f"Writing GeoTIFF to {output_tiff}")
 
+    # Define transform
+    transform = from_origin(minx, maxy, resolution, resolution)
+
     with rasterio.open(
         output_tiff,
         'w',
@@ -120,7 +128,6 @@ gpkg_grid_to_geotiff(
             "/home/juju/gisco/accessibility/out_partition_healthcare/euroaccess_healthcare_100m_2500000_3000000.gpkg"
         ],
         "/home/juju/gisco/accessibility/test.tif",
-    bbox=[2500000,3000000,3000000,3500000],
     attributes=["duration_1", "duration_average_3"],
 
 )
