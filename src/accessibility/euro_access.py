@@ -39,9 +39,10 @@ for service in ["healthcare"]: #, "education"]:
         for y in range(ymin, ymax+1, file_size_m):
             print(x,y)
 
+            out_folder2 = out_folder + service + "/"
             out_file = "euroaccess_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y)
 
-            if os.path.isfile(out_folder + out_file + ".gpkg"):
+            if os.path.isfile(out_folder2 + out_file + ".gpkg"):
                 print("Already done")
                 continue
 
@@ -69,7 +70,7 @@ for service in ["healthcare"]: #, "education"]:
                 pois_loader = pois_loader,
                 road_network_loader = road_network_loader,
                 bbox = [x, y, x+file_size_m, y+file_size_m],
-                out_folder = out_folder,
+                out_folder = out_folder2,
                 out_file = out_file,
                 k = 3,
                 weight_function = weight_function,
@@ -88,6 +89,6 @@ for service in ["healthcare"]: #, "education"]:
                 num_processors_to_use = num_processors_to_use,
                 save_GPKG = True,
                 save_CSV = False,
-                save_parquet = True
+                save_parquet = False
             )
 
