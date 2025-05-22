@@ -112,8 +112,7 @@ gpkg_grid_to_geotiff(
         [
             "/home/juju/gisco/accessibility/out_partition_healthcare/euroaccess_healthcare_100m_2500000_3000000.gpkg"
         ],
-        "/home/juju/gisco/accessibility/test.tif"
-
+        "/home/juju/gisco/accessibility/test.tif",
     resolution=100,
     bbox=[2500000,3000000,3000000,3500000],
     attributes=["duration_1", "duration_average_3"],
