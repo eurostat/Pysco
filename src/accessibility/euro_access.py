@@ -18,7 +18,7 @@ bbox = [3500000, 2000000, 4000000, 2500000]
 #test
 #bbox = [3800000, 2300000, 3900000, 2400000]
 #cnetral europe
-bbox = [ 2500000, 1500000, 5500000, 3500000 ]
+bbox = [ 2500000, 1500000, 6000000, 4500000 ]
 
 
 file_size_m = 500000
@@ -38,6 +38,11 @@ for service in ["education"]: #, "healthcare"]:
             print(x,y)
 
             out_file = "euroaccess_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y)
+
+            if os.path.isfile(out_folder + out_file + ".gpkg"):
+                print("File exists!")
+                continue
+
             partition_size = 125000
             extention_buffer = 20000 if service=="education" else 60000
 
