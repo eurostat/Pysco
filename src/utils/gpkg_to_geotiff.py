@@ -46,7 +46,7 @@ def gpkg_grid_to_geotiff(
                 if maxx is None or x_<maxx: maxx = x_
                 if maxy is None or y_<maxy: maxy = y_
         bbox = [minx-resolution, miny-resolution, maxx+resolution, maxy+resolution]
-        print(f"Bbox: {bbox}")
+        print(f"Extent: {bbox}")
 
 
     # Determine attributes to export
@@ -56,9 +56,6 @@ def gpkg_grid_to_geotiff(
                 attributes = [key for key in f['properties'].keys() if key != grid_id_field]
                 break
         print(f"Attributes to export: {attributes}")
-
-
-    print("Collecting features and computing grid layout...")
 
     # Compute raster dimensions
     [minx, miny, maxx, maxy] = bbox
@@ -94,6 +91,8 @@ def gpkg_grid_to_geotiff(
                 col = int((x - minx) / resolution)
                 row = int((maxy - y) / resolution)
 
+                print(x,y,col,row)
+
                 for a in attributes:
                     value = p.get(a)
                     if value is not None:
@@ -101,10 +100,6 @@ def gpkg_grid_to_geotiff(
 
     # Write to GeoTIFF
     print(f"Writing GeoTIFF to {output_tiff}")
-
-    # Define transform
-    transform = from_origin(minx, maxy, resolution, resolution)
-
     with rasterio.open(
         output_tiff,
         'w',
@@ -114,7 +109,7 @@ def gpkg_grid_to_geotiff(
         count=len(attributes),
         dtype=np.float32,
         crs=crs,
-        transform=transform,
+        transform=from_origin(minx, maxy, resolution, resolution),
         nodata=nodata_value
     ) as dst:
         for idx, attr in enumerate(attributes, start=1):
@@ -126,7 +121,7 @@ def gpkg_grid_to_geotiff(
 # for testing
 gpkg_grid_to_geotiff(
         [
-            "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_2000000.gpkg",
+            #"/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_2000000.gpkg",
             "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_1500000.gpkg"
         ],
         "/home/juju/gisco/accessibility/test.tif",
