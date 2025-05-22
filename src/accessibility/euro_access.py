@@ -7,6 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
 
 
+#TODO check paris centre bug - pedestrian areas
 #TODO ferry
 #TODO school: exclude some...
 #TODO handle case when speed depends on driving direction
