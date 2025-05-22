@@ -29,10 +29,11 @@ out_folder = '/home/juju/gisco/accessibility/out_partition'
 clamp = lambda v:floor(v/file_size_m)*file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
-num_processors_to_use = 6
 grid_resolution = 100
 
 for service in ["education", "healthcare"]:
+
+    num_processors_to_use = 6 if service == "education" else 5
 
     #launch process for each tile file
     for x in range(xmin, xmax+1, file_size_m):
