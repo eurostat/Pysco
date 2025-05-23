@@ -64,11 +64,14 @@ def gpkg_grid_to_geotiff(
         minx = None; miny = None; maxx = None; maxy = None
         for gpkg in input_gpkgs:
             with fiona.open(gpkg) as src:
-                (x,y,x_,y_) = src.bounds
-                if minx is None or x<minx: minx = x
-                if miny is None or y<miny: miny = y
-                if maxx is None or x_>maxx: maxx = x_
-                if maxy is None or y_>maxy: maxy = y_
+                try:
+                    (x,y,x_,y_) = src.bounds
+                    if minx is None or x<minx: minx = x
+                    if miny is None or y<miny: miny = y
+                    if maxx is None or x_>maxx: maxx = x_
+                    if maxy is None or y_>maxy: maxy = y_
+                except:
+                    pass #print("Could not ")
         bbox = [minx, miny, maxx, maxy]
         print(f"Extent: {bbox}")
 
@@ -91,10 +94,9 @@ def gpkg_grid_to_geotiff(
     for gpkg in input_gpkgs:
         print(datetime.now(), gpkg)
         with fiona.open(gpkg) as src:
-            if crs is None:
-                crs = src.crs
-            elif crs != src.crs:
-                raise ValueError("All input GeoPackages must have the same CRS.")
+
+            # retrieve CRS
+            if crs is None: crs = src.crs
 
             for f in src:
                 p = f['properties']
