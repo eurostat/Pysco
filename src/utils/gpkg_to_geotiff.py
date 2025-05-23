@@ -23,7 +23,7 @@ def gpkg_grid_to_geotiff(
     - output_tiff (str): Output GeoTIFF file path.
     - grid_id_field (str): Name of the grid cell ID field. Defaults to 'GRD_ID'.
     - attributes (list of str): Attributes to export into GeoTIFF bands. If None, all attributes except the grid ID are used.
-    - bbox: Bounding box [minx, miny, maxx, maxy] to take. If not specified, the GPKG files bbox is computed and used.
+    - bbox: Bounding box [minx, miny, maxx, maxy] to take. If not specified, the GPKG files bbox is computed and used - in that case, it is assumed the grid cell geometries are polygons.
     - nodata_value (numeric): Nodata value for empty pixels. Default is -9999.
     """
 
@@ -38,6 +38,8 @@ def gpkg_grid_to_geotiff(
     print(f"Grid resolution: {resolution}")
 
     if bbox is None:
+        # here it is assumed the grid cells have a geometry and it is a polygon.
+        # This may be based on the grid_id but it would require checking all cell ids individually and thus take long.
         minx = None; miny = None; maxx = None; maxy = None
         for gpkg in input_gpkgs:
             with fiona.open(gpkg) as src:
@@ -46,7 +48,7 @@ def gpkg_grid_to_geotiff(
                 if miny is None or y<miny: miny = y
                 if maxx is None or x_<maxx: maxx = x_
                 if maxy is None or y_<maxy: maxy = y_
-        bbox = [minx-resolution, miny-resolution, maxx+resolution, maxy+resolution]
+        bbox = [minx, miny, maxx, maxy]
         print(f"Extent: {bbox}")
 
 
@@ -60,8 +62,8 @@ def gpkg_grid_to_geotiff(
 
     # Compute raster dimensions
     [minx, miny, maxx, maxy] = bbox
-    width = int(ceil((maxx - minx) / resolution))
-    height = int(ceil((maxy - miny) / resolution))
+    width = ceil((maxx - minx) / resolution)
+    height = ceil((maxy - miny) / resolution)
 
     print(f"Raster size: {width} x {height} cells")
 
@@ -88,6 +90,7 @@ def gpkg_grid_to_geotiff(
                 id = id.split("N")[1].split("E")
                 x = int(id[1])
                 y = int(id[0])
+                #TODO also check all cells have the same RES ?
 
                 col = int((x - minx) / resolution)
                 row = int((maxy - y) / resolution)-1
