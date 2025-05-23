@@ -118,7 +118,7 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
         ini_node_level = "" if initial_node_level_fun == None else "_" + str(initial_node_level_fun(f))
         fin_node_level = "" if final_node_level_fun == None else "_" + str(final_node_level_fun(f))
 
-        #
+        # get if the section is snappable
         is_snappable = True if is_not_snappable_fun==None else not is_not_snappable_fun(f)
 
         if detailled:
@@ -142,7 +142,7 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
                 # may happen
                 if n1==n2: continue
 
-                #get segment weight
+                # get segment weight
                 segment_length_m = p1.distance(p2)
                 w = weight_fun(f, segment_length_m)
                 if w<0: continue
@@ -197,72 +197,6 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
 
     return { 'graph':graph, 'snappable_nodes':list(snappable_nodes) }
 
-
-
-
-def ___export_dijkstra_results_to_gpkg(result, output_path, crs="EPSG:4326", k=3, with_paths=True):
-    """
-    Export the Dijkstra result to a GeoPackage: a point layer for graph nodes and (optionally) a line layer for paths.
-
-    :param result: Result dict from multi_source_k_nearest_dijkstra()
-    :param output_path: Path to output GeoPackage file
-    :param crs: Coordinate Reference System (e.g. "EPSG:4326")
-    :param k: Number of nearest sources stored per node
-    :param with_paths: Whether the result includes paths to convert
-    """
-    point_records = []
-    path_records = []
-
-    for node_id, entries in result.items():
-        x_str, y_str = node_id.split('_')
-        x, y = float(x_str), float(y_str)
-        geom = Point(x, y)
-
-        point_record = {
-            'node_id': node_id,
-            'geometry': geom
-        }
-
-        for i in range(k):
-            if i < len(entries):
-                entry = entries[i]
-                point_record[f'source_{i+1}'] = entry['source']
-                point_record[f'dist_{i+1}'] = entry['cost']
-                if with_paths:
-                    path_str = '->'.join(entry['path'])
-                    point_record[f'path_{i+1}'] = path_str
-
-                    # Build path LineString geometry
-                    path_coords = [tuple(map(float, p.split('_'))) for p in entry['path']]
-
-                    nb = len(path_coords)
-                    if(nb==1): continue
-                    if(nb==0):
-                        print("error")
-                        continue
-
-                    line_geom = LineString(path_coords)
-                    path_records.append({
-                        'from_node': entry['source'],
-                        'to_node': node_id,
-                        'cost': entry['cost'],
-                        'geometry': line_geom
-                    })
-            else:
-                point_record[f'source_{i+1}'] = None
-                point_record[f'dist_{i+1}'] = None
-                if with_paths:
-                    point_record[f'path_{i+1}'] = None
-
-        point_records.append(point_record)
-
-    # Build GeoDataFrames
-    points_gdf = gpd.GeoDataFrame(point_records, crs=crs)
-    points_gdf.to_file(output_path, driver='GPKG', layer='dijkstra_nodes')
-
-    if with_paths and path_records:
-        paths_gdf = gpd.GeoDataFrame(path_records, crs=crs)
-        paths_gdf.to_file(output_path, driver='GPKG', layer='dijkstra_paths')
 
 
 
