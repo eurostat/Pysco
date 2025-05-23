@@ -101,5 +101,12 @@ if True:
     for service in ["education", "healthcare"]:
         out_folder2 = out_folder + "_" + service + "/"
         gpkg_files = [os.path.join(out_folder2, f) for f in os.listdir(out_folder2) if f.endswith('.gpkg')]
-        print(gpkg_files)
+        print("transforming", len(gpkg_files), "gpkg files into tif for", service)
 
+        gpkg_grid_to_geotiff(
+            gpkg_files,
+            out_folder + service + "tif",
+            attributes=["duration_1", "duration_average_3", "distance_to_node"],
+            gpkg_nodata_values=[-1],
+            compress='deflate'
+        )

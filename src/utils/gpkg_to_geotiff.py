@@ -1,7 +1,6 @@
 import fiona
 import rasterio
 from rasterio.transform import from_origin
-from shapely.geometry import shape, box
 import numpy as np
 from math import ceil
 from datetime import datetime
@@ -36,22 +35,26 @@ def gpkg_grid_to_geotiff(
     # Determine resolution
     # It is assumed all cells of all GPKG files have the same resolution
     resolution = None
-    with fiona.open(input_gpkgs[0]) as src:
-        for f in src:
-            id = f['properties'][grid_id_field]
-            id = id.split("RES")[1]
-            id = id.split("m")[0]
-            resolution = int(id)
-            break
+    for gpkg in input_gpkgs:
+        with fiona.open(gpkg) as src:
+            for f in src:
+                id = f['properties'][grid_id_field]
+                id = id.split("RES")[1]
+                id = id.split("m")[0]
+                resolution = int(id)
+                break
+        if resolution is not None: break
     print(f"Grid resolution: {resolution}")
 
     # Determine attributes to export
     # It is assumed all GPKG files have the same structure
     if attributes is None:
-        with fiona.open(input_gpkgs[0]) as src:
-            for f in src:
-                attributes = [key for key in f['properties'].keys() if key != grid_id_field]
-                break
+        for gpkg in input_gpkgs:
+            with fiona.open(gpkg) as src:
+                for f in src:
+                    attributes = [key for key in f['properties'].keys() if key != grid_id_field]
+                    break
+            if attributes is not None: break
         print(f"Attributes to export: {attributes}")
 
     # Determine the bounding box
