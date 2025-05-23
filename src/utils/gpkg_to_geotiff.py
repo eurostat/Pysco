@@ -116,7 +116,7 @@ def gpkg_grid_to_geotiff(
                     band_arrays[a][row, col] = value
 
     # Write to GeoTIFF
-    print(f"Writing GeoTIFF to {output_tiff}")
+    print(datetime.now(), f"Writing GeoTIFF to {output_tiff}")
     with rasterio.open(
         output_tiff,
         'w',
