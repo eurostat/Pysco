@@ -14,7 +14,8 @@ def gpkg_grid_to_geotiff(
     attributes=None,
     bbox=None,
     gpkg_nodata_values=None,
-    tiff_nodata_value=-9999
+    tiff_nodata_value=-9999,
+    compress='none'
 ):
     """
     Convert vector grid cells from one or several GeoPackage files into a multi-band GeoTIFF.
@@ -27,7 +28,10 @@ def gpkg_grid_to_geotiff(
     - bbox: Bounding box [minx, miny, maxx, maxy] to take. If not specified, the GPKG files bbox is computed and used - in that case, it is assumed the grid cell geometries are polygons.
     - gpkg_nodata_values (list of numbers): If specified, the GPKG file attributes with these values will be encoded as nodata in the tiff. Default is None.
     - tiff_nodata_value (numeric): Nodata value for empty pixels. Default is -9999.
+    - compress (str): Tiff compression, among 'lzw','deflate','jpeg','packbits','none'. Default is none.
     """
+
+
 
     # Determine resolution
     # It is assumed all cells of all GPKG files have the same resolution
@@ -93,16 +97,18 @@ def gpkg_grid_to_geotiff(
                 p = f['properties']
                 id = p[grid_id_field]
                 #CRS3035RES100mN2361200E3848300
+
+                # get cell lower left coordinates
                 id = id.split("N")[1].split("E")
                 x = int(id[1])
                 y = int(id[0])
                 #TODO also check all cells have the same RES ?
 
+                # get pixel position
                 col = int((x - minx) / resolution)
                 row = int((maxy - y) / resolution)-1
 
-                #print(x,y,col,row)
-
+                # set raster values at pixel position
                 for a in attributes:
                     value = p.get(a)
                     if value is None: continue
@@ -121,7 +127,8 @@ def gpkg_grid_to_geotiff(
         dtype=np.float32,
         crs=crs,
         transform=from_origin(minx, maxy, resolution, resolution),
-        nodata=tiff_nodata_value
+        nodata=tiff_nodata_value,
+        compress='none' if compress is None else compress
     ) as dst:
         for idx, attr in enumerate(attributes, start=1):
             dst.write(band_arrays[attr], idx)
@@ -139,5 +146,6 @@ gpkg_grid_to_geotiff(
         "/home/juju/gisco/accessibility/test.tif",
         attributes=["duration_1", "duration_average_3", "distance_to_node"],
         gpkg_nodata_values=[-1],
+        compress='deflate'
 )
 
