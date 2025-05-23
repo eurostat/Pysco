@@ -9,8 +9,11 @@ from utils.gpkg_to_geotiff import gpkg_grid_to_geotiff
 
 
 #TODO check paris centre bug - pedestrian areas
+#TODO take private access sections - tracks
 #TODO check ferries
 #TODO school: exclude some...
+#TODO school, by walking
+#TODO ajouter code pays/nuts aux cellules
 #TODO remove DE, RS, CH, etc.
 #TODO handle case when speed depends on driving direction
 #TODO euro_access
