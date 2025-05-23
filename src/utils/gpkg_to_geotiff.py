@@ -29,6 +29,8 @@ def gpkg_grid_to_geotiff(
     - tiff_nodata_value (numeric): Nodata value for empty pixels. Default is -9999.
     """
 
+    # Determine resolution
+    # It is assumed all cells of all GPKG files have the same resolution
     resolution = None
     with fiona.open(input_gpkgs[0]) as src:
         for f in src:
@@ -39,28 +41,29 @@ def gpkg_grid_to_geotiff(
             break
     print(f"Grid resolution: {resolution}")
 
-    if bbox is None:
-        # here it is assumed the grid cells have a geometry and it is a polygon.
-        # This may be based on the grid_id but it would require checking all cell ids individually and thus take long.
-        minx = None; miny = None; maxx = None; maxy = None
-        for gpkg in input_gpkgs:
-            with fiona.open(gpkg) as src:
-                (x,y,x_,y_) = src.bounds
-                if minx is None or x<minx: minx = x
-                if miny is None or y<miny: miny = y
-                if maxx is None or x_<maxx: maxx = x_
-                if maxy is None or y_<maxy: maxy = y_
-        bbox = [minx, miny, maxx, maxy]
-        print(f"Extent: {bbox}")
-
-
     # Determine attributes to export
+    # It is assumed all GPKG files have the same structure
     if attributes is None:
         with fiona.open(input_gpkgs[0]) as src:
             for f in src:
                 attributes = [key for key in f['properties'].keys() if key != grid_id_field]
                 break
         print(f"Attributes to export: {attributes}")
+
+    # Determine the bounding box
+    # here it is assumed the grid cells have a geometry and it is a polygon.
+    # This may be based on the grid_id but it would require checking all cell ids individually and thus take long.
+    if bbox is None:
+        minx = None; miny = None; maxx = None; maxy = None
+        for gpkg in input_gpkgs:
+            with fiona.open(gpkg) as src:
+                (x,y,x_,y_) = src.bounds
+                if minx is None or x<minx: minx = x
+                if miny is None or y<miny: miny = y
+                if maxx is None or x_>maxx: maxx = x_
+                if maxy is None or y_>maxy: maxy = y_
+        bbox = [minx, miny, maxx, maxy]
+        print(f"Extent: {bbox}")
 
     # Compute raster dimensions
     [minx, miny, maxx, maxy] = bbox
@@ -131,7 +134,7 @@ gpkg_grid_to_geotiff(
         [
             #"/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_3500000.gpkg",
             "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_2000000.gpkg",
-            #"/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_1500000.gpkg",
+            "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_1500000.gpkg",
         ],
         "/home/juju/gisco/accessibility/test.tif",
         attributes=["duration_1", "duration_average_3", "distance_to_node"],
