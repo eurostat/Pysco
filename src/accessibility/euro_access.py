@@ -10,6 +10,8 @@ from utils.gpkg_to_geotiff import gpkg_grid_to_geotiff
 
 #TODO
 #TODO do not transform into shapely geometry? use fiona geometry directly?
+#TODO when doing average, check how to do with -1 values
+#TODO store cells only as parquet - and make gpkg after from it ?
 #TODO check paris centre bug - pedestrian areas
 #TODO take private access sections - tracks
 #TODO check ferries

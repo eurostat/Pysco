@@ -202,31 +202,34 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
 
 
 # function to launch in parallel for each partition
-def parallel_process(params):
+def __parallel_process(params):
+
+    # get partition position
     [ x_part, y_part ] = params['xy']
 
-    #partition extended bbox
+    # build partition extended bbox
     extention_buffer = params['extention_buffer']
     partition_size = params['partition_size']
     extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
     print(datetime.now(),x_part,y_part, "make graph")
     roads = params['road_network_loader'](extended_bbox)
-    graph_ = ___graph_adjacency_list_from_geodataframe(roads,
+    gb_ = ___graph_adjacency_list_from_geodataframe(roads,
                                                         weight_fun = params['weight_function'],
                                                         direction_fun = params['direction_fun'],
                                                         is_not_snappable_fun = params['is_not_snappable_fun'],
                                                         detailled = params['detailled'],
                                                         initial_node_level_fun = params['initial_node_level_fun'],
                                                         final_node_level_fun = params['final_node_level_fun'])
-    graph = graph_['graph']
-    snappable_nodes = graph_['snappable_nodes']
-    del graph_, roads
+    graph = gb_['graph']
+    snappable_nodes = gb_['snappable_nodes']
+    del gb_, roads
     print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
     if(len(graph.keys())==0): return
     if(len(snappable_nodes)==0): return
 
     print(datetime.now(),x_part,y_part, "build nodes spatial index")
+    # for snappable nodes only
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
     print(datetime.now(),x_part,y_part, "get source nodes")
@@ -234,6 +237,7 @@ def parallel_process(params):
     sources = []
     for poi in pois:
         g = shape(poi['geometry'])
+        #TODO may not be necessary to use shapely geometry. use fiona geometry directly?
         n = snappable_nodes[next(idx.nearest((g.x, g.y, g.x, g.y), 1))]
         sources.append(n)
     del pois
@@ -252,44 +256,50 @@ def parallel_process(params):
     for _ in range(k): costs.append([])
     distances_to_node = [] #the cell center distance to its graph node
 
-    #go through cells
+    # go through cells
     grid_resolution = params['grid_resolution']
     cell_network_max_distance = params['cell_network_max_distance']
     r2 = grid_resolution / 2
+    keep_distance_to_node = params['keep_distance_to_node']
     for x in range(x_part, x_part+partition_size, grid_resolution):
         for y in range(y_part, y_part+partition_size, grid_resolution):
 
-            #get cell node
+            # snap cell centre to the snappable nodes, using the spatial index
             ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
             if ni_ == None: continue
             n = snappable_nodes[ni_]
 
-            #compute distance to network and skip if too far
-            dtn = round(distance_to_node(n,x+r2,y+r2))
+            # compute distance from cell centre to node, and skip if too far
+            dtn = distance_to_node(n, x+r2, y+r2)
             if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
-            #get costs
+            # get costs
             cs = result[n]
 
-            #store costs
+            # store costs
             for kk in range(k):
                 if kk>=len(cs): costs[kk].append(-1)
                 else: costs[kk].append(cs[kk]['cost']/60)
 
-            #store distance cell center/node
-            distances_to_node.append(dtn)
+            # store distance cell center/node
+            if keep_distance_to_node:
+                distances_to_node.append( round(dtn) )
 
-            #store cell id
+            # store cell id
             grd_ids.append(params['cell_id_fun'](x,y))
 
-            #store grid cell geometry
+            # store grid cell geometry
             cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
             cell_geometries.append(cell_geometry)
 
     print(datetime.now(), x_part, y_part, len(cell_geometries), "cells created")
 
     del result, idx, snappable_nodes
-    return [cell_geometries, grd_ids, costs, distances_to_node]
+
+    if keep_distance_to_node:
+        return [cell_geometries, grd_ids, costs, distances_to_node]
+    else:
+        return [cell_geometries, grd_ids, costs]
 
 
 
@@ -314,10 +324,10 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        extention_buffer = 30000,
                        detailled = False,
                        duration_simplification_fun = None,
+                       keep_distance_to_node = False,
                        crs = 'EPSG:3035',
                        num_processors_to_use = 1,
                        save_GPKG = True,
-                       save_CSV = False,
                        save_parquet = False
                        ):
 
@@ -340,12 +350,13 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
             'grid_resolution' : grid_resolution,
             'cell_network_max_distance' : cell_network_max_distance,
             'detailled' : detailled,
+            'keep_distance_to_node' : keep_distance_to_node,
          }
         for xy in processes_params
         ]
 
     print(datetime.now(), "launch", len(processes_params), "processes on", num_processors_to_use, "processor(s)")
-    outputs = Pool(num_processors_to_use).map(parallel_process, processes_params)
+    outputs = Pool(num_processors_to_use).map(__parallel_process, processes_params)
 
     print(datetime.now(), "combine", len(outputs), "outputs")
     cell_geometries = []
@@ -364,14 +375,15 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         grd_ids += out[1]
         costs_ = out[2]
         for kk in range(k): costs[kk] += costs_[kk]
-        distances_to_node += out[3]
+        if keep_distance_to_node: distances_to_node += out[3]
 
     print(datetime.now(), len(cell_geometries), "cells")
 
     #if len(cell_geometries) == 0: return
 
     #make output geodataframe
-    data = { 'geometry':cell_geometries, 'GRD_ID':grd_ids, 'distance_to_node':distances_to_node }
+    data = { 'geometry':cell_geometries, 'GRD_ID':grd_ids }
+    if keep_distance_to_node: data['distance_to_node'] = distances_to_node
     for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
 
     # compute average duration and simplify duration values
@@ -400,12 +412,8 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         out.crs = crs
         out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
 
-    if(save_CSV or save_parquet): out = out.drop(columns=['geometry'])
-
-    if(save_CSV):
-        print(datetime.now(), "save as CSV")
-        out.to_csv(out_folder+out_file+".csv", index=False)
     if(save_parquet):
         print(datetime.now(), "save as parquet")
+        out = out.drop(columns=['geometry'])
         out.to_parquet(out_folder+out_file+".parquet")
 
