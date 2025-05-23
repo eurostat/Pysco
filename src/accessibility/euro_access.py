@@ -25,7 +25,7 @@ bbox = [ 1000000, 500000, 6000000, 5500000 ]
 
 
 file_size_m = 500000
-out_folder = '/home/juju/gisco/accessibility/out_partition'
+out_folder = '/home/juju/gisco/accessibility/'
 
 clamp = lambda v:floor(v/file_size_m)*file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
@@ -42,7 +42,7 @@ if False:
             for y in range(ymin, ymax+1, file_size_m):
                 print(x,y)
 
-                out_folder2 = out_folder + "_" + service + "/"
+                out_folder2 = out_folder + "out_partition_" + service + "/"
                 if not os.path.exists(out_folder2): os.makedirs(out_folder2)
                 out_file = "euroaccess_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y)
 
@@ -105,7 +105,7 @@ if True:
 
         gpkg_grid_to_geotiff(
             gpkg_files,
-            out_folder + "_" + service + ".tif",
+            out_folder + service + ".tif",
             attributes=["duration_1", "duration_average_3", "distance_to_node"],
             gpkg_nodata_values=[-1],
             compress='deflate'
