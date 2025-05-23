@@ -4,7 +4,6 @@ from datetime import datetime
 import heapq
 from shapely.geometry import LineString, Point, shape
 from collections import defaultdict
-#import concurrent.futures
 from multiprocessing import Pool
 
 import sys
