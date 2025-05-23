@@ -110,6 +110,7 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
 
         # get feature geometry
         geom = shape(f['geometry'])
+        #TODO do not transform into shapely geometry? use fiona geometry directly?
         if not isinstance(geom, LineString): continue
         coords = list(geom.coords)
 
