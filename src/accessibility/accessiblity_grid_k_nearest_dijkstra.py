@@ -15,11 +15,11 @@ from utils.netutils import nodes_spatial_index_adjacendy_list, distance_to_node
 
 
 
-def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
+def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=False):
     """
     Computes the k nearest sources, their costs, and optionally paths to each node.
 
-    :param graph: A dictionary representing the adjacency list of the graph.
+    :param graph: A dictionary representing the adjacency list of the graph - that is each node is a key; and each value is a list of tuples (node,weight) of the links from this node.
     :param sources: A list of source node ids.
     :param k: Number of nearest sources to track.
     :param with_paths: Whether to track and return the paths.
@@ -71,8 +71,6 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=True):
 
 
 
-
-# make graph from linear features
 def ___graph_adjacency_list_from_geodataframe(sections_iterator,
                                               weight_fun = lambda feature,sl:sl,
                                               direction_fun=lambda feature:"both",
@@ -82,11 +80,16 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
                                               initial_node_level_fun=None,
                                               final_node_level_fun=None):
     """
-    Build a directed graph from a road network stored in a GeoPackage.
+    Build a directed graph from a network stored in a GeoPackage.
 
-    :param gdf: geodataframe containing the road sections, with linear geometry
-    :param weight: function returning a segment weight, based on the feature and the segment length
+    :param sections_iterator: fiona iterator to the dataset containing the road sections, with linear geometry
+    :param weight_fun: function returning a segment weight, based on the feature and the segment length
     :param direction_fun: return section direction ('both', 'oneway', 'forward', 'backward')
+    :param is_not_snappable_fun: return if the nodes of a section are not snappable.
+    :param coord_simp: a function used to build node id from node coordinates.
+    :param detailled: If true, all line vertices become graph nodes, otherwise only the initial and final vertices.
+    :param initial_node_level_fun: For non planar graphs, a function returning the level of the line initial node.
+    :param final_node_level_fun: For non planar graphs, a function returning the level of the line final node.
     :return: graph (adjacency list: {node_id: [(neighbor_node_id, travel_time)]})
     """
 
