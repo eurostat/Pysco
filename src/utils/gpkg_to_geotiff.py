@@ -89,9 +89,9 @@ def gpkg_grid_to_geotiff(
                 y = int(id[0])
 
                 col = int((x - minx) / resolution)
-                row = int((maxy - y) / resolution)
+                row = int((maxy - y) / resolution)-1
 
-                print(x,y,col,row)
+                #print(x,y,col,row)
 
                 for a in attributes:
                     value = p.get(a)
@@ -126,6 +126,6 @@ gpkg_grid_to_geotiff(
             #"/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_1500000.gpkg"
         ],
         "/home/juju/gisco/accessibility/test.tif",
-    #attributes=["duration_1", "duration_average_3"],
+        attributes=["duration_1", "duration_average_3", "distance_to_node"],
 )
 
