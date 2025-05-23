@@ -4,8 +4,8 @@ from rasterio.transform import from_origin
 from shapely.geometry import shape, box
 import numpy as np
 from math import ceil
-#import os
-#from collections import defaultdict
+from datetime import datetime
+
 
 def gpkg_grid_to_geotiff(
     input_gpkgs,
@@ -13,7 +13,8 @@ def gpkg_grid_to_geotiff(
     grid_id_field='GRD_ID',
     attributes=None,
     bbox=None,
-    nodata_value=-9999
+    gpkg_nodata_values=None,
+    tiff_nodata_value=-9999
 ):
     """
     Convert vector grid cells from one or several GeoPackage files into a multi-band GeoTIFF.
@@ -24,7 +25,8 @@ def gpkg_grid_to_geotiff(
     - grid_id_field (str): Name of the grid cell ID field. Defaults to 'GRD_ID'.
     - attributes (list of str): Attributes to export into GeoTIFF bands. If None, all attributes except the grid ID are used.
     - bbox: Bounding box [minx, miny, maxx, maxy] to take. If not specified, the GPKG files bbox is computed and used - in that case, it is assumed the grid cell geometries are polygons.
-    - nodata_value (numeric): Nodata value for empty pixels. Default is -9999.
+    - gpkg_nodata_values (list of numbers): If specified, the GPKG file attributes with these values will be encoded as nodata in the tiff. Default is None.
+    - tiff_nodata_value (numeric): Nodata value for empty pixels. Default is -9999.
     """
 
     resolution = None
@@ -69,7 +71,7 @@ def gpkg_grid_to_geotiff(
 
     # Prepare raster bands
     band_arrays = {
-        attr: np.full((height, width), nodata_value, dtype=np.float32)
+        attr: np.full((height, width), tiff_nodata_value, dtype=np.float32)
         for attr in attributes
     }
 
@@ -77,6 +79,7 @@ def gpkg_grid_to_geotiff(
 
     crs = None
     for gpkg in input_gpkgs:
+        print(datetime.now(), gpkg)
         with fiona.open(gpkg) as src:
             if crs is None:
                 crs = src.crs
@@ -99,8 +102,9 @@ def gpkg_grid_to_geotiff(
 
                 for a in attributes:
                     value = p.get(a)
-                    if value is not None:
-                        band_arrays[a][row, col] = value
+                    if value is None: continue
+                    if gpkg_nodata_values is not None and value in gpkg_nodata_values: continue
+                    band_arrays[a][row, col] = value
 
     # Write to GeoTIFF
     print(f"Writing GeoTIFF to {output_tiff}")
@@ -114,7 +118,7 @@ def gpkg_grid_to_geotiff(
         dtype=np.float32,
         crs=crs,
         transform=from_origin(minx, maxy, resolution, resolution),
-        nodata=nodata_value
+        nodata=tiff_nodata_value
     ) as dst:
         for idx, attr in enumerate(attributes, start=1):
             dst.write(band_arrays[attr], idx)
@@ -126,10 +130,11 @@ def gpkg_grid_to_geotiff(
 gpkg_grid_to_geotiff(
         [
             #"/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_3500000.gpkg"
-            "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_2000000.gpkg",
+            #"/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_2000000.gpkg",
             "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_1500000.gpkg"
         ],
         "/home/juju/gisco/accessibility/test.tif",
         attributes=["duration_1", "duration_average_3", "distance_to_node"],
+        gpkg_nodata_values=[-1],
 )
 
