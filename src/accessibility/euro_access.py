@@ -9,10 +9,11 @@ from utils.gpkg_to_geotiff import gpkg_grid_to_geotiff
 
 
 #TODO check paris centre bug - pedestrian areas
-#TODO ferry
+#TODO check ferries
 #TODO school: exclude some...
+#TODO remove DE, RS, CH, etc.
 #TODO handle case when speed depends on driving direction
-
+#TODO euro_access
 
 #luxembourg
 #bbox = [4030000, 2930000, 4060000, 2960000]
@@ -31,6 +32,7 @@ clamp = lambda v:floor(v/file_size_m)*file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
 grid_resolution = 100
+year = "2023"
 
 if False:
     for service in ["education", "healthcare"]:
@@ -42,11 +44,11 @@ if False:
             for y in range(ymin, ymax+1, file_size_m):
                 print(x,y)
 
-                out_folder2 = out_folder + "out_partition_" + service + "/"
-                if not os.path.exists(out_folder2): os.makedirs(out_folder2)
+                f = out_folder + "out_partition_" + service + "/"
+                if not os.path.exists(f): os.makedirs(f)
                 out_file = "euroaccess_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y)
 
-                if os.path.isfile(out_folder2 + out_file + ".gpkg"):
+                if os.path.isfile(f + out_file + ".gpkg"):
                     print(out_file, "already produced")
                     continue
 
@@ -61,8 +63,8 @@ if False:
                     print("Unexpected driving direction: ", d)
                     return None
 
-                def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_202312.gpkg", bbox=bbox, where="ONEWAY ISNULL or ONEWAY != 'N'")
-                def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_2023_3035.gpkg", bbox=bbox)
+                def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+year+"12.gpkg", bbox=bbox, where="ONEWAY ISNULL or ONEWAY != 'N'")
+                def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox)
                 def weight_function(feature, length): return -1 if feature['properties']['KPH']==0 else 1.1*length/feature['properties']['KPH']*3.6
                 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
                 def is_not_snappable_fun(f): return f['properties']['FOW'] in [1,10,12,6] or f['properties']['FREEWAY'] == 1
@@ -74,7 +76,7 @@ if False:
                     pois_loader = pois_loader,
                     road_network_loader = road_network_loader,
                     bbox = [x, y, x+file_size_m, y+file_size_m],
-                    out_folder = out_folder2,
+                    out_folder = f,
                     out_file = out_file,
                     k = 3,
                     weight_function = weight_function,
@@ -99,13 +101,13 @@ if False:
 # GPKG to tiff
 if True:
     for service in ["education", "healthcare"]:
-        out_folder2 = out_folder + "_" + service + "/"
-        gpkg_files = [os.path.join(out_folder2, f) for f in os.listdir(out_folder2) if f.endswith('.gpkg')]
+        f = out_folder + "_" + service + "/"
+        gpkg_files = [os.path.join(f, f) for f in os.listdir(f) if f.endswith('.gpkg')]
         print("transforming", len(gpkg_files), "gpkg files into tif for", service)
 
         gpkg_grid_to_geotiff(
             gpkg_files,
-            out_folder + service + ".tif",
+            out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif",
             attributes=["duration_1", "duration_average_3", "distance_to_node"],
             gpkg_nodata_values=[-1],
             compress='deflate'
