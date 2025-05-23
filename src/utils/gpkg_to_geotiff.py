@@ -70,8 +70,7 @@ def gpkg_grid_to_geotiff(
                     if miny is None or y<miny: miny = y
                     if maxx is None or x_>maxx: maxx = x_
                     if maxy is None or y_>maxy: maxy = y_
-                except:
-                    pass #print("Could not ")
+                except: pass
         bbox = [minx, miny, maxx, maxy]
         print(f"Extent: {bbox}")
 

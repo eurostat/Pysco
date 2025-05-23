@@ -105,8 +105,9 @@ if True:
 
         gpkg_grid_to_geotiff(
             gpkg_files,
-            out_folder + service + "tif",
+            out_folder + "_" + service + ".tif",
             attributes=["duration_1", "duration_average_3", "distance_to_node"],
             gpkg_nodata_values=[-1],
             compress='deflate'
         )
+
