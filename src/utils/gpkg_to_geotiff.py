@@ -126,7 +126,7 @@ def gpkg_grid_to_geotiff(
 gpkg_grid_to_geotiff(
         [
             #"/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_3500000.gpkg"
-            "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_2000000.gpkg"
+            "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_2000000.gpkg",
             "/home/juju/gisco/accessibility/out_partition_education/euroaccess_education_100m_2500000_1500000.gpkg"
         ],
         "/home/juju/gisco/accessibility/test.tif",
