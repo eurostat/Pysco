@@ -10,9 +10,9 @@ from math import ceil
 def gpkg_grid_to_geotiff(
     input_gpkgs,
     output_tiff,
-    bbox=None,
-    attributes=None,
     grid_id_field='GRD_ID',
+    attributes=None,
+    bbox=None,
     nodata_value=-9999
 ):
     """
@@ -23,6 +23,7 @@ def gpkg_grid_to_geotiff(
     - output_tiff (str): Output GeoTIFF file path.
     - grid_id_field (str): Name of the grid cell ID field. Defaults to 'GRD_ID'.
     - attributes (list of str): Attributes to export into GeoTIFF bands. If None, all attributes except the grid ID are used.
+    - bbox: Bounding box [minx, miny, maxx, maxy] to take. If not specified, the GPKG files bbox is computed and used.
     - nodata_value (numeric): Nodata value for empty pixels. Default is -9999.
     """
 
