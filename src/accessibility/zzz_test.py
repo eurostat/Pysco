@@ -77,7 +77,7 @@ accessiblity_grid_k_nearest_dijkstra(
     duration_simplification_fun = duration_simplification_fun,
     crs = 'EPSG:3035',
     num_processors_to_use = 1,
-    save_GPKG = False,
+    save_GPKG = True,
     save_parquet = True
 )
 
@@ -85,6 +85,6 @@ accessiblity_grid_k_nearest_dijkstra(
 print("Convert parquet to GPKG")
 parquet_grid_to_gpkg(
     '/home/juju/gisco/accessibility/grid.parquet',
-    '/home/juju/gisco/accessibility/grid.gpkg',
+    '/home/juju/gisco/accessibility/grid___.gpkg',
 )
 
