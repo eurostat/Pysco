@@ -5,6 +5,7 @@ import numpy as np
 from math import ceil
 from datetime import datetime
 import geopandas as gpd
+import pandas as pd
 
 
 
@@ -17,13 +18,22 @@ def parquet_grid_to_gpkg(
         grid_id_field='GRD_ID',
 ):
     # read input
-    gdf = gpd.read_file(input_parquet)
+    df = pd.read_parquet(input_parquet)
 
     # make geometry column
     #TODO
+    df = gpd.GeoDataFrame(df, 
+        geometry=gpd.points_from_xy(df.longitude, df.latitude))
+
+    # set CRS
+    #TODO
+    df.set_crs(epsg=4326, inplace=True)
+
+    # make geodataframe
+    df = gpd.GeoDataFrame(df)
 
     # save output
-    gdf.to_file(output_gpkg, driver="GPKG")
+    df.to_file(output_gpkg, driver="GPKG")
 
 
 
