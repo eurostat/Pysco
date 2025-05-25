@@ -15,7 +15,6 @@ from utils.netutils import nodes_spatial_index_adjacendy_list, distance_to_node
 
 
 
-
 def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=False):
     """
     Computes the k nearest sources, their costs, and optionally paths to each node.

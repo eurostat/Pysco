@@ -5,6 +5,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
+from utils.convert import parquet_grid_to_gpkg
 
 
 #TODO store cells only as parquet - and make gpkg after from it ?
@@ -81,4 +82,8 @@ accessiblity_grid_k_nearest_dijkstra(
 )
 
 print("Convert parquet to GPKG")
+parquet_grid_to_gpkg(
+    '/home/juju/gisco/accessibility/grid.parquet',
+    '/home/juju/gisco/accessibility/grid.gpkg',
+)
 
