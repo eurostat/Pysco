@@ -84,7 +84,6 @@ for service in ["education", "healthcare"]:
                 crs = 'EPSG:3035',
                 num_processors_to_use = num_processors_to_use,
                 save_GPKG = True,
-                save_CSV = False,
                 save_parquet = False
             )
 

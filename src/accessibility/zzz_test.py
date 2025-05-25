@@ -5,7 +5,6 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
-from utils.gpkg_to_geotiff import gpkg_grid_to_geotiff
 
 
 #TODO
@@ -81,6 +80,5 @@ accessiblity_grid_k_nearest_dijkstra(
     crs = 'EPSG:3035',
     num_processors_to_use = 1,
     save_GPKG = True,
-    save_CSV = False,
     save_parquet = False
 )
