@@ -6,6 +6,15 @@ from math import ceil
 from datetime import datetime
 
 
+def parquet_grid_to_gpkg(
+        input_parquet,
+        output_gpkg,
+        grid_id_field='GRD_ID',
+):
+    pass
+
+
+
 def gpkg_grid_to_geotiff(
     input_gpkgs,
     output_tiff,
