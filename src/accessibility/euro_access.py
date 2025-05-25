@@ -5,7 +5,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
-from utils.gpkg_to_geotiff import gpkg_grid_to_geotiff
+from utils.convert import gpkg_grid_to_geotiff
 
 #whole europe
 bbox = [ 1000000, 500000, 6000000, 5500000 ]
