@@ -17,6 +17,8 @@ from utils.convert import parquet_grid_to_gpkg
 #TODO ajouter code pays/nuts aux cellules
 #TODO remove DE, RS, CH, etc.
 #TODO handle case when speed depends on driving direction
+
+#TODO no longer do 500km tiles ?
 #TODO euro_access
 
 
