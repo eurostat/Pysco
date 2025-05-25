@@ -7,9 +7,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
 
 
-#TODO
-#TODO do not transform into shapely geometry? use fiona geometry directly?
-#TODO when doing average, check how to do with -1 values
 #TODO store cells only as parquet - and make gpkg after from it ?
 #TODO check paris centre bug - pedestrian areas
 #TODO take private access sections - tracks

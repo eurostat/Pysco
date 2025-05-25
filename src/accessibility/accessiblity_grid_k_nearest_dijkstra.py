@@ -391,12 +391,16 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         sum = 0
         for kk in range(k):
             dur = data['duration_'+str(kk+1)][i]
+            if dur<0: sum = -1; break
             sum += dur
             # simplify duration values
             if duration_simplification_fun != None: data['duration_'+str(kk+1)][i] = duration_simplification_fun(dur)
         # store average value, simplified if necessary
-        sum = sum/k
-        if duration_simplification_fun != None: sum = duration_simplification_fun(sum)
+        if sum <0:
+            sum = -1
+        else:
+            sum = sum/k
+            if duration_simplification_fun != None: sum = duration_simplification_fun(sum)
         averages.append(sum)
     data['duration_average_'+str(k)] = averages
 
