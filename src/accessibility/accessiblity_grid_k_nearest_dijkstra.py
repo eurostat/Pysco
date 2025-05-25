@@ -419,3 +419,4 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         out = out.drop(columns=['geometry'])
         out.to_parquet(out_folder+out_file+".parquet")
 
+
