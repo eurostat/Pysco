@@ -2,9 +2,10 @@ import geopandas as gpd
 from shapely.geometry import Polygon
 from datetime import datetime
 import heapq
-from shapely.geometry import LineString, Point, shape
+from shapely.geometry import shape
 from collections import defaultdict
 from multiprocessing import Pool
+from math import hypot
 
 import sys
 import os
@@ -99,7 +100,7 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
     # function to build node id based on its coordinates
     def node_id(point):
         """Create a unique node id from a Point geometry."""
-        return str(coord_simp(point.x)) +'_'+ str(coord_simp(point.y))
+        return str(coord_simp(point[0])) +'_'+ str(coord_simp(point[1]))
         #return f"{point.x:.6f}_{point.y:.6f}"
 
     for f in sections_iterator:
@@ -108,11 +109,9 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
         direction = direction_fun(f)
         if direction == None: continue
 
-        # get feature geometry
-        geom = shape(f['geometry'])
-        #TODO do not transform into shapely geometry? use fiona geometry directly?
-        if not isinstance(geom, LineString): continue
-        coords = list(geom.coords)
+        geom = f['geometry']
+        if geom['type'] != 'LineString': continue
+        coords = geom['coordinates']
 
         # code for initial and final node levels
         ini_node_level = "" if initial_node_level_fun == None else "_" + str(initial_node_level_fun(f))
@@ -125,14 +124,14 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
             # detailled decomposition: one graph node per line vertex
 
             # make first node
-            p1 = Point(coords[0])
+            p1 = coords[0]
             n1 = node_id(p1) + ini_node_level
 
             nb = len(coords) - 1
             for i in range(nb):
 
                 # make next node
-                p2 = Point(coords[i+1])
+                p2 = coords[i+1]
                 n2 = node_id(p2)
 
                 #add node code part for levels
@@ -143,7 +142,7 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
                 if n1==n2: continue
 
                 # get segment weight
-                segment_length_m = p1.distance(p2)
+                segment_length_m = hypot(p1[0]-p2[0], p1[1]-p2[1])
                 w = weight_fun(f, segment_length_m)
                 if w<0: continue
 
@@ -167,15 +166,15 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
                 n1 = n2
         else:
             # not detailled: a single edge between first and last line points
-            p1 = Point(coords[0])
+            p1 = coords[0]
             n1 = node_id(p1) + ini_node_level
 
-            p2 = Point(coords[-1])
+            p2 = coords[-1]
             n2 = node_id(p2) + fin_node_level
 
             if n1 != n2:
 
-                segment_length_m = geom.length
+                segment_length_m = shape(geom).length
                 w = weight_fun(f, segment_length_m)
                 if w<0: continue
 
@@ -236,9 +235,8 @@ def __parallel_process(params):
     pois = params['pois_loader'](extended_bbox)
     sources = []
     for poi in pois:
-        g = shape(poi['geometry'])
-        #TODO may not be necessary to use shapely geometry. use fiona geometry directly?
-        n = snappable_nodes[next(idx.nearest((g.x, g.y, g.x, g.y), 1))]
+        x, y = poi['geometry']['coordinates']
+        n = snappable_nodes[next(idx.nearest((x, y, x, y), 1))]
         sources.append(n)
     del pois
     print(datetime.now(),x_part,y_part, len(sources), "source nodes found")
