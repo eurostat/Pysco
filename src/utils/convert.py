@@ -4,6 +4,11 @@ from rasterio.transform import from_origin
 import numpy as np
 from math import ceil
 from datetime import datetime
+import geopandas as gpd
+
+
+
+
 
 
 def parquet_grid_to_gpkg(
@@ -11,8 +16,14 @@ def parquet_grid_to_gpkg(
         output_gpkg,
         grid_id_field='GRD_ID',
 ):
-    pass
+    # read input
+    gdf = gpd.read_file(input_parquet)
 
+    # make geometry column
+    #TODO
+
+    # save output
+    gdf.to_file(output_gpkg, driver="GPKG")
 
 
 
