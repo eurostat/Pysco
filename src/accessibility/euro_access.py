@@ -7,32 +7,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
 from utils.gpkg_to_geotiff import gpkg_grid_to_geotiff
 
-
-#TODO
-#TODO do not transform into shapely geometry? use fiona geometry directly?
-#TODO when doing average, check how to do with -1 values
-#TODO store cells only as parquet - and make gpkg after from it ?
-#TODO check paris centre bug - pedestrian areas
-#TODO take private access sections - tracks
-#TODO check ferries
-#TODO school: exclude some...
-#TODO school, by walking
-#TODO ajouter code pays/nuts aux cellules
-#TODO remove DE, RS, CH, etc.
-#TODO handle case when speed depends on driving direction
-#TODO euro_access
-
-
-#set bbox for test area
-#luxembourg
-#bbox = [4030000, 2930000, 4060000, 2960000]
-#big
-#bbox = [3500000, 2000000, 4000000, 2500000]
-#test
-#bbox = [3800000, 2300000, 3900000, 2400000]
 #whole europe
 bbox = [ 1000000, 500000, 6000000, 5500000 ]
-
 
 out_folder = '/home/juju/gisco/accessibility/'
 gpkg_tile_file_size_m = 500000
@@ -41,6 +17,7 @@ year = "2023"
 
 clamp = lambda v:floor(v/gpkg_tile_file_size_m)*gpkg_tile_file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
+
 
 
 for service in ["education", "healthcare"]:
