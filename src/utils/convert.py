@@ -1,5 +1,6 @@
 import fiona
 import rasterio
+from shapely.geometry import Polygon
 from rasterio.transform import from_origin
 import numpy as np
 from math import ceil
@@ -17,22 +18,42 @@ def parquet_grid_to_gpkg(
         output_gpkg,
         grid_id_field='GRD_ID',
 ):
-    # read input
+
+    # Load the parquet file
     df = pd.read_parquet(input_parquet)
 
-    # make geometry column
-    #TODO
-    df = gpd.GeoDataFrame(df, 
-        geometry=gpd.points_from_xy(df.longitude, df.latitude))
+    # Function to create a square polygon from the cell ID
+    def create_square_polygon(s):
+        # CRS3035RES100mN2953200E4041600
+        print(s)
 
-    # set CRS
-    #TODO
-    df.set_crs(epsg=4326, inplace=True)
+        '''
+        id = f['properties'][grid_id_field]
+        id = id.split("RES")[1]
+        id = id.split("m")[0]
+        resolution = int(id)
+        '''
 
-    # make geodataframe
-    df = gpd.GeoDataFrame(df)
+        crs = int(s[s.find('CRS')+3:s.find('RES')])
+        res = int(s[s.find('RES')+3:s.find('m')])
+        x = int(s[s.find('E')+1:s.find('N')])
+        y = int(s[s.find('N')+1:])
 
-    # save output
+        # Create the polygon
+        xy = (x, y)
+        square_polygon = Polygon([xy, (x + res, y), (x + res, y + res), (x, y + res), xy])
+        return square_polygon, crs
+
+    # Apply the function to create a new column with polygons and CRS
+    df['geometry'], df['crs'] = zip(*df[grid_id_field].apply(create_square_polygon))
+
+    # Make GeoDataFrame
+    df = gpd.GeoDataFrame(df, geometry='geometry')
+
+    # Set the CRS
+    df.set_crs(epsg=3035, inplace=True)
+
+    # save to GPKG
     df.to_file(output_gpkg, driver="GPKG")
 
 

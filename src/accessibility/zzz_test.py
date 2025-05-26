@@ -57,7 +57,7 @@ def initial_node_level_fun(f): return f['properties']['F_ELEV']
 def final_node_level_fun(f): return f['properties']['T_ELEV']
 def duration_simplification_fun(x): return round(x,1)
 
-
+'''
 # build accessibility grid
 accessiblity_grid_k_nearest_dijkstra(
     pois_loader = pois_loader,
@@ -83,7 +83,7 @@ accessiblity_grid_k_nearest_dijkstra(
     save_GPKG = True,
     save_parquet = True
 )
-
+'''
 
 print("Convert parquet to GPKG")
 parquet_grid_to_gpkg(
