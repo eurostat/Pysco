@@ -86,7 +86,9 @@ for year in ["2023"]:
 
 
     '''
-        # GPKG to tiff
+    TODO adapt that using parquet_grid_to_geotiff instead
+
+            # GPKG to tiff
         if True:
 
             # get all GPKG files in the output folder
