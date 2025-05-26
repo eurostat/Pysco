@@ -8,6 +8,7 @@ from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_gpkg
 
 
+#TODO: 1000*1000 instead of 500*500 ?
 #TODO take private access sections - tracks
 #TODO check ferries
 #TODO check paris centre bug - pedestrian areas
