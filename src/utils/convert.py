@@ -141,7 +141,7 @@ def parquet_grid_to_geotiff(
             if df.size == 0: continue
 
             for cell in df.itertuples(index=True):
-                id = cell[grid_id_field]
+                id = getattr(cell, grid_id_field)
                 x,y = get_cell_xy_from_id(id)
                 x_ = x+resolution
                 y_ = y+resolution
@@ -178,7 +178,7 @@ def parquet_grid_to_geotiff(
         if df.size == 0: continue
 
         for cell in df.itertuples(index=True):
-            id = cell[grid_id_field]
+            id = getattr(cell, grid_id_field)
             #CRS3035RES100mN2361200E3848300
 
             # get cell lower left coordinates
@@ -191,7 +191,7 @@ def parquet_grid_to_geotiff(
 
             # set raster values at pixel position
             for a in attributes:
-                value = p.get(a)
+                value = getattr(cell, a)
                 if value is None: continue
                 if parquets_nodata_values is not None and value in parquets_nodata_values: continue
                 band_arrays[a][row, col] = value
