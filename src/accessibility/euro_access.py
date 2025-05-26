@@ -67,7 +67,7 @@ for service in ["education", "healthcare"]:
                 road_network_loader = road_network_loader,
                 bbox = [x, y, x+gpkg_tile_file_size_m, y+gpkg_tile_file_size_m],
                 out_folder = f,
-                out_file = out_file,
+                out_parquet_file = out_file,
                 k = 3,
                 weight_function = weight_function,
                 direction_fun = direction_fun,

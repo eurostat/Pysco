@@ -300,8 +300,7 @@ def __parallel_process(params):
 def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        road_network_loader,
                        bbox,
-                       out_folder,
-                       out_file, #TODO
+                       out_parquet_file,
                        k = 3,
                        weight_function = lambda feature,sl:sl,
                        direction_fun=lambda feature:"both", #('both', 'oneway', 'forward', 'backward')
@@ -398,6 +397,6 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
 
     # save output
     print(datetime.now(), "save as parquet")
-    out.to_parquet(out_folder+out_file+".parquet")
+    out.to_parquet(out_parquet_file)
 
 
