@@ -11,14 +11,11 @@ from utils.convert import parquet_grid_to_gpkg, parquet_grid_to_geotiff
 #TODO take private access sections - tracks
 #TODO check ferries
 #TODO check paris centre bug - pedestrian areas
-#TODO school: exclude some...
-#TODO school, by walking
+#TODO school: exclude some ?
 #TODO ajouter code pays/nuts aux cellules - do it in external function
 #TODO remove DE, RS, CH, etc.
-#TODO handle case when speed depends on driving direction
-
-#TODO no longer do 500km tiles ?
 #TODO QGIS plugin for parquet grids
+#TODO handle case when speed depends on driving direction
 
 
 #set bbox for test area
