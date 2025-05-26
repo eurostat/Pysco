@@ -13,7 +13,7 @@ from utils.convert import parquet_grid_to_gpkg
 #TODO check paris centre bug - pedestrian areas
 #TODO school: exclude some...
 #TODO school, by walking
-#TODO ajouter code pays/nuts aux cellules
+#TODO ajouter code pays/nuts aux cellules - do it in external function
 #TODO remove DE, RS, CH, etc.
 #TODO handle case when speed depends on driving direction
 
