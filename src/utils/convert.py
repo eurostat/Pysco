@@ -8,9 +8,10 @@ from datetime import datetime
 import geopandas as gpd
 import pandas as pd
 
-
-
-
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.gridutils import get_cell_xy_from_id
 
 
 def parquet_grid_to_gpkg(
@@ -28,6 +29,7 @@ def parquet_grid_to_gpkg(
 
         # Load the parquet file
         df = pd.read_parquet(input_parquet)
+        if df.size == 0: continue
 
         # Function to create a square polygon from the cell ID
         def create_square_polygon(s):
@@ -70,6 +72,150 @@ def parquet_grid_to_gpkg(
             first = False
         else:
             df.to_file(output_gpkg, layer=layer_name, driver="GPKG", mode='a')
+
+
+
+
+def parquet_grid_to_geotiff(
+    input_parquets,
+    output_tiff,
+    grid_id_field='GRD_ID',
+    attributes=None,
+    bbox=None,
+    parquets_nodata_values=None,
+    tiff_nodata_value=-9999,
+    compress='none'
+):
+    """
+    Convert vector grid cells from one or several parquet grid files into a multi-band GeoTIFF.
+
+    Parameters:
+    - input_parquets (list of str): List of input parquet grid file paths.
+    - output_tiff (str): Output GeoTIFF file path.
+    - grid_id_field (str): Name of the grid cell ID field. Defaults to 'GRD_ID'.
+    - attributes (list of str): Attributes to export into GeoTIFF bands. If None, all attributes except the grid ID are used.
+    - bbox: Bounding box [minx, miny, maxx, maxy] to take. If not specified, the GPKG files bbox is computed and used - in that case, it is assumed the grid cell geometries are polygons.
+    - parquets_nodata_values (list of numbers): If specified, the parquet file attributes with these values will be encoded as nodata in the tiff. Default is None.
+    - tiff_nodata_value (numeric): Nodata value for empty pixels. Default is -9999.
+    - compress (str): Tiff compression, among 'lzw','deflate','jpeg','packbits','none'. Default is none.
+    """
+
+    # Determine resolution and CRS
+    # It is assumed all cells of all GPKG files have the same resolution and CRS
+    resolution = None
+    crs = None
+    for input_parquet in input_parquets:
+
+        # Load the parquet file
+        df = pd.read_parquet(input_parquet)
+        if df.size == 0: continue
+
+        id = df.iloc[0][grid_id_field]
+        a = id.split('RES')
+
+        # get CRS
+        crs = a[0][3:]
+
+        # get resolution
+        a = a[1]
+        a = a.split("m")[0]
+        resolution = int(a)
+
+        if attributes is None:
+            # Determine attributes to export
+            # It is assumed all parquet files have the same structure
+            attributes = df.columns.tolist()
+
+        # no need to continue, assuming all parquet files have the same structure
+        break
+    print(f"Grid resolution: {resolution}")
+    print(f"Grid CRS: {crs}")
+    print(f"Attributes to export: {attributes}")
+
+    # Determine the bounding box
+    if bbox is None:
+        minx = None; miny = None; maxx = None; maxy = None
+        for input_parquet in input_parquets:
+            # Load the parquet file
+            df = pd.read_parquet(input_parquet)
+            if df.size == 0: continue
+
+            for cell in df.itertuples(index=True):
+                id = cell[grid_id_field]
+                x,y = get_cell_xy_from_id(id)
+                x_ = x+resolution
+                y_ = y+resolution
+                try:
+                    if minx is None or x<minx: minx = x
+                    if miny is None or y<miny: miny = y
+                    if maxx is None or x_>maxx: maxx = x_
+                    if maxy is None or y_>maxy: maxy = y_
+                except: continue
+        bbox = [minx, miny, maxx, maxy]
+        print(f"Extent: {bbox}")
+
+    # Compute raster dimensions
+    [minx, miny, maxx, maxy] = bbox
+    width = ceil((maxx - minx) / resolution)
+    height = ceil((maxy - miny) / resolution)
+
+    print(f"Raster size: {width} x {height} cells")
+
+    # Prepare raster bands
+    band_arrays = {
+        attr: np.full((height, width), tiff_nodata_value, dtype=np.float32)
+        for attr in attributes
+    }
+
+    print("Populating raster bands...")
+
+    crs = None
+    for input_parquet in input_parquets:
+        print(datetime.now(), input_parquet)
+
+        # Load the parquet file
+        df = pd.read_parquet(input_parquet)
+        if df.size == 0: continue
+
+        for cell in df.itertuples(index=True):
+            id = cell[grid_id_field]
+            #CRS3035RES100mN2361200E3848300
+
+            # get cell lower left coordinates
+            x,y = get_cell_xy_from_id(id)
+            #TODO also check all cells have the same RES ?
+
+            # get pixel position
+            col = int((x - minx) / resolution)
+            row = int((maxy - y) / resolution)-1
+
+            # set raster values at pixel position
+            for a in attributes:
+                value = p.get(a)
+                if value is None: continue
+                if parquets_nodata_values is not None and value in parquets_nodata_values: continue
+                band_arrays[a][row, col] = value
+
+    # Write to GeoTIFF
+    print(datetime.now(), f"Writing GeoTIFF to {output_tiff}")
+    with rasterio.open(
+        output_tiff,
+        'w',
+        driver='GTiff',
+        height=height,
+        width=width,
+        count=len(attributes),
+        dtype=np.float32,
+        crs=crs,
+        transform=from_origin(minx, maxy, resolution, resolution),
+        nodata=tiff_nodata_value,
+        compress='none' if compress is None else compress
+    ) as dst:
+        for idx, attr in enumerate(attributes, start=1):
+            dst.write(band_arrays[attr], idx)
+            dst.set_band_description(idx, attr)
+
+
 
 
 
@@ -171,9 +317,7 @@ def gpkg_grid_to_geotiff(
                 #CRS3035RES100mN2361200E3848300
 
                 # get cell lower left coordinates
-                id = id.split("N")[1].split("E")
-                x = int(id[1])
-                y = int(id[0])
+                x,y = get_cell_xy_from_id(id)
                 #TODO also check all cells have the same RES ?
 
                 # get pixel position
