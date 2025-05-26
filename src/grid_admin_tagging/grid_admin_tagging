@@ -1,0 +1,29 @@
+# Take some gridded dataset and assigne to it some administrative unit code (i.e. nuts or country code)
+
+
+def produce_correspondance_table(
+    admin_units_dataset, #GPKG - prepared. polygons with id
+    admin_code_attribute,
+    resolution,
+    output_table_path,
+    tolerance_distance = None,
+):
+    pass
+
+    # get gpkg CRS
+    # get dataset bounds
+    # build adm patches spatial index
+
+    #go through cells using bounds
+
+    #make output dataframe
+
+    #for each cell
+        #get cell center coordinates
+        #get admin patches using spatial index with distance smaller than resolution/sqrt(2) OR tolerance_distance
+        #get list of ids of them
+        #make cell_id
+        #add row cell_id, list
+
+    #store output dataframe
+
