@@ -315,7 +315,6 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        detailled = False,
                        duration_simplification_fun = None,
                        keep_distance_to_node = False,
-                       crs = 'EPSG:3035',
                        num_processors_to_use = 1,
                        ):
 

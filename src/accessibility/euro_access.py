@@ -11,11 +11,11 @@ from utils.convert import gpkg_grid_to_geotiff
 bbox = [ 1000000, 500000, 6000000, 5500000 ]
 
 out_folder = '/home/juju/gisco/accessibility/'
-gpkg_tile_file_size_m = 500000
+tile_file_size_m = 500000
 grid_resolution = 100
 year = "2023"
 
-clamp = lambda v:floor(v/gpkg_tile_file_size_m)*gpkg_tile_file_size_m
+clamp = lambda v:floor(v/tile_file_size_m)*tile_file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
 
@@ -25,19 +25,19 @@ for service in ["education", "healthcare"]:
     num_processors_to_use = 7 if service == "education" else 5
 
     # ouput folder
-    f = out_folder + "out_" + service + "/"
-    if not os.path.exists(f): os.makedirs(f)
+    out_folder_service = out_folder + "out_" + service + "/"
+    if not os.path.exists(out_folder_service): os.makedirs(out_folder_service)
 
-    #launch process for each GPKG tile file
-    for x in range(xmin, xmax+1, gpkg_tile_file_size_m):
-        for y in range(ymin, ymax+1, gpkg_tile_file_size_m):
-            print("GPKG tile", x, y)
+    #launch process for each tile file
+    for x in range(xmin, xmax+1, tile_file_size_m):
+        for y in range(ymin, ymax+1, tile_file_size_m):
+            print("Tile file", x, y)
 
             #output file
-            out_file = "euro_access_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y)
+            out_file = out_folder_service + "euro_access_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
 
             #check if output file was already produced
-            if os.path.isfile(f + out_file + ".gpkg"):
+            if os.path.isfile(out_file):
                 print(out_file, "already produced")
                 continue
 
@@ -65,9 +65,8 @@ for service in ["education", "healthcare"]:
             accessiblity_grid_k_nearest_dijkstra(
                 pois_loader = pois_loader,
                 road_network_loader = road_network_loader,
-                bbox = [x, y, x+gpkg_tile_file_size_m, y+gpkg_tile_file_size_m],
-                out_folder = f,
-                out_parquet_file = out_file,
+                bbox = [x, y, x+tile_file_size_m, y+tile_file_size_m],
+                out_parquet_file= out_file,
                 k = 3,
                 weight_function = weight_function,
                 direction_fun = direction_fun,
@@ -81,12 +80,10 @@ for service in ["education", "healthcare"]:
                 extention_buffer = 20000 if service=="education" else 60000,
                 detailled = True,
                 duration_simplification_fun = duration_simplification_fun,
-                crs = 'EPSG:3035',
                 num_processors_to_use = num_processors_to_use,
-                save_GPKG = True,
-                save_parquet = False
             )
 
+'''
     # GPKG to tiff
     if True:
 
@@ -101,4 +98,4 @@ for service in ["education", "healthcare"]:
             gpkg_nodata_values=[-1],
             compress='deflate'
         )
-
+'''
