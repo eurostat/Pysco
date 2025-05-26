@@ -83,6 +83,7 @@ parquet_grid_to_gpkg(
     '/home/juju/gisco/accessibility/grid.gpkg',
 )
 
+print("Convert parquet to geotiff")
 parquet_grid_to_geotiff(
     ['/home/juju/gisco/accessibility/grid.parquet'],
     '/home/juju/gisco/accessibility/grid.tif',
