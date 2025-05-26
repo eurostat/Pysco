@@ -54,7 +54,7 @@ def is_not_snappable_fun(f): return f['properties']['FOW'] in [1,10,12,6] or f['
 def initial_node_level_fun(f): return f['properties']['F_ELEV']
 def final_node_level_fun(f): return f['properties']['T_ELEV']
 def duration_simplification_fun(x): return round(x,1)
-'''
+
 # build accessibility grid
 accessiblity_grid_k_nearest_dijkstra(
     pois_loader = pois_loader,
@@ -82,7 +82,7 @@ parquet_grid_to_gpkg(
     ['/home/juju/gisco/accessibility/grid.parquet'],
     '/home/juju/gisco/accessibility/grid.gpkg',
 )
-'''
+
 parquet_grid_to_geotiff(
     ['/home/juju/gisco/accessibility/grid.parquet'],
     '/home/juju/gisco/accessibility/grid.tif',
