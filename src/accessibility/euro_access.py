@@ -87,7 +87,7 @@ for year in ["2023"]:
         # parquet to tiff
 
         # get all parquet files in the output folder
-        files = [os.path.join(f, f) for f in os.listdir(out_folder_service) if f.endswith('.parquet')]
+        files = [os.path.join(out_folder_service, f) for f in os.listdir(out_folder_service) if f.endswith('.parquet')]
         if len(files)==0: continue
 
         print("transforming", len(files), "parquuet files into tif for", service, year)
