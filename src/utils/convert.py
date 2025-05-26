@@ -173,11 +173,13 @@ def parquet_grid_to_geotiff(
     nb = len(input_parquet_files)
     i=1
     for file in input_parquet_files:
-        print(datetime.now(), i, "/", nb, file)
-        i += 1
 
         # Load the parquet file
         df = pd.read_parquet(file)
+
+        print(datetime.now(), i, "/", nb, df.size, "cells", file)
+        i += 1
+
         if df.size == 0: continue
 
         for cell in df.itertuples(index=True):
