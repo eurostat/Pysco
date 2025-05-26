@@ -77,7 +77,7 @@ def parquet_grid_to_gpkg(
 
 
 def parquet_grid_to_geotiff(
-    input_parquets,
+    input_parquet_files,
     output_tiff,
     grid_id_field='GRD_ID',
     attributes=None,
@@ -104,10 +104,10 @@ def parquet_grid_to_geotiff(
     # It is assumed all cells of all GPKG files have the same resolution and CRS
     resolution = None
     crs = None
-    for input_parquet in input_parquets:
+    for file in input_parquet_files:
 
         # Load the parquet file
-        df = pd.read_parquet(input_parquet)
+        df = pd.read_parquet(file)
         if df.size == 0: continue
 
         id = df.iloc[0][grid_id_field]
@@ -135,9 +135,9 @@ def parquet_grid_to_geotiff(
     # Determine the bounding box
     if bbox is None:
         minx = None; miny = None; maxx = None; maxy = None
-        for input_parquet in input_parquets:
+        for file in input_parquet_files:
             # Load the parquet file
-            df = pd.read_parquet(input_parquet)
+            df = pd.read_parquet(file)
             if df.size == 0: continue
 
             for cell in df.itertuples(index=True):
@@ -170,11 +170,14 @@ def parquet_grid_to_geotiff(
     print("Populating raster bands...")
 
     crs = None
-    for input_parquet in input_parquets:
-        print(datetime.now(), input_parquet)
+    nb = len(input_parquet_files)
+    i=1
+    for file in input_parquet_files:
+        print(datetime.now(), i, "/", nb, file)
+        i += 1
 
         # Load the parquet file
-        df = pd.read_parquet(input_parquet)
+        df = pd.read_parquet(file)
         if df.size == 0: continue
 
         for cell in df.itertuples(index=True):
