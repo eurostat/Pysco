@@ -28,7 +28,6 @@ for year in ["2023"]:
         out_folder_service = out_folder + "out_" + service + "_" + year + "/"
         if not os.path.exists(out_folder_service): os.makedirs(out_folder_service)
 
-        '''
         #launch process for each tile file
         for x in range(xmin, xmax+1, tile_file_size_m):
             for y in range(ymin, ymax+1, tile_file_size_m):
@@ -76,14 +75,14 @@ for year in ["2023"]:
                     final_node_level_fun = final_node_level_fun,
                     cell_id_fun = cell_id_fun,
                     grid_resolution= grid_resolution,
-                    cell_network_max_distance= grid_resolution * 1.5,
+                    cell_network_max_distance= grid_resolution * 2,
                     partition_size = 125000,
                     extention_buffer = 20000 if service=="education" else 60000,
                     detailled = True,
                     duration_simplification_fun = duration_simplification_fun,
                     num_processors_to_use = num_processors_to_use,
                 )
-        '''
+
         # parquet to tiff
 
         # get all parquet files in the output folder
