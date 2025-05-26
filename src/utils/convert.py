@@ -167,9 +167,8 @@ def parquet_grid_to_geotiff(
         for attr in attributes
     }
 
-    print("Populating raster bands...")
+    print("Populate raster bands")
 
-    crs = None
     nb = len(input_parquet_files)
     i=1
     for file in input_parquet_files:
