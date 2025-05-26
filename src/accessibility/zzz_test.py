@@ -8,7 +8,6 @@ from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_gpkg, parquet_grid_to_geotiff
 
 
-#TODO test parquet to geotiff
 #TODO take private access sections - tracks
 #TODO check ferries
 #TODO check paris centre bug - pedestrian areas
