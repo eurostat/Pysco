@@ -24,34 +24,35 @@ def parquet_grid_to_gpkg(
 
     # Function to create a square polygon from the cell ID
     def create_square_polygon(s):
+        # decode cell ID
         # CRS3035RES100mN2953200E4041600
-        print(s)
+        s = s.split('RES')[1].split('mN')
+        res = int(s[0])
+        s = s[1].split('E')
+        x = int(s[1])
+        y = int(s[0])
 
-        '''
-        id = f['properties'][grid_id_field]
-        id = id.split("RES")[1]
-        id = id.split("m")[0]
-        resolution = int(id)
-        '''
-
-        crs = int(s[s.find('CRS')+3:s.find('RES')])
-        res = int(s[s.find('RES')+3:s.find('m')])
-        x = int(s[s.find('E')+1:s.find('N')])
-        y = int(s[s.find('N')+1:])
-
-        # Create the polygon
+        # make polygon
         xy = (x, y)
         square_polygon = Polygon([xy, (x + res, y), (x + res, y + res), (x, y + res), xy])
-        return square_polygon, crs
+        return square_polygon
 
     # Apply the function to create a new column with polygons and CRS
-    df['geometry'], df['crs'] = zip(*df[grid_id_field].apply(create_square_polygon))
+    df['geometry'] = df.apply(
+        lambda cell: create_square_polygon(cell[grid_id_field]),
+        axis=1
+    )
+
+    # get CRS
+    crs = df.iloc[0][grid_id_field]
+    crs = crs.split('RES')
+    crs = crs[0][3:]
 
     # Make GeoDataFrame
     df = gpd.GeoDataFrame(df, geometry='geometry')
 
     # Set the CRS
-    df.set_crs(epsg=3035, inplace=True)
+    df.set_crs(epsg=crs, inplace=True)
 
     # save to GPKG
     df.to_file(output_gpkg, driver="GPKG")
