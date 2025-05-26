@@ -94,6 +94,7 @@ for year in ["2023"]:
         parquet_grid_to_geotiff(
             files,
             out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif",
+            bbox = bbox,
             attributes=["duration_1", "duration_average_3"],
             parquet_nodata_values=[-1],
             compress='deflate'
