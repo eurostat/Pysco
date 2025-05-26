@@ -1,6 +1,6 @@
 import fiona
 import rasterio
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon,Point
 from rasterio.transform import from_origin
 import numpy as np
 from math import ceil
@@ -14,48 +14,62 @@ import pandas as pd
 
 
 def parquet_grid_to_gpkg(
-        input_parquet,
+        input_parquet_files,
         output_gpkg,
+        layer_name = None,
         grid_id_field='GRD_ID',
+        geometry_type="polygon", #could be "point"
 ):
+# convert a list of parquet grid files into a single GPKG file.
+# The cell geometries are built from the grid cell ID.
 
-    # Load the parquet file
-    df = pd.read_parquet(input_parquet)
+    first = True
+    for input_parquet in input_parquet_files:
 
-    # Function to create a square polygon from the cell ID
-    def create_square_polygon(s):
-        # decode cell ID
-        # CRS3035RES100mN2953200E4041600
-        s = s.split('RES')[1].split('mN')
-        res = int(s[0])
-        s = s[1].split('E')
-        x = int(s[1])
-        y = int(s[0])
+        # Load the parquet file
+        df = pd.read_parquet(input_parquet)
 
-        # make polygon
-        xy = (x, y)
-        square_polygon = Polygon([xy, (x + res, y), (x + res, y + res), (x, y + res), xy])
-        return square_polygon
+        # Function to create a square polygon from the cell ID
+        def create_square_polygon(s):
+            # decode cell ID
+            # CRS3035RES100mN2953200E4041600
+            s = s.split('RES')[1].split('mN')
+            res = int(s[0])
+            s = s[1].split('E')
+            x = int(s[1])
+            y = int(s[0])
 
-    # Apply the function to create a new column with polygons and CRS
-    df['geometry'] = df.apply(
-        lambda cell: create_square_polygon(cell[grid_id_field]),
-        axis=1
-    )
+            # make polygon
+            if geometry_type == "polygon":
+                xy = (x, y)
+                return Polygon([xy, (x + res, y), (x + res, y + res), (x, y + res), xy])
+            if geometry_type == "point":
+                return Point((x + res/2, y + res/2))
+            print("Unexpected geometry type: " + geometry_type)
 
-    # get CRS
-    crs = df.iloc[0][grid_id_field]
-    crs = crs.split('RES')
-    crs = crs[0][3:]
+        # Apply the function to create a new column with polygons and CRS
+        df['geometry'] = df.apply(
+            lambda cell: create_square_polygon(cell[grid_id_field]),
+            axis=1
+        )
 
-    # Make GeoDataFrame
-    df = gpd.GeoDataFrame(df, geometry='geometry')
+        # get CRS
+        crs = df.iloc[0][grid_id_field]
+        crs = crs.split('RES')
+        crs = crs[0][3:]
 
-    # Set the CRS
-    df.set_crs(epsg=crs, inplace=True)
+        # Make GeoDataFrame
+        df = gpd.GeoDataFrame(df, geometry='geometry')
 
-    # save to GPKG
-    df.to_file(output_gpkg, driver="GPKG")
+        # Set the CRS
+        df.set_crs(epsg=crs, inplace=True)
+
+        # save to GPKG
+        if first:
+            df.to_file(output_gpkg, layer=layer_name, driver="GPKG")
+            first = False
+        else:
+            df.to_file(output_gpkg, layer=layer_name, driver="GPKG", mode='a')
 
 
 
