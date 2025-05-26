@@ -8,7 +8,7 @@ from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_gpkg
 
 
-#TODO store cells only as parquet - and make gpkg after from it ?
+#TODO store cells only as parquet - and make gpkg after from it
 #TODO check paris centre bug - pedestrian areas
 #TODO take private access sections - tracks
 #TODO check ferries
