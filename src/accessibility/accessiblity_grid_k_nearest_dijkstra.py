@@ -1,5 +1,4 @@
 import geopandas as gpd
-from shapely.geometry import Polygon
 from datetime import datetime
 import heapq
 from shapely.geometry import shape
@@ -247,7 +246,6 @@ def __parallel_process(params):
     del graph, sources
 
     print(datetime.now(), x_part, y_part, "extract cell accessibility data")
-    cell_geometries = [] #the cell geometries
     grd_ids = [] #the cell identifiers
     costs = [] #the costs - an array of arrays
     for _ in range(k): costs.append([])
@@ -285,18 +283,14 @@ def __parallel_process(params):
             # store cell id
             grd_ids.append(params['cell_id_fun'](x,y))
 
-            # store grid cell geometry
-            cell_geometry = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
-            cell_geometries.append(cell_geometry)
-
-    print(datetime.now(), x_part, y_part, len(cell_geometries), "cells created")
+    print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
     del result, idx, snappable_nodes
 
     if keep_distance_to_node:
-        return [cell_geometries, grd_ids, costs, distances_to_node]
+        return [grd_ids, costs, distances_to_node]
     else:
-        return [cell_geometries, grd_ids, costs]
+        return [grd_ids, costs]
 
 
 
@@ -307,7 +301,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        road_network_loader,
                        bbox,
                        out_folder,
-                       out_file,
+                       out_file, #TODO
                        k = 3,
                        weight_function = lambda feature,sl:sl,
                        direction_fun=lambda feature:"both", #('both', 'oneway', 'forward', 'backward')
@@ -324,8 +318,6 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        keep_distance_to_node = False,
                        crs = 'EPSG:3035',
                        num_processors_to_use = 1,
-                       save_GPKG = True,
-                       save_parquet = False
                        ):
 
     #launch parallel computation   
@@ -356,7 +348,6 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
     outputs = Pool(num_processors_to_use).map(__parallel_process, processes_params)
 
     print(datetime.now(), "combine", len(outputs), "outputs")
-    cell_geometries = []
     grd_ids = []
     costs = []
     for _ in range(k): costs.append([])
@@ -368,24 +359,23 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         if len(out[0])==0: continue
 
         # combine results
-        cell_geometries += out[0]
-        grd_ids += out[1]
-        costs_ = out[2]
+        grd_ids += out[0]
+        costs_ = out[1]
         for kk in range(k): costs[kk] += costs_[kk]
-        if keep_distance_to_node: distances_to_node += out[3]
+        if keep_distance_to_node: distances_to_node += out[2]
 
-    print(datetime.now(), len(cell_geometries), "cells")
+    print(datetime.now(), len(grd_ids), "cells")
 
     #if len(cell_geometries) == 0: return
 
     #make output geodataframe
-    data = { 'geometry':cell_geometries, 'GRD_ID':grd_ids }
+    data = { 'GRD_ID':grd_ids }
     if keep_distance_to_node: data['distance_to_node'] = distances_to_node
     for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
 
     # compute average duration and simplify duration values
     averages = []
-    for i in range(len(data['geometry'])):
+    for i in range(len(data['GRD_ID'])):
         # compute average
         sum = 0
         for kk in range(k):
@@ -407,15 +397,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
     out = gpd.GeoDataFrame(data)
 
     # save output
-
-    if(save_GPKG):
-        print(datetime.now(), "save as GPKG")
-        out.crs = crs
-        out.to_file(out_folder+out_file+".gpkg", driver="GPKG")
-
-    if(save_parquet):
-        print(datetime.now(), "save as parquet")
-        out = out.drop(columns=['geometry'])
-        out.to_parquet(out_folder+out_file+".parquet")
+    print(datetime.now(), "save as parquet")
+    out.to_parquet(out_folder+out_file+".parquet")
 
 

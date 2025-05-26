@@ -79,8 +79,6 @@ accessiblity_grid_k_nearest_dijkstra(
     duration_simplification_fun = duration_simplification_fun,
     crs = 'EPSG:3035',
     num_processors_to_use = 1,
-    save_GPKG = False,
-    save_parquet = True
 )
 
 print("Convert parquet to GPKG")
