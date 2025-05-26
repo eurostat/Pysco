@@ -114,7 +114,7 @@ def parquet_grid_to_geotiff(
         a = id.split('RES')
 
         # get CRS
-        crs = a[0][3:]
+        crs = "EPSG:" + a[0][3:]
 
         # get resolution
         a = a[1]

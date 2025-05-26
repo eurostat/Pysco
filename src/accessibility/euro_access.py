@@ -20,7 +20,7 @@ out_folder = '/home/juju/gisco/accessibility/'
 for year in ["2023"]:
 #TODO add 2020
 
-    for service in ["healthcare"]: #["education", "healthcare"]:
+    for service in ["education", "healthcare"]:
 
         num_processors_to_use = 7 if service == "education" else 5
 
