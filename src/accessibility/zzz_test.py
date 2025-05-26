@@ -5,9 +5,10 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
-from utils.convert import parquet_grid_to_gpkg
+from utils.convert import parquet_grid_to_gpkg, parquet_grid_to_geotiff
 
 
+#TODO test parquet to geotiff
 #TODO take private access sections - tracks
 #TODO check ferries
 #TODO check paris centre bug - pedestrian areas
@@ -83,3 +84,10 @@ parquet_grid_to_gpkg(
     '/home/juju/gisco/accessibility/grid.gpkg',
 )
 
+parquet_grid_to_geotiff(
+    ['/home/juju/gisco/accessibility/grid.parquet'],
+    '/home/juju/gisco/accessibility/grid.tif',
+    attributes=["duration_1", "duration_average_3"],
+    gpkg_nodata_values=[-1],
+    compress='deflate'
+)
