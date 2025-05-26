@@ -87,6 +87,6 @@ parquet_grid_to_geotiff(
     ['/home/juju/gisco/accessibility/grid.parquet'],
     '/home/juju/gisco/accessibility/grid.tif',
     attributes=["duration_1", "duration_average_3"],
-    parquets_nodata_values=[-1],
+    parquet_nodata_values=[-1],
     compress='deflate'
 )

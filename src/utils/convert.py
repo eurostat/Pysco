@@ -82,7 +82,7 @@ def parquet_grid_to_geotiff(
     grid_id_field='GRD_ID',
     attributes=None,
     bbox=None,
-    parquets_nodata_values=None,
+    parquet_nodata_values=None,
     tiff_nodata_value=-9999,
     compress='none'
 ):
@@ -95,7 +95,7 @@ def parquet_grid_to_geotiff(
     - grid_id_field (str): Name of the grid cell ID field. Defaults to 'GRD_ID'.
     - attributes (list of str): Attributes to export into GeoTIFF bands. If None, all attributes except the grid ID are used.
     - bbox: Bounding box [minx, miny, maxx, maxy] to take. If not specified, the GPKG files bbox is computed and used - in that case, it is assumed the grid cell geometries are polygons.
-    - parquets_nodata_values (list of numbers): If specified, the parquet file attributes with these values will be encoded as nodata in the tiff. Default is None.
+    - parquet_nodata_values (list of numbers): If specified, the parquet file attributes with these values will be encoded as nodata in the tiff. Default is None.
     - tiff_nodata_value (numeric): Nodata value for empty pixels. Default is -9999.
     - compress (str): Tiff compression, among 'lzw','deflate','jpeg','packbits','none'. Default is none.
     """
@@ -193,7 +193,7 @@ def parquet_grid_to_geotiff(
             for a in attributes:
                 value = getattr(cell, a)
                 if value is None: continue
-                if parquets_nodata_values is not None and value in parquets_nodata_values: continue
+                if parquet_nodata_values is not None and value in parquet_nodata_values: continue
                 band_arrays[a][row, col] = value
 
     # Write to GeoTIFF

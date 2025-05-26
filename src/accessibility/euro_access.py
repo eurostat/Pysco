@@ -5,7 +5,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
-from utils.convert import gpkg_grid_to_geotiff
+from utils.convert import parquet_grid_to_geotiff
 
 # whole europe
 bbox = [ 1000000, 500000, 6000000, 5500000 ]
@@ -85,21 +85,19 @@ for year in ["2023"]:
 
 
 
-    '''
-    TODO adapt that using parquet_grid_to_geotiff instead
 
-            # GPKG to tiff
+        # parquet to tiff
         if True:
 
             # get all GPKG files in the output folder
-            gpkg_files = [os.path.join(f, f) for f in os.listdir(f) if f.endswith('.gpkg')]
+            files = [os.path.join(f, f) for f in os.listdir(f) if f.endswith('.parquet')]
+            if len(files)==0: continue
 
-            print("transforming", len(gpkg_files), "gpkg files into tif for", service)
-            gpkg_grid_to_geotiff(
-                gpkg_files,
+            print("transforming", len(files), "parquuet files into tif for", service, year)
+            parquet_grid_to_geotiff(
+                files,
                 out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif",
                 attributes=["duration_1", "duration_average_3"],
-                gpkg_nodata_values=[-1],
+                parquet_nodata_values=[-1],
                 compress='deflate'
             )
-    '''
