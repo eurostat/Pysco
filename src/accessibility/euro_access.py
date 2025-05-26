@@ -28,6 +28,7 @@ for year in ["2023"]:
         out_folder_service = out_folder + "out_" + service + "_" + year + "/"
         if not os.path.exists(out_folder_service): os.makedirs(out_folder_service)
 
+        '''
         #launch process for each tile file
         for x in range(xmin, xmax+1, tile_file_size_m):
             for y in range(ymin, ymax+1, tile_file_size_m):
@@ -82,22 +83,18 @@ for year in ["2023"]:
                     duration_simplification_fun = duration_simplification_fun,
                     num_processors_to_use = num_processors_to_use,
                 )
-
-
-
-
+        '''
         # parquet to tiff
-        if True:
 
-            # get all GPKG files in the output folder
-            files = [os.path.join(f, f) for f in os.listdir(f) if f.endswith('.parquet')]
-            if len(files)==0: continue
+        # get all parquet files in the output folder
+        files = [os.path.join(f, f) for f in os.listdir(f) if f.endswith('.parquet')]
+        if len(files)==0: continue
 
-            print("transforming", len(files), "parquuet files into tif for", service, year)
-            parquet_grid_to_geotiff(
-                files,
-                out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif",
-                attributes=["duration_1", "duration_average_3"],
-                parquet_nodata_values=[-1],
-                compress='deflate'
-            )
+        print("transforming", len(files), "parquuet files into tif for", service, year)
+        parquet_grid_to_geotiff(
+            files,
+            out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif",
+            attributes=["duration_1", "duration_average_3"],
+            parquet_nodata_values=[-1],
+            compress='deflate'
+        )
