@@ -71,7 +71,7 @@ accessiblity_grid_k_nearest_dijkstra(
     grid_resolution= grid_resolution,
     cell_network_max_distance= grid_resolution * 2,
     partition_size = 30000,
-    extention_buffer = 0,
+    extention_buffer = 10000,
     detailled = True,
     duration_simplification_fun = duration_simplification_fun,
     num_processors_to_use = 1,
