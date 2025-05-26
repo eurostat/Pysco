@@ -193,6 +193,10 @@ def parquet_grid_to_geotiff(
             col = int((x - minx) / resolution)
             row = int((maxy - y) / resolution)-1
 
+            if col <0 or col > width: continue
+            if row <0 or row > height: continue
+            #TODO copy also to gpkg conversion function
+
             # set raster values at pixel position
             for a in attributes:
                 value = getattr(cell, a)
