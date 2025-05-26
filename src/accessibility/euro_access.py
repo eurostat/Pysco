@@ -16,7 +16,9 @@ clamp = lambda v:floor(v/tile_file_size_m)*tile_file_size_m
 grid_resolution = 100
 out_folder = '/home/juju/gisco/accessibility/'
 
+
 for year in ["2023"]:
+#TODO add 2020
 
     for service in ["education", "healthcare"]:
 
@@ -80,6 +82,8 @@ for year in ["2023"]:
                     duration_simplification_fun = duration_simplification_fun,
                     num_processors_to_use = num_processors_to_use,
                 )
+
+
 
     '''
         # GPKG to tiff

@@ -1,4 +1,4 @@
-import geopandas as gpd
+import pandas as pd
 from datetime import datetime
 import heapq
 from shapely.geometry import shape
@@ -392,7 +392,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
     data['duration_average_'+str(k)] = averages
 
     # make geodataframe
-    out = gpd.GeoDataFrame(data)
+    out = pd.DataFrame(data)
 
     # save output
     print(datetime.now(), "save as parquet")
