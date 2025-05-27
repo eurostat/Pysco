@@ -8,9 +8,6 @@ from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_gpkg, parquet_grid_to_geotiff
 
 
-#TODO take private access sections - tracks
-#TODO check paris centre bug - pedestrian areas
-#TODO school: exclude some ?
 #TODO check why most ferry lines are discontinued ?
 
 #TODO ajouter code pays/nuts aux cellules - do it in external function
@@ -45,13 +42,15 @@ def direction_fun(feature):
     print("Unexpected driving direction: ", d)
     return None
 
-def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+year+"12.gpkg", bbox=bbox, where="ONEWAY ISNULL or ONEWAY != 'N'")
-def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox)
+def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+year+"12.gpkg", bbox=bbox) #, where="ONEWAY ISNULL or ONEWAY != 'N'")
+def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels!='0'" if service=="education" else "")
 def weight_function(feature, length):
     p = feature['properties']
     kph = 0
     # ferry
     if p['FOW']==-1 and p['FEATTYP']==4130: kph = 30
+    # private/restricted roads
+    elif p['ONEWAY'] is None or p['ONEWAY']=='N': kph = 10
     # default case
     else: kph = p['KPH']
     return -1 if kph==0 else 1.1*length/kph*3.6
