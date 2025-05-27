@@ -43,7 +43,7 @@ def direction_fun(feature):
     print("Unexpected driving direction: ", d)
     return None
 
-def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+year+"12.gpkg", bbox=bbox) #, where="ONEWAY ISNULL or ONEWAY != 'N'")
+def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+year+"12.gpkg", bbox=bbox)
 def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels!='0'" if service=="education" else "")
 def weight_function(feature, length):
     p = feature['properties']
@@ -51,7 +51,7 @@ def weight_function(feature, length):
     # ferry
     if p['FOW']==-1 and p['FEATTYP']==4130: kph = 30
     # private/restricted roads
-    elif p['ONEWAY'] is None or p['ONEWAY']=='N': kph = 10
+    elif p['ONEWAY']=='N': kph = 10
     # default case
     else: kph = p['KPH']
     return -1 if kph==0 else 1.1*length/kph*3.6
