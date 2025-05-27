@@ -8,8 +8,8 @@ from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_gpkg, parquet_grid_to_geotiff
 
 
+#TODO check ferries - FOW=-1 FEATTYP=4130  ---  FERRY=1 LINK_TYPE='F' check why they are discontinue
 #TODO take private access sections - tracks
-#TODO check ferries
 #TODO check paris centre bug - pedestrian areas
 #TODO school: exclude some ?
 #TODO ajouter code pays/nuts aux cellules - do it in external function
@@ -45,7 +45,14 @@ def direction_fun(feature):
 
 def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+year+"12.gpkg", bbox=bbox, where="ONEWAY ISNULL or ONEWAY != 'N'")
 def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox)
-def weight_function(feature, length): return -1 if feature['properties']['KPH']==0 else 1.1*length/feature['properties']['KPH']*3.6
+def weight_function(feature, length):
+    p = feature['properties']
+    kph = 0
+    # ferry
+    if p['FOW']==-1 and p['FEATTYP']==4130: kph = 30
+    # default case
+    else: kph = p['KPH']
+    return -1 if kph==0 else 1.1*length/kph*3.6
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 def is_not_snappable_fun(f): return f['properties']['FOW'] in [1,10,12,6] or f['properties']['FREEWAY'] == 1
 def initial_node_level_fun(f): return f['properties']['F_ELEV']
