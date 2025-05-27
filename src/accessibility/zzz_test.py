@@ -8,12 +8,14 @@ from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_gpkg, parquet_grid_to_geotiff
 
 
-#TODO check ferries - FOW=-1 FEATTYP=4130  ---  FERRY=1 LINK_TYPE='F' check why they are discontinue
 #TODO take private access sections - tracks
 #TODO check paris centre bug - pedestrian areas
 #TODO school: exclude some ?
+#TODO check why most ferry lines are discontinued ?
+
 #TODO ajouter code pays/nuts aux cellules - do it in external function
 #TODO remove DE, RS, CH, etc.
+
 #TODO QGIS plugin for parquet grids
 #TODO handle case when speed depends on driving direction
 
