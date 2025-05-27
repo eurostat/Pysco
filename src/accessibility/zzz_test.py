@@ -75,7 +75,7 @@ accessiblity_grid_k_nearest_dijkstra(
     final_node_level_fun = final_node_level_fun,
     cell_id_fun = cell_id_fun,
     grid_resolution= grid_resolution,
-    cell_network_max_distance= grid_resolution * 2,
+    cell_network_max_distance= grid_resolution * 1,
     partition_size = 30000,
     extention_buffer = 10000,
     detailled = True,
