@@ -39,6 +39,7 @@ def direction_fun(feature):
     if d==None or d=="": return 'both'
     if d=="FT": return 'forward'
     if d=="TF": return 'backward'
+    if d=="N": return 'both'
     print("Unexpected driving direction: ", d)
     return None
 
