@@ -50,8 +50,8 @@ def weight_function(feature, length):
     kph = 0
     # ferry
     if p['FOW']==-1 and p['FEATTYP']==4130: kph = 30
-    # private/restricted roads
-    elif p['ONEWAY']=='N': kph = 10
+    # private/restricted/pedestrian roads
+    elif p['ONEWAY']=='N': kph = 15
     # default case
     else: kph = p['KPH']
     return -1 if kph==0 else 1.1*length/kph*3.6
