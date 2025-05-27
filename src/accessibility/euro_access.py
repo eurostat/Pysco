@@ -49,12 +49,22 @@ for year in ["2023"]:
                     if d==None or d=="": return 'both'
                     if d=="FT": return 'forward'
                     if d=="TF": return 'backward'
+                    if d=="N": return 'both'
                     print("Unexpected driving direction: ", d)
                     return None
 
-                def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+year+"12.gpkg", bbox=bbox, where="ONEWAY ISNULL or ONEWAY != 'N'")
-                def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox)
-                def weight_function(feature, length): return -1 if feature['properties']['KPH']==0 else 1.1*length/feature['properties']['KPH']*3.6
+                def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+year+"12.gpkg", bbox=bbox)
+                def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels!='0'" if service=="education" else "")
+                def weight_function(feature, length):
+                    p = feature['properties']
+                    kph = 0
+                    # ferry
+                    if p['FOW']==-1 and p['FEATTYP']==4130: kph = 30
+                    # private/restricted/pedestrian roads
+                    elif p['ONEWAY']=='N': kph = 15
+                    # default case
+                    else: kph = p['KPH']
+                    return -1 if kph==0 else 1.1*length/kph*3.6
                 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
                 def is_not_snappable_fun(f): return f['properties']['FOW'] in [1,10,12,6] or f['properties']['FREEWAY'] == 1
                 def initial_node_level_fun(f): return f['properties']['F_ELEV']
