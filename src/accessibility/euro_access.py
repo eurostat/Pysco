@@ -23,7 +23,7 @@ for year in ["2023"]:
 
     for service in ["healthcare"]: #"education"
 
-        num_processors_to_use = 7 if service == "education" else 4
+        num_processors_to_use = 7 if service == "education" else 5
 
         # ouput folder
         out_folder_service = out_folder + "out_" + service + "_" + year + "/"
