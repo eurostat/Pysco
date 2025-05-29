@@ -10,7 +10,7 @@ from utils.convert import parquet_grid_to_gpkg, parquet_grid_to_geotiff
 
 #TODO check why most ferry lines are discontinued ?
 
-#TODO ajouter code pays/nuts aux cellules - do it in external function
+#TODO join countrt/nuts codes - do it in external function
 #TODO remove DE, RS, CH, etc.
 
 #TODO QGIS plugin for parquet grids
