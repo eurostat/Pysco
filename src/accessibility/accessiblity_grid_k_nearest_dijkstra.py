@@ -391,7 +391,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         averages.append(sum)
     data['duration_average_'+str(k)] = averages
 
-    # make geodataframe
+    # make dataframe
     out = pd.DataFrame(data)
 
     # save output

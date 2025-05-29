@@ -125,5 +125,5 @@ def iter_features(filepath, layername=None, bbox=None, where=None):
     :return: Itérateur sur les features filtrées
     """
     with fiona.open(filepath, layer=layername) as src:
-        for fid, feature in src.items(bbox=bbox, where=where):
+        for _, feature in src.items(bbox=bbox, where=where):
             yield feature
