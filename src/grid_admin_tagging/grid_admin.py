@@ -1,5 +1,7 @@
 # Take some gridded dataset and assigne to it some administrative unit code (i.e. nuts or country code)
 
+import fiona
+
 
 def produce_correspondance_table(
     admin_units_dataset, #GPKG - prepared. polygons with id
@@ -10,8 +12,15 @@ def produce_correspondance_table(
 ):
     pass
 
-    # get gpkg CRS
-    # get dataset bounds
+    #print(datetime.now(), gpkg)
+
+    crs = None
+    xmin,ymin,xmax,ymax = None
+    with fiona.open(admin_units_dataset) as src:
+        # get CRS and bounds
+        crs = src.crs
+        (xmin,ymin,xmax,ymax) = src.bounds
+
     # build adm patches spatial index
 
     #go through cells using bounds
