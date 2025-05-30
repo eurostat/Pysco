@@ -3,6 +3,7 @@
 import pandas as pd
 import fiona
 from rtree import index
+from shapely.geometry import shape
 from datetime import datetime #TODO check that
 
 
@@ -21,17 +22,17 @@ def produce_correspondance_table(
     xmin,ymin,xmax,ymax = None
     # spatial index items
     items = []
-    codes = []
+    admin_codes = []
     with fiona.open(admin_units_dataset) as src:
         # get CRS and bounds
         crs = src.crs
         (xmin,ymin,xmax,ymax) = src.bounds
 
         i=0
-        for _, patch in src.items():
-            #TODO
-            items.append((i, (x,y,x,y), None))
-            codes.append(patch['properties'][admin_code_attribute])
+        for patch in src:
+            g = shape(patch["geometry"])
+            items.append((i, g.bounds, None))
+            admin_codes.append(patch['properties'][admin_code_attribute])
             i+=1
 
     # build index
@@ -46,7 +47,6 @@ def produce_correspondance_table(
     r2 = resolution/2
     for x in range(xmin, xmax+1, resolution):
         for y in range(ymin, ymax+1, resolution):
-            pass
 
             #get cell center coordinates
             xc = x+r2, yc = y+r2
