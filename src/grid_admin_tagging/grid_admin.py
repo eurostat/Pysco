@@ -21,17 +21,22 @@ def produce_correspondance_table(
     xmin,ymin,xmax,ymax = None
     # spatial index items
     items = []
+    codes = []
     with fiona.open(admin_units_dataset) as src:
         # get CRS and bounds
         crs = src.crs
         (xmin,ymin,xmax,ymax) = src.bounds
 
+        i=0
         for _, patch in src.items():
             #TODO
             items.append((i, (x,y,x,y), None))
+            codes.append(patch['properties'][admin_code_attribute])
+            i+=1
 
     # build index
     idx = index.Index(((i, box, obj) for i, box, obj in items))
+    del items
 
 
     # prepare output data structure
