@@ -75,9 +75,11 @@ def produce_correspondance_table(
                 if query_point.distance(geom) > d: continue
 
                 cc = feature['properties'][admin_code_attribute]
-                #TODO
-            
-            data['ID'].append(list(set))
+                ccs.add(str(cc))
+
+            # store list of ids
+            set = ",".join(sorted(set))
+            data['ID'].append(set)
 
     # save output
     print(datetime.now(), "save as parquet")
