@@ -12,6 +12,12 @@ def get_cell_xy_from_id(id):
     return [int(a[1]), int(a[0])]
 
 
+#CRS3035RES100mN2951100E4039900
+
+def get_cell_id(res_m, crs, x, y):
+    return 'CRS' + crs + 'RES' + res_m + 'mN' + str(int(y)) + 'E' + str(int(x))
+
+
 
 def csv_grid_to_geopackage(csv_grid_path, gpkg_grid_path, geom="surf"):
 

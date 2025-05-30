@@ -22,7 +22,6 @@ def produce_correspondance_table(
     xmin,ymin,xmax,ymax = None
     # spatial index items
     items = []
-    admin_codes = []
     with fiona.open(admin_units_dataset) as src:
         # get CRS and bounds
         crs = src.crs
@@ -32,7 +31,6 @@ def produce_correspondance_table(
         for patch in src:
             g = shape(patch["geometry"])
             items.append((i, g.bounds, None))
-            admin_codes.append(patch['properties'][admin_code_attribute])
             i+=1
 
     # build index
@@ -45,17 +43,28 @@ def produce_correspondance_table(
 
     #go through cells using bounds
     r2 = resolution/2
+    d = r2* 1.4142 + tolerance_distance
     for x in range(xmin, xmax+1, resolution):
         for y in range(ymin, ymax+1, resolution):
 
-            #get cell center coordinates
+            # get cell center coordinates
             xc = x+r2, yc = y+r2
 
-            #TODO
-            #get admin patches using spatial index with distance smaller than resolution/sqrt(2) OR tolerance_distance
-            #get list of ids of them
-            #make cell_id
-            #add row cell_id, list
+            # get matches nearby
+            query_envelope = (xc-d, yc-d, xc+d, yc+d)
+            candidate_ids = list(idx.intersection(query_envelope))
+
+            if len(candidate_ids)==0: continue
+
+
+            cid = 
+            for fid in candidate_ids:
+                feature = src[fid]
+                geom = shape(feature["geometry"])
+                if query_point.distance(geom) > d: continue
+
+                cc = feature['properties'][admin_code_attribute]
+                #TODO
 
     # save output
     print(datetime.now(), "save as parquet")
