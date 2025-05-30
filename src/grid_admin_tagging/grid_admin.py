@@ -3,8 +3,14 @@
 import pandas as pd
 import fiona
 from rtree import index
-from shapely.geometry import shape
+from shapely.geometry import shape, Point
 from datetime import datetime #TODO check that
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.gridutils import get_cell_id
+
 
 
 def produce_correspondance_table(
@@ -41,11 +47,15 @@ def produce_correspondance_table(
     # prepare output data structure
     data = { 'GRD_ID':[], 'ID': [] }
 
-    #go through cells using bounds
+    # go through cells using bounds
     r2 = resolution/2
     d = r2* 1.4142 + tolerance_distance
     for x in range(xmin, xmax+1, resolution):
         for y in range(ymin, ymax+1, resolution):
+
+            # add entry for grid cell
+            cid = get_cell_id(crs=crs, res_m=resolution, x=x, y=y)
+            data['GRD_ID'].append(cid)
 
             # get cell center coordinates
             xc = x+r2, yc = y+r2
@@ -54,10 +64,11 @@ def produce_correspondance_table(
             query_envelope = (xc-d, yc-d, xc+d, yc+d)
             candidate_ids = list(idx.intersection(query_envelope))
 
-            if len(candidate_ids)==0: continue
+            # set of admin codes
+            ccs = set()
 
-
-            cid = 
+            # check distance
+            query_point = Point(xc, yc)
             for fid in candidate_ids:
                 feature = src[fid]
                 geom = shape(feature["geometry"])
@@ -65,6 +76,8 @@ def produce_correspondance_table(
 
                 cc = feature['properties'][admin_code_attribute]
                 #TODO
+            
+            data['ID'].append(list(set))
 
     # save output
     print(datetime.now(), "save as parquet")
