@@ -20,7 +20,6 @@ def produce_correspondance_table(
     output_table_path,
     tolerance_distance = None,
 ):
-    pass
 
     print(datetime.now(), "Spatial index patches")
 
