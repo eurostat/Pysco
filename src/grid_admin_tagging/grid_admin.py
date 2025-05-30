@@ -18,6 +18,7 @@ def produce_correspondance_table(
     admin_code_attribute,
     resolution,
     output_table_path,
+    bbox = None,
     tolerance_distance = None,
 ):
 
@@ -30,7 +31,8 @@ def produce_correspondance_table(
     with fiona.open(admin_units_dataset) as src:
         # get CRS and bounds
         crs = src.crs
-        (xmin,ymin,xmax,ymax) = src.bounds
+        if bbox == None:
+            (xmin,ymin,xmax,ymax) = src.bounds
 
         i=0
         for patch in src:
@@ -85,3 +87,14 @@ def produce_correspondance_table(
     out = pd.DataFrame(data)
     out.to_parquet(output_table_path)
 
+
+
+
+produce_correspondance_table(
+    "/home/juju/geodata/gisco/CNTR_RG_01M_2024_3035.gpkg",
+    "CNTR_ID",
+    1000,
+    "/home/juju/Bureau/mvn_deploy/output.parquet",
+    tolerance_distance = 200,
+    bbox = (4030000, 2930000, 4060000, 2960000)
+)
