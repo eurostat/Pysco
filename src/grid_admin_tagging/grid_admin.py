@@ -50,7 +50,7 @@ def produce_correspondance_table(
     (xmin,ymin,xmax,ymax) = bbox
 
     #
-    crs = str(crs).replace("EPSG:", "").replace("epdg:", "")
+    crs = str(crs).replace("EPSG:", "").replace("epsg:", "")
 
     # prepare output data structure
     data = { 'GRD_ID':[], 'ID': [] }
