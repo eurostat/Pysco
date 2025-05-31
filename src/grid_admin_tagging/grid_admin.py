@@ -24,15 +24,14 @@ def produce_correspondance_table(
 
     print(datetime.now(), "Spatial index patches")
 
+    # spatial index items, get CRS, get bbox
     crs = None
-    xmin,ymin,xmax,ymax = None
-    # spatial index items
     items = []
     with fiona.open(admin_units_dataset) as src:
         # get CRS and bounds
         crs = src.crs
         if bbox == None:
-            (xmin,ymin,xmax,ymax) = src.bounds
+            bbox = src.bounds
 
         i=0
         for patch in src:
@@ -44,6 +43,8 @@ def produce_correspondance_table(
     idx = index.Index(((i, box, obj) for i, box, obj in items))
     del items
 
+    # bbox
+    (xmin,ymin,xmax,ymax) = bbox
 
     # prepare output data structure
     data = { 'GRD_ID':[], 'ID': [] }
@@ -59,7 +60,8 @@ def produce_correspondance_table(
             data['GRD_ID'].append(cid)
 
             # get cell center coordinates
-            xc = x+r2, yc = y+r2
+            xc = x+r2
+            yc = y+r2
 
             # get matches nearby
             query_envelope = (xc-d, yc-d, xc+d, yc+d)
