@@ -71,7 +71,7 @@ def produce_correspondance_table(
             candidate_ids = list(idx.intersection(query_envelope))
 
             # set of admin codes
-            ccs = set()
+            codes = set()
 
             # check distance
             query_point = Point(xc, yc)
@@ -81,11 +81,12 @@ def produce_correspondance_table(
                 if query_point.distance(g) > d: continue
 
                 cc = f['properties'][admin_code_attribute]
-                ccs.add(str(cc))
+                codes.add(str(cc))
 
             # store list of ids
-            set = ",".join(sorted(set))
-            data['ID'].append(set)
+            codes = ",".join(sorted(codes))
+            print(codes)
+            data['ID'].append(codes)
 
     # save output
     print(datetime.now(), "save as parquet")
@@ -99,7 +100,7 @@ produce_correspondance_table(
     "/home/juju/geodata/gisco/CNTR_RG_01M_2024_3035.gpkg",
     "CNTR_ID",
     1000,
-    "/home/juju/Bureau/mvn_deploy/output.parquet",
+    "/home/juju/Bureau/output.parquet",
     tolerance_distance = 200,
     bbox = (4030000, 2930000, 4060000, 2960000)
 )
