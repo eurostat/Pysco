@@ -22,26 +22,28 @@ def produce_correspondance_table(
     tolerance_distance = None,
 ):
 
-    print(datetime.now(), "Spatial index patches")
+    print(datetime.now(), "Load admin patches")
 
     # spatial index items, get CRS, get bbox
     crs = None
-    items = []
-    with fiona.open(admin_units_dataset) as src:
+    index = []
+    features = []
+    with fiona.open(admin_units_dataset, 'r') as src:
         # get CRS and bounds
         crs = src.crs
         if bbox == None:
             bbox = src.bounds
 
         i=0
-        for patch in src:
-            g = shape(patch["geometry"])
-            items.append((i, g.bounds, None))
+        for f in src.items(bbox=bbox):
+            g = shape(f["geometry"])
+            index.append((i, g.bounds, None))
+            f["g"] = g
+            features.append(f)
             i+=1
 
     # build index
-    idx = index.Index(((i, box, obj) for i, box, obj in items))
-    del items
+    index = index.Index(((i, box, obj) for i, box, obj in index))
 
     # bbox
     (xmin,ymin,xmax,ymax) = bbox
@@ -65,7 +67,7 @@ def produce_correspondance_table(
 
             # get matches nearby
             query_envelope = (xc-d, yc-d, xc+d, yc+d)
-            candidate_ids = list(idx.intersection(query_envelope))
+            candidate_ids = list(index.intersection(query_envelope))
 
             # set of admin codes
             ccs = set()
@@ -73,11 +75,11 @@ def produce_correspondance_table(
             # check distance
             query_point = Point(xc, yc)
             for fid in candidate_ids:
-                feature = src[fid]
-                geom = shape(feature["geometry"])
-                if query_point.distance(geom) > d: continue
+                f = features[fid]
+                g = f["g"]
+                if query_point.distance(g) > d: continue
 
-                cc = feature['properties'][admin_code_attribute]
+                cc = f['properties'][admin_code_attribute]
                 ccs.add(str(cc))
 
             # store list of ids
