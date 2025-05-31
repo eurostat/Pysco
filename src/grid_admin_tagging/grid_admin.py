@@ -26,7 +26,7 @@ def produce_correspondance_table(
 
     # spatial index items, get CRS, get bbox
     crs = None
-    index = []
+    idx = []
     features = []
     with fiona.open(admin_units_dataset, 'r') as src:
         # get CRS and bounds
@@ -36,14 +36,15 @@ def produce_correspondance_table(
 
         i=0
         for f in src.items(bbox=bbox):
+            f = f[1]
             g = shape(f["geometry"])
-            index.append((i, g.bounds, None))
+            idx.append((i, g.bounds, None))
             f["g"] = g
             features.append(f)
             i+=1
 
     # build index
-    index = index.Index(((i, box, obj) for i, box, obj in index))
+    idx = index.Index(((i, box, obj) for i, box, obj in idx))
 
     # bbox
     (xmin,ymin,xmax,ymax) = bbox
@@ -67,7 +68,7 @@ def produce_correspondance_table(
 
             # get matches nearby
             query_envelope = (xc-d, yc-d, xc+d, yc+d)
-            candidate_ids = list(index.intersection(query_envelope))
+            candidate_ids = list(idx.intersection(query_envelope))
 
             # set of admin codes
             ccs = set()
