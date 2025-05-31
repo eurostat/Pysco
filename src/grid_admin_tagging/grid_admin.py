@@ -59,7 +59,7 @@ def produce_correspondance_table(
     r2 = resolution/2
     d = r2* 1.4142 + tolerance_distance
     for x in range(xmin, xmax+1, resolution):
-        print(x)
+        print(datetime.now(), x)
         for y in range(ymin, ymax+1, resolution):
 
             # add entry for grid cell
