@@ -59,6 +59,7 @@ def produce_correspondance_table(
     r2 = resolution/2
     d = r2* 1.4142 + tolerance_distance
     for x in range(xmin, xmax+1, resolution):
+        print(x)
         for y in range(ymin, ymax+1, resolution):
 
             # add entry for grid cell
@@ -102,11 +103,13 @@ def produce_correspondance_table(
 produce_correspondance_table(
     "/home/juju/geodata/gisco/CNTR_RG_01M_2024_3035.gpkg",
     "CNTR_ID",
-    1000,
+    100,
     "/home/juju/Bureau/output.parquet",
     tolerance_distance = 200,
-    bbox = (4030000, 2930000, 4060000, 2960000)
+    #bbox = (4030000, 2930000, 4060000, 2960000)
+    bbox = ( 1000000, 500000, 6000000, 5500000 )
 )
 
 # to csv
+print("to csv")
 pd.read_parquet("/home/juju/Bureau/output.parquet").to_csv("/home/juju/Bureau/output.csv", index=False)
