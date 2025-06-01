@@ -12,6 +12,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import get_cell_id
 
 
+#TODO decompose input dataset
+#TODO parallelism
+
+
 
 def produce_correspondance_table(
     admin_units_dataset, #GPKG - prepared. polygons with id
