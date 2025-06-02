@@ -72,6 +72,7 @@ def produce_correspondance_table(
             # get matches nearby
             query_envelope = (xc-d, yc-d, xc+d, yc+d)
             candidate_ids = list(idx.intersection(query_envelope))
+            if len(candidate_ids)==0: continue
 
             # set of admin codes
             codes = set()
