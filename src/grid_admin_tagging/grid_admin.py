@@ -109,24 +109,23 @@ def __parallel_process(params):
     d = r2* 1.4142 + tolerance_distance
     for y in range(ymin, ymax+1, resolution):
 
-        # get cell center coordinates
-        xc = x+r2
-        yc = y+r2
-
         # get matches nearby
-        query_envelope = (xc-d, yc-d, xc+d, yc+d)
-        candidate_ids = idx.intersection(query_envelope)
+        xc = x+r2; yc = y+r2
+        envelope = (xc-d, yc-d, xc+d, yc+d)
+        candidate_ids = idx.intersection(envelope)
         if not candidate_ids: continue
 
         # set of admin codes
         codes = set()
 
+        candidate_ids = list(candidate_ids)
+
         # check distance
         query_point = Point(xc, yc)
         for fid in candidate_ids:
             f = features[fid]
+            #TODO check if this is really necessary
             if query_point.distance(f["g"]) > d: continue
-
             cc = f['properties'][admin_code_attribute]
             codes.add(str(cc))
 
