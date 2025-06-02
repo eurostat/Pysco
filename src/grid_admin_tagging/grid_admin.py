@@ -12,7 +12,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import get_cell_id
 
 
-#TODO decompose input dataset
 #TODO parallelism
 
 
@@ -105,13 +104,14 @@ def produce_correspondance_table(
 
 
 produce_correspondance_table(
-    "/home/juju/geodata/gisco/CNTR_RG_01M_2024_3035.gpkg",
+    "/home/juju/geodata/gisco/admin_tagging/final.gpkg",
+    #"/home/juju/geodata/gisco/CNTR_RG_01M_2024_3035.gpkg",
     "CNTR_ID",
     100,
     "/home/juju/Bureau/output.parquet",
-    tolerance_distance = 200,
-    bbox = (4030000, 2930000, 4060000, 2960000)
-    #bbox = ( 1000000, 500000, 6000000, 5500000 )
+    tolerance_distance = 500,
+    #bbox = (4030000, 2930000, 4060000, 2960000)
+    bbox = ( 1000000, 500000, 6000000, 5500000 )
 )
 
 # to csv
