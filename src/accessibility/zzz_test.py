@@ -8,15 +8,15 @@ from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_gpkg, parquet_grid_to_geotiff
 
 
-#TODO ferry not snappable
-#TODO check why most ferry lines are discontinued ?
+#TODO join country/nuts codes - do it in external function
+#TODO remove DE, RS, CH, etc.
+
 #TODO alleger gpkg tomtom
-#TODO 2023
+#TODO make ferry not snappable
+#TODO check why most ferry lines are discontinued ?
+#TODO healthcare: new 2023 with new EL
 #TODO tomtom 2019
 
-
-#TODO join countrt/nuts codes - do it in external function
-#TODO remove DE, RS, CH, etc.
 
 #TODO QGIS plugin for parquet grids
 #TODO handle case when speed depends on driving direction
