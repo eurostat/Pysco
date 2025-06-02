@@ -369,7 +369,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
     #make output geodataframe
     data = { 'GRD_ID':grd_ids }
     if keep_distance_to_node: data['distance_to_node'] = distances_to_node
-    for kk in range(k): data['duration_'+str(kk+1)] = costs[kk]
+    for kk in range(k): data['duration_s_'+str(kk+1)] = costs[kk]
 
     # compute average duration and simplify duration values
     averages = []
@@ -377,11 +377,11 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         # compute average
         sum = 0
         for kk in range(k):
-            dur = data['duration_'+str(kk+1)][i]
+            dur = data['duration_s_'+str(kk+1)][i]
             if dur<0: sum = -1; break
             sum += dur
             # simplify duration values
-            if duration_simplification_fun != None: data['duration_'+str(kk+1)][i] = duration_simplification_fun(dur)
+            if duration_simplification_fun != None: data['duration_s_'+str(kk+1)][i] = duration_simplification_fun(dur)
         # store average value, simplified if necessary
         if sum <0:
             sum = -1
@@ -389,7 +389,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
             sum = sum/k
             if duration_simplification_fun != None: sum = duration_simplification_fun(sum)
         averages.append(sum)
-    data['duration_average_'+str(k)] = averages
+    data['duration_average_s_'+str(k)] = averages
 
     # make dataframe
     out = pd.DataFrame(data)
@@ -397,5 +397,4 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
     # save output
     print(datetime.now(), "save as parquet")
     out.to_parquet(out_parquet_file)
-
 
