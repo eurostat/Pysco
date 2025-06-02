@@ -65,10 +65,6 @@ def produce_correspondance_table(
         print(datetime.now(), x)
         for y in range(ymin, ymax+1, resolution):
 
-            # add entry for grid cell
-            cid = get_cell_id(crs=crs, res_m=resolution, x=x, y=y)
-            data['GRD_ID'].append(cid)
-
             # get cell center coordinates
             xc = x+r2
             yc = y+r2
@@ -90,9 +86,16 @@ def produce_correspondance_table(
                 cc = f['properties'][admin_code_attribute]
                 codes.add(str(cc))
 
-            # store list of ids
+            #
+            if len(codes)==0: continue
+
+            # add entry for grid cell
+            data['GRD_ID'].append(
+                'CRS' + str(crs) + 'RES' + str(resolution) + 'mN' + str(int(y)) + 'E' + str(int(x))
+            )
+
+            # store list of admin ids
             codes = "-".join(sorted(codes))
-            #print(codes)
             data['ID'].append(codes)
 
     # save output
