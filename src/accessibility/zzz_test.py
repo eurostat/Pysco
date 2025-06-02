@@ -10,15 +10,15 @@ from utils.convert import parquet_grid_to_gpkg, parquet_grid_to_geotiff
 
 #TODO join country/nuts codes - do it in external function
 #TODO remove DE, RS, CH, etc.
+#TODO densify lines when conscutive vertexes too far ?
 
 #TODO alleger gpkg tomtom
-#TODO make ferry not snappable
 #TODO check why most ferry lines are discontinued ?
 #TODO healthcare: new 2023 with new EL
-#TODO tomtom 2019
 
-#TODO CHECK seconds - save as int
-
+#TOCHECK make ferry not snappable
+#TOCHECK seconds - save as int
+#TOCHECK tomtom 2019
 
 #TODO QGIS plugin for parquet grids
 #TODO handle case when speed depends on driving direction
@@ -63,7 +63,9 @@ def weight_function(feature, length):
     else: kph = p['KPH']
     return -1 if kph==0 else 1.1*length/kph*3.6
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
-def is_not_snappable_fun(f): return f['properties']['FOW'] in [1,10,12,6] or f['properties']['FREEWAY'] == 1
+def is_not_snappable_fun(f):
+    p = f['properties']
+    return p['FOW'] in [1,10,12,6] or p['FREEWAY'] == 1 or (p['FOW']==-1 and p['FEATTYP']==4130)
 def initial_node_level_fun(f): return f['properties']['F_ELEV']
 def final_node_level_fun(f): return f['properties']['T_ELEV']
 def duration_simplification_fun(x): return round(x,1)
