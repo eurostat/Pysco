@@ -19,7 +19,7 @@ out_folder = '/home/juju/gisco/accessibility/'
 
 
 for year in ["2023"]:
-#TODO add 2020
+#TODO add 2020 or 2019
 
     for service in ["healthcare"]: #"education"
 

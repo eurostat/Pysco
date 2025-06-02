@@ -8,7 +8,12 @@ from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_gpkg, parquet_grid_to_geotiff
 
 
+#TODO ferry not snappable
 #TODO check why most ferry lines are discontinued ?
+#TODO alleger gpkg tomtom
+#TODO 2023
+#TODO tomtom 2019
+
 
 #TODO join countrt/nuts codes - do it in external function
 #TODO remove DE, RS, CH, etc.

@@ -1,5 +1,4 @@
 import networkx as nx
-from shapely.geometry import LineString
 import math
 from rtree import index
 
