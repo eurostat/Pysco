@@ -4,12 +4,13 @@ import pandas as pd
 import fiona
 from rtree import index
 from shapely.geometry import shape, Point
-from datetime import datetime #TODO check that
+#from datetime import datetime #TODO check that
+import datetime
 
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.gridutils import get_cell_id
+#from utils.gridutils import get_cell_id
 
 
 #TODO parallelism
