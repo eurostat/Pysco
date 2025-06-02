@@ -9,11 +9,10 @@ from datetime import datetime
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-#from utils.gridutils import get_cell_id
 
 
 #TODO parallelism
-
+# 80h
 
 
 def produce_correspondance_table(
@@ -73,7 +72,6 @@ def produce_correspondance_table(
             query_envelope = (xc-d, yc-d, xc+d, yc+d)
             candidate_ids = idx.intersection(query_envelope)
             if not candidate_ids: continue
-            #candidate_ids = list(candidate_ids)
 
             # set of admin codes
             codes = set()
@@ -82,8 +80,7 @@ def produce_correspondance_table(
             query_point = Point(xc, yc)
             for fid in candidate_ids:
                 f = features[fid]
-                g = f["g"]
-                if query_point.distance(g) > d: continue
+                if query_point.distance(f["g"]) > d: continue
 
                 cc = f['properties'][admin_code_attribute]
                 codes.add(str(cc))
