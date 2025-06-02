@@ -5,6 +5,8 @@ import fiona
 from rtree import index
 from shapely.geometry import shape, Point
 from datetime import datetime
+from multiprocessing import Pool
+
 
 import sys
 import os
@@ -14,6 +16,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 #TODO parallelism. otherwise 7h
 
 
+
 def produce_correspondance_table(
     admin_units_dataset, #GPKG - prepared. polygons with id
     admin_code_attribute,
@@ -21,6 +24,7 @@ def produce_correspondance_table(
     output_table_path,
     bbox = None,
     tolerance_distance = None,
+    num_processors_to_use = 1
 ):
 
     print(datetime.now(), "Load admin patches")
@@ -53,53 +57,92 @@ def produce_correspondance_table(
     #
     crs = str(crs).replace("EPSG:", "").replace("epsg:", "")
 
+    # prepare processes parameters
+    processes_params = [
+        {
+            'x' : x,
+            'ymin' : ymin,
+            'ymax' : ymax,
+            'resolution' : resolution,
+            'idx' : idx,
+            'features' : features,
+            'crs' : crs,
+            'tolerance_distance' : tolerance_distance,
+            'admin_code_attribute' : admin_code_attribute,
+        }
+        for x in range(xmin, xmax+1, resolution)
+        ]
+
+    # launch parallel processes
+    outputs = Pool(num_processors_to_use).map(__parallel_process, processes_params)
+    print(outputs)
+
     # prepare output data structure
     data = { 'GRD_ID':[], 'ID': [] }
 
-    # go through cells using bounds
-    r2 = resolution/2
-    d = r2* 1.4142 + tolerance_distance
-    for x in range(xmin, xmax+1, resolution):
-        print(datetime.now(), x)
-        for y in range(ymin, ymax+1, resolution):
-
-            # get cell center coordinates
-            xc = x+r2
-            yc = y+r2
-
-            # get matches nearby
-            query_envelope = (xc-d, yc-d, xc+d, yc+d)
-            candidate_ids = idx.intersection(query_envelope)
-            if not candidate_ids: continue
-
-            # set of admin codes
-            codes = set()
-
-            # check distance
-            query_point = Point(xc, yc)
-            for fid in candidate_ids:
-                f = features[fid]
-                if query_point.distance(f["g"]) > d: continue
-
-                cc = f['properties'][admin_code_attribute]
-                codes.add(str(cc))
-
-            #
-            if len(codes)==0: continue
-
-            # add entry for grid cell
-            data['GRD_ID'].append(
-                'CRS' + str(crs) + 'RES' + str(resolution) + 'mN' + str(int(y)) + 'E' + str(int(x))
-            )
-
-            # store list of admin ids
-            codes = "-".join(sorted(codes))
-            data['ID'].append(codes)
+    #TODO combine outputs
 
     # save output
     print(datetime.now(), "save as parquet")
     out = pd.DataFrame(data)
     out.to_parquet(output_table_path)
+
+
+
+def __parallel_process(params):
+    x = params['x']
+    ymin = params['ymin']
+    ymax = params['ymax']
+    resolution = params['resolution']
+    tolerance_distance = params['tolerance_distance']
+    idx = params['idx']
+    features = params['features']
+    crs = params['crs']
+    admin_code_attribute = params['admin_code_attribute']
+
+    print(datetime.now(), x)
+
+    # prepare output data structure
+    data = { 'GRD_ID':[], 'ID': [] }
+
+    r2 = resolution/2
+    d = r2* 1.4142 + tolerance_distance
+    for y in range(ymin, ymax+1, resolution):
+
+        # get cell center coordinates
+        xc = x+r2
+        yc = y+r2
+
+        # get matches nearby
+        query_envelope = (xc-d, yc-d, xc+d, yc+d)
+        candidate_ids = idx.intersection(query_envelope)
+        if not candidate_ids: continue
+
+        # set of admin codes
+        codes = set()
+
+        # check distance
+        query_point = Point(xc, yc)
+        for fid in candidate_ids:
+            f = features[fid]
+            if query_point.distance(f["g"]) > d: continue
+
+            cc = f['properties'][admin_code_attribute]
+            codes.add(str(cc))
+
+        #
+        if len(codes)==0: continue
+
+        # add entry for grid cell
+        data['GRD_ID'].append(
+            'CRS' + str(crs) + 'RES' + str(resolution) + 'mN' + str(int(y)) + 'E' + str(int(x))
+        )
+
+        # store list of admin ids
+        codes = "-".join(sorted(codes))
+        data['ID'].append(codes)
+
+        return data
 
 
 
@@ -111,8 +154,9 @@ produce_correspondance_table(
     100,
     "/home/juju/Bureau/output.parquet",
     tolerance_distance = 500,
-    #bbox = (4030000, 2930000, 4060000, 2960000)
-    bbox = ( 1000000, 500000, 6000000, 5500000 )
+    num_processors_to_use=1,
+    bbox = (4030000, 2930000, 4060000, 2960000)
+    #bbox = ( 1000000, 500000, 6000000, 5500000 )
 )
 
 # to csv
