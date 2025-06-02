@@ -274,7 +274,7 @@ def __parallel_process(params):
             # store costs
             for kk in range(k):
                 if kk>=len(cs): costs[kk].append(-1)
-                else: costs[kk].append(cs[kk]['cost']/60)
+                else: costs[kk].append(cs[kk]['cost'])
 
             # store distance cell center/node
             if keep_distance_to_node:

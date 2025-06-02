@@ -98,8 +98,8 @@ def accessibility_grid(pois_loader,
                 #store distance cell center/node
                 distances_to_node.append(dtn)
 
-                #store duration, in minutes
-                d = round(duration[n]/60)
+                #store duration, in seconds
+                d = round(duration[n])
                 durations.append(d)
 
                 #store cell id
