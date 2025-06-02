@@ -9,6 +9,7 @@ from utils.convert import parquet_grid_to_gpkg, parquet_grid_to_geotiff
 
 
 #TODO join country/nuts codes - do it in external function
+#TODO get 100k versions
 #TODO remove DE, RS, CH, etc.
 #TODO densify lines when consecutive vertexes too far ?
 
