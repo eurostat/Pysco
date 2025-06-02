@@ -10,7 +10,7 @@ from utils.convert import parquet_grid_to_gpkg, parquet_grid_to_geotiff
 
 #TODO join country/nuts codes - do it in external function
 #TODO remove DE, RS, CH, etc.
-#TODO densify lines when conscutive vertexes too far ?
+#TODO densify lines when consecutive vertexes too far ?
 
 #TODO alleger gpkg tomtom
 #TODO check why most ferry lines are discontinued ?
