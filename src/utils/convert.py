@@ -84,6 +84,7 @@ def parquet_grid_to_geotiff(
     bbox=None,
     parquet_nodata_values=None,
     tiff_nodata_value=-9999,
+    dtype=np.int16,
     compress='none'
 ):
     """
@@ -163,7 +164,7 @@ def parquet_grid_to_geotiff(
 
     # Prepare raster bands
     band_arrays = {
-        attr: np.full((height, width), tiff_nodata_value, dtype=np.float32)
+        attr: np.full((height, width), tiff_nodata_value, dtype=dtype)
         for attr in attributes
     }
 
@@ -212,7 +213,7 @@ def parquet_grid_to_geotiff(
         height=height,
         width=width,
         count=len(attributes),
-        dtype=np.float32,
+        dtype=dtype,
         crs=crs,
         transform=from_origin(minx, maxy, resolution, resolution),
         nodata=tiff_nodata_value,
@@ -235,6 +236,7 @@ def gpkg_grid_to_geotiff(
     bbox=None,
     gpkg_nodata_values=None,
     tiff_nodata_value=-9999,
+    dtype=np.int16,
     compress='none'
 ):
     """
@@ -304,7 +306,7 @@ def gpkg_grid_to_geotiff(
 
     # Prepare raster bands
     band_arrays = {
-        attr: np.full((height, width), tiff_nodata_value, dtype=np.float32)
+        attr: np.full((height, width), tiff_nodata_value, dtype=dtype)
         for attr in attributes
     }
 
@@ -350,7 +352,7 @@ def gpkg_grid_to_geotiff(
         height=height,
         width=width,
         count=len(attributes),
-        dtype=np.float32,
+        dtype=dtype,
         crs=crs,
         transform=from_origin(minx, maxy, resolution, resolution),
         nodata=tiff_nodata_value,

@@ -8,7 +8,6 @@ from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_gpkg, parquet_grid_to_geotiff
 
 
-#TODO seconds - save as int
 #TODO join country/nuts codes - do it in external function
 #TODO remove DE, RS, CH, etc.
 
@@ -17,6 +16,8 @@ from utils.convert import parquet_grid_to_gpkg, parquet_grid_to_geotiff
 #TODO check why most ferry lines are discontinued ?
 #TODO healthcare: new 2023 with new EL
 #TODO tomtom 2019
+
+#TODO CHECK seconds - save as int
 
 
 #TODO QGIS plugin for parquet grids
