@@ -142,7 +142,7 @@ def __parallel_process(params):
         codes = "-".join(sorted(codes))
         data['ID'].append(codes)
 
-        return data
+    return data
 
 
 
