@@ -4,8 +4,7 @@ import pandas as pd
 import fiona
 from rtree import index
 from shapely.geometry import shape, Point
-#from datetime import datetime #TODO check that
-import datetime
+from datetime import datetime
 
 import sys
 import os
