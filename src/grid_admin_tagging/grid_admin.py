@@ -92,7 +92,7 @@ def produce_correspondance_table(
                 codes.add(str(cc))
 
             # store list of ids
-            codes = ",".join(sorted(codes))
+            codes = "-".join(sorted(codes))
             #print(codes)
             data['ID'].append(codes)
 
@@ -110,10 +110,11 @@ produce_correspondance_table(
     100,
     "/home/juju/Bureau/output.parquet",
     tolerance_distance = 200,
-    #bbox = (4030000, 2930000, 4060000, 2960000)
-    bbox = ( 1000000, 500000, 6000000, 5500000 )
+    bbox = (4030000, 2930000, 4060000, 2960000)
+    #bbox = ( 1000000, 500000, 6000000, 5500000 )
 )
 
 # to csv
 print("to csv")
 pd.read_parquet("/home/juju/Bureau/output.parquet").to_csv("/home/juju/Bureau/output.csv", index=False)
+
