@@ -8,6 +8,31 @@ import os
 
 
 
+def rename_geotiff_bands(input_path, new_band_names, output_path=None):
+    """
+    Rename the bands (descriptions) of a GeoTIFF file.
+    
+    Parameters:
+        input_path (str): Path to the input GeoTIFF file.
+        new_band_names (list of str): List of new band names.
+        output_path (str): Path to save the modified GeoTIFF.
+    """
+    with rasterio.open(input_path) as src:
+        if len(new_band_names) != src.count:
+            raise ValueError(f"Number of new band names ({len(new_band_names)}) "
+                             f"must match number of bands in the file ({src.count}).")
+
+        profile = src.profile
+
+        # Copy data to a new file with updated descriptions
+        if output_path is None: output_path = input_path
+        with rasterio.open(output_path, 'w', **profile) as dst:
+            for i in range(1, src.count + 1):
+                data = src.read(i)
+                dst.write(data, i)
+                dst.set_band_description(i, new_band_names[i - 1])
+
+
 
 def combine_geotiffs(input_files, output_file, output_bounds=None, compress=None, nodata_value = -9999):
     """

@@ -6,7 +6,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_geotiff
-from utils.geotiff import combine_geotiffs
+from utils.geotiff import combine_geotiffs,rename_geotiff_bands
 
 #TODO check why most ferry lines are discontinued ?
 #TODO healthcare: new 2023 with new EL
@@ -100,6 +100,10 @@ for year in []: #"2023", "2020"
         parquet_nodata_values=[-1],
         compress='deflate'
     )
+
+    print("Rename bands")
+    rename_geotiff_bands('/home/juju/gisco/accessibility/grid_'+year+'.tif', [service+"_1_"+year, service+"_a3_"+year])
+
 
 combine_geotiffs(
     [
