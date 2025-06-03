@@ -1,8 +1,6 @@
 import rasterio
 from rasterio.features import geometry_mask
 import geopandas as gpd
-from rasterio.merge import merge
-from rasterio.coords import BoundingBox
 from rasterio.transform import from_bounds
 from rasterio.enums import Resampling
 import numpy as np
