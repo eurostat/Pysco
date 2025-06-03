@@ -15,7 +15,7 @@ def geotiff_mask_by_countries(
           compress = None
 ):
 
-    # Lire le raster en entrée
+    # read input raster
     with rasterio.open(in_tiff_path) as src:
         profile = src.profile.copy()
         data = src.read()
@@ -23,35 +23,35 @@ def geotiff_mask_by_countries(
         crs = src.crs
         height, width = src.height, src.width
 
-    # Lire le GeoPackage et filtrer selon la liste des valeurs
+    # get geometries for masking
     gdf = gpd.read_file(gpkg)
     gdf = gdf[gdf[gpkg_column].isin(values_to_exclude)]
 
-    # Reprojeter les polygones dans le CRS du raster si nécessaire
+    # projection change, if needed
     if gdf.crs != crs:
         gdf = gdf.to_crs(crs)
 
-    # Créer un masque booléen (True = à masquer)
+    # make boolean mask (True = to mask)
     mask = geometry_mask(
         geometries=gdf.geometry,
         transform=transform,
-        invert=True,  # True = pixels dans les géométries seront True
+        invert=True,  # True = pixels in the geometries are set to True
         out_shape=(height, width)
     )
 
-    # Remplacer les pixels concernés par la valeur nodata sur toutes les bandes
+    # get nodata value
     nodata_value = profile.get('nodata', None)
     if nodata_value is None:
         # Si pas de nodata défini, on en choisit un (exemple ici -9999)
         nodata_value = -9999
         profile.update(nodata=nodata_value)
 
+    # apply mask to every band
+    data[:, mask] = nodata_value
+
     # set compression
     if compress is not None:
         profile.update(compress=compress)
-
-    # apply mask to every band
-    data[:, mask] = nodata_value
 
     # write output tiff
     with rasterio.open(out_tiff_path, 'w', **profile) as dst:
