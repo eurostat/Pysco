@@ -10,6 +10,7 @@ def geotiff_mask_by_countries(
           values_to_exclude,
           gpkg = '/home/juju/geodata/gisco/admin_tagging/final.gpkg',
           gpkg_column = 'CNTR_ID',
+          compress = None
 ):
 
         # load mask geometries
@@ -18,15 +19,17 @@ def geotiff_mask_by_countries(
 
         # apply mask
         with rasterio.open(in_tiff_path) as src:
-            out_image, out_transform = mask(src, gdf.geometry, crop=True, nodata=src.nodata)
             out_meta = src.meta.copy()
-            print(out_meta)
+            print(src.meta)
+            out_image, out_transform = mask(src, gdf.geometry, crop=True, nodata=src.nodata)
 
         # update metadata
         out_meta.update({"driver": "GTiff",
                         "height": out_image.shape[1],
                         "width": out_image.shape[2],
-                        "transform": out_transform})
+                        "transform": out_transform,
+                        "compress": "none" if compress is None else compress
+                        })
 
         # save output
         with rasterio.open(out_tiff_path, "w", **out_meta) as dest:
