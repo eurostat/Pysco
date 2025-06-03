@@ -104,12 +104,12 @@ for year in ["2023"]:
         files = [os.path.join(out_folder_service, f) for f in os.listdir(out_folder_service) if f.endswith('.parquet')]
         if len(files)==0: continue
 
-        print("transforming", len(files), "parquuet files into tif for", service, year)
+        print("transforming", len(files), "parquet files into tif for", service, year)
         parquet_grid_to_geotiff(
             files,
             out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif",
             bbox = bbox,
-            attributes=["duration_1", "duration_average_3"],
+            attributes=["duration_s_1", "duration_average_s_3"],
             parquet_nodata_values=[-1],
             compress='deflate'
         )
