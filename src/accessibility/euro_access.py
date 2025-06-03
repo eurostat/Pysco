@@ -6,6 +6,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_geotiff
+from utils.geotiff import geotiff_mask_by_countries
 
 # whole europe
 bbox = [ 1000000, 500000, 6000000, 5500000 ]
@@ -105,12 +106,21 @@ for year in ["2023"]:
         if len(files)==0: continue
 
         print("transforming", len(files), "parquet files into tif for", service, year)
+        geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif"
         parquet_grid_to_geotiff(
             files,
-            out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif",
+            geotiff,
             bbox = bbox,
             attributes=["duration_s_1", "duration_average_s_3"],
             parquet_nodata_values=[-1],
             compress='deflate'
         )
 
+        print("Apply mask on geotiff")
+        geotiff_mask_by_countries(
+                geotiff,
+                geotiff,
+                values_to_exclude = ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
+                gpkg = '/home/juju/geodata/gisco/admin_tagging/final.gpkg',
+                gpkg_column = 'CNTR_ID',
+        )
