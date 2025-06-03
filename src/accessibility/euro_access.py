@@ -119,10 +119,10 @@ for year in ["2020", "2023"]:
 
         print("apply mask to force some countries to nodata")
         geotiff_mask_by_countries(
-                geotiff,
-                geotiff,
-                gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
-                gpkg_column = 'CNTR_ID',
-                values_to_exclude = ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
-                compress="deflate"
+            geotiff,
+            geotiff,
+            gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
+            gpkg_column = 'CNTR_ID',
+            values_to_exclude = ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
+            compress="deflate"
         )
