@@ -64,7 +64,7 @@ def duration_simplification_fun(x): return int(round(x))
 
 service = "education"
 
-for year in []: #"2023", "2020"
+for year in ["2023", "2020"]:
 
     tomtom_year = "2019" if year == "2020" else year
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
