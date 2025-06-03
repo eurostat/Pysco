@@ -19,7 +19,7 @@ grid_resolution = 100
 out_folder = '/home/juju/gisco/accessibility/'
 
 
-for year in ["2023", "2020"]:
+for year in ["2020","2023"]:
 
     tomtom_year = "2019" if year == "2020" else year
 

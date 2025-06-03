@@ -13,7 +13,6 @@ from utils.geotiff import combine_geotiffs,rename_geotiff_bands
 #TODO densify lines when consecutive vertexes too far ?
 
 #TOCHECK make ferry not snappable
-#TOCHECK tomtom 2019
 
 #TODO QGIS plugin for parquet grids
 #TODO handle case when speed depends on driving direction
@@ -64,7 +63,7 @@ def duration_simplification_fun(x): return int(round(x))
 
 service = "education"
 
-for year in ["2023", "2020"]:
+for year in ["2020"]: #"2023",
 
     tomtom_year = "2019" if year == "2020" else year
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
@@ -104,7 +103,7 @@ for year in ["2023", "2020"]:
     print("Rename bands")
     rename_geotiff_bands('/home/juju/gisco/accessibility/grid_'+year+'.tif', [service+"_1_"+year, service+"_a3_"+year])
 
-
+'''
 combine_geotiffs(
     [
         "/home/juju/gisco/accessibility/grid_2020.tif",
@@ -115,3 +114,4 @@ combine_geotiffs(
     output_bounds=bbox,
     compress="deflate"
 )
+'''
