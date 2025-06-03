@@ -19,10 +19,11 @@ grid_resolution = 100
 out_folder = '/home/juju/gisco/accessibility/'
 
 
-for year in ["2023"]:
-#TODO add 2020 or 2019
+for year in ["2020", "2023"]:
 
-    for service in ["healthcare"]: #"education"
+    tomtom_year = "2019" if year == "2020" else year
+
+    for service in ["education", "healthcare"]:
 
         num_processors_to_use = 7 if service == "education" else 5
 
@@ -30,7 +31,7 @@ for year in ["2023"]:
         out_folder_service = out_folder + "out_" + service + "_" + year + "/"
         if not os.path.exists(out_folder_service): os.makedirs(out_folder_service)
 
-        #launch process for each tile file
+        # launch process for each tile file
         for x in range(xmin, xmax+1, tile_file_size_m):
             for y in range(ymin, ymax+1, tile_file_size_m):
                 print("Tile file", x, y)
@@ -40,7 +41,7 @@ for year in ["2023"]:
 
                 #check if output file was already produced
                 if os.path.isfile(out_file):
-                    print(out_file, "already produced")
+                    #print(out_file, "already produced")
                     continue
 
                 # define parameter functions
@@ -55,7 +56,7 @@ for year in ["2023"]:
                     print("Unexpected driving direction: ", d)
                     return None
 
-                def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+year+"12.gpkg", bbox=bbox)
+                def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
                 def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels!='0'" if service=="education" else "")
                 def weight_function(feature, length):
                     p = feature['properties']
@@ -116,7 +117,7 @@ for year in ["2023"]:
             compress='deflate'
         )
 
-        print("Apply mask on geotiff")
+        print("apply mask to force some countries to nodata")
         geotiff_mask_by_countries(
                 geotiff,
                 geotiff,
