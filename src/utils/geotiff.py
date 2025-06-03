@@ -5,19 +5,18 @@ import geopandas as gpd
 #import numpy as np
 
 
-def mask_raster_with_gpkg(input_raster_path, input_gpkg_path, attribute_name, attribute_values, output_raster_path):
-    """
-    Masque des pixels d'un GeoTIFF selon des polygones d'un GeoPackage filtrés par attribut.
+# apply mask on a geotiff based on some geometries from a vector file
+def geotiff_mask_by_countries(
+          in_tiff_path,
+          out_tiff_path,
+          values_to_exclude,
+          gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
+          gpkg_column = 'CNTR_ID',
+          compress = None
+):
 
-    Args:
-        input_raster_path (str): Chemin vers le GeoTIFF en entrée.
-        input_gpkg_path (str): Chemin vers le GeoPackage contenant des polygones.
-        attribute_name (str): Nom de l'attribut du GeoPackage à utiliser pour le filtre.
-        attribute_values (list): Liste des valeurs à conserver pour filtrer les polygones.
-        output_raster_path (str): Chemin vers le GeoTIFF de sortie.
-    """
     # Lire le raster en entrée
-    with rasterio.open(input_raster_path) as src:
+    with rasterio.open(in_tiff_path) as src:
         profile = src.profile.copy()
         data = src.read()
         transform = src.transform
@@ -25,8 +24,8 @@ def mask_raster_with_gpkg(input_raster_path, input_gpkg_path, attribute_name, at
         height, width = src.height, src.width
 
     # Lire le GeoPackage et filtrer selon la liste des valeurs
-    gdf = gpd.read_file(input_gpkg_path)
-    gdf = gdf[gdf[attribute_name].isin(attribute_values)]
+    gdf = gpd.read_file(gpkg)
+    gdf = gdf[gdf[gpkg_column].isin(values_to_exclude)]
 
     # Reprojeter les polygones dans le CRS du raster si nécessaire
     if gdf.crs != crs:
@@ -47,19 +46,25 @@ def mask_raster_with_gpkg(input_raster_path, input_gpkg_path, attribute_name, at
         nodata_value = -9999
         profile.update(nodata=nodata_value)
 
-    # Appliquer le masque sur chaque bande
+    # set compression
+    if compress is not None:
+        profile.update(compress=compress)
+
+    # apply mask to every band
     data[:, mask] = nodata_value
 
-    # Écrire le raster de sortie
-    with rasterio.open(output_raster_path, 'w', **profile) as dst:
+    # write output tiff
+    with rasterio.open(out_tiff_path, 'w', **profile) as dst:
         dst.write(data)
 
-    print(f"Raster exporté : {output_raster_path}")
 
 
 
-# apply mask on a geotiff based on some geometries from a vector file
-def geotiff_mask_by_countries(
+
+
+
+
+def geotiff_mask_by_countries___(
           in_tiff_path,
           out_tiff_path,
           values_to_exclude,
