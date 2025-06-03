@@ -8,16 +8,7 @@ for service in ["education", "healthcare"]:
 
         geotiff_mask_by_countries(
                 '/home/juju/gisco/accessibility/euro_access_'+service+'_2023_100m.tif',
-                '/home/juju/gisco/accessibility/euro_access_'+service+'_2023_100m_mask.tif',
+                '/home/juju/gisco/accessibility/euro_access_'+service+'_2023_100m.tif',
                 values_to_exclude = ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
                 compress="deflate",
                 )
-
-'''
-        geotiff_mask_by_countries(
-                '/home/juju/gisco/accessibility/euro_access_'+service+'_2023_100m.tif',
-                '/home/juju/gisco/accessibility/euro_access_'+service+'_2023_100m_mask.tif',
-                values_to_exclude = ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
-                compress="deflate",
-        )
-'''
