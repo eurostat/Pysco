@@ -69,7 +69,9 @@ for year in ["2023"]:
                     # duration in seconds
                     return 1.1 * length / kph * 3.6
                 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
-                def is_not_snappable_fun(f): return f['properties']['FOW'] in [1,10,12,6] or f['properties']['FREEWAY'] == 1
+                def is_not_snappable_fun(f):
+                    p = f['properties']
+                    return p['FOW'] in [1,10,12,6] or p['FREEWAY'] == 1 or (p['FOW']==-1 and p['FEATTYP']==4130)
                 def initial_node_level_fun(f): return f['properties']['F_ELEV']
                 def final_node_level_fun(f): return f['properties']['T_ELEV']
                 def duration_simplification_fun(x): return int(round(x))

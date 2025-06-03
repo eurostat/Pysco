@@ -78,6 +78,7 @@ def produce_correspondance_table(
             for fid in candidate_ids:
                 f = features[fid]
                 #TODO check if this is really necessary
+                # or only with intersect ?
                 if query_point.distance(f["g"]) > d: continue
                 cc = f['properties'][admin_code_attribute]
                 codes.add(str(cc))
