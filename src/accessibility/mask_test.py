@@ -3,25 +3,40 @@ from rasterio.mask import mask
 import geopandas as gpd
 
 
-# Charger le fichier vectoriel GPKG
-gdf = gpd.read_file('votre_fichier.gpkg')
 
-# Supposons que vous ayez une colonne 'nom' et que vous vouliez filtrer par une valeur spécifique
-gdf_filtered = gdf[gdf['nom'] == 'valeur_d_interet']
+def geotiff_mask_by_countries(
+          in_tiff_path,
+          out_tiff_path,
+          values_to_exclude,
+          gpkg = '/home/juju/geodata/gisco/admin_tagging/final.gpkg',
+          gpkg_column = 'CNTR_ID',
+):
 
-# Ensuite, utilisez gdf_filtered au lieu de gdf dans la fonction mask
-with rasterio.open('votre_fichier.tif') as src:
-    out_image, out_transform = mask(src, gdf_filtered.geometry, crop=True, nodata=src.nodata)
-    out_meta = src.meta.copy()
+        # load mask geometries
+        gdf = gpd.read_file(gpkg)
+        gdf = gdf[~gdf[gpkg_column].isin(values_to_exclude)]
 
-# Mettre à jour les métadonnées
-out_meta.update({"driver": "GTiff",
-                 "height": out_image.shape[1],
-                 "width": out_image.shape[2],
-                 "transform": out_transform})
+        # apply mask
+        with rasterio.open(in_tiff_path) as src:
+            out_image, out_transform = mask(src, gdf.geometry, crop=True, nodata=src.nodata)
+            out_meta = src.meta.copy()
 
-# Sauvegarder le résultat
-with rasterio.open('fichier_masque.tif', "w", **out_meta) as dest:
-    dest.write(out_image)
+        # update metadata
+        out_meta.update({"driver": "GTiff",
+                        "height": out_image.shape[1],
+                        "width": out_image.shape[2],
+                        "transform": out_transform})
+
+        # save output
+        with rasterio.open(out_tiff_path, "w", **out_meta) as dest:
+            dest.write(out_image)
 
 
+
+geotiff_mask_by_countries(
+        '/home/juju/gisco/accessibility/euro_access_education_2023_100m.tif',
+        '/home/juju/gisco/accessibility/euro_access_education_2023_100m_masked.tif',
+        values_to_exclude = ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
+        gpkg = '/home/juju/geodata/gisco/admin_tagging/final.gpkg',
+        gpkg_column = 'CNTR_ID',
+)

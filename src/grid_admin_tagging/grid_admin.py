@@ -11,7 +11,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 
-#TODO parallelism
+#TODO parallelism, by 500*500km bloc, with index creation for each block
 
 
 def produce_correspondance_table(
