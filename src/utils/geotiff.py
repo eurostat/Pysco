@@ -2,6 +2,61 @@ import rasterio
 from rasterio.features import geometry_mask
 import geopandas as gpd
 
+from rasterio.merge import merge
+
+
+
+
+def combine_geotiffs(input_files, output_file, output_bounds=None, compress=None):
+    """
+    Combine multiple GeoTIFF files into a single GeoTIFF.
+
+    Parameters:
+    - input_files: List of paths to input GeoTIFF files.
+    - output_file: Path to the output GeoTIFF file.
+    - output_bounds: Optional tuple specifying the output bounding box as (left, bottom, right, top).
+    """
+
+    # Open all input files
+    src_files_to_mosaic = []
+    for fp in input_files:
+        src = rasterio.open(fp)
+        src_files_to_mosaic.append(src)
+
+    # Merge the files
+    if output_bounds:
+        mosaic, out_trans = merge(src_files_to_mosaic, bounds=output_bounds)
+    else:
+        mosaic, out_trans = merge(src_files_to_mosaic)
+
+    # Copy the metadata from the first file
+    out_meta = src_files_to_mosaic[0].meta.copy()
+
+    # Update the metadata
+    out_meta.update({
+        "driver": "GTiff",
+        "height": mosaic.shape[1],
+        "width": mosaic.shape[2],
+        "transform": out_trans,
+        "count": mosaic.shape[0],  # Number of bands
+    })
+
+    # set compression
+    if compress is not None:
+        out_meta.update(compress=compress)
+
+    # Write the mosaic raster to disk
+    with rasterio.open(output_file, "w", **out_meta) as dest:
+        dest.write(mosaic)
+
+    # Close all source files
+    for src in src_files_to_mosaic:
+        src.close()
+
+
+
+
+
 
 # apply mask on a geotiff based on some geometries from a vector file
 def geotiff_mask_by_countries(
