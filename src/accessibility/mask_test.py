@@ -1,8 +1,6 @@
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.featureutils import iter_features
-from utils.convert import parquet_grid_to_geotiff
 from utils.geotiff import geotiff_mask_by_countries
 
 

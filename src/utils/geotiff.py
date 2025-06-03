@@ -20,6 +20,7 @@ def geotiff_mask_by_countries(
         with rasterio.open(in_tiff_path) as src:
             out_image, out_transform = mask(src, gdf.geometry, crop=True, nodata=src.nodata)
             out_meta = src.meta.copy()
+            print(out_meta)
 
         # update metadata
         out_meta.update({"driver": "GTiff",
