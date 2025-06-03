@@ -222,6 +222,10 @@ def __parallel_process(xy,
     # build partition extended bbox
     extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
+    print(datetime.now(),x_part,y_part, "get POIs")
+    pois = pois_loader(extended_bbox)
+    if not pois: return
+
     print(datetime.now(),x_part,y_part, "make graph")
     roads = road_network_loader(extended_bbox)
     gb_ = ___graph_adjacency_list_from_geodataframe(roads,
@@ -243,7 +247,6 @@ def __parallel_process(xy,
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
     print(datetime.now(),x_part,y_part, "get source nodes")
-    pois = pois_loader(extended_bbox)
     sources = []
     for poi in pois:
         x, y = poi['geometry']['coordinates']

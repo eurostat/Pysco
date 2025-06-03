@@ -33,6 +33,7 @@ bbox = [4030000, 2930000, 4060000, 2960000]
 grid_resolution = 100
 year = "2023"
 service = "education"
+tomtom_year = "2019" if year == "2020" else year
 
 
 # driving direction
@@ -45,7 +46,7 @@ def direction_fun(feature):
     print("Unexpected driving direction: ", d)
     return None
 
-def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+year+"12.gpkg", bbox=bbox)
+def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
 def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels!='0'" if service=="education" else "")
 def weight_function(feature, length):
     p = feature['properties']
@@ -70,7 +71,7 @@ accessiblity_grid_k_nearest_dijkstra(
     pois_loader = pois_loader,
     road_network_loader = road_network_loader,
     bbox = bbox,
-    out_parquet_file = "/home/juju/gisco/accessibility/grid.parquet",
+    out_parquet_file = "/home/juju/gisco/accessibility/grid_"+year+".parquet",
     k = 3,
     weight_function = weight_function,
     direction_fun = direction_fun,
@@ -87,16 +88,18 @@ accessiblity_grid_k_nearest_dijkstra(
     num_processors_to_use = 1,
 )
 
+'''
 print("Convert parquet to GPKG")
 parquet_grid_to_gpkg(
-    ['/home/juju/gisco/accessibility/grid.parquet'],
-    '/home/juju/gisco/accessibility/grid.gpkg',
+    ['/home/juju/gisco/accessibility/grid_'+year+'.parquet'],
+    '/home/juju/gisco/accessibility/grid_'+year+'.gpkg',
 )
+'''
 
 print("Convert parquet to geotiff")
 parquet_grid_to_geotiff(
-    ['/home/juju/gisco/accessibility/grid.parquet'],
-    '/home/juju/gisco/accessibility/grid.tif',
+    ['/home/juju/gisco/accessibility/grid_'+year+'.parquet'],
+    '/home/juju/gisco/accessibility/grid_'+year+'.tif',
     attributes=["duration_s_1", "duration_average_s_3"],
     parquet_nodata_values=[-1],
     compress='deflate'
