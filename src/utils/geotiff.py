@@ -24,8 +24,8 @@ def geotiff_mask_by_countries(
 
         # update metadata
         out_meta.update({"driver": "GTiff",
-                        "height": out_image.shape[1],
-                        "width": out_image.shape[2],
+                        #"height": out_image.shape[1],
+                        #"width": out_image.shape[2],
                         "transform": out_transform,
                         "compress": "none" if compress is None else compress
                         })

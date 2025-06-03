@@ -121,7 +121,5 @@ for year in ["2023"]:
                 geotiff,
                 geotiff,
                 values_to_exclude = ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
-                gpkg = '/home/juju/geodata/gisco/admin_tagging/final.gpkg',
-                gpkg_column = 'CNTR_ID',
                 compress="deflate"
         )
