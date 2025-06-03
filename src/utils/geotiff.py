@@ -8,15 +8,14 @@ def geotiff_mask_by_countries(
           in_tiff_path,
           out_tiff_path,
           values_to_exclude,
-          gpkg = '/home/juju/geodata/gisco/admin_tagging/final.gpkg',
+          gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
           gpkg_column = 'CNTR_ID',
           compress = None
 ):
 
         # load mask geometries
         gdf = gpd.read_file(gpkg)
-        gdf = gdf[gpkg_column].isin(values_to_exclude)
-
+        gdf = gdf[ gdf[gpkg_column].isin(values_to_exclude) ]
 
         # apply mask
         with rasterio.open(in_tiff_path) as src:
