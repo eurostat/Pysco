@@ -199,25 +199,38 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
 
 
 # function to launch in parallel for each partition
-def __parallel_process(params):
+def __parallel_process(xy,
+            extention_buffer,
+            partition_size,
+            pois_loader,
+            road_network_loader,
+            k,
+            weight_function,
+            direction_fun,
+            is_not_snappable_fun,
+            initial_node_level_fun,
+            final_node_level_fun,
+            cell_id_fun,
+            grid_resolution,
+            cell_network_max_distance,
+            detailled,
+            keep_distance_to_node):
 
     # get partition position
-    [ x_part, y_part ] = params['xy']
+    [ x_part, y_part ] = xy
 
     # build partition extended bbox
-    extention_buffer = params['extention_buffer']
-    partition_size = params['partition_size']
     extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
     print(datetime.now(),x_part,y_part, "make graph")
-    roads = params['road_network_loader'](extended_bbox)
+    roads = road_network_loader(extended_bbox)
     gb_ = ___graph_adjacency_list_from_geodataframe(roads,
-                                                        weight_fun = params['weight_function'],
-                                                        direction_fun = params['direction_fun'],
-                                                        is_not_snappable_fun = params['is_not_snappable_fun'],
-                                                        detailled = params['detailled'],
-                                                        initial_node_level_fun = params['initial_node_level_fun'],
-                                                        final_node_level_fun = params['final_node_level_fun'])
+                                                        weight_fun = weight_function,
+                                                        direction_fun = direction_fun,
+                                                        is_not_snappable_fun = is_not_snappable_fun,
+                                                        detailled = detailled,
+                                                        initial_node_level_fun = initial_node_level_fun,
+                                                        final_node_level_fun = final_node_level_fun)
     graph = gb_['graph']
     snappable_nodes = gb_['snappable_nodes']
     del gb_, roads
@@ -230,7 +243,7 @@ def __parallel_process(params):
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
     print(datetime.now(),x_part,y_part, "get source nodes")
-    pois = params['pois_loader'](extended_bbox)
+    pois = pois_loader(extended_bbox)
     sources = []
     for poi in pois:
         x, y = poi['geometry']['coordinates']
@@ -241,7 +254,6 @@ def __parallel_process(params):
     if(len(sources)==0): return
 
     print(datetime.now(),x_part,y_part, "compute accessiblity")
-    k = params['k']
     result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
     del graph, sources
 
@@ -252,10 +264,7 @@ def __parallel_process(params):
     distances_to_node = [] #the cell center distance to its graph node
 
     # go through cells
-    grid_resolution = params['grid_resolution']
-    cell_network_max_distance = params['cell_network_max_distance']
     r2 = grid_resolution / 2
-    keep_distance_to_node = params['keep_distance_to_node']
     for x in range(x_part, x_part+partition_size, grid_resolution):
         for y in range(y_part, y_part+partition_size, grid_resolution):
 
@@ -281,7 +290,7 @@ def __parallel_process(params):
                 distances_to_node.append( round(dtn) )
 
             # store cell id
-            grd_ids.append(params['cell_id_fun'](x,y))
+            grd_ids.append(cell_id_fun(x,y))
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
@@ -321,29 +330,29 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
     #launch parallel computation   
     processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
     processes_params = [
-        {
-            'xy' : xy,
-            'extention_buffer' : extention_buffer,
-            'partition_size' : partition_size,
-            'pois_loader' : pois_loader,
-            'road_network_loader' : road_network_loader,
-            'k' : k,
-            'weight_function' : weight_function,
-            'direction_fun' : direction_fun,
-            'is_not_snappable_fun' : is_not_snappable_fun,
-            'initial_node_level_fun' : initial_node_level_fun,
-            'final_node_level_fun' : final_node_level_fun,
-            'cell_id_fun' : cell_id_fun,
-            'grid_resolution' : grid_resolution,
-            'cell_network_max_distance' : cell_network_max_distance,
-            'detailled' : detailled,
-            'keep_distance_to_node' : keep_distance_to_node,
-         }
+        (
+            xy,
+            extention_buffer,
+            partition_size,
+            pois_loader,
+            road_network_loader,
+            k,
+            weight_function,
+            direction_fun,
+            is_not_snappable_fun,
+            initial_node_level_fun,
+            final_node_level_fun,
+            cell_id_fun,
+            grid_resolution,
+            cell_network_max_distance,
+            detailled,
+            keep_distance_to_node,
+        )
         for xy in processes_params
         ]
 
     print(datetime.now(), "launch", len(processes_params), "processes on", num_processors_to_use, "processor(s)")
-    outputs = Pool(num_processors_to_use).map(__parallel_process, processes_params)
+    outputs = Pool(num_processors_to_use).starmap(__parallel_process, processes_params)
 
     print(datetime.now(), "combine", len(outputs), "outputs")
     grd_ids = []

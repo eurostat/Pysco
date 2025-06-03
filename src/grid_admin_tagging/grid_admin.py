@@ -11,6 +11,8 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 
+#TODO parallelism
+
 
 def produce_correspondance_table(
     admin_units_dataset, #GPKG - prepared. polygons with id
