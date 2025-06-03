@@ -15,11 +15,12 @@ def geotiff_mask_by_countries(
 
         # load mask geometries
         gdf = gpd.read_file(gpkg)
-        gdf = gdf[~gdf[gpkg_column].isin(values_to_exclude)]
+        gdf = gdf[gpkg_column].isin(values_to_exclude)
+
 
         # apply mask
         with rasterio.open(in_tiff_path) as src:
-            out_image, out_transform = mask(src, gdf.geometry, crop=True, nodata=src.nodata)
+            out_image, out_transform = mask(src, gdf.geometry, crop=True, invert=True, nodata=src.nodata)
             out_meta = src.meta.copy()
 
         # update metadata

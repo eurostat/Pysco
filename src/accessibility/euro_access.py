@@ -120,7 +120,8 @@ for year in ["2023"]:
         geotiff_mask_by_countries(
                 geotiff,
                 geotiff,
-                values_to_exclude = ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
+                to_exclude = ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
                 gpkg = '/home/juju/geodata/gisco/admin_tagging/final.gpkg',
                 gpkg_column = 'CNTR_ID',
+                compress="deflate"
         )
