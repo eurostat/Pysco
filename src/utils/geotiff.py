@@ -7,9 +7,9 @@ import geopandas as gpd
 def geotiff_mask_by_countries(
           in_tiff_path,
           out_tiff_path,
+          gpkg,
+          gpkg_column,
           values_to_exclude,
-          gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
-          gpkg_column = 'CNTR_ID',
           compress = None
 ):
 
