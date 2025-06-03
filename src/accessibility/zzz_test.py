@@ -108,6 +108,6 @@ combine_geotiffs(
         #"/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m.tif"
      ],
     "/home/juju/gisco/accessibility/grid.tif",
-    #output_bounds=bbox,
+    output_bounds=bbox,
     compress="deflate"
 )
