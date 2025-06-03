@@ -105,7 +105,7 @@ combine_geotiffs(
     [
         "/home/juju/gisco/accessibility/grid_2020.tif",
         "/home/juju/gisco/accessibility/grid_2023.tif",
-        #"/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m.tif"
+        "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m.tif"
      ],
     "/home/juju/gisco/accessibility/grid.tif",
     output_bounds=bbox,

@@ -11,7 +11,7 @@ import os
 
 
 
-def combine_geotiffs(input_files, output_file, output_bounds=None, compress=None):
+def combine_geotiffs(input_files, output_file, output_bounds=None, compress=None, nodata_value = -9999):
     """
     Combine multiple GeoTIFF files into a single multi-band GeoTIFF.
 
@@ -26,14 +26,12 @@ def combine_geotiffs(input_files, output_file, output_bounds=None, compress=None
     # Check all have same CRS and resolution and nodata
     crs_set = set([ds.crs.to_string() for ds in datasets])
     res_set = set([(ds.res[0], ds.res[1]) for ds in datasets])
-    nodata_values = set([ds.nodata for ds in datasets])
 
-    if len(crs_set) > 1 or len(res_set) > 1 or len(nodata_values) > 1:
+    if len(crs_set) > 1 or len(res_set) > 1:
         raise ValueError("All input GeoTIFFs must have the same CRS and resolution and nodata.")
 
     crs = datasets[0].crs
     res_x, res_y = datasets[0].res
-    nodata_value = datasets[0].nodata
 
     # Compute output bounds
     if output_bounds is None:
