@@ -8,13 +8,12 @@ from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_geotiff
 from utils.geotiff import combine_geotiffs,rename_geotiff_bands
 
-
-#TODO densify lines when consecutive vertexes too far ?
-
-#TODO check why most ferry lines are discontinued ?
-#TODO healthcare: new 2023 with new EL
-
 #TOCHECK make ferry not snappable
+#TODO densify lines when consecutive vertexes too far ?
+#TODO remove NAMETYP from tomtom
+#TODO check why most ferry lines are discontinued ?
+
+#TODO healthcare: new 2023 with new EL
 
 #TODO QGIS plugin for parquet grids
 #TODO handle case when speed depends on driving direction
