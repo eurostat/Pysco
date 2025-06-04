@@ -15,8 +15,8 @@ from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
 #luxembourg
 #bbox = [4030000, 2930000, 4060000, 2960000]
 #greece
-bbox = [5200000, 1200000, 5500000, 1500000]
-  
+bbox = [ 5000000, 1500000, 5500000, 2000000 ]
+
 
 tile_file_size_m = 500000
 clamp = lambda v:floor(v/tile_file_size_m)*tile_file_size_m
@@ -40,8 +40,8 @@ for year in ["2020","2023"]:
         if not os.path.exists(out_folder_service): os.makedirs(out_folder_service)
 
         # launch process for each tile file
-        for x in range(xmin, xmax+1, tile_file_size_m):
-            for y in range(ymin, ymax+1, tile_file_size_m):
+        for x in range(xmin, xmax, tile_file_size_m):
+            for y in range(ymin, ymax, tile_file_size_m):
 
                 #output file
                 out_file = out_folder_service + "euro_access_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
