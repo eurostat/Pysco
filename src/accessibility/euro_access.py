@@ -11,11 +11,11 @@ from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
 
 
 # whole europe
-#bbox = [ 1000000, 500000, 6000000, 5500000 ]
+bbox = [ 1000000, 500000, 6000000, 5500000 ]
 #luxembourg
 #bbox = [4030000, 2930000, 4060000, 2960000]
 #greece
-bbox = [ 5000000, 1500000, 5500000, 2000000 ]
+#bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
 
 tile_file_size_m = 500000
