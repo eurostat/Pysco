@@ -122,7 +122,7 @@ for year in ["2020","2023"]:
             attributes=["duration_s_1", "duration_average_s_3"],
             parquet_nodata_values=[-1],
             dtype=np.int16,
-            value_fun= lambda v:np.int16(v),
+            value_fun= lambda v:v if v<32767 else 32767, # np.int16(v),
             compress='deflate'
         )
 
