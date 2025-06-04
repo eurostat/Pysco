@@ -76,6 +76,7 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
                                               is_not_snappable_fun = None,
                                               coord_simp=round,
                                               detailled=False,
+                                              densification_distance=None,
                                               initial_node_level_fun=None,
                                               final_node_level_fun=None):
     """
@@ -87,6 +88,7 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
     :param is_not_snappable_fun: return if the nodes of a section are not snappable.
     :param coord_simp: a function used to build node id from node coordinates.
     :param detailled: If true, all line vertices become graph nodes, otherwise only the initial and final vertices.
+    :param densification_distance: If detailled=true, this will apply densification on line geometries to ensure vertices are not to far. When two consecutive coordinates are too far, vertices are inserted between them. This can be usefull for graph snapping purposes.
     :param initial_node_level_fun: For non planar graphs, a function returning the level of the line initial node.
     :param final_node_level_fun: For non planar graphs, a function returning the level of the line final node.
     :return: graph (adjacency list: {node_id: [(neighbor_node_id, travel_time)]})
@@ -120,6 +122,9 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
 
         if detailled:
             # detailled decomposition: one graph node per line vertex
+
+            if densification_distance is not None and densification_distance>0:
+                coords = densify_line(coords, densification_distance)
 
             # make first node
             p1 = coords[0]
@@ -195,6 +200,10 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
     return { 'graph':graph, 'snappable_nodes':list(snappable_nodes) }
 
 
+
+def densify_line(coords, densification_distance):
+    #TODO
+    return coords
 
 
 
