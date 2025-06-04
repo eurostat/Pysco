@@ -104,11 +104,6 @@ for year in ["2020","2023"]:
 
         # parquet to tiff
 
-        # check if tiff file was already produced
-        geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif"
-        if os.path.isfile(geotiff):
-            #print(out_file, "already produced")
-            continue
 
         # get all parquet files in the output folder
         files = [os.path.join(out_folder_service, f) for f in os.listdir(out_folder_service) if f.endswith('.parquet')]
