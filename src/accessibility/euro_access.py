@@ -1,5 +1,6 @@
 from math import floor
 from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra
+import numpy as np
 
 import sys
 import os
@@ -114,6 +115,7 @@ for year in ["2020","2023"]:
             bbox = bbox,
             attributes=["duration_s_1", "duration_average_s_3"],
             parquet_nodata_values=[-1],
+            dtype=np.int64,
             compress='deflate'
         )
 
