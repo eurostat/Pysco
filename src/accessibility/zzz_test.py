@@ -19,6 +19,7 @@ from utils.geotiff import combine_geotiffs,rename_geotiff_bands
 #TODO handle case when speed depends on driving direction
 
 
+
 #set bbox for test area
 #luxembourg
 bbox = [4030000, 2930000, 4060000, 2960000]
