@@ -25,6 +25,7 @@ for year in ["2020","2023"]:
     tomtom_year = "2019" if year == "2020" else year
 
     for service in ["education", "healthcare"]:
+        print(year, service)
 
         num_processors_to_use = 7 if service == "education" else 5
 
