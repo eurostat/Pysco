@@ -99,6 +99,7 @@ for year in ["2020","2023"]:
                     partition_size = 125000,
                     extention_buffer = 20000 if service=="education" else 60000,
                     detailled = True,
+                    densification_distance=grid_resolution,
                     duration_simplification_fun = duration_simplification_fun,
                     num_processors_to_use = num_processors_to_use,
                 )

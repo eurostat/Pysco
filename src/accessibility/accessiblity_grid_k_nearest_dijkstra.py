@@ -251,6 +251,7 @@ def __parallel_process(xy,
             grid_resolution,
             cell_network_max_distance,
             detailled,
+            densification_distance,
             keep_distance_to_node):
 
     # get partition position
@@ -270,6 +271,7 @@ def __parallel_process(xy,
                                                         direction_fun = direction_fun,
                                                         is_not_snappable_fun = is_not_snappable_fun,
                                                         detailled = detailled,
+                                                        densification_distance=densification_distance,
                                                         initial_node_level_fun = initial_node_level_fun,
                                                         final_node_level_fun = final_node_level_fun)
     graph = gb_['graph']
@@ -362,6 +364,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        partition_size = 100000,
                        extention_buffer = 30000,
                        detailled = False,
+                       densification_distance = None,
                        duration_simplification_fun = None,
                        keep_distance_to_node = False,
                        num_processors_to_use = 1,
@@ -386,6 +389,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
             grid_resolution,
             cell_network_max_distance,
             detailled,
+            densification_distance,
             keep_distance_to_node,
         )
         for xy in processes_params
