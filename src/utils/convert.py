@@ -85,6 +85,7 @@ def parquet_grid_to_geotiff(
     parquet_nodata_values=None,
     tiff_nodata_value=-9999,
     dtype=np.int16,
+    value_fun=None,
     compress='none'
 ):
     """
@@ -98,6 +99,7 @@ def parquet_grid_to_geotiff(
     - bbox: Bounding box [minx, miny, maxx, maxy] to take. If not specified, the GPKG files bbox is computed and used - in that case, it is assumed the grid cell geometries are polygons.
     - parquet_nodata_values (list of numbers): If specified, the parquet file attributes with these values will be encoded as nodata in the tiff. Default is None.
     - tiff_nodata_value (numeric): Nodata value for empty pixels. Default is -9999.
+    - value_fun (function): A function that take a value and return another one. If specified, it is applied to the parquet values after being read. It may be used for example to change the parquet values.
     - compress (str): Tiff compression, among 'lzw','deflate','jpeg','packbits','none'. Default is none.
     """
 
@@ -200,6 +202,7 @@ def parquet_grid_to_geotiff(
             # set raster values at pixel position
             for a in attributes:
                 value = getattr(cell, a)
+                if value_fun: value = value_fun(value)
                 if value is None: continue
                 if parquet_nodata_values is not None and value in parquet_nodata_values: continue
                 band_arrays[a][row, col] = value

@@ -121,7 +121,8 @@ for year in ["2020","2023"]:
             bbox = bbox,
             attributes=["duration_s_1", "duration_average_s_3"],
             parquet_nodata_values=[-1],
-            dtype=np.int64,
+            dtype=np.int16,
+            value_fun= lambda v:np.int16(v),
             compress='deflate'
         )
 
