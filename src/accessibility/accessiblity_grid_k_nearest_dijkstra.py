@@ -4,7 +4,7 @@ import heapq
 from shapely.geometry import shape
 from collections import defaultdict
 from multiprocessing import Pool
-from math import hypot
+import math
 
 import sys
 import os
@@ -145,7 +145,7 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
                 if n1==n2: continue
 
                 # get segment weight
-                segment_length_m = hypot(p1[0]-p2[0], p1[1]-p2[1])
+                segment_length_m = math.hypot(p1[0]-p2[0], p1[1]-p2[1])
                 w = weight_fun(f, segment_length_m)
                 if w<0: continue
 
@@ -202,9 +202,37 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
 
 
 def densify_line(coords, densification_distance):
-    #TODO
-    return coords
+    densified_line = []
 
+    # add first point
+    p1 = coords[0]
+    densified_line.append(p1)
+
+    for i in range(len(coords) - 1):
+        p2 = coords[i + 1]
+
+        # compute segment length
+        dx = p2[0] - p1[0]
+        dy = p2[1] - p1[1]
+        d = math.hypot(dx, dy)
+        if d > densification_distance:
+            # Calculate the number of new segments needed
+            num_segments = int(math.ceil(d / densification_distance))
+
+            # Calculate intermediate points
+            for j in range(1, num_segments):
+                ratio = j / num_segments
+                densified_line.append([ p1[0] + ratio * dx, p1[1] + ratio * dy ])
+
+        # add last point
+        densified_line.append(p2)
+        p1 = p2
+
+    # Add the last point
+    if densified_line[-1] != coords[-1]:
+        densified_line.append(coords[-1])
+
+    return densified_line
 
 
 # function to launch in parallel for each partition

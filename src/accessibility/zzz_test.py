@@ -10,7 +10,6 @@ from utils.geotiff import combine_geotiffs,rename_geotiff_bands
 
 #TODO include ferry lines
 #TODO densify lines when consecutive vertexes too far ?
-#TODO remove NAMETYP from tomtom
 
 #TODO healthcare: new 2023 with new EL
 
