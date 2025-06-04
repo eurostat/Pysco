@@ -7,7 +7,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_geotiff
-from utils.geotiff import geotiff_mask_by_countries
+from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
 
 # whole europe
 bbox = [ 1000000, 500000, 6000000, 5500000 ]
@@ -35,7 +35,6 @@ for year in ["2020","2023"]:
         # launch process for each tile file
         for x in range(xmin, xmax+1, tile_file_size_m):
             for y in range(ymin, ymax+1, tile_file_size_m):
-                print("Tile file", x, y)
 
                 #output file
                 out_file = out_folder_service + "euro_access_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
@@ -44,6 +43,8 @@ for year in ["2020","2023"]:
                 if os.path.isfile(out_file):
                     #print(out_file, "already produced")
                     continue
+
+                print("Tile file", x, y)
 
                 # define parameter functions
 
@@ -103,12 +104,17 @@ for year in ["2020","2023"]:
 
         # parquet to tiff
 
+        # check if tiff file was already produced
+        geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif"
+        if os.path.isfile(geotiff):
+            #print(out_file, "already produced")
+            continue
+
         # get all parquet files in the output folder
         files = [os.path.join(out_folder_service, f) for f in os.listdir(out_folder_service) if f.endswith('.parquet')]
         if len(files)==0: continue
 
         print("transforming", len(files), "parquet files into tif for", service, year)
-        geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif"
         parquet_grid_to_geotiff(
             files,
             geotiff,
@@ -128,3 +134,7 @@ for year in ["2020","2023"]:
             values_to_exclude = ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
             compress="deflate"
         )
+
+        print("rename bands")
+        rename_geotiff_bands(geotiff, [service + "_" + year + "_1", service + "_" + year + "_a3"])
+

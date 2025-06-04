@@ -8,6 +8,9 @@ from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_geotiff
 from utils.geotiff import combine_geotiffs,rename_geotiff_bands
 
+
+#TODO ajust tiff nb.dtype
+
 #TODO check why most ferry lines are discontinued ?
 #TODO healthcare: new 2023 with new EL
 #TODO densify lines when consecutive vertexes too far ?
