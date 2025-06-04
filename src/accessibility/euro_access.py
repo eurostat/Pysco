@@ -27,7 +27,7 @@ for year in ["2020","2023"]:
     for service in ["education", "healthcare"]:
         print(year, service)
 
-        num_processors_to_use = 7 if service == "education" else 5
+        num_processors_to_use = 7 if service == "education" else 4
 
         # ouput folder
         out_folder_service = out_folder + "out_" + service + "_" + year + "/"
