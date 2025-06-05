@@ -6,6 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_geotiff
 from utils.geotiff import rename_geotiff_bands
+from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
 #TODO check cyprus and north
 #TODO crop by country - see issue on the coast
@@ -14,7 +15,6 @@ from utils.geotiff import rename_geotiff_bands
 
 #TODO QGIS plugin for parquet grids
 #TODO handle case when speed depends on driving direction
-
 
 
 #set bbox for test area
@@ -30,33 +30,7 @@ bbox = [4030000, 2930000, 4060000, 2960000]
 
 grid_resolution = 100
 
-
-# driving direction
-def direction_fun(feature):
-    d = feature['properties']['ONEWAY']
-    if d==None or d=="": return 'both'
-    if d=="FT": return 'forward'
-    if d=="TF": return 'backward'
-    if d=="N": return 'both'
-    print("Unexpected driving direction: ", d)
-    return None
-
-def weight_function(feature, length):
-    p = feature['properties']
-    kph = 0
-    # ferry
-    if p['FOW']==-1 and p['FEATTYP']==4130: kph = 30
-    # private/restricted/pedestrian roads
-    elif p['ONEWAY']=='N': kph = 15
-    # default case
-    else: kph = p['KPH']
-    return -1 if kph==0 else 1.1*length/kph*3.6
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
-def is_not_snappable_fun(f):
-    p = f['properties']
-    return p['FOW'] in [1,10,12,6] or p['FREEWAY'] == 1 or (p['FOW']==-1 and p['FEATTYP']==4130)
-def initial_node_level_fun(f): return f['properties']['F_ELEV']
-def final_node_level_fun(f): return f['properties']['T_ELEV']
 def duration_simplification_fun(x): return int(round(x))
 
 
