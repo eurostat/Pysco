@@ -28,10 +28,10 @@ def circular_kernel_sum(
 
     # Replace negative values with 0 for computation
     data = np.where(data < 0, 0, data)
+    #data = np.clip(data, 0, None)
 
     #print("change dtype")
     data = data.astype(dtype)
-    data = np.clip(data, 0, None)
 
     #print("make circular kernel")
     radius_px = int(radius_m / pixel_size)
