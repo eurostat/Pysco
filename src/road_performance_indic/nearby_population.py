@@ -34,15 +34,22 @@ def circular_kernel_sum(
 
 
 
-
+print("2018")
 circular_kernel_sum(
-    "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2.tiff",
-    "/home/juju/gisco/road_transport_performance/nearby_population_2023.tiff",
+    "/home/juju/geodata/census/2018/JRC_1K_POP_2018.tif",
+    "/home/juju/gisco/road_transport_performance/nearby_population_2018.tiff",
     120000,
     rasterio.int64
     )
 
 
+print("2021")
+circular_kernel_sum(
+    "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2.tiff",
+    "/home/juju/gisco/road_transport_performance/nearby_population_2021.tiff",
+    120000,
+    rasterio.int64
+    )
 
 
 
