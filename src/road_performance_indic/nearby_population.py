@@ -44,7 +44,7 @@ def circular_kernel_sum(
 
 circular_kernel_sum(
     "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2.tiff",
-    "/home/juju/gisco/road_transport_performance/2023/neraby_population.tiff",
+    "/home/juju/gisco/road_transport_performance/nearby_population_2023.tiff",
     120000,
     rasterio.int64
     )
