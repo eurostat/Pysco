@@ -49,7 +49,7 @@ def circular_kernel_sum(
 
 print("2018")
 circular_kernel_sum(
-    "/home/juju/geodata/census/2018/JRC_1K_POP_2018.tif",
+    "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
     "/home/juju/gisco/road_transport_performance/nearby_population_2018.tiff",
     120000,
     rasterio.int64,
