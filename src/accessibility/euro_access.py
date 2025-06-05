@@ -45,8 +45,6 @@ for service in ["education", "healthcare"]:
 
     for year in ["2020","2023"]:
 
-        print(year, service)
-
         # ouput folder
         out_folder_service = out_folder + "out_" + service + "_" + year + "/"
         if not os.path.exists(out_folder_service): os.makedirs(out_folder_service)
@@ -68,7 +66,7 @@ for service in ["education", "healthcare"]:
                 # skip if output file was already produced
                 if os.path.isfile(out_file): continue
 
-                print("Tile file", x, y)
+                print(service, year, " - Tile file", x, y)
 
                 # build accessibility grid
                 accessiblity_grid_k_nearest_dijkstra(
