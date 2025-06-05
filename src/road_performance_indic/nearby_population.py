@@ -1,44 +1,45 @@
-import geopandas as gpd
-from datetime import datetime
+#import geopandas as gpd
+#from datetime import datetime
 #import concurrent.futures
 #import threading
-import fiona
-from shapely.geometry import shape
-from rtree import index
-import csv
+#import fiona
+#from shapely.geometry import shape
+#from rtree import index
+#import csv
 
 import rasterio
 import numpy as np
 from scipy import ndimage
 
 
-input_tiff = None
-output_tiff = None
-dtype=rasterio.float32
-radius_m = 120000
 
+def circular_kernel_sum(
+    input_tiff,
+    output_tiff,
+    radius_m = 120000,
+    dtype=rasterio.float32,
+):
+    # Open the input GeoTIFF
+    with rasterio.open(input_tiff) as src:
+        data = src.read(1)
+        profile = src.profile
+        pixel_size = src.res[0]  # assuming square pixels
 
-# Open the input GeoTIFF
-with rasterio.open(input_tiff) as src:
-    data = src.read(1)
-    profile = src.profile
-    pixel_size = src.res[0]  # assuming square pixels
+    # Create a circular kernel
+    radius_px = int(radius_m / pixel_size)
+    y, x = np.ogrid[-radius_px:radius_px+1, -radius_px:radius_px+1]
+    mask = x**2 + y**2 <= radius_px**2
+    kernel = np.zeros((2*radius_px+1, 2*radius_px+1))
+    kernel[mask] = 1
 
-# Create a circular kernel
-radius_px = int(radius_m / pixel_size)
-y, x = np.ogrid[-radius_px:radius_px+1, -radius_px:radius_px+1]
-mask = x**2 + y**2 <= radius_px**2
-kernel = np.zeros((2*radius_px+1, 2*radius_px+1))
-kernel[mask] = 1
+    # Convolve using the kernel
+    summed = ndimage.convolve(data, kernel, mode='constant', cval=0)
 
-# Convolve using the kernel
-summed = ndimage.convolve(data, kernel, mode='constant', cval=0)
+    # Save the output GeoTIFF
+    profile.update(dtype=dtype)
 
-# Save the output GeoTIFF
-profile.update(dtype=dtype)
-
-with rasterio.open(output_tiff, "w", **profile) as dst:
-    dst.write(summed.astype(rasterio.float32), 1)
+    with rasterio.open(output_tiff, "w", **profile) as dst:
+        dst.write(summed.astype(rasterio.float32), 1)
 
 
 
