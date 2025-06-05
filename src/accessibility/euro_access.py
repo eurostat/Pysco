@@ -14,9 +14,11 @@ from tomtom_utils import weight_function, direction_fun, is_not_snappable_fun, i
 # where to store the outputs
 out_folder = '/home/juju/gisco/accessibility/'
 
+
+
 # define output bounding box
 # whole europe
-bbox = [ 1000000, 500000, 7000000, 5500000 ]
+bbox = [ 900000, 900000, 6600000, 5400000 ]
 #luxembourg
 #bbox = [4030000, 2930000, 4060000, 2960000]
 #greece
@@ -35,8 +37,10 @@ def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+
 def duration_simplification_fun(x): return int(round(x))
 
 
+# clamp bbox to fit with tile_file_size_m
 clamp = lambda v:floor(v/tile_file_size_m)*tile_file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
+
 
 for service in ["education", "healthcare"]:
 
@@ -59,10 +63,10 @@ for service in ["education", "healthcare"]:
         for x in range(xmin, xmax, tile_file_size_m):
             for y in range(ymin, ymax, tile_file_size_m):
 
-                #output file
+                # output file
                 out_file = out_folder_service + "euro_access_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
 
-                #check if output file was already produced
+                # skip if output file was already produced
                 if os.path.isfile(out_file): continue
 
                 print("Tile file", x, y)
