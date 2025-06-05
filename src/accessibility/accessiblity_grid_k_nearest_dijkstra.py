@@ -80,7 +80,7 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
                                               initial_node_level_fun=None,
                                               final_node_level_fun=None):
     """
-    Build a directed graph from a network stored in a GeoPackage.
+    Build a directed graph from a network stored in a geo dataset.
 
     :param sections_iterator: fiona iterator to the dataset containing the road sections, with linear geometry
     :param weight_fun: function returning a segment weight, based on the feature and the segment length
