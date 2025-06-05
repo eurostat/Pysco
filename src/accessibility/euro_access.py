@@ -20,17 +20,21 @@ bbox = [ 1000000, 500000, 6000000, 5500000 ]
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
 
-tile_file_size_m = 500000
-clamp = lambda v:floor(v/tile_file_size_m)*tile_file_size_m
-[xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
-
 grid_resolution = 100
 detailled = True
+densification_distance = grid_resolution
+cell_network_max_distance = grid_resolution * 2
+tile_file_size_m = 500000
+partition_size = 125000
+
 out_folder = '/home/juju/gisco/accessibility/'
 
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 def duration_simplification_fun(x): return int(round(x))
 
+
+clamp = lambda v:floor(v/tile_file_size_m)*tile_file_size_m
+[xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
 for service in ["education", "healthcare"]:
 
@@ -47,6 +51,7 @@ for service in ["education", "healthcare"]:
         def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
         def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels!='0'" if service=="education" else "")
         num_processors_to_use = 7 if service == "education" else 4
+        extention_buffer = 20000 if service=="education" else 60000
 
         # launch process for each tile file
         for x in range(xmin, xmax, tile_file_size_m):
@@ -78,7 +83,7 @@ for service in ["education", "healthcare"]:
                     partition_size = 125000,
                     extention_buffer = 20000 if service=="education" else 60000,
                     detailled = detailled,
-                    densification_distance=grid_resolution,
+                    densification_distance=densification_distance,
                     duration_simplification_fun = duration_simplification_fun,
                     num_processors_to_use = num_processors_to_use,
                 )
