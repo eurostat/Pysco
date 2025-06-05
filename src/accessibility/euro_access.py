@@ -37,7 +37,7 @@ def duration_simplification_fun(x): return int(round(x))
 
 
 # clamp bbox to fit with tile_file_size_m
-clamp = lambda v:floor(v/tile_file_size_m)*tile_file_size_m
+clamp = lambda v : floor(v/tile_file_size_m)*tile_file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
 
@@ -57,8 +57,8 @@ for service in ["education", "healthcare"]:
         extention_buffer = 20000 if service=="education" else 60000
 
         # launch process for each tile file
-        for x in range(xmin, xmax, tile_file_size_m):
-            for y in range(ymin, ymax, tile_file_size_m):
+        for x in range(xmin, xmax+1, tile_file_size_m):
+            for y in range(ymin, ymax+1, tile_file_size_m):
 
                 # output file
                 out_file = out_folder_service + "euro_access_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"

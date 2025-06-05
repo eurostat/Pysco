@@ -42,6 +42,12 @@ def circular_kernel_sum(
         dst.write(summed.astype(rasterio.float32), 1)
 
 
+circular_kernel_sum(
+    "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2.tiff",
+    "/home/juju/gisco/road_transport_performance/2023/neraby_population.tiff",
+    120000,
+    rasterio.int64
+    )
 
 
 
