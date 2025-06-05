@@ -1,12 +1,3 @@
-#import geopandas as gpd
-#from datetime import datetime
-#import concurrent.futures
-#import threading
-#import fiona
-#from shapely.geometry import shape
-#from rtree import index
-#import csv
-
 import rasterio
 import numpy as np
 from scipy import ndimage
@@ -25,7 +16,7 @@ def circular_kernel_sum(
         profile = src.profile
         pixel_size = src.res[0]  # assuming square pixels
 
-    # Create a circular kernel
+    # Create circular kernel
     radius_px = int(radius_m / pixel_size)
     y, x = np.ogrid[-radius_px:radius_px+1, -radius_px:radius_px+1]
     mask = x**2 + y**2 <= radius_px**2
@@ -42,6 +33,8 @@ def circular_kernel_sum(
         dst.write(summed.astype(rasterio.float32), 1)
 
 
+
+
 circular_kernel_sum(
     "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2.tiff",
     "/home/juju/gisco/road_transport_performance/nearby_population_2023.tiff",
@@ -49,6 +42,20 @@ circular_kernel_sum(
     rasterio.int64
     )
 
+
+
+
+
+
+
+#import geopandas as gpd
+#from datetime import datetime
+#import concurrent.futures
+#import threading
+#import fiona
+#from shapely.geometry import shape
+#from rtree import index
+#import csv
 
 
 '''
