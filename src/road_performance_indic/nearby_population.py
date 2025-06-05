@@ -11,17 +11,21 @@ import rasterio
 import numpy as np
 from scipy import ndimage
 
+
+input_tiff = None
+output_tiff = None
+dtype=rasterio.float32
+radius_m = 120000
+
+
 # Open the input GeoTIFF
-with rasterio.open("input.tif") as src:
+with rasterio.open(input_tiff) as src:
     data = src.read(1)
     profile = src.profile
     pixel_size = src.res[0]  # assuming square pixels
 
-# Define the radius in meters and convert to pixels
-radius_m = 120_000  # 120 km
-radius_px = int(radius_m / pixel_size)
-
 # Create a circular kernel
+radius_px = int(radius_m / pixel_size)
 y, x = np.ogrid[-radius_px:radius_px+1, -radius_px:radius_px+1]
 mask = x**2 + y**2 <= radius_px**2
 kernel = np.zeros((2*radius_px+1, 2*radius_px+1))
@@ -31,13 +35,16 @@ kernel[mask] = 1
 summed = ndimage.convolve(data, kernel, mode='constant', cval=0)
 
 # Save the output GeoTIFF
-profile.update(dtype=rasterio.float32)
+profile.update(dtype=dtype)
 
-with rasterio.open("output_summed.tif", "w", **profile) as dst:
+with rasterio.open(output_tiff, "w", **profile) as dst:
     dst.write(summed.astype(rasterio.float32), 1)
 
 
 
+
+
+'''
 # bbox - set to None to compute on the entire space
 bbox = None #(3750000, 2720000, 3960000, 2970000)
 
@@ -50,10 +57,6 @@ nearby_population_csv = "/home/juju/gisco/road_transport_performance/nearby_popu
 
 
 
-
-
-
-'''
 def compute_nearby_population(population_grid, layer, nearby_population_csv, only_populated_cells=True, bbox=None, radius_m = 120000):
 
     print(datetime.now(), "Load population grid...", population_grid)
