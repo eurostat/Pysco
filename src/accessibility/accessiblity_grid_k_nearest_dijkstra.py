@@ -98,7 +98,7 @@ def __parallel_process(xy,
     print(datetime.now(),x_part,y_part, "get source POIs")
     pois = pois_loader(extended_bbox)
     #TODO stop there or fill with 'no_data' ?
-    if(len(pois)==0): return
+    if(not pois): return
 
     print(datetime.now(),x_part,y_part, "make graph")
     roads = road_network_loader(extended_bbox)
