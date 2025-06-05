@@ -1,4 +1,3 @@
-from math import floor
 from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra
 
 import sys
@@ -6,11 +5,11 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_geotiff
-from utils.geotiff import combine_geotiffs,rename_geotiff_bands
+from utils.geotiff import rename_geotiff_bands
 
 #TODO check cyprus and north
 #TODO crop by country - see issue on the coast
-#TODO produce 1000m
+#TODO produce 1000m. before: handle case when detailled=False, for link length
 #TODO healthcare: new 2023 with new EL
 
 #TODO QGIS plugin for parquet grids
