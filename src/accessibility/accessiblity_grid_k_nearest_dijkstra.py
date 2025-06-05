@@ -109,9 +109,18 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
         direction = direction_fun(f)
         if direction == None: continue
 
+        # get line coordinates
         geom = f['geometry']
         if geom['type'] != 'LineString': continue
         coords = geom['coordinates']
+
+        # use only first and last vertices if not detailled
+        if not detailled:
+            coords = [ coords[0], coords[-1] ]
+
+        # densify coordinates list
+        if densification_distance is not None and densification_distance>0:
+            coords = densify_line(coords, densification_distance)
 
         # code for initial and final node levels
         ini_node_level = "" if initial_node_level_fun == None else "_" + str(initial_node_level_fun(f))
@@ -120,82 +129,47 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
         # get if the section is snappable
         is_snappable = True if is_not_snappable_fun==None else not is_not_snappable_fun(f)
 
-        if detailled:
-            # detailled decomposition: one graph node per line vertex
+        # make first node
+        p1 = coords[0]
+        n1 = node_id(p1) + ini_node_level
 
-            if densification_distance is not None and densification_distance>0:
-                coords = densify_line(coords, densification_distance)
+        nb = len(coords) - 1
+        for i in range(nb):
 
-            # make first node
-            p1 = coords[0]
-            n1 = node_id(p1) + ini_node_level
+            # make next node
+            p2 = coords[i+1]
+            n2 = node_id(p2)
 
-            nb = len(coords) - 1
-            for i in range(nb):
+            # add node code part for levels
+            if i==nb-1: n2 += fin_node_level # for the last node, add the final node level code
+            else: n2 += ini_node_level+fin_node_level # for vertex nodes, add both initial and final node codes
 
-                # make next node
-                p2 = coords[i+1]
-                n2 = node_id(p2)
+            # may happen
+            if n1==n2: continue
 
-                #add node code part for levels
-                if i==nb-1: n2 += fin_node_level # for the last node, add the final node level code
-                else: n2 += ini_node_level+fin_node_level # for vertex nodes, add both initial and final node codes
+            # get segment weight
+            segment_length_m = math.hypot(p1[0]-p2[0], p1[1]-p2[1])
+            w = weight_fun(f, segment_length_m)
+            if w<0: continue
 
-                # may happen
-                if n1==n2: continue
+            # Add directed edge(s)
+            if direction == 'both':
+                graph[n1].append((n2, w))
+                graph[n2].append((n1, w))
+            # (assume 'oneway' means forward)
+            if direction == 'forward' or  direction == 'oneway':
+                graph[n1].append((n2, w))
+                if graph[n2] is None: graph[n2] = []
+            if direction == 'backward':
+                if graph[n1] is None: graph[n1] = []
+                graph[n2].append((n1, w))
 
-                # get segment weight
-                segment_length_m = math.hypot(p1[0]-p2[0], p1[1]-p2[1])
-                w = weight_fun(f, segment_length_m)
-                if w<0: continue
+            # collect snappable nodes
+            if is_snappable: snappable_nodes.update([n1, n2])
 
-                # Add directed edge(s)
-                if direction == 'both':
-                    graph[n1].append((n2, w))
-                    graph[n2].append((n1, w))
-                # (assume 'oneway' means forward)
-                if direction == 'forward' or  direction == 'oneway':
-                    graph[n1].append((n2, w))
-                    if graph[n2] == None: graph[n2] = []
-                if direction == 'backward':
-                    if graph[n1] == None: graph[n1] = []
-                    graph[n2].append((n1, w))
-
-                # collect snappable nodes
-                if is_snappable: snappable_nodes.update([n1, n2])
-
-                # next segment
-                p1 = p2
-                n1 = n2
-        else:
-            # not detailled: a single edge between first and last line points
-            p1 = coords[0]
-            n1 = node_id(p1) + ini_node_level
-
-            p2 = coords[-1]
-            n2 = node_id(p2) + fin_node_level
-
-            if n1 != n2:
-
-                segment_length_m = shape(geom).length
-                w = weight_fun(f, segment_length_m)
-                if w<0: continue
-
-                # Add directed edge(s)
-                if direction == 'both':
-                    graph[n1].append((n2, w))
-                    graph[n2].append((n1, w))
-                # (assume 'oneway' means forward)
-                if direction == 'forward' or  direction == 'oneway':
-                    graph[n1].append((n2, w))
-                    if graph[n2] == None: graph[n2] = []
-                if direction == 'backward':
-                    if graph[n1] == None: graph[n1] = []
-                    graph[n2].append((n1, w))
-
-                # collect snappable nodes
-                if is_snappable: snappable_nodes.update([n1, n2])
-
+            # next segment
+            p1 = p2
+            n1 = n2
 
     return { 'graph':graph, 'snappable_nodes':list(snappable_nodes) }
 
