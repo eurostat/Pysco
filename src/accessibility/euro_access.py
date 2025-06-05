@@ -9,6 +9,8 @@ from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_geotiff
 from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
 
+from tomtom_utils import weight_function, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
+
 
 # whole europe
 bbox = [ 1000000, 500000, 6000000, 5500000 ]
@@ -23,21 +25,28 @@ clamp = lambda v:floor(v/tile_file_size_m)*tile_file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
 grid_resolution = 100
+detailled = True
 out_folder = '/home/juju/gisco/accessibility/'
 
+def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
+def duration_simplification_fun(x): return int(round(x))
 
-for year in ["2020","2023"]:
 
-    tomtom_year = "2019" if year == "2020" else year
+for service in ["education", "healthcare"]:
 
-    for service in ["education", "healthcare"]:
+    for year in ["2020","2023"]:
+
         print(year, service)
-
-        num_processors_to_use = 7 if service == "education" else 4
 
         # ouput folder
         out_folder_service = out_folder + "out_" + service + "_" + year + "/"
         if not os.path.exists(out_folder_service): os.makedirs(out_folder_service)
+
+
+        tomtom_year = "2019" if year == "2020" else year
+        def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
+        def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels!='0'" if service=="education" else "")
+        num_processors_to_use = 7 if service == "education" else 4
 
         # launch process for each tile file
         for x in range(xmin, xmax, tile_file_size_m):
@@ -47,45 +56,9 @@ for year in ["2020","2023"]:
                 out_file = out_folder_service + "euro_access_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
 
                 #check if output file was already produced
-                if os.path.isfile(out_file):
-                    #print(out_file, "already produced")
-                    continue
+                if os.path.isfile(out_file): continue
 
                 print("Tile file", x, y)
-
-                # define parameter functions
-
-                # driving direction
-                def direction_fun(feature):
-                    d = feature['properties']['ONEWAY']
-                    if d==None or d=="": return 'both'
-                    if d=="FT": return 'forward'
-                    if d=="TF": return 'backward'
-                    if d=="N": return 'both'
-                    print("Unexpected driving direction: ", d)
-                    return None
-
-                def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
-                def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels!='0'" if service=="education" else "")
-                def weight_function(feature, length):
-                    p = feature['properties']
-                    kph = 0
-                    # ferry
-                    if p['FOW']==-1 and p['FEATTYP']==4130: kph = 30
-                    # private/restricted/pedestrian roads
-                    elif p['ONEWAY']=='N': kph = 15
-                    # default case
-                    else: kph = p['KPH']
-                    if kph==0: return -1
-                    # duration in seconds
-                    return 1.1 * length / kph * 3.6
-                def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
-                def is_not_snappable_fun(f):
-                    p = f['properties']
-                    return p['FOW'] in [1,10,12,6] or p['FREEWAY'] == 1 or (p['FOW']==-1 and p['FEATTYP']==4130)
-                def initial_node_level_fun(f): return f['properties']['F_ELEV']
-                def final_node_level_fun(f): return f['properties']['T_ELEV']
-                def duration_simplification_fun(x): return int(round(x))
 
                 # build accessibility grid
                 accessiblity_grid_k_nearest_dijkstra(
@@ -104,7 +77,7 @@ for year in ["2020","2023"]:
                     cell_network_max_distance= grid_resolution * 2,
                     partition_size = 125000,
                     extention_buffer = 20000 if service=="education" else 60000,
-                    detailled = True,
+                    detailled = detailled,
                     densification_distance=grid_resolution,
                     duration_simplification_fun = duration_simplification_fun,
                     num_processors_to_use = num_processors_to_use,

@@ -8,6 +8,7 @@ from utils.featureutils import iter_features
 from utils.convert import parquet_grid_to_geotiff
 from utils.geotiff import combine_geotiffs,rename_geotiff_bands
 
+#TODO produce 1000m
 #TODO healthcare: new 2023 with new EL
 
 #TODO QGIS plugin for parquet grids
