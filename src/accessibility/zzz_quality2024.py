@@ -1,5 +1,5 @@
 import geopandas as gpd
-from accessibility_grid import accessibility_grid
+from accessibility.zzz_old_accessibility_grid import accessibility_grid
 
 import sys
 import os
