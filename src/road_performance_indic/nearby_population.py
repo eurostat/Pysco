@@ -3,6 +3,9 @@ import numpy as np
 from scipy import ndimage
 
 
+#TODO handle nodata values
+#TODO compress ?
+
 
 def circular_kernel_sum(
     input_tiff,
