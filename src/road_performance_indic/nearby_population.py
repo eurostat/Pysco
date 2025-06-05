@@ -24,6 +24,9 @@ def circular_kernel_sum(
     if nodata is not None:
         data = np.where(data == nodata, 0, data)
 
+    # Replace negative values with 0 for computation
+    data = np.where(data < 0, 0, data)
+
     # Create circular kernel
     radius_px = int(radius_m / pixel_size)
     y, x = np.ogrid[-radius_px:radius_px+1, -radius_px:radius_px+1]
@@ -42,7 +45,7 @@ def circular_kernel_sum(
         dst.write(summed.astype(dtype), 1)
 
 
-
+'''
 print("2018")
 circular_kernel_sum(
     "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
@@ -51,7 +54,7 @@ circular_kernel_sum(
     rasterio.uint16,
     compress="deflate",
     )
-
+'''
 
 print("2021")
 circular_kernel_sum(

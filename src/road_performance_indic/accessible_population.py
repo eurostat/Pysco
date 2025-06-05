@@ -29,3 +29,5 @@ accessible_population_csv = "/home/juju/gisco/road_transport_performance/accessi
 #TODO
 
 
+#algorithme de Floyd-Warshall
+
