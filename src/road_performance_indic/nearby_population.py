@@ -41,14 +41,14 @@ def circular_kernel_sum(
     kernel[mask] = 1
 
     print("convolve using the kernel")
-    summed = ndimage.convolve(data, kernel, mode='constant', cval=0)
+    data = ndimage.convolve(data, kernel, mode='constant', cval=0)
 
     print("save")
     profile.update(dtype=dtype)
     if compress is not None: profile.update(compress=compress)
 
     with rasterio.open(output_tiff, "w", **profile) as dst:
-        dst.write(summed, 1)
+        dst.write(data, 1)
 
 
 
