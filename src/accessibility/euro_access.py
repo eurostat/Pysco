@@ -11,9 +11,10 @@ from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
 
 from tomtom_utils import weight_function, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
-
+# where to store the outputs
 out_folder = '/home/juju/gisco/accessibility/'
 
+# define output bounding box
 # whole europe
 bbox = [ 1000000, 500000, 6000000, 5500000 ]
 #luxembourg
@@ -21,13 +22,14 @@ bbox = [ 1000000, 500000, 6000000, 5500000 ]
 #greece
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
-
+# fixed parameters
 grid_resolution = 100
-detailled = True
+detailled_network_decomposition = True
 densification_distance = grid_resolution
 cell_network_max_distance = grid_resolution * 2
+
 tile_file_size_m = 500000
-partition_size = 125000
+partition_size = 125000 #should be a divisor of tile_file_size_m
 
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 def duration_simplification_fun(x): return int(round(x))
@@ -82,7 +84,7 @@ for service in ["education", "healthcare"]:
                     cell_network_max_distance= grid_resolution * 2,
                     partition_size = 125000,
                     extention_buffer = 20000 if service=="education" else 60000,
-                    detailled = detailled,
+                    detailled = detailled_network_decomposition,
                     densification_distance=densification_distance,
                     duration_simplification_fun = duration_simplification_fun,
                     num_processors_to_use = num_processors_to_use,
