@@ -95,6 +95,11 @@ def __parallel_process(xy,
     # build partition extended bbox
     extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
+    print(datetime.now(),x_part,y_part, "get source POIs")
+    pois = pois_loader(extended_bbox)
+    #TODO stop there or fill with 'no_data' ?
+    if(len(pois)==0): return
+
     print(datetime.now(),x_part,y_part, "make graph")
     roads = road_network_loader(extended_bbox)
     gb_ = ___graph_adjacency_list_from_geodataframe(roads,
@@ -110,13 +115,12 @@ def __parallel_process(xy,
     del gb_, roads
     print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
     if(len(snappable_nodes)==0): return
-    if(len(graph.keys())==0): return
+    #if(len(graph.keys())==0): return
 
     print(datetime.now(),x_part,y_part, "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
     print(datetime.now(),x_part,y_part, "get source nodes")
-    pois = pois_loader(extended_bbox)
     sources = []
     for poi in pois:
         x, y = poi['geometry']['coordinates']
@@ -124,6 +128,7 @@ def __parallel_process(xy,
         sources.append(n)
     del pois
     print(datetime.now(),x_part,y_part, len(sources), "source nodes found")
+    #TODO stop there or fill with 'no_data' ?
     if(len(sources)==0): return
 
     print(datetime.now(),x_part,y_part, "compute accessiblity")
@@ -201,7 +206,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        num_processors_to_use = 1,
                        ):
 
-    #launch parallel computation   
+    # launch parallel computation   
     processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
     processes_params = [
         (
