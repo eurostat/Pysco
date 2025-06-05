@@ -13,12 +13,15 @@ def circular_kernel_sum(
     dtype=rasterio.float32,
     compress=None,
 ):
-    # Open the input GeoTIFF
+
+    print("open the input GeoTIFF")
     with rasterio.open(input_tiff) as src:
         data = src.read(1)
         profile = src.profile
         nodata = src.nodata
         pixel_size = src.res[0]  # assuming square pixels
+
+    print("replace data")
 
     # Replace nodata with 0 for computation
     if nodata is not None:
@@ -27,22 +30,25 @@ def circular_kernel_sum(
     # Replace negative values with 0 for computation
     data = np.where(data < 0, 0, data)
 
-    # Create circular kernel
+    print("change dtype")
+    data = data.astype(dtype)
+
+    print("create circular kernel")
     radius_px = int(radius_m / pixel_size)
     y, x = np.ogrid[-radius_px:radius_px+1, -radius_px:radius_px+1]
     mask = x**2 + y**2 <= radius_px**2
     kernel = np.zeros((2*radius_px+1, 2*radius_px+1))
     kernel[mask] = 1
 
-    # Convolve using the kernel
+    print("convolve using the kernel")
     summed = ndimage.convolve(data, kernel, mode='constant', cval=0)
 
-    # Save the output GeoTIFF
+    print("save")
     profile.update(dtype=dtype)
     if compress is not None: profile.update(compress=compress)
 
     with rasterio.open(output_tiff, "w", **profile) as dst:
-        dst.write(summed.astype(dtype), 1)
+        dst.write(summed, 1)
 
 
 

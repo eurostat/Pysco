@@ -8,7 +8,6 @@ from utils.convert import parquet_grid_to_geotiff
 from utils.geotiff import rename_geotiff_bands
 from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
-#TODO check cyprus and north
 #TODO crop by country - see issue on the coast
 #TODO produce 1000m. before: handle case when detailled=False, for link length
 #TODO healthcare: new 2023 with new EL
