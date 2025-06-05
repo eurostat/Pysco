@@ -3,7 +3,7 @@ import numpy as np
 from scipy import ndimage
 
 
-#TODO handle nodata values
+#TODO handle nodata values: should be like 0
 #TODO compress ?
 
 
@@ -17,7 +17,12 @@ def circular_kernel_sum(
     with rasterio.open(input_tiff) as src:
         data = src.read(1)
         profile = src.profile
+        nodata = src.nodata
         pixel_size = src.res[0]  # assuming square pixels
+
+    # Replace nodata with 0 for computation
+    if nodata is not None:
+        data = np.where(data == nodata, 0, data)
 
     # Create circular kernel
     radius_px = int(radius_m / pixel_size)
@@ -33,7 +38,7 @@ def circular_kernel_sum(
     profile.update(dtype=dtype)
 
     with rasterio.open(output_tiff, "w", **profile) as dst:
-        dst.write(summed.astype(rasterio.float32), 1)
+        dst.write(summed.astype(dtype), 1)
 
 
 
