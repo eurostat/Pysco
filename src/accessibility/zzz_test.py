@@ -9,6 +9,7 @@ from utils.convert import parquet_grid_to_geotiff
 from utils.geotiff import combine_geotiffs,rename_geotiff_bands
 
 #TODO check cyprus and north
+#TODO crop by country - see issue on the coast
 #TODO produce 1000m
 #TODO healthcare: new 2023 with new EL
 

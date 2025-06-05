@@ -16,7 +16,7 @@ out_folder = '/home/juju/gisco/accessibility/'
 
 # define output bounding box
 # whole europe
-bbox = [ 1000000, 500000, 6000000, 5500000 ]
+bbox = [ 1000000, 500000, 7000000, 5500000 ]
 #luxembourg
 #bbox = [4030000, 2930000, 4060000, 2960000]
 #greece
