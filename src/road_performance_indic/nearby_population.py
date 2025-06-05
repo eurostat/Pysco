@@ -31,6 +31,7 @@ def circular_kernel_sum(
 
     #print("change dtype")
     data = data.astype(dtype)
+    data = np.clip(data, 0, None)
 
     #print("make circular kernel")
     radius_px = int(radius_m / pixel_size)
@@ -50,7 +51,7 @@ def circular_kernel_sum(
         dst.write(data, 1)
 
 
-
+'''
 print("2018")
 circular_kernel_sum(
     "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
@@ -59,11 +60,11 @@ circular_kernel_sum(
     rasterio.uint32,
     compress="deflate",
     )
-
+'''
 
 print("2021")
 circular_kernel_sum(
-    "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2.tiff",
+    "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2_clean.tiff",
     "/home/juju/gisco/road_transport_performance/nearby_population_2021.tiff",
     120000,
     rasterio.uint32,
