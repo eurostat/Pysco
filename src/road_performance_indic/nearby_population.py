@@ -3,10 +3,40 @@ from datetime import datetime
 #import concurrent.futures
 #import threading
 import fiona
-import fiona.transform
 from shapely.geometry import shape
 from rtree import index
 import csv
+
+import rasterio
+import numpy as np
+from scipy import ndimage
+
+# Open the input GeoTIFF
+with rasterio.open("input.tif") as src:
+    data = src.read(1)
+    profile = src.profile
+    pixel_size = src.res[0]  # assuming square pixels
+
+# Define the radius in meters and convert to pixels
+radius_m = 120_000  # 120 km
+radius_px = int(radius_m / pixel_size)
+
+# Create a circular kernel
+y, x = np.ogrid[-radius_px:radius_px+1, -radius_px:radius_px+1]
+mask = x**2 + y**2 <= radius_px**2
+kernel = np.zeros((2*radius_px+1, 2*radius_px+1))
+kernel[mask] = 1
+
+# Convolve using the kernel
+summed = ndimage.convolve(data, kernel, mode='constant', cval=0)
+
+# Save the output GeoTIFF
+profile.update(dtype=rasterio.float32)
+
+with rasterio.open("output_summed.tif", "w", **profile) as dst:
+    dst.write(summed.astype(rasterio.float32), 1)
+
+
 
 # bbox - set to None to compute on the entire space
 bbox = None #(3750000, 2720000, 3960000, 2970000)
@@ -19,6 +49,11 @@ nearby_population_csv = "/home/juju/gisco/road_transport_performance/nearby_popu
 
 
 
+
+
+
+
+'''
 def compute_nearby_population(population_grid, layer, nearby_population_csv, only_populated_cells=True, bbox=None, radius_m = 120000):
 
     print(datetime.now(), "Load population grid...", population_grid)
@@ -103,4 +138,4 @@ def compute_nearby_population(population_grid, layer, nearby_population_csv, onl
 #
 compute_nearby_population(population_grid, "census2021", nearby_population_csv, bbox=bbox)
 
-
+'''
