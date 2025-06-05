@@ -1,5 +1,5 @@
-#import geopandas as gpd
 from shapely.geometry import LineString, MultiPoint, Point, Polygon, MultiLineString, MultiPolygon
+from math import hypot, ceil
 
 #function to get segments of a linestring, as 2 vertices linestrings
 def extract_segments(line):
@@ -61,3 +61,39 @@ def average_z_coordinate(geometry):
 
     if total_points > 0: return total_z / total_points
     return None
+
+
+
+
+def densify_line(coords, densification_distance):
+    densified_line = []
+
+    # add first point
+    p1 = coords[0]
+    densified_line.append(p1)
+
+    for i in range(len(coords) - 1):
+        p2 = coords[i + 1]
+
+        # compute segment length
+        dx = p2[0] - p1[0]
+        dy = p2[1] - p1[1]
+        d = hypot(dx, dy)
+        if d > densification_distance:
+            # Calculate the number of new segments needed
+            num_segments = int(ceil(d / densification_distance))
+
+            # Calculate intermediate points
+            for j in range(1, num_segments):
+                ratio = j / num_segments
+                densified_line.append([ p1[0] + ratio * dx, p1[1] + ratio * dy ])
+
+        # add last point
+        densified_line.append(p2)
+        p1 = p2
+
+    # Add the last point
+    if densified_line[-1] != coords[-1]:
+        densified_line.append(coords[-1])
+
+    return densified_line

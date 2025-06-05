@@ -11,7 +11,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.utils import cartesian_product_comp
 from utils.netutils import nodes_spatial_index_adjacendy_list, distance_to_node
-
+from utils.geomutils import densify_line
 
 
 def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=False):
@@ -173,40 +173,6 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
 
     return { 'graph':graph, 'snappable_nodes':list(snappable_nodes) }
 
-
-
-def densify_line(coords, densification_distance):
-    densified_line = []
-
-    # add first point
-    p1 = coords[0]
-    densified_line.append(p1)
-
-    for i in range(len(coords) - 1):
-        p2 = coords[i + 1]
-
-        # compute segment length
-        dx = p2[0] - p1[0]
-        dy = p2[1] - p1[1]
-        d = math.hypot(dx, dy)
-        if d > densification_distance:
-            # Calculate the number of new segments needed
-            num_segments = int(math.ceil(d / densification_distance))
-
-            # Calculate intermediate points
-            for j in range(1, num_segments):
-                ratio = j / num_segments
-                densified_line.append([ p1[0] + ratio * dx, p1[1] + ratio * dy ])
-
-        # add last point
-        densified_line.append(p2)
-        p1 = p2
-
-    # Add the last point
-    if densified_line[-1] != coords[-1]:
-        densified_line.append(coords[-1])
-
-    return densified_line
 
 
 # function to launch in parallel for each partition
@@ -393,7 +359,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
 
     #if len(cell_geometries) == 0: return
 
-    #make output geodataframe
+    # make output dataframe
     data = { 'GRD_ID':grd_ids }
     if keep_distance_to_node: data['distance_to_node'] = distances_to_node
     for kk in range(k): data['duration_s_'+str(kk+1)] = costs[kk]
