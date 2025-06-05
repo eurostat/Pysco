@@ -94,13 +94,11 @@ for service in ["education", "healthcare"]:
                     num_processors_to_use = num_processors_to_use,
                 )
 
-        # parquet to tiff
+        # combine parquet files to a single tiff file
+        geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif"
 
         # check if tiff file was already produced
-        geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif"
-        if os.path.isfile(geotiff):
-            #print(out_file, "already produced")
-            continue
+        if os.path.isfile(geotiff): continue
 
         # get all parquet files in the output folder
         files = [os.path.join(out_folder_service, f) for f in os.listdir(out_folder_service) if f.endswith('.parquet')]
@@ -128,6 +126,6 @@ for service in ["education", "healthcare"]:
             compress="deflate"
         )
 
-        print("rename bands")
+        print("rename tiff bands")
         rename_geotiff_bands(geotiff, [service + "_" + year + "_1", service + "_" + year + "_a3"])
 
