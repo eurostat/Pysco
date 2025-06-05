@@ -1,5 +1,5 @@
 import heapq
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
+#from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor, as_completed
 #from collections import defaultdict
 
 
@@ -58,7 +58,34 @@ def compute_od_matrix(graph, origins, destinations, cutoff):
     return od_matrix
 
 
+'''
+# Exemple d'utilisation
 
+# Graphe sous forme d'adjacence pondérée
+graph = {
+    'A': [('B', 2), ('C', 5)],
+    'B': [('C', 1), ('D', 3)],
+    'C': [('D', 2)],
+    'D': []
+}
+
+origins = ['A', 'B']
+destinations = ['C', 'D']
+cutoff = 4
+
+matrix = compute_od_matrix(graph, origins, destinations, cutoff)
+
+for origin in matrix:
+    for dest in destinations:
+        cost = matrix[origin].get(dest, "infini")
+        print(f"De {origin} à {dest} : {cost}")
+'''
+
+
+
+
+
+'''
 def compute_od_matrix_parallel(graph, origins, destinations, cutoff, max_workers=4):
     od_matrix = {}
     destinations_set = set(destinations)
@@ -74,12 +101,9 @@ def compute_od_matrix_parallel(graph, origins, destinations, cutoff, max_workers
             od_matrix[origin] = costs
 
     return od_matrix
+'''
 
-
-
-
-
-
+'''
 def compute_od_matrix_multiprocessing(graph, origins, destinations, cutoff, max_workers=4):
     od_matrix = {}
     destinations_set = set(destinations)
@@ -98,7 +122,7 @@ def compute_od_matrix_multiprocessing(graph, origins, destinations, cutoff, max_
             od_matrix[origin] = costs
 
     return od_matrix
-
+'''
 
 
 
