@@ -1,6 +1,4 @@
 from datetime import datetime
-import fiona
-import numpy as np
 from rtree import index
 import pandas as pd
 
@@ -17,9 +15,9 @@ from utils.featureutils import index_from_geo_fiona
 #TODO parquet to tiff
 
 
-def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, only_populated_cells=False, radius_m = 120000):
+def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, resolution=1000, only_populated_cells=False, radius_m = 120000):
 
-    # extended bbox
+    # make extended bbox
     (xmin, ymin, xmax, ymax) = bbox
     extended_bbox = (xmin-radius_m, ymin-radius_m, xmax+radius_m, ymax+radius_m)
 
@@ -27,12 +25,6 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
     lm = pd.read_parquet("/home/juju/gisco/road_transport_performance/cells_land_mass.parquet")
     lm.set_index("GRD_ID", inplace=True)
     print(datetime.now(), lm.size, "figures loaded")
-
-    print(datetime.now(), "Load grid")
-    gpkg = fiona.open("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", 'r', driver='GPKG')
-    cells = list(gpkg.items(bbox=extended_bbox))
-    print(datetime.now(), len(cells), "cells loaded")
-    gpkg.close()
 
     print(datetime.now(), "Load population figures")
     pop_dict = pop_dict_loader(extended_bbox)
@@ -43,15 +35,14 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
     cells_ = []
     items = []
     i = 0
-    for c in cells:
-        c = c[1]
-        x, y = c['geometry']['coordinates']
-        items.append((i, (x,y,x,y), None))
-        id = c["properties"]["GRD_ID"]
-        pop = pop_dict[id]
-        lmi = lm.loc[id]['code'].item()
-        cells_.append( { "x":x, "y":y, "GRD_ID": id, "pop":pop, "lmi":lmi } )
-        i += 1
+    for x in range(xmin, ymax, resolution):
+        for y in range(ymin, ymax, resolution):
+            items.append((i, (x,y,x,y), None))
+            id = 'CRS3035RES' + str(resolution) + 'mN' + str(y) + 'E' + str(x)
+            pop = pop_dict[id]
+            lmi = lm.loc[id]['code'].item()
+            cells_.append( { "x":x, "y":y, "GRD_ID": id, "pop":pop, "lmi":lmi } )
+            i += 1
 
     # build index
     spatial_index = index.Index(((i, box, obj) for i, box, obj in items))
@@ -63,15 +54,14 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
     del cells
     cells = cells_
 
-    # precompute
-    radius_m_s = radius_m * radius_m
-
     print(datetime.now(), "compute indicator for each cell...")
-    # only those in the bbox, not the extended
+    # only those in the bbox, not the extended bbox
     cells_to_compute = list(spatial_index.intersection(bbox))
 
     out_id = []
     out_indic = []
+    radius_m_s = radius_m * radius_m
+
     for i in cells_to_compute:
         c = cells[i]
 
@@ -126,7 +116,7 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
 
 
 # bbox - set to None to compute on the entire space
-bbox = (3750000, 2720000, 3760000, 2770000)
+bbox = (3700000, 2700000, 3800000, 2800000)
 
 for year in ["2018", "2021"]:
     print(year)
@@ -143,7 +133,7 @@ for year in ["2018", "2021"]:
         bbox=bbox,
         only_populated_cells=False
     )
-
+'''
     print("parquet to geotiff")
     parquet_grid_to_geotiff(
         parquet_file,
@@ -152,7 +142,7 @@ for year in ["2018", "2021"]:
         dtype=np.int32,
         compress='deflate'
     )
-
+'''
 
 
 
