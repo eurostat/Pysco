@@ -17,7 +17,7 @@ from utils.featureutils import index_from_geo_fiona
 
 
 # bbox - set to None to compute on the entire space
-bbox = (3750000, 2720000, 3960000, 2970000)
+bbox = (3750000, 2720000, 3760000, 2770000)
 
 year = "2021"
 nearby_population_csv = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".csv"
@@ -28,8 +28,8 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
 
     print(datetime.now(), "Load land mass cell index")
     lm = pd.read_parquet("/home/juju/gisco/road_transport_performance/cells_land_mass.parquet")
-    print(lm)
-    return
+    lm.set_index("GRD_ID", inplace=True)
+    print(datetime.now(), lm.size, "figures loaded")
 
     print(datetime.now(), "Load grid")
     gpkg = fiona.open("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", 'r', driver='GPKG')
@@ -54,7 +54,8 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
         items.append((i, (x,y,x,y), None))
         id = c["properties"]["GRD_ID"]
         pop = pop_dict[id]
-        cells_.append( { "x":x, "y":y, "GRD_ID": id, "pop":pop } )
+        lmi = lm.loc[id]['code'].item()
+        cells_.append( { "x":x, "y":y, "GRD_ID": id, "pop":pop, "lmi":lmi } )
         i += 1
 
     # build index
@@ -63,6 +64,7 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
 
     print(datetime.now(), "free memory")
     del pop_dict
+    del lm
     del cells
     cells = cells_
 
@@ -77,8 +79,6 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
         p = c["pop"]
         if only_populated_cells and (p is None or p<=0): continue
 
-        #print(c)
-
         x = c["x"]
         y = c["y"]
 
@@ -86,16 +86,17 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
         close_cells = list(spatial_index.intersection((x-radius_m, y-radius_m, x+radius_m, y+radius_m)))
 
         #compute population total
+        lmi = c['lmi']
         pop_tot = 0
         for i2 in close_cells:
             c2 = cells[i2]
             p2 = c2["pop"]
             if p2 is None or p2<=0: continue
 
-            #TODO
-            #check if same land mass
+            # check if same land mass index
+            if lmi != c2['lmi']: continue
 
-            #too far: skip
+            # too far: skip
             dx = x-c2["x"]
             dy = y-c2["y"]
             if dx*dx+dy*dy > radius_m_s : continue
