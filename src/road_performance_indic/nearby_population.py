@@ -139,9 +139,11 @@ for year in ["2018", "2021"]:
         [parquet_file],
         "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tiff",
         bbox=bbox,
+        attributes=["POP_N_120"],
+        #grid_id_field='GRD_ID',
         tiff_nodata_value=-9999,
         dtype=np.int32,
-        compress='deflate'
+        compress='deflate',
     )
 
 
