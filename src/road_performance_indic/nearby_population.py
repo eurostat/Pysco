@@ -2,6 +2,7 @@ from datetime import datetime
 import fiona
 from rtree import index
 import csv
+import pandas as pd
 
 import sys
 import os
@@ -25,14 +26,20 @@ nearby_population_csv = "/home/juju/gisco/road_transport_performance/nearby_popu
 
 def compute_nearby_population(nearby_population_csv, only_populated_cells=False, bbox=None, radius_m = 120000):
 
-    print(datetime.now(), "Load population figures...")
-    pop_dict = index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T", bbox=bbox)
-    print(datetime.now(), len(pop_dict.keys()), "figures loaded")
+    print(datetime.now(), "Load land mass cell index")
+    lm = pd.read_parquet("/home/juju/gisco/road_transport_performance/cells_land_mass.parquet")
+    print(lm)
+    return
 
-    print(datetime.now(), "Load grid...")
+    print(datetime.now(), "Load grid")
     gpkg = fiona.open("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", 'r', driver='GPKG')
     cells = list(gpkg.items(bbox=bbox))
     gpkg.close()
+
+    print(datetime.now(), "Load population figures")
+    pop_dict = index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T", bbox=bbox)
+    print(datetime.now(), len(pop_dict.keys()), "figures loaded")
+
 
     print(datetime.now(), len(cells), "cells loaded")
 
