@@ -1,0 +1,70 @@
+import geopandas as gpd
+from shapely.ops import unary_union
+from shapely.geometry import box
+import numpy as np
+from math import floor
+
+def make_landmass_polygons(input_file, output_file, id_att, id_values):
+
+    # load gpkg
+    gdf = gpd.read_file(input_file)
+
+    # filter
+    filtered_gdf = gdf[gdf[id_att].isin(id_values)]
+
+    # keep geometries
+    geometries = filtered_gdf.geometry
+
+    # union
+    union_geometry = unary_union(geometries)
+    del geometries
+
+    # decompose
+    simple_polygons = []
+    if union_geometry.geom_type == 'Polygon':
+        simple_polygons.append(union_geometry)
+    elif union_geometry.geom_type == 'MultiPolygon':
+        simple_polygons.extend(list(union_geometry))
+
+    # make geodataframe
+    result_gdf = gpd.GeoDataFrame(geometry=simple_polygons, crs=gdf.crs)
+
+    # add code
+    result_gdf['code'] = range(1, len(result_gdf) + 1)
+
+    # save outcome
+    result_gdf.to_file(output_file, driver='GPKG')
+
+
+
+def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
+    # load input file
+    gdf = gpd.read_file(input_gpkg)
+
+    # bounds
+    minx, miny, maxx, maxy = gdf.total_bounds
+    minx = floor(minx/grid_resolution)*grid_resolution
+    miny = floor(miny/grid_resolution)*grid_resolution
+
+    # make grid
+    x_coords = np.arange(minx, maxx, grid_resolution)
+    y_coords = np.arange(miny, maxy, grid_resolution)
+
+    # make grid cells
+    grid_cells = []
+    for x in x_coords:
+        for y in y_coords:
+            cell = box(x, y, x + grid_resolution, y + grid_resolution)
+            grid_cells.append(cell)
+    del x_coords
+    del y_coords
+
+    # make grid
+    grid_gdf = gpd.GeoDataFrame(geometry=grid_cells, crs=gdf.crs)
+
+    # compute intersection
+    intersected_gdf = gpd.overlay(gdf, grid_gdf, how='intersection')
+
+    # save output
+    intersected_gdf.to_file(output_gpkg, driver='GPKG')
+

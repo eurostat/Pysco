@@ -11,6 +11,8 @@ from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum
 # do sum in vector mode using - keep only those with same code
 
 
+
+
 '''
 print("mask", "2018")
 geotiff_mask_by_countries(
