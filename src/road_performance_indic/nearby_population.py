@@ -9,11 +9,9 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import index_from_geo_fiona
 
-
-#TODO one per year
+#TODO use pandas
 #TODO parallel
 #TODO parquet to tiff
-
 
 
 
@@ -98,7 +96,7 @@ def compute_nearby_population(pop_dict_loader, nearby_population_csv, only_popul
             pop_tot += p2
 
         #print(pop_tot)
-        output.append( { "pop":pop_tot, "GRD_ID":c["GRD_ID"] } )
+        output.append( { "pop":round(pop_tot), "GRD_ID":c["GRD_ID"] } )
 
 
     print(datetime.now(), "free memory")
@@ -119,10 +117,12 @@ def compute_nearby_population(pop_dict_loader, nearby_population_csv, only_popul
 
 
 
+
+
 # bbox - set to None to compute on the entire space
 bbox = (3750000, 2720000, 3760000, 2770000)
 
-for year in ["2021"]:
+for year in ["2018", "2021"]:
     print(year)
 
     if year == "2021":
