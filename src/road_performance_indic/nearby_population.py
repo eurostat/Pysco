@@ -55,6 +55,7 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
     print(datetime.now(), "compute indicator for each cell...")
     # only those in the bbox, not the extended bbox
     cells_to_compute = list(spatial_index.intersection(bbox))
+    print(datetime.now(), len(cells_to_compute))
 
     out_id = []
     out_indic = []
