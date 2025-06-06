@@ -67,14 +67,15 @@ def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
     del x_coords
     del y_coords
 
-    # make grid
     grid_gdf = gpd.GeoDataFrame(geometry=grid_cells, crs=gdf.crs)
+    del grid_cells
 
     print("compute grid intersection")
-    intersected_gdf = gpd.overlay(gdf, grid_gdf, how='intersection')
+    gdf = gpd.overlay(gdf, grid_gdf, how='intersection')
+    del grid_gdf
 
-    print("save", intersected_gdf.size)
-    intersected_gdf.to_file(output_gpkg, driver='GPKG')
+    print("save", gdf.size)
+    gdf.to_file(output_gpkg, driver='GPKG')
 
 
 #ccs = [ "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE", "AD", "SM", "MC", "VA", "NO", "CH" ]
