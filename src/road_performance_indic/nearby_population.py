@@ -138,6 +138,7 @@ for year in ["2018", "2021"]:
     parquet_grid_to_geotiff(
         [parquet_file],
         "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tiff",
+        bbox=bbox,
         tiff_nodata_value=-9999,
         dtype=np.int32,
         compress='deflate'
