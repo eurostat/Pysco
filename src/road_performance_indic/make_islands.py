@@ -10,6 +10,7 @@ def make_landmass_polygons(input_file, output_file, id_att, id_values):
 
     # load gpkg
     gdf = gpd.read_file(input_file)
+    crs = gdf.crs
     print(gdf.size, "loaded")
 
     # filter
@@ -32,7 +33,7 @@ def make_landmass_polygons(input_file, output_file, id_att, id_values):
     del u
 
     # make geodataframe
-    result_gdf = gpd.GeoDataFrame(geometry=simple_polygons, crs=gdf.crs)
+    result_gdf = gpd.GeoDataFrame(geometry=simple_polygons, crs=crs)
 
     # add code
     result_gdf['code'] = range(1, len(result_gdf) + 1)
