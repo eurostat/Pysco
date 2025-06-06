@@ -1,127 +1,16 @@
-import rasterio
+from datetime import datetime
+import fiona
+from shapely.geometry import shape
+from rtree import index
+import csv
 
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum
 
 #TODO
-# make land mass polygons. tag them.
 # tag populated cells by land mass polygon.
 # do sum in vector mode using - keep only those with same code
 
 
 
-
-'''
-print("mask", "2018")
-geotiff_mask_by_countries(
-    "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
-    "/home/juju/gisco/road_transport_performance/pop_2018.tiff",
-    gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
-    gpkg_column = 'CNTR_ID',
-    values_to_exclude = ["UK", "RS", "BA", "MK", "AL", "ME"],
-    compress="deflate"
-)
-print("mask", "2021")
-geotiff_mask_by_countries(
-    "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2_clean.tiff",
-    "/home/juju/gisco/road_transport_performance/pop_2021.tiff",
-    gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
-    gpkg_column = 'CNTR_ID',
-    values_to_exclude = ["UK", "RS", "BA", "MK", "AL", "ME"],
-    compress="deflate"
-)
-'''
-
-for year in ["2018", "2021"]:
-    print("convolution", year)
-    circular_kernel_sum(
-        "/home/juju/gisco/road_transport_performance/pop_"+year+".tiff",
-        "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tiff",
-        120000,
-        rasterio.uint32,
-        compress="deflate",
-        )
-
-
-
-
-
-
-
-'''
-import rasterio
-import numpy as np
-from scipy import ndimage
-
-
-
-
-def circular_kernel_sum(
-    input_tiff,
-    output_tiff,
-    radius_m = 120000,
-    dtype=rasterio.float32,
-    compress=None,
-):
-
-    #print("open the input GeoTIFF")
-    with rasterio.open(input_tiff) as src:
-        data = src.read(1)
-        profile = src.profile
-        nodata = src.nodata
-        pixel_size = src.res[0]  # assuming square pixels
-
-    #print("replace data")
-
-    # Replace nodata with 0 for computation
-    if nodata is not None:
-        data = np.where(data == nodata, 0, data)
-
-    # Replace nodata and negative values with 0 for computation
-    if nodata is not None:
-        data = np.where((data == nodata) | (data < 0), 0, data)
-    else:
-        data = np.clip(data, 0, None)
-
-    #print("change dtype")
-    data = data.astype(dtype)
-
-    #print("make circular kernel")
-    radius_px = int(radius_m / pixel_size)
-    y, x = np.ogrid[-radius_px:radius_px+1, -radius_px:radius_px+1]
-    mask = x**2 + y**2 <= radius_px**2
-    kernel = np.zeros((2*radius_px+1, 2*radius_px+1))
-    kernel[mask] = 1
-
-    #print("compute convolution using the kernel")
-    data = ndimage.convolve(data, kernel, mode='constant', cval=0)
-
-    #print("save")
-    profile.update(dtype=dtype)
-    if compress is not None: profile.update(compress=compress)
-
-    with rasterio.open(output_tiff, "w", **profile) as dst:
-        dst.write(data, 1)
-'''
-
-
-
-
-
-
-#import geopandas as gpd
-#from datetime import datetime
-#import concurrent.futures
-#import threading
-#import fiona
-#from shapely.geometry import shape
-#from rtree import index
-#import csv
-
-
-'''
 # bbox - set to None to compute on the entire space
 bbox = None #(3750000, 2720000, 3960000, 2970000)
 
@@ -215,7 +104,47 @@ def compute_nearby_population(population_grid, layer, nearby_population_csv, onl
 
 
 
-#
-compute_nearby_population(population_grid, "census2021", nearby_population_csv, bbox=bbox)
+#compute_nearby_population(population_grid, "census2021", nearby_population_csv, bbox=bbox)
 
+
+
+
+
+'''
+#raster mode, with convolution
+
+import rasterio
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum
+
+print("mask", "2018")
+geotiff_mask_by_countries(
+    "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
+    "/home/juju/gisco/road_transport_performance/pop_2018.tiff",
+    gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
+    gpkg_column = 'CNTR_ID',
+    values_to_exclude = ["UK", "RS", "BA", "MK", "AL", "ME"],
+    compress="deflate"
+)
+print("mask", "2021")
+geotiff_mask_by_countries(
+    "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2_clean.tiff",
+    "/home/juju/gisco/road_transport_performance/pop_2021.tiff",
+    gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
+    gpkg_column = 'CNTR_ID',
+    values_to_exclude = ["UK", "RS", "BA", "MK", "AL", "ME"],
+    compress="deflate"
+)
+
+for year in ["2018", "2021"]:
+    print("convolution", year)
+    circular_kernel_sum(
+        "/home/juju/gisco/road_transport_performance/pop_"+year+".tiff",
+        "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tiff",
+        120000,
+        rasterio.uint32,
+        compress="deflate",
+        )
 '''
