@@ -1,15 +1,16 @@
 from datetime import datetime
 import fiona
+import numpy as np
 from rtree import index
 import pandas as pd
 
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.convert import parquet_grid_to_geotiff
 from utils.featureutils import index_from_geo_fiona
 
 
-#TODO extend bbox
 #TODO check duration
 #TODO optimise
 #TODO parallel
@@ -80,7 +81,7 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
         x = c["x"]
         y = c["y"]
 
-        #get close cells using spatial index
+        # get close cells using spatial index
         close_cells = list(spatial_index.intersection((x-radius_m, y-radius_m, x+radius_m, y+radius_m)))
 
         #compute population total
@@ -135,13 +136,21 @@ for year in ["2018", "2021"]:
     else:
         pop_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", "GRD_ID", "TOT_P_2018", bbox=bbox)
 
+    parquet_file = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".parquet"
     compute_nearby_population(
         pop_dict_loader,
-        "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".parquet",
+        parquet_file,
         bbox=bbox,
         only_populated_cells=False
     )
 
+    parquet_grid_to_geotiff(
+        parquet_file,
+        "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tiff",
+        tiff_nodata_value=-9999,
+        dtype=np.int32,
+        compress='deflate'
+    )
 
 
 
