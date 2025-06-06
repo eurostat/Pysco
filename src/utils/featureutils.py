@@ -129,10 +129,12 @@ def iter_features(filepath, layername=None, bbox=None, where=None):
             yield feature
 
 # make index from ID colmn to value of one of the attributes
-def index_from_geo_fiona(file_path, key_att, value_att):
+def index_from_geo_fiona(file_path, key_att, value_att, bbox=None, layer=None, where=None):
     with fiona.open(file_path) as src:
         dict = {}
-        for f in src:
+        data = list(src.items(bbox=bbox, layer=layer, where=where))
+        for f in data:
+            f = f[1]
             k = f['properties'][key_att]
             v = f['properties'][value_att]
             dict[k] = v

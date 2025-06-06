@@ -16,13 +16,15 @@ bbox = (3750000, 2720000, 3960000, 2970000)
 year = "2021"
 nearby_population_csv = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".csv"
 
-pop_dict = index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T")
 
 
 
 
-def compute_nearby_population(pop_dict, nearby_population_csv, only_populated_cells=False, bbox=None, radius_m = 120000):
+def compute_nearby_population(nearby_population_csv, only_populated_cells=False, bbox=None, radius_m = 120000):
 
+    print(datetime.now(), "Load population figures...")
+    pop_dict = index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T", bbox=bbox)
+    print(datetime.now(), len(pop_dict.keys()), "figures loaded")
 
     print(datetime.now(), "Load grid...")
     gpkg = fiona.open("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", 'r', driver='GPKG')
