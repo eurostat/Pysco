@@ -29,6 +29,7 @@ def circular_kernel_sum(
     data = ndimage.convolve(data, kernel, mode='constant', cval=0)
 
     profile.update(dtype=dtype)
+    profile.update(nodata=None)
     if compress is not None:
         profile.update(compress=compress)
 

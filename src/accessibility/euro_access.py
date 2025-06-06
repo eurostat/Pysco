@@ -43,7 +43,7 @@ clamp = lambda v : floor(v/tile_file_size_m)*tile_file_size_m
 
 for service in ["education", "healthcare"]:
 
-    for year in ["2020","2023"]:
+    for year in ["2023","2020"]:
 
         # ouput folder
         out_folder_service = out_folder + "out_" + service + "_" + year + "/"
@@ -53,7 +53,7 @@ for service in ["education", "healthcare"]:
         tomtom_year = "2019" if year == "2020" else year
         def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
         def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels IS NULL or levels!='0'" if service=="education" else "")
-        num_processors_to_use = 7 if service == "education" else 3
+        num_processors_to_use = 7 if service == "education" else 4
         extention_buffer = 20000 if service=="education" else 60000
 
         # launch process for each tile file
