@@ -10,7 +10,7 @@ from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum
 
 
 
-
+'''
 print("mask", "2018")
 geotiff_mask_by_countries(
     "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
@@ -29,8 +29,9 @@ geotiff_mask_by_countries(
     values_to_exclude = ["UK", "RS", "BA", "MK", "AL", "ME"],
     compress="deflate"
 )
+'''
 
-for year in ["2028", "2021"]:
+for year in ["2018", "2021"]:
     print("convolution", year)
     circular_kernel_sum(
         "/home/juju/gisco/road_transport_performance/pop_"+year+".tiff",
