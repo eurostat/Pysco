@@ -43,7 +43,7 @@ clamp = lambda v : floor(v/tile_file_size_m)*tile_file_size_m
 
 for service in ["education", "healthcare"]:
 
-    for year in ["2023","2020"]:
+    for year in ["2020","2023"]:
 
         # ouput folder
         out_folder_service = out_folder + "out_" + service + "_" + year + "/"

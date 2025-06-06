@@ -3,60 +3,43 @@ import rasterio
 from scipy import ndimage
 from skimage.morphology import disk
 
-def circular_kernel_sum(
-    input_tiff,
-    output_tiff,
-    radius_m=120000,
-    dtype=rasterio.float32,
-    compress=None,
-):
-    with rasterio.open(input_tiff) as src:
-        data = src.read(1)
-        profile = src.profile
-        nodata = src.nodata
-        pixel_size = src.res[0]  # assuming square pixels
-
-    if nodata is not None:
-        data = np.where((data == nodata) | (data < 0), 0, data)
-    else:
-        data = np.clip(data, 0, None)
-
-    data = data.astype(dtype)
-
-    radius_px = int(radius_m / pixel_size)
-    kernel = disk(radius_px).astype(dtype)
-
-    data = ndimage.convolve(data, kernel, mode='constant', cval=0)
-
-    profile.update(dtype=dtype)
-    profile.pop("nodata", None)
-    #profile.update(nodata=None)
-    if compress is not None:
-        profile.update(compress=compress)
-
-    with rasterio.open(output_tiff, "w", **profile) as dst:
-        dst.write(data, 1)
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum
 
 
 
-print("2018")
-circular_kernel_sum(
+
+print("mask", "2018")
+geotiff_mask_by_countries(
     "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
-    "/home/juju/gisco/road_transport_performance/nearby_population_2018.tiff",
-    120000,
-    rasterio.uint32,
-    compress="deflate",
-    )
-
-
-print("2021")
-circular_kernel_sum(
+    "/home/juju/gisco/road_transport_performance/pop_2018.tiff",
+    gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
+    gpkg_column = 'CNTR_ID',
+    values_to_exclude = ["UK", "RS", "BA", "MK", "AL", "ME"],
+    compress="deflate"
+)
+print("mask", "2021")
+geotiff_mask_by_countries(
     "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2_clean.tiff",
-    "/home/juju/gisco/road_transport_performance/nearby_population_2021.tiff",
-    120000,
-    rasterio.uint32,
-    compress="deflate",
-    )
+    "/home/juju/gisco/road_transport_performance/pop_2021.tiff",
+    gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
+    gpkg_column = 'CNTR_ID',
+    values_to_exclude = ["UK", "RS", "BA", "MK", "AL", "ME"],
+    compress="deflate"
+)
+
+for year in ["2028", "2021"]:
+    print("convolution", year)
+    circular_kernel_sum(
+        "/home/juju/gisco/road_transport_performance/pop_"+year+".tiff",
+        "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tiff",
+        120000,
+        rasterio.uint32,
+        compress="deflate",
+        )
+
 
 
 

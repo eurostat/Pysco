@@ -8,6 +8,42 @@ import os
 
 
 
+def circular_kernel_sum(
+    input_tiff,
+    output_tiff,
+    radius_m=120000,
+    dtype=rasterio.float32,
+    compress=None,
+):
+    with rasterio.open(input_tiff) as src:
+        data = src.read(1)
+        profile = src.profile
+        nodata = src.nodata
+        pixel_size = src.res[0]  # assuming square pixels
+
+    if nodata is not None:
+        data = np.where((data == nodata) | (data < 0), 0, data)
+    else:
+        data = np.clip(data, 0, None)
+
+    data = data.astype(dtype)
+
+    radius_px = int(radius_m / pixel_size)
+    kernel = disk(radius_px).astype(dtype)
+
+    data = ndimage.convolve(data, kernel, mode='constant', cval=0)
+
+    profile.update(dtype=dtype)
+    profile.pop("nodata", None)
+    #profile.update(nodata=None)
+    if compress is not None:
+        profile.update(compress=compress)
+
+    with rasterio.open(output_tiff, "w", **profile) as dst:
+        dst.write(data, 1)
+
+
+
 def rename_geotiff_bands(input_path, new_band_names, output_path=None):
     """
     Rename the bands (descriptions) of a GeoTIFF file.
