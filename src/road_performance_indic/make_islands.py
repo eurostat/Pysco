@@ -4,22 +4,26 @@ from shapely.geometry import box
 import numpy as np
 from math import floor
 
+
+
 def make_landmass_polygons(input_file, output_file, id_att, id_values):
 
     # load gpkg
     gdf = gpd.read_file(input_file)
+    print(gdf.size, "loaded")
 
     # filter
     filtered_gdf = gdf[gdf[id_att].isin(id_values)]
+    print(gdf.size, "filtered")
 
     # keep geometries
     geometries = filtered_gdf.geometry
 
-    # union
+    print("compute union")
     union_geometry = unary_union(geometries)
     del geometries
 
-    # decompose
+    print("decompose")
     simple_polygons = []
     if union_geometry.geom_type == 'Polygon':
         simple_polygons.append(union_geometry)
@@ -32,7 +36,7 @@ def make_landmass_polygons(input_file, output_file, id_att, id_values):
     # add code
     result_gdf['code'] = range(1, len(result_gdf) + 1)
 
-    # save outcome
+    print("save")
     result_gdf.to_file(output_file, driver='GPKG')
 
 
@@ -68,3 +72,10 @@ def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
     # save output
     intersected_gdf.to_file(output_gpkg, driver='GPKG')
 
+
+ccs = [
+    "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
+    "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
+    "PL", "PT", "RO", "SK", "SI", "ES", "SE", "AD", "SM", "MC", "VA"
+]
+make_landmass_polygons("/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg", "/home/juju/gisco/road_transport_performance/land_mass.gpkg", "CNTR_ID", ccs)
