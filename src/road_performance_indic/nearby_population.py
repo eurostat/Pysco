@@ -1,3 +1,67 @@
+import numpy as np
+import rasterio
+from scipy import ndimage
+from skimage.morphology import disk
+
+def circular_kernel_sum(
+    input_tiff,
+    output_tiff,
+    radius_m=120000,
+    dtype=rasterio.float32,
+    compress=None,
+):
+    with rasterio.open(input_tiff) as src:
+        data = src.read(1)
+        profile = src.profile
+        nodata = src.nodata
+        pixel_size = src.res[0]  # assuming square pixels
+
+    if nodata is not None:
+        data = np.where((data == nodata) | (data < 0), 0, data)
+    else:
+        data = np.clip(data, 0, None)
+
+    data = data.astype(dtype)
+
+    radius_px = int(radius_m / pixel_size)
+    kernel = disk(radius_px).astype(dtype)
+
+    data = ndimage.convolve(data, kernel, mode='constant', cval=0)
+
+    profile.update(dtype=dtype)
+    if compress is not None:
+        profile.update(compress=compress)
+
+    with rasterio.open(output_tiff, "w", **profile) as dst:
+        dst.write(data, 1)
+
+
+
+print("2018")
+circular_kernel_sum(
+    "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
+    "/home/juju/gisco/road_transport_performance/nearby_population_2018.tiff",
+    120000,
+    rasterio.uint32,
+    #compress="deflate",
+    )
+
+
+print("2021")
+circular_kernel_sum(
+    "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2_clean.tiff",
+    "/home/juju/gisco/road_transport_performance/nearby_population_2021.tiff",
+    120000,
+    rasterio.uint32,
+    #compress="deflate",
+    )
+
+
+
+
+
+
+'''
 import rasterio
 import numpy as np
 from scipy import ndimage
@@ -51,27 +115,8 @@ def circular_kernel_sum(
 
     with rasterio.open(output_tiff, "w", **profile) as dst:
         dst.write(data, 1)
-
-
-'''
-print("2018")
-circular_kernel_sum(
-    "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
-    "/home/juju/gisco/road_transport_performance/nearby_population_2018.tiff",
-    120000,
-    rasterio.uint32,
-    compress="deflate",
-    )
 '''
 
-print("2021")
-circular_kernel_sum(
-    "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2_clean.tiff",
-    "/home/juju/gisco/road_transport_performance/nearby_population_2021.tiff",
-    120000,
-    rasterio.uint32,
-    compress="deflate",
-    )
 
 
 
