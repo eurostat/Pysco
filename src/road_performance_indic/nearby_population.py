@@ -42,7 +42,9 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
         c = c[1]
         x, y = c['geometry']['coordinates']
         items.append((i, (x,y,x,y), None))
-        cells_.append( {"x":x, "y":y, "GRD_ID": c["properties"]["GRD_ID"]} )
+        id = c["properties"]["GRD_ID"]
+        pop = pop_dict[id]
+        cells_.append( { "x":x, "y":y, "GRD_ID": id, "pop":pop } )
         i += 1
 
     # build index
@@ -50,6 +52,7 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
     del items
 
     print(datetime.now(), "free memory")
+    del pop_dict
     del cells
     cells = cells_
 
@@ -83,7 +86,7 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
             if dx*dx+dy*dy > radius_m_s : continue
 
             #sum population
-            pop_tot += pop_dict[c2["GRD_ID"]]
+            pop_tot += c["pop"]
 
         output.append( { "pop":pop_tot, "GRD_ID":c["GRD_ID"] } )
 
