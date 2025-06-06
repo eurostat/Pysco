@@ -11,9 +11,8 @@ from utils.featureutils import index_from_geo_fiona
 
 
 #TODO check duration : 30" for 10000 cells : 8h30 for 10e6 cells
-#TODO optimise
+
 #TODO parallel
-#TODO parquet to tiff
 
 
 def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, resolution=1000, only_populated_cells=False, radius_m = 120000):
@@ -84,7 +83,7 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
             # too far: skip
             dx = x-c2["x"]
             dy = y-c2["y"]
-            if dx*dx+dy*dy > radius_m_s : continue
+            if dx*dx + dy*dy > radius_m_s : continue
 
             #sum population
             pop_tot += p2
