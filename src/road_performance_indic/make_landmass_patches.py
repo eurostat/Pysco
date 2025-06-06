@@ -72,7 +72,12 @@ def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
 
     print("compute grid intersection")
     gdf = gpd.overlay(gdf, grid_gdf, how='intersection')
+    print(gdf.size)
     del grid_gdf
+
+    print("decompose multipolygon")
+    gdf = gdf.explode(index_parts=True)
+    gdf = gdf.reset_index(drop=True)
 
     print("save", gdf.size)
     gdf.to_file(output_gpkg, driver='GPKG')
@@ -80,5 +85,5 @@ def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
 
 #ccs = [ "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE", "AD", "SM", "MC", "VA", "NO", "CH" ]
 #make_landmass_polygons("/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg", "/home/juju/gisco/road_transport_performance/land_mass.gpkg", "CNTR_ID", ccs)
-intersect_with_grid("/home/juju/gisco/road_transport_performance/land_mass.gpkg", 20000, "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg")
+intersect_with_grid("/home/juju/gisco/road_transport_performance/land_mass.gpkg", 30000, "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg")
 
