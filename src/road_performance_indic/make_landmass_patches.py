@@ -5,7 +5,7 @@ import numpy as np
 from math import floor
 
 
-
+# make union of polygon, and decompose the union into simple polygon features tagged with a unique code
 def make_landmass_polygons(input_file, output_file, id_att, id_values):
 
     # load gpkg
@@ -42,7 +42,7 @@ def make_landmass_polygons(input_file, output_file, id_att, id_values):
     result_gdf.to_file(output_file, driver='GPKG')
 
 
-
+# intersect a dataset with a grid
 def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
 
     # load input file
@@ -73,7 +73,7 @@ def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
     print("compute grid intersection")
     intersected_gdf = gpd.overlay(gdf, grid_gdf, how='intersection')
 
-    print("save")
+    print("save", intersected_gdf.size)
     intersected_gdf.to_file(output_gpkg, driver='GPKG')
 
 
