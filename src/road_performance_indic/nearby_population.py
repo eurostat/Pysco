@@ -11,7 +11,7 @@ from utils.featureutils import index_from_geo_fiona
 
 
 # bbox - set to None to compute on the entire space
-bbox = None #(3750000, 2720000, 3960000, 2970000)
+bbox = (3750000, 2720000, 3960000, 2970000)
 
 year = "2021"
 nearby_population_csv = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".csv"
@@ -57,12 +57,13 @@ def compute_nearby_population(pop_dict, nearby_population_csv, only_populated_ce
 
     output = []
     for c in cells:
-        x=c["x"]
-        y=c["y"]
+
+        #TODO only_populated_cells
+
+        x = c["x"]
+        y = c["y"]
 
         #get close cells using spatial index
-        #close_cells = None
-        #with lock:
         close_cells = list(spatial_index.intersection((x-radius_m, y-radius_m, x+radius_m, y+radius_m)))
 
         #compute population total
@@ -99,7 +100,7 @@ def compute_nearby_population(pop_dict, nearby_population_csv, only_populated_ce
 
 
 
-#compute_nearby_population(population_grid, "census2021", nearby_population_csv, bbox=bbox)
+compute_nearby_population(pop_dict, nearby_population_csv, bbox=bbox)
 
 
 
