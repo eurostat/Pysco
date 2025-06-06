@@ -23,19 +23,19 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
 
     print(datetime.now(), "Load land mass cell index")
     lm = pd.read_parquet("/home/juju/gisco/road_transport_performance/cells_land_mass.parquet")
+    print(datetime.now(), lm.size, "land mass figures loaded")
     lm.set_index("GRD_ID", inplace=True)
-    print(datetime.now(), lm.size, "figures loaded")
 
     print(datetime.now(), "Load population figures")
     pop_dict = pop_dict_loader(extended_bbox)
-    print(datetime.now(), len(pop_dict.keys()), "figures loaded")
+    print(datetime.now(), len(pop_dict.keys()), "population figures loaded")
 
     print(datetime.now(), "prepare cells...")
 
     cells_ = []
     items = []
     i = 0
-    for x in range(xmin, ymax, resolution):
+    for x in range(xmin, xmax, resolution):
         for y in range(ymin, ymax, resolution):
             items.append((i, (x,y,x,y), None))
             id = 'CRS3035RES' + str(resolution) + 'mN' + str(y) + 'E' + str(x)
