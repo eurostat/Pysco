@@ -101,7 +101,7 @@ def tag_grid_cells(id_att, id_values):
 
     # save result
     print("save", result.size)
-    result.to_file("/home/juju/gisco/road_transport_performance/pop_land_mass_"+str(year)+".gpkg", driver='GPKG')
+    result.to_file("/home/juju/gisco/road_transport_performance/cells_land_mass.gpkg", driver='GPKG')
 
 
 
