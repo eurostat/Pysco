@@ -8,9 +8,9 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import index_from_geo_fiona
 
+#TODO check duration
+#TODO optimise
 #TODO extend bbox
-#TODO use pandas
-#TODO check duration - optimise
 #TODO parallel
 #TODO parquet to tiff
 
