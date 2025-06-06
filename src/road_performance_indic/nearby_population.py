@@ -5,6 +5,10 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum
 
+#TODO
+# make land mass polygons. tag them.
+# tag populated cells by land mass polygon.
+# do sum in vector mode using - keep only those with same code
 
 
 '''

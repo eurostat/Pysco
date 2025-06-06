@@ -11,8 +11,18 @@ from rtree import index
 import csv
 #from utils.featureutils import loadFeatures
 
+
+#TODO
+# Floyd-Warshall algorithm ?
+# exclude ferry links
+
+
+
+
 # bbox - set to None to compute on the entire space
 bbox = (3750000, 2720000, 3960000, 2970000)
+
+
 
 
 # population grid
@@ -25,9 +35,4 @@ tomtom_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/2021/nw.gp
 # output CSV
 accessible_population_csv = "/home/juju/gisco/road_transport_performance/accessible_population_2021.csv"
 
-
-#TODO
-
-
-#algorithme de Floyd-Warshall
 
