@@ -13,22 +13,23 @@ def make_landmass_polygons(input_file, output_file, id_att, id_values):
     print(gdf.size, "loaded")
 
     # filter
-    filtered_gdf = gdf[gdf[id_att].isin(id_values)]
+    gdf = gdf[gdf[id_att].isin(id_values)]
     print(gdf.size, "filtered")
 
     # keep geometries
-    geometries = filtered_gdf.geometry
+    gdf = gdf.geometry
 
     print("compute union")
-    union_geometry = unary_union(geometries)
-    del geometries
+    u = unary_union(gdf)
+    del gdf
 
     print("decompose")
     simple_polygons = []
-    if union_geometry.geom_type == 'Polygon':
-        simple_polygons.append(union_geometry)
-    elif union_geometry.geom_type == 'MultiPolygon':
-        simple_polygons.extend(list(union_geometry))
+    if u.geom_type == 'Polygon':
+        simple_polygons.append(u)
+    elif u.geom_type == 'MultiPolygon':
+        simple_polygons.extend(list(u))
+    del u
 
     # make geodataframe
     result_gdf = gpd.GeoDataFrame(geometry=simple_polygons, crs=gdf.crs)
