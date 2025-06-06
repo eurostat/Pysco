@@ -128,6 +128,7 @@ def parquet_grid_to_geotiff(
             # Determine attributes to export
             # It is assumed all parquet files have the same structure
             attributes = df.columns.tolist()
+            attributes.remove(grid_id_field)
 
         # no need to continue, assuming all parquet files have the same structure
         break
