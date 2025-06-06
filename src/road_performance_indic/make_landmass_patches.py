@@ -82,22 +82,22 @@ def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
     gdf.to_file(output_gpkg, driver='GPKG')
 
 
-def tag_grid_cells(year, css):
+def tag_grid_cells(id_att, id_values):
 
     # load cells
-    #TODO
-    #TODO keep from css
-    pop_points = 
+    points = gpd.read_file("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg")
+    print(points.size, "cells loaded")
 
-    # turn cells into points
-    #TODO
+    # filter
+    gdf = gdf[gdf[id_att].isin(id_values)]
+    print(gdf.size, "filtered")
 
     # load land mass polygons
     lm_polygons = gpd.read_file("/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg")
     print(lm_polygons.size, "loaded")
 
     # spatial join
-    result = gpd.sjoin(pop_points, lm_polygons, how="inner", predicate="within")
+    result = gpd.sjoin(points, lm_polygons, how="inner", predicate="within")
 
     # save result
     print("save", result.size)
@@ -110,6 +110,5 @@ ccs = [ "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", 
 
 #intersect_with_grid("/home/juju/gisco/road_transport_performance/land_mass.gpkg", 10000, "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg")
 
-tag_grid_cells(2018, css)
-tag_grid_cells(2021, css)
+tag_grid_cells("CNTR_ID", css)
 
