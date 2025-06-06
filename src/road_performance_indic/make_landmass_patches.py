@@ -1,9 +1,8 @@
 import geopandas as gpd
 from shapely.ops import unary_union
-from shapely.geometry import box
+from shapely.geometry import box,Point, Polygon
 import numpy as np
 from math import floor
-
 
 # make union of polygon, and decompose the union into simple polygon features tagged with a unique code
 def make_landmass_polygons(input_file, output_file, id_att, id_values):
@@ -83,7 +82,34 @@ def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
     gdf.to_file(output_gpkg, driver='GPKG')
 
 
-#ccs = [ "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE", "AD", "SM", "MC", "VA", "NO", "CH" ]
+def tag_grid_cells(year, css):
+
+    # load cells
+    #TODO
+    #TODO keep from css
+    pop_points = 
+
+    # turn cells into points
+    #TODO
+
+    # load land mass polygons
+    lm_polygons = gpd.read_file("/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg")
+    print(lm_polygons.size, "loaded")
+
+    # spatial join
+    result = gpd.sjoin(pop_points, lm_polygons, how="inner", predicate="within")
+
+    # save result
+    print("save", result.size)
+    result.to_file("/home/juju/gisco/road_transport_performance/pop_land_mass_"+str(year)+".gpkg", driver='GPKG')
+
+
+
+ccs = [ "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE", "AD", "SM", "MC", "VA", "NO", "CH" ]
 #make_landmass_polygons("/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg", "/home/juju/gisco/road_transport_performance/land_mass.gpkg", "CNTR_ID", ccs)
-intersect_with_grid("/home/juju/gisco/road_transport_performance/land_mass.gpkg", 10000, "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg")
+
+#intersect_with_grid("/home/juju/gisco/road_transport_performance/land_mass.gpkg", 10000, "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg")
+
+tag_grid_cells(2018, css)
+tag_grid_cells(2021, css)
 
