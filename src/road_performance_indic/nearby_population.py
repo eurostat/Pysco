@@ -38,10 +38,10 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
     i = 0
     for x in range(xmin, xmax, resolution):
         for y in range(ymin, ymax, resolution):
+            id = 'CRS3035RES' + str(resolution) + 'mN' + str(y) + 'E' + str(x)
             pop = pop_dict[id]
             if only_populated_cells and (p is None or p<=0): continue
             items.append((i, (x,y,x,y), None))
-            id = 'CRS3035RES' + str(resolution) + 'mN' + str(y) + 'E' + str(x)
             lmi = lm.loc[id]['code'].item()
             cells.append( { "x":x, "y":y, "GRD_ID": id, "pop":pop, "lmi":lmi } )
             i += 1
