@@ -67,7 +67,7 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
         p = c["pop"]
         if only_populated_cells and (p is None or p<=0): continue
 
-        print(c)
+        #print(c)
 
         x = c["x"]
         y = c["y"]
@@ -93,7 +93,7 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
             #sum population
             pop_tot += p2
 
-        print(pop_tot)
+        #print(pop_tot)
         output.append( { "pop":pop_tot, "GRD_ID":c["GRD_ID"] } )
 
 
