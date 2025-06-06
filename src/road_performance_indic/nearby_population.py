@@ -32,7 +32,7 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
 
     print(datetime.now(), "prepare cells...")
 
-    cells_ = []
+    cells = []
     items = []
     i = 0
     for x in range(xmin, xmax, resolution):
@@ -41,7 +41,7 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
             id = 'CRS3035RES' + str(resolution) + 'mN' + str(y) + 'E' + str(x)
             pop = pop_dict[id]
             lmi = lm.loc[id]['code'].item()
-            cells_.append( { "x":x, "y":y, "GRD_ID": id, "pop":pop, "lmi":lmi } )
+            cells.append( { "x":x, "y":y, "GRD_ID": id, "pop":pop, "lmi":lmi } )
             i += 1
 
     # build index
@@ -51,8 +51,6 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
     print(datetime.now(), "free memory")
     del pop_dict
     del lm
-    del cells
-    cells = cells_
 
     print(datetime.now(), "compute indicator for each cell...")
     # only those in the bbox, not the extended bbox
