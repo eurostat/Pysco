@@ -15,12 +15,6 @@ from utils.featureutils import index_from_geo_fiona
 #TODO parquet to tiff
 
 
-# bbox - set to None to compute on the entire space
-bbox = (3750000, 2720000, 3760000, 2770000)
-
-year = "2021"
-nearby_population_csv = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".csv"
-pop_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T", bbox=bbox)
 
 
 def compute_nearby_population(pop_dict_loader, nearby_population_csv, only_populated_cells=False, bbox=None, radius_m = 120000):
@@ -124,7 +118,24 @@ def compute_nearby_population(pop_dict_loader, nearby_population_csv, only_popul
 
 
 
-compute_nearby_population(nearby_population_csv, bbox=bbox, only_populated_cells=True)
+
+# bbox - set to None to compute on the entire space
+bbox = (3750000, 2720000, 3760000, 2770000)
+
+for year in ["2021"]:
+    print(year)
+
+    if year == "2021":
+        pop_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T", bbox=bbox)
+    else:
+        pop_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", "GRD_ID", "TOT_P_2018", bbox=bbox)
+
+    compute_nearby_population(
+        pop_dict_loader,
+        "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".csv",
+        bbox=bbox,
+        only_populated_cells=False
+    )
 
 
 
