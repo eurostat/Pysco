@@ -39,11 +39,11 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
     for x in range(xmin, xmax, resolution):
         for y in range(ymin, ymax, resolution):
             id = 'CRS3035RES' + str(resolution) + 'mN' + str(y) + 'E' + str(x)
-            pop = pop_dict[id]
+            p = pop_dict[id]
             if only_populated_cells and (p is None or p<=0): continue
             items.append((i, (x,y,x,y), None))
             lmi = lm.loc[id]['code'].item()
-            cells.append( { "x":x, "y":y, "GRD_ID": id, "pop":pop, "lmi":lmi } )
+            cells.append( { "x":x, "y":y, "GRD_ID": id, "pop":p, "lmi":lmi } )
             i += 1
 
     # build index
@@ -74,7 +74,7 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
 
         # get close cells using spatial index
         close_cells = list(spatial_index.intersection((x-radius_m, y-radius_m, x+radius_m, y+radius_m)))
-        print(len(close_cells))
+        #print(len(close_cells))
 
         #compute population total
         lmi = c['lmi']
@@ -133,7 +133,7 @@ for year in ["2018"]: #, "2021"
         pop_dict_loader,
         parquet_file,
         bbox=bbox,
-        only_populated_cells=False
+        only_populated_cells=True
     )
 
     print("parquet to geotiff")
