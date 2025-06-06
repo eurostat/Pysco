@@ -46,13 +46,12 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
             cells.append( { "x":x, "y":y, "GRD_ID": id, "pop":p, "lmi":lmi } )
             i += 1
 
+    del pop_dict
+    del lm
+
     # build index
     spatial_index = index.Index(((i, box, obj) for i, box, obj in items))
     del items
-
-    print(datetime.now(), "free memory")
-    del pop_dict
-    del lm
 
     print(datetime.now(), "compute indicator for each cell...")
     # only those in the bbox, not the extended bbox
@@ -66,21 +65,16 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
     for i in cells_to_compute:
         c = cells[i]
 
-        p = c["pop"]
-        #if only_populated_cells and (p is None or p<=0): continue
-
-        x = c["x"]
-        y = c["y"]
-
         # get close cells using spatial index
-        close_cells = list(spatial_index.intersection((x-radius_m, y-radius_m, x+radius_m, y+radius_m)))
-        #print(len(close_cells))
+        x = c["x"]; y = c["y"]
+        close_cells = spatial_index.intersection((x-radius_m, y-radius_m, x+radius_m, y+radius_m))
 
         #compute population total
-        lmi = c['lmi']
         pop_tot = 0
+        lmi = c['lmi']
         for i2 in close_cells:
             c2 = cells[i2]
+
             p2 = c2["pop"]
             if p2 is None or p2<=0: continue
 
@@ -99,8 +93,6 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
         out_id.append(c["GRD_ID"])
         out_indic.append(round(pop_tot))
 
-
-    print(datetime.now(), "free memory")
     del spatial_index
     del cells
 
@@ -120,7 +112,7 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
 # bbox - set to None to compute on the entire space
 bbox = (3700000, 2400000, 3800000, 2500000)
 
-for year in ["2018"]: #, "2021"
+for year in ["2021"]: #, "2018"
     print(year)
 
     if year == "2021":
