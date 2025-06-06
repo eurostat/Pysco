@@ -1,4 +1,5 @@
 from datetime import datetime
+import numpy as np
 from rtree import index
 import pandas as pd
 
@@ -9,7 +10,7 @@ from utils.convert import parquet_grid_to_geotiff
 from utils.featureutils import index_from_geo_fiona
 
 
-#TODO check duration
+#TODO check duration : 30" for 10000 cells : 8h30 for 10e6 cells
 #TODO optimise
 #TODO parallel
 #TODO parquet to tiff
@@ -132,16 +133,16 @@ for year in ["2018", "2021"]:
         bbox=bbox,
         only_populated_cells=False
     )
-'''
+
     print("parquet to geotiff")
     parquet_grid_to_geotiff(
-        parquet_file,
+        [parquet_file],
         "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tiff",
         tiff_nodata_value=-9999,
         dtype=np.int32,
         compress='deflate'
     )
-'''
+
 
 
 
