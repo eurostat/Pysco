@@ -118,7 +118,7 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, 
 
 
 # bbox - set to None to compute on the entire space
-bbox = (3700000, 2400000, 3900000, 2600000)
+bbox = (3700000, 2400000, 3800000, 2500000)
 
 for year in ["2018"]: #, "2021"
     print(year)

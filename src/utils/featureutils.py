@@ -134,8 +134,6 @@ def index_from_geo_fiona(file_path, key_att, value_att, bbox=None, layer=None, w
         dict = {}
         data = list(src.items(bbox=bbox, layer=layer, where=where))
         for f in data:
-            f = f[1]
-            k = f['properties'][key_att]
-            v = f['properties'][value_att]
-            dict[k] = v
+            p = f[1]['properties']
+            dict[ p[key_att] ] = p[value_att]
     return dict
