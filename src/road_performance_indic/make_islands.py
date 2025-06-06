@@ -28,7 +28,7 @@ def make_landmass_polygons(input_file, output_file, id_att, id_values):
     if u.geom_type == 'Polygon':
         simple_polygons.append(u)
     elif u.geom_type == 'MultiPolygon':
-        simple_polygons.extend(list(u))
+        simple_polygons.extend(list(u.geoms))
     del u
 
     # make geodataframe
