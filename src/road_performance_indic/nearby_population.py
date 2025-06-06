@@ -42,7 +42,7 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
         c = c[1]
         x, y = c['geometry']['coordinates']
         items.append((i, (x,y,x,y), None))
-        cells_.append( {"pop":c["properties"]["T"], "x":x, "y":y, "GRD_ID": c["properties"]["GRD_ID"]} )
+        cells_.append( {"x":x, "y":y, "GRD_ID": c["properties"]["GRD_ID"]} )
         i += 1
 
     # build index
