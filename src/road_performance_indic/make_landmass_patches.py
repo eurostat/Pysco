@@ -1,6 +1,8 @@
+import re
 import geopandas as gpd
 from shapely.ops import unary_union
-from shapely.geometry import box,Point, Polygon
+from shapely.geometry import box
+from geopandas.tools import sjoin_nearest
 import numpy as np
 from math import floor
 
@@ -91,7 +93,9 @@ def tag_grid_cells(id_att, id_values):
     print(cells.size, "cells loaded")
 
     # filter
-    cells = cells[cells[id_att].isin(id_values)]
+    pattern = '|'.join(map(re.escape, id_values))
+    cells = cells[cells[id_att].str.contains(pattern, na=False)]
+    #cells = cells[cells[id_att].isin(id_values)]
     print(cells.size, "filtered")
 
     # load land mass polygons
@@ -99,13 +103,19 @@ def tag_grid_cells(id_att, id_values):
     print(lm_polygons.size, "loaded")
 
     print("spatial join")
-    result = gpd.sjoin(cells, lm_polygons, how="inner", predicate="intersects")
+    #result = gpd.sjoin(cells, lm_polygons, how="inner", predicate="intersects")
+    result = sjoin_nearest(cells, lm_polygons, how='left', distance_col="distance")
     del cells
     del lm_polygons
 
-    # save result
     print("save", result.size)
+
+    # save result as GPKG
     result.to_file("/home/juju/gisco/road_transport_performance/cells_land_mass.gpkg", driver='GPKG')
+
+    # extract columns
+    result = result[['GRD_ID', 'code']]
+    result.to_parquet("/home/juju/gisco/road_transport_performance/cells_land_mass.parquet")
 
 
 
