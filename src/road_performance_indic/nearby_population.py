@@ -10,7 +10,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import index_from_geo_fiona
 
 
-#TODO use land mass id
 #TODO one per year
 #TODO parallel
 #TODO parquet to tiff
@@ -21,10 +20,10 @@ bbox = (3750000, 2720000, 3760000, 2770000)
 
 year = "2021"
 nearby_population_csv = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".csv"
+pop_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T", bbox=bbox)
 
 
-
-def compute_nearby_population(nearby_population_csv, only_populated_cells=False, bbox=None, radius_m = 120000):
+def compute_nearby_population(pop_dict_loader, nearby_population_csv, only_populated_cells=False, bbox=None, radius_m = 120000):
 
     print(datetime.now(), "Load land mass cell index")
     lm = pd.read_parquet("/home/juju/gisco/road_transport_performance/cells_land_mass.parquet")
@@ -37,7 +36,7 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
     gpkg.close()
 
     print(datetime.now(), "Load population figures")
-    pop_dict = index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T", bbox=bbox)
+    pop_dict = pop_dict_loader(bbox)
     print(datetime.now(), len(pop_dict.keys()), "figures loaded")
 
 
