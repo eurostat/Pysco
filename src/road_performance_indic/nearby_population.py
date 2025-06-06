@@ -8,15 +8,19 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import index_from_geo_fiona
 
+
+#TODO extend bbox
 #TODO check duration
 #TODO optimise
-#TODO extend bbox
 #TODO parallel
 #TODO parquet to tiff
 
 
+def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, only_populated_cells=False, radius_m = 120000):
 
-def compute_nearby_population(pop_dict_loader, nearby_population_parquet, only_populated_cells=False, bbox=None, radius_m = 120000):
+    # extended bbox
+    (xmin, ymin, xmax, ymax) = bbox
+    extended_bbox = (xmin-radius_m, ymin-radius_m, xmax+radius_m, ymax+radius_m)
 
     print(datetime.now(), "Load land mass cell index")
     lm = pd.read_parquet("/home/juju/gisco/road_transport_performance/cells_land_mass.parquet")
@@ -25,15 +29,13 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, only_p
 
     print(datetime.now(), "Load grid")
     gpkg = fiona.open("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", 'r', driver='GPKG')
-    cells = list(gpkg.items(bbox=bbox))
+    cells = list(gpkg.items(bbox=extended_bbox))
+    print(datetime.now(), len(cells), "cells loaded")
     gpkg.close()
 
     print(datetime.now(), "Load population figures")
-    pop_dict = pop_dict_loader(bbox)
+    pop_dict = pop_dict_loader(extended_bbox)
     print(datetime.now(), len(pop_dict.keys()), "figures loaded")
-
-
-    print(datetime.now(), len(cells), "cells loaded")
 
     print(datetime.now(), "prepare cells...")
 
@@ -64,10 +66,13 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, only_p
     radius_m_s = radius_m * radius_m
 
     print(datetime.now(), "compute indicator for each cell...")
+    # only those in the bbox, not the extended
+    cells_to_compute = list(spatial_index.intersection(bbox))
 
     out_id = []
     out_indic = []
-    for c in cells:
+    for i in cells_to_compute:
+        c = cells[i]
 
         p = c["pop"]
         if only_populated_cells and (p is None or p<=0): continue
@@ -107,7 +112,7 @@ def compute_nearby_population(pop_dict_loader, nearby_population_parquet, only_p
     del cells
 
     df = pd.DataFrame( { "GRD_ID": out_id, "POP_N_120": out_indic } )
-    print(datetime.now(), "Save")
+    print(datetime.now(), "save")
     df.to_parquet(nearby_population_parquet)
     df.to_csv(nearby_population_parquet+'.csv', index=False)
 
