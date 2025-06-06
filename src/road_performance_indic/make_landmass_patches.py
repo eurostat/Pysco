@@ -82,6 +82,8 @@ def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
     gdf.to_file(output_gpkg, driver='GPKG')
 
 
+
+
 def tag_grid_cells(id_att, id_values):
 
     # load cells
@@ -96,7 +98,7 @@ def tag_grid_cells(id_att, id_values):
     lm_polygons = gpd.read_file("/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg")
     print(lm_polygons.size, "loaded")
 
-    # spatial join
+    print("spatial join")
     result = gpd.sjoin(cells, lm_polygons, how="inner", predicate="intersects")
     del cells
     del lm_polygons
