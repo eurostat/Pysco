@@ -133,7 +133,8 @@ for year in ["2018"]: #, "2021"
         pop_dict_loader,
         parquet_file,
         bbox=bbox,
-        only_populated_cells=True
+        only_populated_cells=False,
+        radius_m = 120000,
     )
 
     print("parquet to geotiff")
