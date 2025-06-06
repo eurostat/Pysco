@@ -1,7 +1,6 @@
 from datetime import datetime
 import fiona
 from rtree import index
-import csv
 import pandas as pd
 
 import sys
@@ -9,13 +8,15 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import index_from_geo_fiona
 
+#TODO extend bbox
 #TODO use pandas
+#TODO check duration - optimise
 #TODO parallel
 #TODO parquet to tiff
 
 
 
-def compute_nearby_population(pop_dict_loader, nearby_population_csv, only_populated_cells=False, bbox=None, radius_m = 120000):
+def compute_nearby_population(pop_dict_loader, nearby_population_parquet, only_populated_cells=False, bbox=None, radius_m = 120000):
 
     print(datetime.now(), "Load land mass cell index")
     lm = pd.read_parquet("/home/juju/gisco/road_transport_performance/cells_land_mass.parquet")
@@ -64,7 +65,8 @@ def compute_nearby_population(pop_dict_loader, nearby_population_csv, only_popul
 
     print(datetime.now(), "compute indicator for each cell...")
 
-    output = []
+    out_id = []
+    out_indic = []
     for c in cells:
 
         p = c["pop"]
@@ -96,20 +98,18 @@ def compute_nearby_population(pop_dict_loader, nearby_population_csv, only_popul
             pop_tot += p2
 
         #print(pop_tot)
-        output.append( { "pop":round(pop_tot), "GRD_ID":c["GRD_ID"] } )
+        out_id.append(c["GRD_ID"])
+        out_indic.append(round(pop_tot))
 
 
     print(datetime.now(), "free memory")
     del spatial_index
     del cells
 
-    #TODO use panda
-    #TODO as parquet
-    print(datetime.now(), "Save as CSV")
-    file = open(nearby_population_csv, mode="w", newline="", encoding="utf-8")
-    writer = csv.DictWriter(file, fieldnames=output[0].keys())
-    writer.writeheader()
-    writer.writerows(output)
+    df = pd.DataFrame( { "GRD_ID": out_id, "POP_N_120": out_indic } )
+    print(datetime.now(), "Save")
+    df.to_parquet(nearby_population_parquet)
+    df.to_csv(nearby_population_parquet+'.csv', index=False)
 
     print(datetime.now(), "Done.")
 
@@ -132,7 +132,7 @@ for year in ["2018", "2021"]:
 
     compute_nearby_population(
         pop_dict_loader,
-        "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".csv",
+        "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".parquet",
         bbox=bbox,
         only_populated_cells=False
     )
