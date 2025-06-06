@@ -144,6 +144,7 @@ for year in ["2018", "2021"]:
         only_populated_cells=False
     )
 
+    print("parquet to geotiff")
     parquet_grid_to_geotiff(
         parquet_file,
         "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tiff",
