@@ -44,7 +44,7 @@ circular_kernel_sum(
     "/home/juju/gisco/road_transport_performance/nearby_population_2018.tiff",
     120000,
     rasterio.uint32,
-    #compress="deflate",
+    compress="deflate",
     )
 
 
@@ -54,7 +54,7 @@ circular_kernel_sum(
     "/home/juju/gisco/road_transport_performance/nearby_population_2021.tiff",
     120000,
     rasterio.uint32,
-    #compress="deflate",
+    compress="deflate",
     )
 
 
