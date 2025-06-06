@@ -26,9 +26,11 @@ def circular_kernel_sum(
     if nodata is not None:
         data = np.where(data == nodata, 0, data)
 
-    # Replace negative values with 0 for computation
-    data = np.where(data < 0, 0, data)
-    #data = np.clip(data, 0, None)
+    # Replace nodata and negative values with 0 for computation
+    if nodata is not None:
+        data = np.where((data == nodata) | (data < 0), 0, data)
+    else:
+        data = np.clip(data, 0, None)
 
     #print("change dtype")
     data = data.astype(dtype)
