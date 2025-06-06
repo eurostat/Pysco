@@ -58,7 +58,7 @@ def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
     x_coords = np.arange(minx, maxx, grid_resolution)
     y_coords = np.arange(miny, maxy, grid_resolution)
 
-    print(gdf.size, "make grid")
+    print("make grid")
     grid_cells = []
     for x in x_coords:
         for y in y_coords:
@@ -70,7 +70,7 @@ def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
     # make grid
     grid_gdf = gpd.GeoDataFrame(geometry=grid_cells, crs=gdf.crs)
 
-    print(gdf.size, "compute grid intersection")
+    print("compute grid intersection")
     intersected_gdf = gpd.overlay(gdf, grid_gdf, how='intersection')
 
     print("save")
