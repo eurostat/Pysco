@@ -9,14 +9,17 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import index_from_geo_fiona
 
 
+#TODO use land mass id
+#TODO one per year
+#TODO parallel
+#TODO parquet to tiff
+
 
 # bbox - set to None to compute on the entire space
 bbox = (3750000, 2720000, 3960000, 2970000)
 
 year = "2021"
 nearby_population_csv = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".csv"
-
-
 
 
 
@@ -101,6 +104,8 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
     del spatial_index
     del cells
 
+    #TODO use panda
+    #TODO as parquet
     print(datetime.now(), "Save as CSV")
     file = open(nearby_population_csv, mode="w", newline="", encoding="utf-8")
     writer = csv.DictWriter(file, fieldnames=output[0].keys())
