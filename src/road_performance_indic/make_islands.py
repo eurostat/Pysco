@@ -44,8 +44,10 @@ def make_landmass_polygons(input_file, output_file, id_att, id_values):
 
 
 def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
+
     # load input file
     gdf = gpd.read_file(input_gpkg)
+    print(gdf.size, "loaded")
 
     # bounds
     minx, miny, maxx, maxy = gdf.total_bounds
@@ -56,7 +58,7 @@ def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
     x_coords = np.arange(minx, maxx, grid_resolution)
     y_coords = np.arange(miny, maxy, grid_resolution)
 
-    # make grid cells
+    print(gdf.size, "make grid")
     grid_cells = []
     for x in x_coords:
         for y in y_coords:
@@ -68,14 +70,14 @@ def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
     # make grid
     grid_gdf = gpd.GeoDataFrame(geometry=grid_cells, crs=gdf.crs)
 
-    # compute intersection
+    print(gdf.size, "compute grid intersection")
     intersected_gdf = gpd.overlay(gdf, grid_gdf, how='intersection')
 
-    # save output
+    print("save")
     intersected_gdf.to_file(output_gpkg, driver='GPKG')
 
 
-#ccs = [ "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE", "AD", "SM", "MC", "VA", "NO", "CH" ]
-#make_landmass_polygons("/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg", "/home/juju/gisco/road_transport_performance/land_mass.gpkg", "CNTR_ID", ccs)
+ccs = [ "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE", "AD", "SM", "MC", "VA", "NO", "CH" ]
+make_landmass_polygons("/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg", "/home/juju/gisco/road_transport_performance/land_mass.gpkg", "CNTR_ID", ccs)
+intersect_with_grid("/home/juju/gisco/road_transport_performance/land_mass.gpkg", 100000, "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg")
 
-intersect_with_grid("/home/juju/gisco/road_transport_performance/land_mass.gpkg", 100000, "/home/juju/gisco/road_transport_performance/land_mass_grid.gpkg")
