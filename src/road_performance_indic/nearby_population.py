@@ -1,7 +1,4 @@
-import numpy as np
 import rasterio
-from scipy import ndimage
-from skimage.morphology import disk
 
 import sys
 import os

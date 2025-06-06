@@ -4,6 +4,8 @@ import geopandas as gpd
 from rasterio.transform import from_bounds
 from rasterio.enums import Resampling
 import numpy as np
+from scipy import ndimage
+from skimage.morphology import disk
 import os
 
 
