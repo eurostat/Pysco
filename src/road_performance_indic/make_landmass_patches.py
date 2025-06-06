@@ -124,5 +124,5 @@ ccs = [ "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", 
 
 #intersect_with_grid("/home/juju/gisco/road_transport_performance/land_mass.gpkg", 10000, "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg")
 
-tag_grid_cells("CNTR_ID", ccs)
+#tag_grid_cells("CNTR_ID", ccs)
 

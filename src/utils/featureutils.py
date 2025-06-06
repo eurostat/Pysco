@@ -127,3 +127,13 @@ def iter_features(filepath, layername=None, bbox=None, where=None):
     with fiona.open(filepath, layer=layername) as src:
         for _, feature in src.items(bbox=bbox, where=where):
             yield feature
+
+# make index from ID colmn to value of one of the attributes
+def index_from_geo_fiona(file_path, key_att, value_att):
+    with fiona.open(file_path) as src:
+        dict = {}
+        for f in src:
+            k = f['properties'][key_att]
+            v = f['properties'][value_att]
+            dict[k] = v
+    return dict
