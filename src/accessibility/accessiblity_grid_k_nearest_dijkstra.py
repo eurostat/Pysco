@@ -87,7 +87,9 @@ def __parallel_process(xy,
             cell_network_max_distance,
             detailled,
             densification_distance,
-            keep_distance_to_node):
+            keep_distance_to_node,
+            show_detailled_messages = False,
+            ):
 
     # get partition position
     [ x_part, y_part ] = xy
@@ -95,12 +97,12 @@ def __parallel_process(xy,
     # build partition extended bbox
     extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
-    print(datetime.now(),x_part,y_part, "get source POIs")
+    if show_detailled_messages: print(datetime.now(),x_part,y_part, "get source POIs")
     pois = pois_loader(extended_bbox)
     #TODO stop there or fill with 'no_data' ?
     if(not pois): return
 
-    print(datetime.now(),x_part,y_part, "make graph")
+    if show_detailled_messages: print(datetime.now(),x_part,y_part, "make graph")
     roads = road_network_loader(extended_bbox)
     gb_ = ___graph_adjacency_list_from_geodataframe(roads,
                                                         weight_fun = weight_function,
@@ -113,29 +115,29 @@ def __parallel_process(xy,
     graph = gb_['graph']
     snappable_nodes = gb_['snappable_nodes']
     del gb_, roads
-    print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
+    if show_detailled_messages: print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
     if(len(snappable_nodes)==0): return
     #if(len(graph.keys())==0): return
 
-    print(datetime.now(),x_part,y_part, "build nodes spatial index")
+    if show_detailled_messages: print(datetime.now(),x_part,y_part, "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
-    print(datetime.now(),x_part,y_part, "get source nodes")
+    if show_detailled_messages: print(datetime.now(),x_part,y_part, "get source nodes")
     sources = []
     for poi in pois:
         x, y = poi['geometry']['coordinates']
         n = snappable_nodes[next(idx.nearest((x, y, x, y), 1))]
         sources.append(n)
     del pois
-    print(datetime.now(),x_part,y_part, len(sources), "source nodes found")
+    if show_detailled_messages: print(datetime.now(),x_part,y_part, len(sources), "source nodes found")
     #TODO stop there or fill with 'no_data' ?
     if(len(sources)==0): return
 
-    print(datetime.now(),x_part,y_part, "compute accessiblity")
+    if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute accessiblity")
     result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
     del graph, sources
 
-    print(datetime.now(), x_part, y_part, "extract cell accessibility data")
+    if show_detailled_messages: print(datetime.now(), x_part, y_part, "extract cell accessibility data")
     grd_ids = [] #the cell identifiers
     costs = [] #the costs - an array of arrays
     for _ in range(k): costs.append([])
@@ -204,6 +206,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
                        duration_simplification_fun = None,
                        keep_distance_to_node = False,
                        num_processors_to_use = 1,
+                       show_detailled_messages = False,
                        ):
 
     # launch parallel computation   
@@ -227,6 +230,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
             detailled,
             densification_distance,
             keep_distance_to_node,
+            show_detailled_messages,
         )
         for xy in processes_params
         ]
