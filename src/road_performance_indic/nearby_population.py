@@ -16,7 +16,7 @@ bbox = None #(3750000, 2720000, 3960000, 2970000)
 year = "2021"
 nearby_population_csv = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".csv"
 
-pop_dict_2021 = index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T")
+pop_dict = index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T")
 
 
 
@@ -46,9 +46,6 @@ def compute_nearby_population(pop_dict, nearby_population_csv, only_populated_ce
     spatial_index = index.Index(((i, box, obj) for i, box, obj in items))
     del items
 
-
-
-
     print(datetime.now(), "free memory")
     del cells
     cells = cells_
@@ -58,8 +55,8 @@ def compute_nearby_population(pop_dict, nearby_population_csv, only_populated_ce
 
     print(datetime.now(), "compute indicator for each cell...")
 
-    #lock = threading.Lock()
-    def compute_cell(c):
+    output = []
+    for c in cells:
         x=c["x"]
         y=c["y"]
 
@@ -72,24 +69,20 @@ def compute_nearby_population(pop_dict, nearby_population_csv, only_populated_ce
         pop_tot = 0
         for i2 in close_cells:
             c2 = cells[i2]
-            dx = x-c2["x"]
-            dy = y-c2["y"]
+
+            #TODO
+            #check if same land mass
 
             #too far: skip
-            if dx*dx+dy*dy>radius_m_s :continue
+            dx = x-c2["x"]
+            dy = y-c2["y"]
+            if dx*dx+dy*dy > radius_m_s : continue
 
             #sum population
-            pop_tot += c2["pop"]
+            pop_tot += pop_dict[c2["GRD_ID"]]
 
-        return { "pop":pop_tot, "GRD_ID":c["GRD_ID"] }
+        output.append( { "pop":pop_tot, "GRD_ID":c["GRD_ID"] } )
 
-    #compute, not in parallel
-    output = []
-    for c in cells: output.append( compute_cell(c) )
-
-    # Run in parallel
-    #executor = concurrent.futures.ThreadPoolExecutor()
-    #output = list(executor.map(compute_cell_indicator, cells))
 
     print(datetime.now(), "free memory")
     del spatial_index
