@@ -85,19 +85,21 @@ def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
 def tag_grid_cells(id_att, id_values):
 
     # load cells
-    points = gpd.read_file("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg")
-    print(points.size, "cells loaded")
+    cells = gpd.read_file("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg")
+    print(cells.size, "cells loaded")
 
     # filter
-    gdf = gdf[gdf[id_att].isin(id_values)]
-    print(gdf.size, "filtered")
+    cells = cells[cells[id_att].isin(id_values)]
+    print(cells.size, "filtered")
 
     # load land mass polygons
     lm_polygons = gpd.read_file("/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg")
     print(lm_polygons.size, "loaded")
 
     # spatial join
-    result = gpd.sjoin(points, lm_polygons, how="inner", predicate="within")
+    result = gpd.sjoin(cells, lm_polygons, how="inner", predicate="intersects")
+    del cells
+    del lm_polygons
 
     # save result
     print("save", result.size)
