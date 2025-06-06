@@ -64,7 +64,10 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
     output = []
     for c in cells:
 
-        #TODO only_populated_cells
+        p = c["pop"]
+        if only_populated_cells and (p is None or p<=0): continue
+
+        print(c)
 
         x = c["x"]
         y = c["y"]
@@ -76,6 +79,8 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
         pop_tot = 0
         for i2 in close_cells:
             c2 = cells[i2]
+            p2 = c2["pop"]
+            if p2 is None or p2<=0: continue
 
             #TODO
             #check if same land mass
@@ -86,8 +91,9 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
             if dx*dx+dy*dy > radius_m_s : continue
 
             #sum population
-            pop_tot += c["pop"]
+            pop_tot += p2
 
+        print(pop_tot)
         output.append( { "pop":pop_tot, "GRD_ID":c["GRD_ID"] } )
 
 
@@ -106,7 +112,7 @@ def compute_nearby_population(nearby_population_csv, only_populated_cells=False,
 
 
 
-compute_nearby_population(nearby_population_csv, bbox=bbox)
+compute_nearby_population(nearby_population_csv, bbox=bbox, only_populated_cells=True)
 
 
 
