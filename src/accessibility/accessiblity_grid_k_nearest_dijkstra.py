@@ -94,6 +94,8 @@ def __parallel_process(xy,
     # get partition position
     [ x_part, y_part ] = xy
 
+    if not show_detailled_messages: print(datetime.now(),x_part,y_part)
+
     # build partition extended bbox
     extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
