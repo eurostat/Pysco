@@ -75,7 +75,7 @@ def intersect_with_grid(input_gpkg, grid_resolution, output_gpkg):
     print(gdf.size)
     del grid_gdf
 
-    print("decompose multipolygon")
+    print("decompose multipolygons")
     gdf = gdf.explode(index_parts=True)
     gdf = gdf.reset_index(drop=True)
 
