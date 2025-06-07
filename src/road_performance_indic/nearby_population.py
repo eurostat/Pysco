@@ -2,9 +2,12 @@ from datetime import datetime
 import numpy as np
 from rtree import index
 import pandas as pd
+from multiprocessing import Pool
 
 import sys
 import os
+
+from utils.utils import cartesian_product_comp
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.convert import parquet_grid_to_geotiff #, parquet_grid_to_gpkg
 from utils.featureutils import index_from_geo_fiona
@@ -14,7 +17,7 @@ from utils.featureutils import index_from_geo_fiona
 #TODO check duration : 30" for 10000 cells : 8h30 for 10e6 cells
 
 
-def __parallel(xy, partition_size, pop_dict_loader, land_mass_dict_loader, resolution=1000, only_populated_cells=False, radius_m = 120000):
+def __parallel_process(xy, partition_size, pop_dict_loader, land_mass_dict_loader, resolution=1000, only_populated_cells=False, radius_m = 120000):
 
     # make extended bbox
     [xmin, ymin] = xy
@@ -110,7 +113,23 @@ def compute_nearby_population(pop_dict_loader,
                               radius_m = 120000,
                               partition_size = 100000,
                               num_processors_to_use = 1):
+
+    processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
+    processes_params = [
+        ( xy, partition_size, pop_dict_loader, land_mass_dict_loader, resolution, only_populated_cells, radius_m )
+        for xy in processes_params ]
+
+    print(datetime.now(), "launch", len(processes_params), "processes on", num_processors_to_use, "processor(s)")
+    outputs = Pool(num_processors_to_use).starmap(__parallel_process, processes_params)
+
+    print(datetime.now(), "combine", len(outputs), "outputs")
+    grd_ids = []
+    costs = []
+
     pass
+
+
+
 
 
 
@@ -130,7 +149,7 @@ for year in ["2021", "2018"]:
     xy = [3900000, 2600000]
     partition_size = 100000
 
-    res = __parallel(
+    res = __parallel_process(
         xy,
         partition_size,
         pop_dict_loader,
