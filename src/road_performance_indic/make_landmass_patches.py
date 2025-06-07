@@ -95,15 +95,16 @@ def tag_grid_cells(id_att, id_values):
     # filter
     pattern = '|'.join(map(re.escape, id_values))
     cells = cells[cells[id_att].str.contains(pattern, na=False)]
-    #cells = cells[cells[id_att].isin(id_values)]
     print(cells.size, "filtered")
+
+    # keep only necessary columns
+    cells = cells[['GRD_ID', 'geometry']]
 
     # load land mass polygons
     lm_polygons = gpd.read_file("/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg")
     print(lm_polygons.size, "loaded")
 
     print("spatial join")
-    #result = gpd.sjoin(cells, lm_polygons, how="inner", predicate="intersects")
     result = sjoin_nearest(cells, lm_polygons, how='left', distance_col="distance")
     del cells
     del lm_polygons

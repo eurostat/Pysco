@@ -15,16 +15,15 @@ from utils.featureutils import index_from_geo_fiona
 #TODO parallel
 
 
-def compute_nearby_population(pop_dict_loader, nearby_population_parquet, bbox, resolution=1000, only_populated_cells=False, radius_m = 120000):
+def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_population_parquet, bbox, resolution=1000, only_populated_cells=False, radius_m = 120000):
 
     # make extended bbox
     (xmin, ymin, xmax, ymax) = bbox
     extended_bbox = (xmin-radius_m, ymin-radius_m, xmax+radius_m, ymax+radius_m)
 
     print(datetime.now(), "Load land mass cell index")
-    lm = pd.read_parquet("/home/juju/gisco/road_transport_performance/cells_land_mass.parquet")
-    print(datetime.now(), lm.size, "land mass figures loaded")
-    lm.set_index("GRD_ID", inplace=True)
+    lm_dict = land_mass_dict_loader(extended_bbox)
+    print(datetime.now(), len(lm_dict.keys()), "land mass figures loaded")
 
     print(datetime.now(), "Load population figures")
     pop_dict = pop_dict_loader(extended_bbox)
@@ -119,9 +118,12 @@ for year in ["2021"]: #, "2018"
     else:
         pop_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", "GRD_ID", "TOT_P_2018", bbox=bbox)
 
+    lm_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/gisco/road_transport_performance/cells_land_mass.gpkg", "GRD_ID", "code", bbox=bbox)
+
     parquet_file = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".parquet"
     compute_nearby_population(
         pop_dict_loader,
+
         parquet_file,
         bbox=bbox,
         only_populated_cells=False,
