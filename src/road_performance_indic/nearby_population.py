@@ -16,6 +16,7 @@ from utils.featureutils import index_from_geo_fiona
 
 
 def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_population_parquet, bbox, resolution=1000, only_populated_cells=False, radius_m = 120000):
+    r2 = resolution/2
 
     # make extended bbox
     (xmin, ymin, xmax, ymax) = bbox
@@ -39,7 +40,7 @@ def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_pop
             id = 'CRS3035RES' + str(resolution) + 'mN' + str(y) + 'E' + str(x)
             p = pop_dict[id]
             if only_populated_cells and (p is None or p<=0): continue
-            items.append((i, (x,y,x,y)))
+            items.append((i, (x+r2,y+r2,x+r2,y+r2)))
             lmi = lm_dict[id]
             cells.append( { "x":x, "y":y, "GRD_ID": id, "pop":p, "lmi":lmi } )
             i += 1
@@ -53,7 +54,7 @@ def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_pop
 
     print(datetime.now(), "compute indicator for each cell...")
     # only those in the bbox, not the extended bbox
-    cells_to_compute = list(spatial_index.intersection( (xmin+resolution*0.1, ymin+resolution*0.1, xmax-resolution*0.1, ymax-resolution*0.1) ))
+    cells_to_compute = list(spatial_index.intersection( (xmin+r2, ymin+r2, xmax-r2, ymax-r2) ))
     print(datetime.now(), len(cells_to_compute))
 
     out_id = []
