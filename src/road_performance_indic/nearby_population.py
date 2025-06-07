@@ -117,6 +117,7 @@ def __parallel_process(xy, partition_size, pop_dict_loader, land_mass_dict_loade
 def compute_nearby_population(pop_dict_loader,
                               land_mass_dict_loader,
                               bbox,
+                              out_parquet_file,
                               resolution=1000,
                               only_populated_cells=False,
                               radius_m = 120000,
@@ -149,7 +150,7 @@ def compute_nearby_population(pop_dict_loader,
     # save output
     print(datetime.now(), "save as parquet")
     df = pd.DataFrame( { "GRD_ID": out_id, "POP_N_120": out_indic } )
-    df.to_parquet(parquet_file)
+    df.to_parquet(out_parquet_file)
 
 
 
