@@ -9,9 +9,6 @@ from utils.geotiff import rename_geotiff_bands
 from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
 
-#     graph = defaultdict(list) ?
-# python executable/compilation, to be faster ?
-
 #TODO produce 1000m. before: handle case when detailled=False, for link length
 #TODO fix length for detailled=False
 #check: FEATTYP=4110 FRC 0 to 6
