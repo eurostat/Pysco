@@ -25,12 +25,13 @@ bbox = [ 900000, 900000, 6600000, 5400000 ]
 
 # fixed parameters
 grid_resolution = 100
-detailled_network_decomposition = True
-densification_distance = grid_resolution
+detailled_network_decomposition = grid_resolution == 100
+densification_distance = grid_resolution if grid_resolution == 100 else None
 cell_network_max_distance = grid_resolution * 2
 
-tile_file_size_m = 500000
-partition_size = 125000 #should be a divisor of tile_file_size_m
+tile_file_size_m = 500000 if grid_resolution == 100 else 1000000
+# should be a divisor of tile_file_size_m
+partition_size = 125000 if grid_resolution == 100 else 200000
 
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 def duration_simplification_fun(x): return int(round(x))
