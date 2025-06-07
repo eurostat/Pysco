@@ -54,7 +54,7 @@ def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_pop
 
     print(datetime.now(), "compute indicator for each cell...")
     # only those in the bbox, not the extended bbox
-    cells_to_compute = list(spatial_index.intersection( (xmin+r2, ymin+r2, xmax-r2, ymax-r2) ))
+    cells_to_compute = list(spatial_index.intersection( (xmin+resolution*0.1, ymin+r2, xmax-resolution*0.1, ymax-resolution*0.1) ))
     print(datetime.now(), len(cells_to_compute))
 
     out_id = []
