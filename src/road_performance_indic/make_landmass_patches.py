@@ -109,11 +109,7 @@ def tag_grid_cells(id_att, id_values):
     del lm_polygons
 
     print("save", result.size)
-
-    # save result as GPKG
     result.to_file("/home/juju/gisco/road_transport_performance/cells_land_mass.gpkg", driver='GPKG')
-
-    # extract columns
     result = result[['GRD_ID', 'code']]
     result.to_parquet("/home/juju/gisco/road_transport_performance/cells_land_mass.parquet")
 
@@ -124,5 +120,5 @@ ccs = [ "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "EL", 
 
 #intersect_with_grid("/home/juju/gisco/road_transport_performance/land_mass.gpkg", 10000, "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg")
 
-#tag_grid_cells("CNTR_ID", ccs)
+tag_grid_cells("CNTR_ID", ccs)
 
