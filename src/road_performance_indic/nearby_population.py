@@ -165,8 +165,25 @@ for year in ["2021", "2018"]:
     else:
         pop_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", "GRD_ID", "TOT_P_2018", bbox=bbox)
 
-    lm_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/gisco/road_transport_performance/cells_land_mass.gpkg", "GRD_ID", "code", bbox=bbox)
+    land_mass_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/gisco/road_transport_performance/cells_land_mass.gpkg", "GRD_ID", "code", bbox=bbox)
 
+
+    out_parquet_file = out_folder + "todo.parquet"
+
+
+    bbox = [3900000, 2600000, 4000000, 2700000]
+    compute_nearby_population(pop_dict_loader,
+                              land_mass_dict_loader,
+                              bbox,
+                              out_parquet_file,
+                              resolution=1000,
+                              only_populated_cells=False,
+                              radius_m = 30000,
+                              partition_size = 100000,
+                              num_processors_to_use = 1)
+
+
+    '''
     xy = [3900000, 2600000]
     partition_size = 100000
 
@@ -174,15 +191,15 @@ for year in ["2021", "2018"]:
         xy,
         partition_size,
         pop_dict_loader,
-        lm_dict_loader,
+        land_mass_dict_loader,
         only_populated_cells=False,
         radius_m = 30000,
     )
 
-    parquet_file = out_folder + "todo.parquet"
     [out_id, out_indic] = res
     df = pd.DataFrame( { "GRD_ID": out_id, "POP_N_120": out_indic } )
-    df.to_parquet(parquet_file)
+    df.to_parquet(out_parquet_file)
+    '''
 
     print(year, "parquet to geotiff")
     files = [os.path.join(out_folder, f) for f in os.listdir(out_folder) if f.endswith('.parquet')]
