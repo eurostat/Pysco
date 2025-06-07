@@ -46,7 +46,7 @@ for service in ["education", "healthcare"]:
     for year in ["2020","2023"]:
 
         # ouput folder
-        out_folder_service = out_folder + "out_" + service + "_" + year + "_" + grid_resolution + "m/"
+        out_folder_service = out_folder + "out_" + service + "_" + year + "_" + str(grid_resolution) + "m/"
         if not os.path.exists(out_folder_service): os.makedirs(out_folder_service)
 
 
