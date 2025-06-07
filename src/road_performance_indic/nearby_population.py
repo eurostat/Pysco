@@ -14,25 +14,27 @@ from utils.featureutils import index_from_geo_fiona
 #TODO check duration : 30" for 10000 cells : 8h30 for 10e6 cells
 
 
-def compute_nearby_population(bbox, pop_dict_loader, land_mass_dict_loader, resolution=1000, only_populated_cells=False, radius_m = 120000):
-    r2 = resolution/2
+def __parallel(xy, partition_size, pop_dict_loader, land_mass_dict_loader, resolution=1000, only_populated_cells=False, radius_m = 120000):
 
     # make extended bbox
-    (xmin, ymin, xmax, ymax) = bbox
+    [xmin, ymin] = xy
+    xmax = xmin + partition_size
+    ymax = ymin + partition_size
     extended_bbox = (xmin-radius_m-resolution, ymin-radius_m-resolution, xmax+radius_m+resolution, ymax+radius_m+resolution)
 
-    print(datetime.now(), "Load land mass cell index")
+    print(datetime.now(),xmin, ymin, "Load land mass cell index")
     lm_dict = land_mass_dict_loader(extended_bbox)
-    print(datetime.now(), len(lm_dict.keys()), "land mass figures loaded")
+    print(datetime.now(),xmin, ymin, len(lm_dict.keys()), "land mass figures loaded")
 
-    print(datetime.now(), "Load population figures")
+    print(datetime.now(),xmin, ymin, "Load population figures")
     pop_dict = pop_dict_loader(extended_bbox)
-    print(datetime.now(), len(pop_dict.keys()), "population figures loaded")
+    print(datetime.now(),xmin, ymin, len(pop_dict.keys()), "population figures loaded")
 
-    print(datetime.now(), "prepare cells...")
+    print(datetime.now(),xmin, ymin, "prepare cells...")
 
     cells = []
     items = []
+    r2 = resolution/2
     i = 0
     for x in range(xmin-radius_m-resolution, xmax+radius_m+resolution, resolution):
         for y in range(ymin-radius_m-resolution, ymax+radius_m+resolution, resolution):
@@ -51,10 +53,10 @@ def compute_nearby_population(bbox, pop_dict_loader, land_mass_dict_loader, reso
     spatial_index = index.Index(((i, box, None) for i, box in items))
     del items
 
-    print(datetime.now(), "compute indicator for each cell...")
+    print(datetime.now(),xmin, ymin, "compute indicator for each cell...")
     # only those in the bbox, not the extended bbox
     cells_to_compute = list(spatial_index.intersection( (xmin+resolution*0.1, ymin+r2, xmax-resolution*0.1, ymax-resolution*0.1) ))
-    print(datetime.now(), len(cells_to_compute))
+    print(datetime.now(),xmin, ymin, len(cells_to_compute))
 
     out_id = []
     out_indic = []
@@ -96,6 +98,7 @@ def compute_nearby_population(bbox, pop_dict_loader, land_mass_dict_loader, reso
     del spatial_index
     del cells
 
+    print(datetime.now(),xmin, ymin, "done -", len(cells))
     return( [out_id, out_indic] )
 
 
@@ -104,11 +107,11 @@ def compute_nearby_population(bbox, pop_dict_loader, land_mass_dict_loader, reso
 
 
 
-# bbox - set to None to compute on the entire space
-bbox = (3900000, 2600000, 4000000, 2700000)
-
 for year in ["2021"]: #, "2018"
     print(year)
+
+    out_folder = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+"/"
+    if not os.path.exists(out_folder): os.makedirs(out_folder)
 
     if year == "2021":
         pop_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T", bbox=bbox)
@@ -117,23 +120,29 @@ for year in ["2021"]: #, "2018"
 
     lm_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/gisco/road_transport_performance/cells_land_mass.gpkg", "GRD_ID", "code", bbox=bbox)
 
-    res = compute_nearby_population(
-        bbox,
+    xy = [3900000, 2600000]
+    partition_size = 100000
+
+    res = __parallel(
+        xy,
+        partition_size,
         pop_dict_loader,
         lm_dict_loader,
         only_populated_cells=False,
         radius_m = 120000,
     )
 
-    parquet_file = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".parquet"
+    parquet_file = out_folder + "todo.parquet"
     [out_id, out_indic] = res
     df = pd.DataFrame( { "GRD_ID": out_id, "POP_N_120": out_indic } )
     df.to_parquet(parquet_file)
-    df.to_csv(parquet_file+'.csv', index=False)
+    #df.to_csv(parquet_file+'.csv', index=False)
 
-    print("parquet to geotiff")
+    print(year, "parquet to geotiff")
+    files = [os.path.join(out_folder, f) for f in os.listdir(out_folder) if f.endswith('.parquet')]
+    if len(files)==0: continue
     parquet_grid_to_geotiff(
-        [parquet_file],
+        files,
         "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tiff",
         dtype=np.int32,
         compress='deflate',
