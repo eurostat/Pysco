@@ -14,10 +14,8 @@ from utils.convert import parquet_grid_to_geotiff #, parquet_grid_to_gpkg
 from utils.featureutils import index_from_geo_fiona
 
 
-#TODO parallel
-#TODO check duration : 30" for 10000 cells : 8h30 for 10e6 cells
 
-
+# base function, for a partition
 def __parallel_process(xy, partition_size, pop_dict_loader, land_mass_dict_loader, resolution=1000, only_populated_cells=False, radius_m = 120000):
 
     # make extended bbox
@@ -112,7 +110,7 @@ def __parallel_process(xy, partition_size, pop_dict_loader, land_mass_dict_loade
 
 
 
-
+# function using parallelism
 def compute_nearby_population(pop_dict_loader,
                               land_mass_dict_loader,
                               bbox,
@@ -154,6 +152,10 @@ def compute_nearby_population(pop_dict_loader,
 
 
 
+
+
+
+radius_m = 120000 # 120km
 grid_resolution = 1000
 tile_file_size_m = 500000
 partition_size = 125000 #should be a divisor of tile_file_size_m
@@ -162,13 +164,14 @@ bbox = [3900000, 2600000, 4000000, 2700000]
 clamp = lambda v : floor(v/tile_file_size_m)*tile_file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
-
+# to load data on population, by year
 def pop_dict_loader_2021(bbox): return index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T", bbox=bbox)
 def pop_dict_loader_2018(bbox): return index_from_geo_fiona("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", "GRD_ID", "TOT_P_2018", bbox=bbox)
+# to load data on land mass index, by grid cell
 def land_mass_dict_loader(bbox): return index_from_geo_fiona("/home/juju/gisco/road_transport_performance/cells_land_mass.gpkg", "GRD_ID", "code", bbox=bbox)
 
+
 for year in ["2021", "2018"]:
-    print(year)
 
     out_folder = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+"/"
     if not os.path.exists(out_folder): os.makedirs(out_folder)
@@ -192,7 +195,7 @@ for year in ["2021", "2018"]:
                 out_parquet_file = out_file,
                 resolution = grid_resolution,
                 only_populated_cells = False,
-                radius_m = 30000,
+                radius_m = radius_m,
                 partition_size = partition_size,
                 num_processors_to_use = 1)
 
@@ -206,8 +209,4 @@ for year in ["2021", "2018"]:
         dtype=np.int32,
         compress='deflate',
     )
-
-
-
-
 
