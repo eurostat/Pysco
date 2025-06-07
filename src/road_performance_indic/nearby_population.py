@@ -107,7 +107,7 @@ def __parallel(xy, partition_size, pop_dict_loader, land_mass_dict_loader, resol
 
 
 
-for year in ["2021"]: #, "2018"
+for year in ["2021", "2018"]:
     print(year)
 
     out_folder = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+"/"
