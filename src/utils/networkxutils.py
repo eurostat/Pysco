@@ -1,5 +1,7 @@
 import networkx as nx
 
+from utils.netutils import distance
+
 
 # make networkx graph from linear features
 def graph_from_geodataframe(gdf, weight = lambda feature:feature.geometry.length, coord_simp=round, edge_fun = None, detailled=False):
