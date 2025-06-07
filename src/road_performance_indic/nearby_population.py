@@ -162,7 +162,7 @@ radius_m = 120000 # 120km
 grid_resolution = 1000
 tile_file_size_m = 1000000
 partition_size = 200000 #should be a divisor of tile_file_size_m
-num_processors_to_use = 8
+num_processors_to_use = 10
 
 
 # whole europe
