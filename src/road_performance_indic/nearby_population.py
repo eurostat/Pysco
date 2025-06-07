@@ -10,9 +10,9 @@ from utils.convert import parquet_grid_to_geotiff, parquet_grid_to_gpkg
 from utils.featureutils import index_from_geo_fiona
 
 
-#TODO check duration : 30" for 10000 cells : 8h30 for 10e6 cells
-
+#TODO fix
 #TODO parallel
+#TODO check duration : 30" for 10000 cells : 8h30 for 10e6 cells
 
 
 def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_population_parquet, bbox, resolution=1000, only_populated_cells=False, radius_m = 120000):
@@ -39,16 +39,16 @@ def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_pop
             id = 'CRS3035RES' + str(resolution) + 'mN' + str(y) + 'E' + str(x)
             p = pop_dict[id]
             if only_populated_cells and (p is None or p<=0): continue
-            items.append((i, (x,y,x,y), None))
-            lmi = lm.loc[id]['code'].item()
+            items.append((i, (x,y,x,y)))
+            lmi = lm_dict[id]
             cells.append( { "x":x, "y":y, "GRD_ID": id, "pop":p, "lmi":lmi } )
             i += 1
 
     del pop_dict
-    del lm
+    del lm_dict
 
     # build index
-    spatial_index = index.Index(((i, box, obj) for i, box, obj in items))
+    spatial_index = index.Index(((i, box) for i, box in items))
     del items
 
     print(datetime.now(), "compute indicator for each cell...")
@@ -65,7 +65,12 @@ def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_pop
 
         # get close cells using spatial index
         x = c["x"]; y = c["y"]
-        close_cells = spatial_index.intersection((x-radius_m, y-radius_m, x+radius_m, y+radius_m))
+        sq = (x-radius_m, y-radius_m, x+radius_m, y+radius_m)
+        #print(sq)
+        close_cells = spatial_index.intersection(sq)
+
+        aaa = len(list(close_cells))
+        print(aaa)
 
         #compute population total
         pop_tot = 0
@@ -123,7 +128,7 @@ for year in ["2021"]: #, "2018"
     parquet_file = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".parquet"
     compute_nearby_population(
         pop_dict_loader,
-
+        lm_dict_loader,
         parquet_file,
         bbox=bbox,
         only_populated_cells=False,
