@@ -46,8 +46,9 @@ def __parallel_process(xy, partition_size, pop_dict_loader, land_mass_dict_loade
             try: p = pop_dict[id]
             except: continue
             if only_populated_cells and (p is None or p<=0): continue
+            try: lmi = lm_dict[id]
+            except: continue
             items.append((i, (x+r2,y+r2,x+r2,y+r2)))
-            lmi = lm_dict[id]
             cells.append( { "x":x, "y":y, "GRD_ID": id, "pop":p, "lmi":lmi } )
             i += 1
 
