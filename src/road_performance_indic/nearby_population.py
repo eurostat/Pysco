@@ -153,6 +153,9 @@ def compute_nearby_population(pop_dict_loader,
 
 
 
+def pop_dict_loader_2021(bbox): return index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T", bbox=bbox)
+def pop_dict_loader_2018(bbox): return index_from_geo_fiona("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", "GRD_ID", "TOT_P_2018", bbox=bbox)
+def land_mass_dict_loader(bbox): return index_from_geo_fiona("/home/juju/gisco/road_transport_performance/cells_land_mass.gpkg", "GRD_ID", "code", bbox=bbox)
 
 for year in ["2021", "2018"]:
     print(year)
@@ -160,27 +163,18 @@ for year in ["2021", "2018"]:
     out_folder = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+"/"
     if not os.path.exists(out_folder): os.makedirs(out_folder)
 
-    if year == "2021":
-        pop_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T", bbox=bbox)
-    else:
-        pop_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", "GRD_ID", "TOT_P_2018", bbox=bbox)
-
-    land_mass_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/gisco/road_transport_performance/cells_land_mass.gpkg", "GRD_ID", "code", bbox=bbox)
-
-
-    out_parquet_file = out_folder + "todo.parquet"
-
-
     bbox = [3900000, 2600000, 4000000, 2700000]
-    compute_nearby_population(pop_dict_loader,
-                              land_mass_dict_loader,
-                              bbox,
-                              out_parquet_file,
-                              resolution=1000,
-                              only_populated_cells=False,
-                              radius_m = 30000,
-                              partition_size = 100000,
-                              num_processors_to_use = 1)
+
+    compute_nearby_population(
+        pop_dict_loader_2021 if year == "2021" else pop_dict_loader_2018,
+        land_mass_dict_loader,
+        bbox,
+        out_folder + "todo.parquet",
+        resolution=1000,
+        only_populated_cells=False,
+        radius_m = 30000,
+        partition_size = 100000,
+        num_processors_to_use = 1)
 
 
     '''
