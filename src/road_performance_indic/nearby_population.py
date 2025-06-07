@@ -95,11 +95,9 @@ def __parallel_process(xy, partition_size, pop_dict_loader, land_mass_dict_loade
             pop_tot += p2
         '''
 
-        #TODO check if it is faster !
         pop_tot = sum(cells[i2]["pop"] for i2 in close_cells
                         if cells[i2]["pop"] and cells[i2]["lmi"] == lmi
                         and (x - cells[i2]["x"])**2 + (y - cells[i2]["y"])**2 <= radius_m_s)
-
 
         #print(pop_tot)
         out_id.append(c["GRD_ID"])
@@ -178,14 +176,13 @@ for year in ["2021", "2018"]:
         pop_dict_loader,
         lm_dict_loader,
         only_populated_cells=False,
-        radius_m = 1200,
+        radius_m = 30000,
     )
 
     parquet_file = out_folder + "todo.parquet"
     [out_id, out_indic] = res
     df = pd.DataFrame( { "GRD_ID": out_id, "POP_N_120": out_indic } )
     df.to_parquet(parquet_file)
-    #df.to_csv(parquet_file+'.csv', index=False)
 
     print(year, "parquet to geotiff")
     files = [os.path.join(out_folder, f) for f in os.listdir(out_folder) if f.endswith('.parquet')]
