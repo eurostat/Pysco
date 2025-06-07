@@ -6,16 +6,15 @@ import pandas as pd
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.convert import parquet_grid_to_geotiff, parquet_grid_to_gpkg
+from utils.convert import parquet_grid_to_geotiff #, parquet_grid_to_gpkg
 from utils.featureutils import index_from_geo_fiona
 
 
-#TODO fix
 #TODO parallel
 #TODO check duration : 30" for 10000 cells : 8h30 for 10e6 cells
 
 
-def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_population_parquet, bbox, resolution=1000, only_populated_cells=False, radius_m = 120000):
+def compute_nearby_population(bbox, pop_dict_loader, land_mass_dict_loader, resolution=1000, only_populated_cells=False, radius_m = 120000):
     r2 = resolution/2
 
     # make extended bbox
@@ -97,12 +96,7 @@ def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_pop
     del spatial_index
     del cells
 
-    df = pd.DataFrame( { "GRD_ID": out_id, "POP_N_120": out_indic } )
-    print(datetime.now(), "save")
-    df.to_parquet(nearby_population_parquet)
-    df.to_csv(nearby_population_parquet+'.csv', index=False)
-
-    print(datetime.now(), "Done.")
+    return( [out_id, out_indic] )
 
 
 
@@ -123,15 +117,19 @@ for year in ["2021"]: #, "2018"
 
     lm_dict_loader = lambda bbox : index_from_geo_fiona("/home/juju/gisco/road_transport_performance/cells_land_mass.gpkg", "GRD_ID", "code", bbox=bbox)
 
-    parquet_file = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".parquet"
-    compute_nearby_population(
+    res = compute_nearby_population(
+        bbox,
         pop_dict_loader,
         lm_dict_loader,
-        parquet_file,
-        bbox=bbox,
         only_populated_cells=False,
         radius_m = 120000,
     )
+
+    parquet_file = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".parquet"
+    [out_id, out_indic] = res
+    df = pd.DataFrame( { "GRD_ID": out_id, "POP_N_120": out_indic } )
+    df.to_parquet(parquet_file)
+    df.to_csv(parquet_file+'.csv', index=False)
 
     print("parquet to geotiff")
     parquet_grid_to_geotiff(
