@@ -53,7 +53,7 @@ for service in ["education", "healthcare"]:
         tomtom_year = "2019" if year == "2020" else year
         def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
         def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels IS NULL or levels!='0'" if service=="education" else "")
-        num_processors_to_use = 7 if service == "education" else 4 #3
+        num_processors_to_use = 7 if service == "education" else 6 #3
         extention_buffer = 20000 if service=="education" else 60000
 
         # launch process for each tile file

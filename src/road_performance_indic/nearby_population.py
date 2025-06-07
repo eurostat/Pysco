@@ -87,22 +87,30 @@ def __parallel(xy, partition_size, pop_dict_loader, land_mass_dict_loader, resol
             dy = y-c2["y"]
             if dx*dx + dy*dy > radius_m_s : continue
 
-            #sum population
+            # sum population
             pop_tot += p2
 
         #print(pop_tot)
         out_id.append(c["GRD_ID"])
         out_indic.append(round(pop_tot))
 
+    print(datetime.now(),xmin, ymin, "done -", len(cells))
     del spatial_index
     del cells
 
-    print(datetime.now(),xmin, ymin, "done -", len(cells))
     return( [out_id, out_indic] )
 
 
 
-
+def compute_nearby_population(pop_dict_loader,
+                              land_mass_dict_loader,
+                              bbox,
+                              resolution=1000,
+                              only_populated_cells=False,
+                              radius_m = 120000,
+                              partition_size = 100000,
+                              num_processors_to_use = 1):
+    pass
 
 
 
