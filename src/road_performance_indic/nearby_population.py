@@ -1,4 +1,5 @@
 from datetime import datetime
+from math import floor
 import numpy as np
 from rtree import index
 import pandas as pd
@@ -153,6 +154,15 @@ def compute_nearby_population(pop_dict_loader,
 
 
 
+grid_resolution = 1000
+tile_file_size_m = 500000
+partition_size = 125000 #should be a divisor of tile_file_size_m
+
+bbox = [3900000, 2600000, 4000000, 2700000]
+clamp = lambda v : floor(v/tile_file_size_m)*tile_file_size_m
+[xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
+
+
 def pop_dict_loader_2021(bbox): return index_from_geo_fiona("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", "GRD_ID", "T", bbox=bbox)
 def pop_dict_loader_2018(bbox): return index_from_geo_fiona("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", "GRD_ID", "TOT_P_2018", bbox=bbox)
 def land_mass_dict_loader(bbox): return index_from_geo_fiona("/home/juju/gisco/road_transport_performance/cells_land_mass.gpkg", "GRD_ID", "code", bbox=bbox)
@@ -163,37 +173,29 @@ for year in ["2021", "2018"]:
     out_folder = "/home/juju/gisco/road_transport_performance/nearby_population_"+year+"/"
     if not os.path.exists(out_folder): os.makedirs(out_folder)
 
-    bbox = [3900000, 2600000, 4000000, 2700000]
+    # launch process for each tile file
+    for x in range(xmin, xmax+1, tile_file_size_m):
+        for y in range(ymin, ymax+1, tile_file_size_m):
 
-    compute_nearby_population(
-        pop_dict_loader_2021 if year == "2021" else pop_dict_loader_2018,
-        land_mass_dict_loader,
-        bbox,
-        out_folder + "todo.parquet",
-        resolution=1000,
-        only_populated_cells=False,
-        radius_m = 30000,
-        partition_size = 100000,
-        num_processors_to_use = 1)
+            # output file
+            out_file = out_folder + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
 
+            # skip if output file was already produced
+            if os.path.isfile(out_file): continue
 
-    '''
-    xy = [3900000, 2600000]
-    partition_size = 100000
+            print(year, " - Tile file", x, y)
 
-    res = __parallel_process(
-        xy,
-        partition_size,
-        pop_dict_loader,
-        land_mass_dict_loader,
-        only_populated_cells=False,
-        radius_m = 30000,
-    )
+            compute_nearby_population(
+                pop_dict_loader_2021 if year == "2021" else pop_dict_loader_2018,
+                land_mass_dict_loader,
+                bbox = [x, y, x+tile_file_size_m, y+tile_file_size_m],
+                out_parquet_file = out_file,
+                resolution = grid_resolution,
+                only_populated_cells = False,
+                radius_m = 30000,
+                partition_size = partition_size,
+                num_processors_to_use = 1)
 
-    [out_id, out_indic] = res
-    df = pd.DataFrame( { "GRD_ID": out_id, "POP_N_120": out_indic } )
-    df.to_parquet(out_parquet_file)
-    '''
 
     print(year, "parquet to geotiff")
     files = [os.path.join(out_folder, f) for f in os.listdir(out_folder) if f.endswith('.parquet')]
@@ -208,41 +210,4 @@ for year in ["2021", "2018"]:
 
 
 
-'''
-#raster mode, with convolution
 
-import rasterio
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum
-
-print("mask", "2018")
-geotiff_mask_by_countries(
-    "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
-    "/home/juju/gisco/road_transport_performance/pop_2018.tiff",
-    gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
-    gpkg_column = 'CNTR_ID',
-    values_to_exclude = ["UK", "RS", "BA", "MK", "AL", "ME"],
-    compress="deflate"
-)
-print("mask", "2021")
-geotiff_mask_by_countries(
-    "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2_clean.tiff",
-    "/home/juju/gisco/road_transport_performance/pop_2021.tiff",
-    gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
-    gpkg_column = 'CNTR_ID',
-    values_to_exclude = ["UK", "RS", "BA", "MK", "AL", "ME"],
-    compress="deflate"
-)
-
-for year in ["2018", "2021"]:
-    print("convolution", year)
-    circular_kernel_sum(
-        "/home/juju/gisco/road_transport_performance/pop_"+year+".tiff",
-        "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tiff",
-        120000,
-        rasterio.uint32,
-        compress="deflate",
-        )
-'''
