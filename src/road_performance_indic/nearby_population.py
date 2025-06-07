@@ -27,10 +27,12 @@ def __parallel_process(xy, partition_size, pop_dict_loader, land_mass_dict_loade
     print(datetime.now(),xmin, ymin, "Load land mass cell index")
     lm_dict = land_mass_dict_loader(extended_bbox)
     print(datetime.now(),xmin, ymin, len(lm_dict.keys()), "land mass figures loaded")
+    if len(lm_dict.keys())==0: return
 
     print(datetime.now(),xmin, ymin, "Load population figures")
     pop_dict = pop_dict_loader(extended_bbox)
     print(datetime.now(),xmin, ymin, len(pop_dict.keys()), "population figures loaded")
+    if len(pop_dict.keys())==0: return
 
     print(datetime.now(),xmin, ymin, "prepare cells...")
 
@@ -41,7 +43,8 @@ def __parallel_process(xy, partition_size, pop_dict_loader, land_mass_dict_loade
     for x in range(xmin-radius_m-resolution, xmax+radius_m+resolution, resolution):
         for y in range(ymin-radius_m-resolution, ymax+radius_m+resolution, resolution):
             id = 'CRS3035RES' + str(resolution) + 'mN' + str(y) + 'E' + str(x)
-            p = pop_dict[id]
+            try: p = pop_dict[id]
+            except: continue
             if only_populated_cells and (p is None or p<=0): continue
             items.append((i, (x+r2,y+r2,x+r2,y+r2)))
             lmi = lm_dict[id]
