@@ -7,8 +7,8 @@ from multiprocessing import Pool
 import sys
 import os
 
-from utils.utils import cartesian_product_comp
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.utils import cartesian_product_comp
 from utils.convert import parquet_grid_to_geotiff #, parquet_grid_to_gpkg
 from utils.featureutils import index_from_geo_fiona
 
