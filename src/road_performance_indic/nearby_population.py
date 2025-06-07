@@ -19,7 +19,7 @@ def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_pop
 
     # make extended bbox
     (xmin, ymin, xmax, ymax) = bbox
-    extended_bbox = (xmin-radius_m, ymin-radius_m, xmax+radius_m, ymax+radius_m)
+    extended_bbox = (xmin-radius_m-resolution, ymin-radius_m-resolution, xmax+radius_m+resolution, ymax+radius_m+resolution)
 
     print(datetime.now(), "Load land mass cell index")
     lm_dict = land_mass_dict_loader(extended_bbox)
@@ -34,8 +34,8 @@ def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_pop
     cells = []
     items = []
     i = 0
-    for x in range(xmin-radius_m, xmax+-radius_m, resolution):
-        for y in range(ymin-radius_m, ymax+-radius_m, resolution):
+    for x in range(xmin-radius_m-resolution, xmax+radius_m+resolution, resolution):
+        for y in range(ymin-radius_m-resolution, ymax+radius_m+resolution, resolution):
             id = 'CRS3035RES' + str(resolution) + 'mN' + str(y) + 'E' + str(x)
             p = pop_dict[id]
             if only_populated_cells and (p is None or p<=0): continue
@@ -65,12 +65,9 @@ def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_pop
 
         # get close cells using spatial index
         x = c["x"]; y = c["y"]
-        sq = (x-radius_m, y-radius_m, x+radius_m, y+radius_m)
+        sq = (x-radius_m-resolution, y-radius_m-resolution, x+radius_m+resolution, y+radius_m+resolution)
         #print(sq)
         close_cells = spatial_index.intersection(sq)
-
-        #aaa = len(list(close_cells))
-        #print(aaa)
 
         #compute population total
         pop_tot = 0
