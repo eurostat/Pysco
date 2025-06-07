@@ -178,7 +178,7 @@ for year in ["2021", "2018"]:
         pop_dict_loader,
         lm_dict_loader,
         only_populated_cells=False,
-        radius_m = 120000,
+        radius_m = 1200,
     )
 
     parquet_file = out_folder + "todo.parquet"
