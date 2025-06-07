@@ -159,8 +159,14 @@ radius_m = 120000 # 120km
 grid_resolution = 1000
 tile_file_size_m = 500000
 partition_size = 125000 #should be a divisor of tile_file_size_m
+num_processors_to_use = 8
 
-bbox = [3900000, 2600000, 4000000, 2700000]
+
+# whole europe
+bbox = [ 900000, 900000, 6600000, 5400000 ]
+# dijon
+#bbox = [3900000, 2600000, 4000000, 2700000]
+
 clamp = lambda v : floor(v/tile_file_size_m)*tile_file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
@@ -197,7 +203,7 @@ for year in ["2021", "2018"]:
                 only_populated_cells = False,
                 radius_m = radius_m,
                 partition_size = partition_size,
-                num_processors_to_use = 1)
+                num_processors_to_use = num_processors_to_use)
 
 
     print(year, "parquet to geotiff")
