@@ -8,7 +8,7 @@ from utils.convert import parquet_grid_to_geotiff
 from utils.geotiff import rename_geotiff_bands
 from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
-
+#TODO fix length for detailled=False
 #check: FEATTYP=4110 FRC 0 to 6
 #TODO crop by country - see issue on the coast
 #TODO crop by country: remove andorra, monaco, san marino
