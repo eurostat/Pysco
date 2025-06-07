@@ -53,23 +53,22 @@ def __parallel(xy, partition_size, pop_dict_loader, land_mass_dict_loader, resol
     spatial_index = index.Index(((i, box, None) for i, box in items))
     del items
 
-    print(datetime.now(),xmin, ymin, "compute indicator for each cell...")
-    # only those in the bbox, not the extended bbox
+    # compute indicator only for those in the bbox, not the extended bbox
     cells_to_compute = list(spatial_index.intersection( (xmin+resolution*0.1, ymin+r2, xmax-resolution*0.1, ymax-resolution*0.1) ))
     print(datetime.now(),xmin, ymin, len(cells_to_compute))
 
+    print(datetime.now(),xmin, ymin, "compute indicator for each cell...")
     out_id = []
     out_indic = []
     radius_m_s = radius_m * radius_m
+    rr = radius_m-resolution
 
     for i in cells_to_compute:
         c = cells[i]
 
         # get close cells using spatial index
         x = c["x"]; y = c["y"]
-        sq = (x-radius_m-resolution, y-radius_m-resolution, x+radius_m+resolution, y+radius_m+resolution)
-        #print(sq)
-        close_cells = spatial_index.intersection(sq)
+        close_cells = spatial_index.intersection( (x-rr, y-rr, x+rr, y+rr) )
 
         #compute population total
         pop_tot = 0
