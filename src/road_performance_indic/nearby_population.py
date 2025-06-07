@@ -34,8 +34,8 @@ def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_pop
     cells = []
     items = []
     i = 0
-    for x in range(xmin, xmax, resolution):
-        for y in range(ymin, ymax, resolution):
+    for x in range(xmin-radius_m, xmax+-radius_m, resolution):
+        for y in range(ymin-radius_m, ymax+-radius_m, resolution):
             id = 'CRS3035RES' + str(resolution) + 'mN' + str(y) + 'E' + str(x)
             p = pop_dict[id]
             if only_populated_cells and (p is None or p<=0): continue
@@ -48,7 +48,7 @@ def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_pop
     del lm_dict
 
     # build index
-    spatial_index = index.Index(((i, box) for i, box in items))
+    spatial_index = index.Index(((i, box, None) for i, box in items))
     del items
 
     print(datetime.now(), "compute indicator for each cell...")
@@ -69,8 +69,8 @@ def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_pop
         #print(sq)
         close_cells = spatial_index.intersection(sq)
 
-        aaa = len(list(close_cells))
-        print(aaa)
+        #aaa = len(list(close_cells))
+        #print(aaa)
 
         #compute population total
         pop_tot = 0
@@ -113,7 +113,7 @@ def compute_nearby_population(pop_dict_loader, land_mass_dict_loader, nearby_pop
 
 
 # bbox - set to None to compute on the entire space
-bbox = (3700000, 2400000, 3800000, 2500000)
+bbox = (3900000, 2600000, 4000000, 2700000)
 
 for year in ["2021"]: #, "2018"
     print(year)
