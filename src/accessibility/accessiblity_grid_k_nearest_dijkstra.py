@@ -286,10 +286,8 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         averages.append(sum)
     data['duration_average_s_'+str(k)] = averages
 
-    # make dataframe
-    out = pd.DataFrame(data)
-
     # save output
     print(datetime.now(), "save as parquet")
+    out = pd.DataFrame(data)
     out.to_parquet(out_parquet_file)
 

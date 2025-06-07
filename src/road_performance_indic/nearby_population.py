@@ -73,6 +73,7 @@ def __parallel_process(xy, partition_size, pop_dict_loader, land_mass_dict_loade
         x = c["x"]; y = c["y"]
         close_cells = spatial_index.intersection( (x-rr, y-rr, x+rr, y+rr) )
 
+        '''
         #compute population total
         pop_tot = 0
         lmi = c['lmi']
@@ -92,6 +93,13 @@ def __parallel_process(xy, partition_size, pop_dict_loader, land_mass_dict_loade
 
             # sum population
             pop_tot += p2
+        '''
+
+        #TODO check if it is faster !
+        pop_tot = sum(cells[i2]["pop"] for i2 in close_cells
+                        if cells[i2]["pop"] and cells[i2]["lmi"] == lmi
+                        and (x - cells[i2]["x"])**2 + (y - cells[i2]["y"])**2 <= radius_m_s)
+
 
         #print(pop_tot)
         out_id.append(c["GRD_ID"])
@@ -102,6 +110,7 @@ def __parallel_process(xy, partition_size, pop_dict_loader, land_mass_dict_loade
     del cells
 
     return( [out_id, out_indic] )
+
 
 
 
@@ -123,11 +132,24 @@ def compute_nearby_population(pop_dict_loader,
     outputs = Pool(num_processors_to_use).starmap(__parallel_process, processes_params)
 
     print(datetime.now(), "combine", len(outputs), "outputs")
-    grd_ids = []
-    costs = []
 
-    pass
+    out_id = []
+    out_indic = []
+    for out in outputs:
+        # skip if empty result
+        if out==None : continue
+        if len(out[0])==0: continue
 
+        # combine results
+        out_id += out[0]
+        out_indic += out[1]
+
+    print(datetime.now(), len(out_id), "cells")
+
+    # save output
+    print(datetime.now(), "save as parquet")
+    df = pd.DataFrame( { "GRD_ID": out_id, "POP_N_120": out_indic } )
+    df.to_parquet(parquet_file)
 
 
 
