@@ -115,7 +115,7 @@ def circular_kernel_sum_per_code_fast(
         codes = src.read(2)
         profile = src.profile
         nodata = src.nodata
-        pixel_size = src.res
+        pixel_size = src.res[0]
 
     if nodata is not None:
         values = np.where((values == nodata) | (values < 0), 0, values)
