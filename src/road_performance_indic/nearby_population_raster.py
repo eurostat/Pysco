@@ -1,10 +1,11 @@
 # compute nearby population from raster data, using (fast) convolution
 
+import numpy as np
 import rasterio
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum
+from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum, rasterise_tesselation_gpkg
 
 '''
 # prepare population grids
@@ -40,3 +41,26 @@ for year in ["2018", "2021"]:
         rasterio.uint32,
         compress="deflate",
         )
+
+
+resolution = 1000
+year = 2021
+
+
+# rasterise land mass index
+rasterise_tesselation_gpkg(
+    "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg",
+    "/home/juju/gisco/road_transport_performance/land_mass_gridded.tiff",
+    fieldname='code',
+    resolution=resolution,
+    compression='deflate',
+    nodata_value=-9999,
+    dtype=np.int32
+)
+
+
+
+
+# combine with population
+
+# compute convolution

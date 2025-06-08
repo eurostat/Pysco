@@ -8,6 +8,10 @@ from scipy import ndimage
 from skimage.morphology import disk
 import os
 
+
+
+
+
 def circular_kernel_sum(
     input_tiff,
     output_tiff,
@@ -155,6 +159,73 @@ def circular_kernel_sum_per_code_fast(
 
     with rasterio.open(output_tiff, "w", **profile) as dst:
         dst.write(output, 1)
+
+
+
+
+
+import rasterio
+from rasterio.features import rasterize
+import fiona
+from shapely.geometry import shape, mapping
+import numpy as np
+
+def rasterise_tesselation_gpkg(
+    input_gpkg,
+    output_tiff,
+    layer=None,
+    fieldname='code',
+    resolution=1000,
+    compression='none',
+    nodata_value=-9999,
+    dtype=np.float32
+):
+    # Open vector file
+    with fiona.open(input_gpkg, layer=layer) as src:
+        crs = src.crs
+        bounds = src.bounds
+
+        # Compute raster dimensions
+        width = int((bounds[2] - bounds[0]) / resolution)
+        height = int((bounds[3] - bounds[1]) / resolution)
+
+        # Prepare shapes with value tuples for rasterisation
+        shapes = (
+            (shape(feature['geometry']), feature['properties'][fieldname])
+            for feature in src
+        )
+
+        # Define raster transform
+        transform = rasterio.transform.from_origin(bounds[0], bounds[3], resolution, resolution)
+
+        # Rasterise
+        raster = rasterize(
+            shapes=shapes,
+            out_shape=(height, width),
+            fill=nodata_value,
+            transform=transform,
+            dtype=dtype
+        )
+
+    # Define raster profile
+    profile = {
+        'driver': 'GTiff',
+        'height': height,
+        'width': width,
+        'count': 1,
+        'dtype': dtype,
+        'crs': crs,
+        'transform': transform,
+        'nodata': nodata_value,
+        'compress': compression
+    }
+
+    # Write output raster
+    with rasterio.open(output_tiff, 'w', **profile) as dst:
+        dst.write(raster, 1)
+
+    print(f"Raster saved to {output_tiff}")
+
 
 
 
