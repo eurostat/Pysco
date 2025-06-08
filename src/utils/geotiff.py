@@ -256,28 +256,37 @@ def rename_geotiff_bands(input_path, new_band_names, output_path=None):
 
 
 
-def combine_geotiffs(input_files, output_file, nodata_value=-9999, compress=None):
+def combine_geotiffs(input_files, output_file, nodata_value=-9999, compress=None, dtype=None):
     """
     Combine multiple GeoTIFF files (single or multi-band) into a single multi-band GeoTIFF.
-    Assumes same CRS, resolution, data type, and aligned grids.
+    Assumes same CRS, resolution, and aligned grids.
+    Converts to specified dtype if provided.
 
     Parameters:
     - input_files: list of input GeoTIFF file paths.
     - output_file: path for the output GeoTIFF file.
     - nodata_value: value for areas without data.
     - compress: optional compression method (e.g. 'LZW').
+    - dtype: optional output data type (e.g. 'float32', 'int16'). If None, use first input file dtype.
     """
 
     datasets = [rasterio.open(f) for f in input_files]
 
-    # Validate matching CRS, resolution, dtype
+    # Validate matching CRS, resolution
     crs = datasets[0].crs
     res = datasets[0].res
-    dtype = datasets[0].dtypes[0]
 
     for ds in datasets:
-        if ds.crs != crs or ds.res != res or ds.dtypes[0] != dtype:
-            raise ValueError("All input GeoTIFFs must have same CRS, resolution and data type.")
+        if ds.crs != crs or ds.res != res:
+            raise ValueError("All input GeoTIFFs must have same CRS and resolution.")
+
+    # Check and resolve data types
+    input_dtypes = set(ds.dtypes[0] for ds in datasets)
+
+    if dtype is None:
+        if len(input_dtypes) > 1:
+            raise ValueError(f"Input files have different data types: {input_dtypes}. Specify a 'dtype' to convert.")
+        dtype = datasets[0].dtypes[0]
 
     # Compute combined bounds
     minxs, minys, maxxs, maxys = zip(*[ds.bounds for ds in datasets])
@@ -319,6 +328,10 @@ def combine_geotiffs(input_files, output_file, nodata_value=-9999, compress=None
                 # Read data for this band
                 data = ds.read(i+1)
 
+                # Convert to desired dtype if necessary
+                if data.dtype != dtype:
+                    data = data.astype(dtype)
+
                 # Create full-size array filled with nodata
                 full_data = np.full((height, width), nodata_value, dtype=dtype)
 
@@ -339,7 +352,6 @@ def combine_geotiffs(input_files, output_file, nodata_value=-9999, compress=None
     # Close all input datasets
     for ds in datasets:
         ds.close()
-
 
 
 
