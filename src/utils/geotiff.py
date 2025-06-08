@@ -178,12 +178,13 @@ def rasterise_tesselation_gpkg(
     resolution=1000,
     compression='none',
     nodata_value=-9999,
+    bbox=None,
     dtype=np.float32
 ):
     # Open vector file
     with fiona.open(input_gpkg, layer=layer) as src:
         crs = src.crs
-        bounds = src.bounds
+        bounds = src.bounds if bbox is None else bbox
 
         # Compute raster dimensions
         width = int((bounds[2] - bounds[0]) / resolution)
