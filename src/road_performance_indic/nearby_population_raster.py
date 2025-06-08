@@ -61,29 +61,25 @@ rasterise_tesselation_gpkg(
 
 '''
 
-year = "2021"
+for year in ["2021", "2018"]:
 
+    print("combine population + land mass index")
+    combine_geotiffs(
+        [
+            "/home/juju/gisco/road_transport_performance/pop_"+year+".tiff",
+            "/home/juju/gisco/road_transport_performance/land_mass_gridded.tiff",
+        ],
+        "/home/juju/gisco/road_transport_performance/pop_"+year+"_lmi.tiff",
+        compress="deflate",
+        nodata_value=-9999,
+        dtype=np.int64,
+    )
 
-'''
-print("combine population + land mass index")
-combine_geotiffs(
-    [
-        "/home/juju/gisco/road_transport_performance/pop_"+year+".tiff",
-        "/home/juju/gisco/road_transport_performance/land_mass_gridded.tiff",
-    ],
-    "/home/juju/gisco/road_transport_performance/pop_"+year+"_lmi.tiff",
-    compress="deflate",
-    nodata_value=-9999,
-    dtype=np.int64,
-)
-
-'''
-print("compute convolution")
-circular_kernel_sum_per_code_fast(
-    "/home/juju/gisco/road_transport_performance/pop_"+year+"_lmi.tiff",
-    "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tiff",
-    radius_m=120000,
-    dtype=rasterio.int32,
-    compress="deflate",
-)
-
+    print("compute convolution")
+    circular_kernel_sum_per_code_fast(
+        "/home/juju/gisco/road_transport_performance/pop_"+year+"_lmi.tiff",
+        "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tiff",
+        radius_m=120000,
+        dtype=rasterio.int32,
+        compress="deflate",
+    )
