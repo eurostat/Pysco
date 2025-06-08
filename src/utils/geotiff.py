@@ -129,6 +129,7 @@ def circular_kernel_sum_per_code_fast(
     kernel = disk(radius_px).astype(dtype)
 
     max_code = np.max(codes)
+    print("max code:", max_code)
     h, w = values.shape
 
     # Pre-allocate masked value stacks (codes from 0 to max_code)
@@ -140,7 +141,8 @@ def circular_kernel_sum_per_code_fast(
 
     # Convolve each stack layer
     convolved = np.zeros_like(masked_values)
-    for c in tqdm(range(max_code + 1), desc="Convolving code layers"):
+    for c in range(max_code + 1):
+        print(c)
         convolved[c] = ndimage.convolve(masked_values[c], kernel, mode='constant', cval=0)
 
     # Extract final output by selecting the convolved value at each pixel's code
