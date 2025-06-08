@@ -56,7 +56,7 @@ for service in ["education", "healthcare"]:
         def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels IS NULL or levels!='0'" if service=="education" else "")
         if grid_resolution == 100:
             num_processors_to_use = 7 if service == "education" else 4 #3
-        else: num_processors_to_use = 9
+        else: num_processors_to_use = 10
         extention_buffer = 20000 if service=="education" else 60000
 
         # launch process for each tile file
