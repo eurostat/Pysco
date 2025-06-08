@@ -6,7 +6,7 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum, rasterise_tesselation_gpkg, combine_geotiffs, circular_kernel_sum_per_code_fast
+from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum, rasterise_tesselation_gpkg, combine_geotiffs, circular_kernel_sum_per_code
 
 '''
 # prepare population grids
@@ -76,10 +76,10 @@ for year in ["2021"]: #, "2018"
     )
     '''
     print("compute convolution")
-    circular_kernel_sum_per_code_fast(
+    circular_kernel_sum_per_code(
         "/home/juju/gisco/road_transport_performance/pop_"+year+"_lmi.tiff",
         "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tiff",
         radius_m=120000,
-        dtype=rasterio.int32,
+        dtype=rasterio.int64,
         compress="deflate",
     )

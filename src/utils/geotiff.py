@@ -63,8 +63,7 @@ def circular_kernel_sum_per_code(
         codes = src.read(2)
         profile = src.profile
         nodata = src.nodata
-        pixel_size, pixel_size_y = src.res
-        assert pixel_size == pixel_size_y, "Pixels must be square."
+        pixel_size = src.res[0]
 
     if nodata is not None:
         values = np.where((values == nodata) | (values < 0), 0, values)
