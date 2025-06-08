@@ -5,7 +5,7 @@ import rasterio
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum, rasterise_tesselation_gpkg
+from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum, rasterise_tesselation_gpkg, combine_geotiffs
 
 '''
 # prepare population grids
@@ -30,8 +30,8 @@ geotiff_mask_by_countries(
 )
 '''
 
+'''
 # apply fast convolution - without taking into account land mass index
-
 for year in ["2018", "2021"]:
     print("convolution", year)
     circular_kernel_sum(
@@ -41,11 +41,9 @@ for year in ["2018", "2021"]:
         rasterio.uint32,
         compress="deflate",
         )
-
+'''
 
 resolution = 1000
-year = 2021
-
 
 # rasterise land mass index
 rasterise_tesselation_gpkg(
@@ -58,9 +56,17 @@ rasterise_tesselation_gpkg(
     dtype=np.int32
 )
 
+year = 2021
 
-
-
-# combine with population
+# combine population + land mass indx
+combine_geotiffs(
+    [
+        "/home/juju/gisco/road_transport_performance/pop_"+year+".tiff",
+        "/home/juju/gisco/road_transport_performance/land_mass_gridded.tiff",
+    ],
+    "/home/juju/gisco/road_transport_performance/pop_"+year+"_lmi.tiff",
+    compress="deflate",
+    nodata_value=-9999,
+)
 
 # compute convolution
