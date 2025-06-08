@@ -72,6 +72,7 @@ combine_geotiffs(
     "/home/juju/gisco/road_transport_performance/pop_"+year+"_lmi.tiff",
     compress="deflate",
     nodata_value=-9999,
+    datatype=np.int64,
 )
 
 '''
