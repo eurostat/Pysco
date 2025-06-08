@@ -277,8 +277,10 @@ def combine_geotiffs(input_files, output_file, nodata_value=-9999, compress=None
     res = datasets[0].res
 
     for ds in datasets:
-        if ds.crs != crs or ds.res != res:
-            raise ValueError("All input GeoTIFFs must have same CRS and resolution.")
+        if ds.crs != crs:
+            raise ValueError("All input GeoTIFFs must have same CRS.")
+        if ds.res != res:
+            raise ValueError("All input GeoTIFFs must have same resolution.")
 
     # Check and resolve data types
     input_dtypes = set(ds.dtypes[0] for ds in datasets)
