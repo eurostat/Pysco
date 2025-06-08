@@ -14,6 +14,10 @@ from utils.convert import parquet_grid_to_geotiff #, parquet_grid_to_gpkg
 from utils.featureutils import index_from_geo_fiona
 
 
+#TODO check/debug lmi
+#TODO fix missing tiles
+#TODO do it in raster mode, with boolean functional window ?
+
 
 # base function, for a partition
 def __parallel_process(xy, partition_size, pop_dict_loader, land_mass_dict_loader, resolution=1000, only_populated_cells=False, radius_m = 120000):

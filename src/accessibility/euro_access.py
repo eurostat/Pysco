@@ -24,9 +24,9 @@ bbox = [ 900000, 900000, 6600000, 5400000 ]
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
 # fixed parameters
-grid_resolution = 100
+grid_resolution = 1000
 detailled_network_decomposition = grid_resolution == 100
-densification_distance = grid_resolution if grid_resolution == 100 else None
+densification_distance = grid_resolution
 cell_network_max_distance = grid_resolution * 2
 
 tile_file_size_m = 500000 if grid_resolution == 100 else 1000000
