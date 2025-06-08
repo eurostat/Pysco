@@ -93,6 +93,69 @@ def circular_kernel_sum_per_code(
     with rasterio.open(output_tiff, "w", **profile) as dst:
         dst.write(output, 1)
 
+'''
+Same as previous but more efficient.
+This avoids looping over codes one-by-one — much faster and cleaner.
+Batch-processing all codes at once by:
+ - Creating a 3D array masked_values_per_code where:
+   - each slice masked_values_per_code[c] is values where codes == c, zero elsewhere
+ - Convolve each slice separately
+Then reconstruct the final raster by selecting, at each pixel, the result corresponding to its code
+'''
+def circular_kernel_sum_per_code_fast(
+    input_tiff,
+    output_tiff,
+    radius_m=120000,
+    dtype=rasterio.float32,
+    compress=None,
+):
+    with rasterio.open(input_tiff) as src:
+        values = src.read(1)
+        codes = src.read(2)
+        profile = src.profile
+        nodata = src.nodata
+        pixel_size, pixel_size_y = src.res
+        assert pixel_size == pixel_size_y, "Pixels must be square."
+
+    if nodata is not None:
+        values = np.where((values == nodata) | (values < 0), 0, values)
+    else:
+        values = np.clip(values, 0, None)
+
+    values = values.astype(dtype)
+    codes = codes.astype(np.int32)
+
+    radius_px = int(radius_m / pixel_size)
+    kernel = disk(radius_px).astype(dtype)
+
+    max_code = np.max(codes)
+    h, w = values.shape
+
+    # Pre-allocate masked value stacks (codes from 0 to max_code)
+    masked_values = np.zeros((max_code + 1, h, w), dtype=dtype)
+
+    # Fill masked values stack
+    for c in range(max_code + 1):
+        masked_values[c] = np.where(codes == c, values, 0)
+
+    # Convolve each stack layer
+    convolved = np.zeros_like(masked_values)
+    for c in tqdm(range(max_code + 1), desc="Convolving code layers"):
+        convolved[c] = ndimage.convolve(masked_values[c], kernel, mode='constant', cval=0)
+
+    # Extract final output by selecting the convolved value at each pixel's code
+    output = convolved[codes, np.indices((h, w))[0], np.indices((h, w))[1]]
+
+    profile.update(dtype=dtype, count=1)
+    profile.pop("nodata", None)
+    if compress is not None:
+        profile.update(compress=compress)
+
+    with rasterio.open(output_tiff, "w", **profile) as dst:
+        dst.write(output, 1)
+
+
+
 
 
 
