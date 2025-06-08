@@ -63,6 +63,8 @@ rasterise_tesselation_gpkg(
 
 year = "2021"
 
+
+'''
 print("combine population + land mass index")
 combine_geotiffs(
     [
@@ -84,6 +86,4 @@ circular_kernel_sum_per_code_fast(
     dtype=rasterio.int32,
     compress="deflate",
 )
-
-'''
 
