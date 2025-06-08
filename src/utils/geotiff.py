@@ -93,9 +93,9 @@ def circular_kernel_sum_per_code(
     with rasterio.open(output_tiff, "w", **profile) as dst:
         dst.write(output, 1)
 
+
 '''
-Same as previous but more efficient.
-This avoids looping over codes one-by-one — much faster and cleaner.
+Same as previous but more efficient. This version avoids looping over codes one-by-one — much faster and cleaner.
 Batch-processing all codes at once by:
  - Creating a 3D array masked_values_per_code where:
    - each slice masked_values_per_code[c] is values where codes == c, zero elsewhere
