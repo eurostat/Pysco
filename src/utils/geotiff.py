@@ -8,8 +8,6 @@ from scipy import ndimage
 from skimage.morphology import disk
 import os
 
-
-
 def circular_kernel_sum(
     input_tiff,
     output_tiff,
@@ -23,7 +21,6 @@ def circular_kernel_sum(
         nodata = src.nodata
         pixel_size, pixel_size_y = src.res
         assert pixel_size == pixel_size_y, "Pixels must be square."
-
 
     if nodata is not None:
         data = np.where((data == nodata) | (data < 0), 0, data)
@@ -48,6 +45,54 @@ def circular_kernel_sum(
 
     with rasterio.open(output_tiff, "w", **profile) as dst:
         dst.write(data, 1)
+
+
+
+# compute circular kernel sum of band 1, but only for pixel values with same band 2 values
+# use it for example, to compute neerby population in the same land mass / island
+def circular_kernel_sum_per_code(
+    input_tiff, # band 1: population. band 2: codes
+    output_tiff,
+    radius_m=120000,
+    dtype=rasterio.float32,
+    compress=None,
+):
+    with rasterio.open(input_tiff) as src:
+        values = src.read(1)
+        codes = src.read(2)
+        profile = src.profile
+        nodata = src.nodata
+        pixel_size, pixel_size_y = src.res
+        assert pixel_size == pixel_size_y, "Pixels must be square."
+
+    if nodata is not None:
+        values = np.where((values == nodata) | (values < 0), 0, values)
+    else:
+        values = np.clip(values, 0, None)
+
+    values = values.astype(dtype)
+
+    radius_px = int(radius_m / pixel_size)
+    kernel = disk(radius_px).astype(dtype)
+
+    output = np.zeros_like(values, dtype=dtype)
+    unique_codes = np.unique(codes)
+
+    for code in unique_codes:
+        print("Processing", code)
+        mask = (codes == code).astype(dtype)
+        masked_values = values * mask
+        summed = ndimage.convolve(masked_values, kernel, mode='constant', cval=0)
+        output += np.where(codes == code, summed, 0)
+
+    profile.update(dtype=dtype, count=1)
+    profile.pop("nodata", None)
+    if compress is not None:
+        profile.update(compress=compress)
+
+    with rasterio.open(output_tiff, "w", **profile) as dst:
+        dst.write(output, 1)
+
 
 
 
