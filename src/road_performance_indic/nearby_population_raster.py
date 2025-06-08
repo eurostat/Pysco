@@ -46,6 +46,7 @@ for year in ["2018", "2021"]:
 
 resolution = 1000
 
+'''
 
 print("rasterise land mass index")
 rasterise_tesselation_gpkg(
@@ -60,8 +61,8 @@ rasterise_tesselation_gpkg(
 
 
 year = "2021"
-
 '''
+
 print("combine population + land mass index")
 combine_geotiffs(
     [
@@ -73,6 +74,7 @@ combine_geotiffs(
     nodata_value=-9999,
 )
 
+'''
 print("compute convolution")
 circular_kernel_sum_per_code_fast(
     "/home/juju/gisco/road_transport_performance/pop_"+year+"_lmi.tiff",
@@ -81,5 +83,6 @@ circular_kernel_sum_per_code_fast(
     dtype=rasterio.int32,
     compress="deflate",
 )
+
 '''
 
