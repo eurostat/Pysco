@@ -4,8 +4,9 @@ import numpy as np
 import rasterio
 import sys
 import os
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum, rasterise_tesselation_gpkg, combine_geotiffs
+from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum, rasterise_tesselation_gpkg, combine_geotiffs, circular_kernel_sum_per_code_fast
 
 '''
 # prepare population grids
@@ -45,7 +46,7 @@ for year in ["2018", "2021"]:
 
 resolution = 1000
 
-# rasterise land mass index
+print("rasterise land mass index")
 rasterise_tesselation_gpkg(
     "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg",
     "/home/juju/gisco/road_transport_performance/land_mass_gridded.tiff",
@@ -58,7 +59,8 @@ rasterise_tesselation_gpkg(
 
 year = 2021
 
-# combine population + land mass indx
+
+print("combine population + land mass index")
 combine_geotiffs(
     [
         "/home/juju/gisco/road_transport_performance/pop_"+year+".tiff",
