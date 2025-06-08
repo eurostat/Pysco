@@ -21,7 +21,9 @@ def circular_kernel_sum(
         data = src.read(1)
         profile = src.profile
         nodata = src.nodata
-        pixel_size = src.res[0]  # assuming square pixels
+        pixel_size, pixel_size_y = src.res
+        assert pixel_size == pixel_size_y, "Pixels must be square."
+
 
     if nodata is not None:
         data = np.where((data == nodata) | (data < 0), 0, data)
@@ -34,6 +36,9 @@ def circular_kernel_sum(
     kernel = disk(radius_px).astype(dtype)
 
     data = ndimage.convolve(data, kernel, mode='constant', cval=0)
+    #TODO test that - it may be faster !
+    #from scipy.signal import fftconvolve
+    #data = fftconvolve(data, kernel, mode='same')
 
     profile.update(dtype=dtype)
     profile.pop("nodata", None)
