@@ -59,9 +59,9 @@ rasterise_tesselation_gpkg(
     dtype=np.int32
 )
 
+'''
 
 year = "2021"
-'''
 
 print("combine population + land mass index")
 combine_geotiffs(

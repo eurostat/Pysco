@@ -2,14 +2,11 @@ import rasterio
 from rasterio.features import geometry_mask
 import geopandas as gpd
 from rasterio.transform import from_bounds
-from rasterio.enums import Resampling
+from rasterio.windows import from_bounds as window_from_bounds
 import numpy as np
 from scipy import ndimage
 from skimage.morphology import disk
 import os
-
-
-
 
 
 def circular_kernel_sum(
@@ -259,47 +256,42 @@ def rename_geotiff_bands(input_path, new_band_names, output_path=None):
 
 
 
-def combine_geotiffs(input_files, output_file, output_bounds=None, compress=None, nodata_value = -9999):
+def combine_geotiffs(input_files, output_file, nodata_value=-9999, compress=None):
     """
-    Combine multiple GeoTIFF files into a single multi-band GeoTIFF.
+    Combine multiple GeoTIFF files (single or multi-band) into a single multi-band GeoTIFF.
+    Assumes same CRS, resolution, data type, and aligned grids.
 
     Parameters:
     - input_files: list of input GeoTIFF file paths.
     - output_file: path for the output GeoTIFF file.
-    - output_bounds: optional tuple (minx, miny, maxx, maxy). If None, uses union of input bounds.
+    - nodata_value: value for areas without data.
+    - compress: optional compression method (e.g. 'LZW').
     """
 
     datasets = [rasterio.open(f) for f in input_files]
 
-    # Check all have same CRS and resolution and nodata
-    crs_set = set([ds.crs.to_string() for ds in datasets])
-    res_set = set([(ds.res[0], ds.res[1]) for ds in datasets])
-
-    if len(crs_set) > 1 or len(res_set) > 1:
-        raise ValueError("All input GeoTIFFs must have the same CRS and resolution and nodata.")
-
+    # Validate matching CRS, resolution, dtype
     crs = datasets[0].crs
-    res_x, res_y = datasets[0].res
+    res = datasets[0].res
+    dtype = datasets[0].dtypes[0]
 
-    # Compute output bounds
-    if output_bounds is None:
-        minxs, minys, maxxs, maxys = zip(*[ds.bounds for ds in datasets])
-        output_bounds = (
-            min(minxs),
-            min(minys),
-            max(maxxs),
-            max(maxys)
-        )
+    for ds in datasets:
+        if ds.crs != crs or ds.res != res or ds.dtypes[0] != dtype:
+            raise ValueError("All input GeoTIFFs must have same CRS, resolution and data type.")
 
-    # Calculate output transform and shape
-    width = int(np.ceil((output_bounds[2] - output_bounds[0]) / res_x))
-    height = int(np.ceil((output_bounds[3] - output_bounds[1]) / abs(res_y)))
+    # Compute combined bounds
+    minxs, minys, maxxs, maxys = zip(*[ds.bounds for ds in datasets])
+    output_bounds = (min(minxs), min(minys), max(maxxs), max(maxys))
+
+    # Calculate output shape and transform
+    width = int(np.ceil((output_bounds[2] - output_bounds[0]) / res[0]))
+    height = int(np.ceil((output_bounds[3] - output_bounds[1]) / res[1]))
     transform = from_bounds(*output_bounds, width, height)
 
-    # Prepare output metadata
+    # Total output band count
     total_bands = sum(ds.count for ds in datasets)
-    dtype = datasets[0].dtypes[0]  # Assuming all have same dtype
 
+    # Prepare metadata
     out_meta = {
         'driver': 'GTiff',
         'height': height,
@@ -308,51 +300,48 @@ def combine_geotiffs(input_files, output_file, output_bounds=None, compress=None
         'crs': crs,
         'transform': transform,
         'dtype': dtype,
-        'nodata': nodata_value,
+        'nodata': nodata_value
     }
-
-    # set compression
-    if compress is not None:
+    if compress:
         out_meta['compress'] = compress
 
-    # Collect band names
-    band_names = []
-    for ds in datasets:
-        for i in range(ds.count):
-            name = ds.descriptions[i] if ds.descriptions[i] else f"{os.path.basename(ds.name)}_band{i+1}"
-            band_names.append(name)
-
-    # Write combined raster
+    # Create output file and write data
     with rasterio.open(output_file, 'w', **out_meta) as dest:
         band_index = 1
         for ds in datasets:
+            # Compute window in output raster for this input raster
+            window = window_from_bounds(*ds.bounds, transform=transform)
+
+            row_off, col_off = int(window.row_off), int(window.col_off)
+            rows, cols = ds.height, ds.width
+
             for i in range(ds.count):
-                window = rasterio.windows.from_bounds(*output_bounds, transform=ds.transform)
-                data = ds.read(
-                    i+1,
-                    out_shape=(height, width),
-                    resampling=Resampling.nearest,
-                    window=window,
-                    masked=True
-                )
+                # Read data for this band
+                data = ds.read(i+1)
 
-                # Fill masked areas with nodata
-                data_filled = np.where(data.mask, nodata_value, data.filled())
+                # Create full-size array filled with nodata
+                full_data = np.full((height, width), nodata_value, dtype=dtype)
 
-                dest.write(data_filled, band_index)
-                dest.set_band_description(band_index, band_names[band_index-1])
+                # Place input data into correct window
+                full_data[row_off:row_off+rows, col_off:col_off+cols] = data
+
+                # Write to corresponding band in output
+                dest.write(full_data, band_index)
+
+                # Set band description
+                desc = ds.descriptions[i]
+                if not desc:
+                    desc = f"{os.path.basename(ds.name)}_band{i+1}"
+                dest.set_band_description(band_index, desc)
+
                 band_index += 1
 
-                '''data = ds.read(i+1, out_shape=(height, width), resampling=rasterio.enums.Resampling.nearest, 
-                               window=rasterio.windows.from_bounds(*output_bounds, transform=ds.transform))
-
-                dest.write(data, band_index)
-                dest.set_band_description(band_index, band_names[band_index-1])
-                band_index += 1'''
-
-    # Close input datasets
+    # Close all input datasets
     for ds in datasets:
         ds.close()
+
+
+
 
 
 
