@@ -110,7 +110,7 @@ def circular_kernel_sum_per_code(
         output_sub[mask_sub] = summed_sub[mask_sub]
         output[row_start:row_stop, col_start:col_stop] = output_sub
 
-        if code > 50: break
+        if code > 250: break
 
     # Update profile
     profile.update(dtype=dtype, count=1, nodata=nodata)
