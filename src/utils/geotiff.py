@@ -79,8 +79,8 @@ def circular_kernel_sum_per_code(
     unique_codes = np.unique(codes)
 
     for code in unique_codes:
-        print("Processing", code)
         if code==nodata: continue
+        print("Processing", code)
         mask = (codes == code).astype(dtype)
         masked_values = values * mask
         summed = ndimage.convolve(masked_values, kernel, mode='constant', cval=0)
