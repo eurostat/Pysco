@@ -55,7 +55,7 @@ resolution = 1000
 print("rasterise land mass index")
 rasterise_tesselation_gpkg(
     "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg",
-    "/home/juju/gisco/road_transport_performance/land_mass_gridded___.tiff",
+    "/home/juju/gisco/road_transport_performance/land_mass_gridded.tiff",
     fieldname='code',
     resolution=resolution,
     compression='deflate',
