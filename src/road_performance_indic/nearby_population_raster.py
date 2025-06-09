@@ -61,8 +61,9 @@ rasterise_tesselation_gpkg(
 )
 '''
 
-for year in ["2021"]: #, "2018"
-    '''
+for year in ["2021", "2018"]: #
+
+
     print("combine population + land mass index")
     combine_geotiffs(
         [
@@ -74,7 +75,6 @@ for year in ["2021"]: #, "2018"
         nodata_value=-9999,
         dtype=np.int64,
     )
-    '''
 
     print("compute convolution")
     circular_kernel_sum_per_code(
@@ -84,3 +84,4 @@ for year in ["2021"]: #, "2018"
         dtype=rasterio.int64,
         compress="deflate",
     )
+
