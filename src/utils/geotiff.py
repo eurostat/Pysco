@@ -152,14 +152,14 @@ def rasterise_tesselation_gpkg(
         bounds = src.bounds if bbox is None else bbox
 
         # ensure bounds are resolution-rounded
-        bounds[0] = floor(bounds[0]/resolution)*resolution
-        bounds[1] = floor(bounds[1]/resolution)*resolution
-        bounds[2] = ceil(bounds[2]/resolution)*resolution
-        bounds[3] = ceil(bounds[3]/resolution)*resolution
+        minx = floor(bounds[0]/resolution)*resolution
+        miny = floor(bounds[1]/resolution)*resolution
+        maxx = ceil(bounds[2]/resolution)*resolution
+        maxy = ceil(bounds[3]/resolution)*resolution
 
         # Compute raster dimensions
-        width = int((bounds[2] - bounds[0]) / resolution)
-        height = int((bounds[3] - bounds[1]) / resolution)
+        width = int((maxx - minx) / resolution)
+        height = int((maxy - miny) / resolution)
 
         # Prepare shapes with value tuples for rasterisation
         shapes = (
@@ -168,7 +168,7 @@ def rasterise_tesselation_gpkg(
         )
 
         # Define raster transform
-        transform = rasterio.transform.from_origin(bounds[0], bounds[3], resolution, resolution)
+        transform = rasterio.transform.from_origin(minx, maxy, resolution, resolution)
 
         # Rasterise
         raster = rasterize(
