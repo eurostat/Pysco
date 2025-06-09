@@ -78,6 +78,7 @@ def circular_kernel_sum_per_code(
     kernel = disk(radius_px).astype(dtype)
 
     unique_codes = np.unique(codes)
+    print(len(unique_codes), "codes")
     for code in unique_codes:
         if code == nodata: continue
 
