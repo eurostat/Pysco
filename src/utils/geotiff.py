@@ -1,3 +1,4 @@
+from math import ceil, floor
 import rasterio
 from rasterio.features import geometry_mask
 import geopandas as gpd
@@ -149,6 +150,11 @@ def rasterise_tesselation_gpkg(
     with fiona.open(input_gpkg, layer=layer) as src:
         crs = src.crs
         bounds = src.bounds if bbox is None else bbox
+
+        bounds[0] = floor(bounds[0]/resolution)*resolution
+        bounds[1] = floor(bounds[1]/resolution)*resolution
+        bounds[2] = ceil(bounds[2]/resolution)*resolution
+        bounds[3] = ceil(bounds[3]/resolution)*resolution
 
         # Compute raster dimensions
         width = int((bounds[2] - bounds[0]) / resolution)
