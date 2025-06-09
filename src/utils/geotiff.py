@@ -7,6 +7,11 @@ import numpy as np
 from scipy import ndimage
 from skimage.morphology import disk
 import os
+from rasterio.features import rasterize
+import fiona
+from shapely.geometry import shape
+import numpy as np
+
 
 
 def circular_kernel_sum(
@@ -125,14 +130,6 @@ def circular_kernel_sum_per_code(
 
 
 
-
-
-import rasterio
-from rasterio.features import rasterize
-import fiona
-from shapely.geometry import shape, mapping
-import numpy as np
-
 def rasterise_tesselation_gpkg(
     input_gpkg,
     output_tiff,
@@ -142,7 +139,8 @@ def rasterise_tesselation_gpkg(
     compression='none',
     nodata_value=-9999,
     bbox=None,
-    dtype=np.float32
+    dtype=np.float32,
+    all_touched=False
 ):
     # Open vector file
     with fiona.open(input_gpkg, layer=layer) as src:
@@ -168,7 +166,8 @@ def rasterise_tesselation_gpkg(
             out_shape=(height, width),
             fill=nodata_value,
             transform=transform,
-            dtype=dtype
+            dtype=dtype,
+            all_touched=all_touched
         )
 
     # Define raster profile

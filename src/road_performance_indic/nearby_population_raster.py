@@ -46,24 +46,23 @@ for year in ["2018", "2021"]:
 
 resolution = 1000
 
-'''
+
 # TODO not only center - larger intersection
 # TODO peloponese !
 print("rasterise land mass index")
 rasterise_tesselation_gpkg(
     "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg",
-    "/home/juju/gisco/road_transport_performance/land_mass_gridded.tiff",
+    "/home/juju/gisco/road_transport_performance/land_mass_gridded___.tiff",
     fieldname='code',
     resolution=resolution,
     compression='deflate',
     nodata_value=-9999,
-    dtype=np.int32
+    dtype=np.int32,
+    all_touched = True
 )
 
 '''
-
 for year in ["2021"]: #, "2018"
-    '''
     print("combine population + land mass index")
     combine_geotiffs(
         [
@@ -75,7 +74,6 @@ for year in ["2021"]: #, "2018"
         nodata_value=-9999,
         dtype=np.int64,
     )
-    '''
     print("compute convolution")
     circular_kernel_sum_per_code(
         "/home/juju/gisco/road_transport_performance/pop_"+year+"_lmi.tiff",
@@ -84,3 +82,4 @@ for year in ["2021"]: #, "2018"
         dtype=rasterio.int64,
         compress="deflate",
     )
+    '''
