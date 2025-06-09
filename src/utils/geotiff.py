@@ -117,7 +117,7 @@ def circular_kernel_sum_per_code(
         rows_mask, cols_mask = np.where(mask_sub)
         output[row_start:row_stop, col_start:col_stop][rows_mask, cols_mask] = summed_sub[rows_mask, cols_mask]
 
-        if code > 1000: break
+        #if code > 1000: break
 
     # Update profile
     profile.update(dtype=dtype, count=1, nodata=nodata)
