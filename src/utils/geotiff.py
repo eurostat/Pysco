@@ -93,6 +93,8 @@ def circular_kernel_sum_per_code(
         col_start = max(col_min, 0)
         col_stop  = min(col_max + 1, values.shape[1])
 
+        print( (row_stop-row_start)*(col_stop-col_start), "pixels" )
+
         # Extract subarrays
         values_sub = values[row_start:row_stop, col_start:col_stop]
         mask_sub   = mask[row_start:row_stop, col_start:col_stop]
