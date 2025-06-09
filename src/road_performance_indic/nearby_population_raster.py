@@ -47,7 +47,7 @@ for year in ["2018", "2021"]:
 resolution = 1000
 
 '''
-
+# TODO not only center - larger intersection
 print("rasterise land mass index")
 rasterise_tesselation_gpkg(
     "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg",
