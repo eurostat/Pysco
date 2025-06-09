@@ -52,8 +52,6 @@ for year in ["2018", "2021"]:
 
 resolution = 1000
 
-'''
-# TODO check peloponese !
 print("rasterise land mass index")
 rasterise_tesselation_gpkg(
     "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg",
@@ -65,7 +63,7 @@ rasterise_tesselation_gpkg(
     dtype=np.int32,
     all_touched = True
 )
-'''
+
 
 for year in ["2021", "2018"]: #
 
