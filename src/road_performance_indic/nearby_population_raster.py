@@ -48,6 +48,7 @@ resolution = 1000
 
 '''
 # TODO not only center - larger intersection
+# TODO peloponese !
 print("rasterise land mass index")
 rasterise_tesselation_gpkg(
     "/home/juju/gisco/road_transport_performance/land_mass_gridded.gpkg",
