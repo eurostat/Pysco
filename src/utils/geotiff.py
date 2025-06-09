@@ -151,6 +151,7 @@ def rasterise_tesselation_gpkg(
         crs = src.crs
         bounds = src.bounds if bbox is None else bbox
 
+        # ensure bounds are resolution-rounded
         bounds[0] = floor(bounds[0]/resolution)*resolution
         bounds[1] = floor(bounds[1]/resolution)*resolution
         bounds[2] = ceil(bounds[2]/resolution)*resolution
