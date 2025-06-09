@@ -111,9 +111,11 @@ def circular_kernel_sum_per_code(
         summed_sub = ndimage.convolve(masked_values, kernel, mode='constant', cval=0)
 
         # Write results back only where mask is True
-        output_sub = output[row_start:row_stop, col_start:col_stop]
-        output_sub[mask_sub] = summed_sub[mask_sub]
-        output[row_start:row_stop, col_start:col_stop] = output_sub
+        #output_sub = output[row_start:row_stop, col_start:col_stop]
+        #output_sub[mask_sub] = summed_sub[mask_sub]
+        #output[row_start:row_stop, col_start:col_stop] = output_sub
+        rows_mask, cols_mask = np.where(mask_sub)
+        output[row_start:row_stop, col_start:col_stop][rows_mask, cols_mask] = summed_sub[rows_mask, cols_mask]
 
         if code > 1000: break
 
