@@ -9,9 +9,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum, rasterise_tesselation_gpkg, combine_geotiffs, circular_kernel_sum_per_code
 
 
-#TODO land mass gridded - shift! restarise: specify position - rounded coordinates
+#TODO guyane negative
 #TODO peloponese
-
 
 
 '''
