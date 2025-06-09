@@ -68,41 +68,33 @@ def circular_kernel_sum_per_code(
     # Prepare output with nodata everywhere
     output = np.full_like(values, nodata, dtype=dtype)
 
-    # Replace nodata/negative with 0 for calculation
-    values_clean = np.where((values == nodata) | (values < 0), 0, values).astype(dtype)
-
     # Prepare kernel
     radius_px = int(radius_m / pixel_size)
     kernel = disk(radius_px).astype(dtype)
 
     unique_codes = np.unique(codes)
     for code in unique_codes:
-        if code == nodata:
-            continue
+        if code == nodata: continue
 
         print(f"Processing code: {code}")
 
         # Create mask for this code
         mask = (codes == code)
-        if not np.any(mask):
-            continue
+        if not np.any(mask): continue
 
         # Get bounds of mask: min and max rows/cols where mask is True
         rows, cols = np.where(mask)
         row_min, row_max = rows.min(), rows.max()
         col_min, col_max = cols.min(), cols.max()
 
-        # Define margin to safely contain kernel footprint
-        margin = radius_px + 1  # +1 to be safe
-
         # Compute window boundaries, clamped within raster
-        row_start = max(row_min - margin, 0)
-        row_stop  = min(row_max + margin + 1, values.shape[0])
-        col_start = max(col_min - margin, 0)
-        col_stop  = min(col_max + margin + 1, values.shape[1])
+        row_start = max(row_min, 0)
+        row_stop  = min(row_max + 1, values.shape[0])
+        col_start = max(col_min, 0)
+        col_stop  = min(col_max + 1, values.shape[1])
 
         # Extract subarrays
-        values_sub = values_clean[row_start:row_stop, col_start:col_stop]
+        values_sub = values[row_start:row_stop, col_start:col_stop]
         mask_sub   = mask[row_start:row_stop, col_start:col_stop]
 
         # Multiply mask and values
