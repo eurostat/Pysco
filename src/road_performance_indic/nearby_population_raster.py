@@ -11,7 +11,7 @@ from utils.geotiff import geotiff_mask_by_countries, circular_kernel_sum, raster
 
 #TODO guyane negative
 #TODO peloponese
-#TODO popYYYY: remove coastal pixels - apply buffered mask
+#TODO popYYYY: remove coastal pixels - apply buffered masks
 
 
 '''
