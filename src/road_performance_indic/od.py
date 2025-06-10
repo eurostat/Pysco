@@ -11,7 +11,6 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff):
     destinations: set des noeuds destinations
     cutoff: valeur maximale de coût au-delà de laquelle on ignore le chemin
     """
-    costs = {}
     heap = [(0, origin)]
     visited = set()
     result = {}
@@ -19,20 +18,17 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff):
     while heap:
         cost, node = heapq.heappop(heap)
 
-        if node in visited:
-            continue
+        if node in visited: continue
         visited.add(node)
 
         # Si destination atteinte, enregistrer le coût
         if node in destinations:
             result[node] = cost
             # Optionnel : early exit si toutes les destinations atteintes
-            if len(result) == len(destinations):
-                break
+            if len(result) == len(destinations): break
 
         # Ignorer si le coût dépasse le cutoff
-        if cost > cutoff:
-            continue
+        if cost > cutoff: continue
 
         for neighbor, weight in graph.get(node, []):
             if neighbor not in visited:
@@ -41,6 +37,7 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff):
                     heapq.heappush(heap, (new_cost, neighbor))
 
     return result
+
 
 
 def compute_od_matrix(graph, origins, destinations, cutoff):

@@ -34,12 +34,11 @@ tomtom = "/home/juju/geodata/tomtom/tomtom_202312.gpkg"
 road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/2021/nw.gpkg', 'r', driver='GPKG', bbox=bbox),
 #TODO exclude ferry links
 
+# output
+accessible_population = "/home/juju/gisco/road_transport_performance/accessible_population_2021.parquet"
 
-# output CSV
-accessible_population_csv = "/home/juju/gisco/road_transport_performance/accessible_population_2021.csv"
 
-
-extention_buffer = 200000
+extention_buffer = 200000 #200 km
 # build partition extended bbox
 extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
@@ -67,7 +66,7 @@ idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 node_pop_dict = {}
 # TODO: attach population grid cell centers to the nearest snappable node. assign population (sum?) to these nodes.
 
-# destination nodes: the nodes with some population
+# destination nodes: all nodes with population
 destinations = node_pop_dict.keys()
 
 # go through cells
@@ -85,4 +84,8 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
         if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
         if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute OD matrix")
-        costs = dijkstra_with_cutoff(graph, origin, destinations, 90*60)
+        result = dijkstra_with_cutoff(graph, n, destinations, 90*60)
+        #TODO return only nodes ? result.keys() ?
+
+        print(result)
+
