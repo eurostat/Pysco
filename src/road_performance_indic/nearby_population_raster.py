@@ -176,7 +176,6 @@ for resolution in [1000]: #100
             rasterio.uint32,
             compress="deflate",
         )
-        '''
         print("combine population + land mass index")
         combine_geotiffs(
             [
@@ -197,5 +196,4 @@ for resolution in [1000]: #100
             dtype=rasterio.int64,
             compress="deflate",
         )
-        '''
 

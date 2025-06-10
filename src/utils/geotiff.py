@@ -192,13 +192,13 @@ def combine_geotiffs(input_files, output_file, nodata_value=None, compress=None,
                 # Read data for this band
                 data = ds.read(i+1)
 
-                # Use common nodata value, for all bands
-                if ds.nodata != nodata_value:
-                    data[data == ds.nodata] = nodata_value
-
                 # Convert to desired dtype if necessary
                 if data.dtype != dtype:
                     data = data.astype(dtype)
+
+                # Use common nodata value, for all bands
+                if ds.nodata != nodata_value:
+                    data[data == ds.nodata] = nodata_value
 
                 # Create full-size array filled with nodata
                 full_data = np.full((height, width), nodata_value, dtype=dtype)
