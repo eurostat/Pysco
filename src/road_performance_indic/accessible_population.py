@@ -70,6 +70,7 @@ node_pop_dict = {}
 destinations = node_pop_dict.keys()
 
 # go through cells
+if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute OD matrix")
 r2 = grid_resolution / 2
 for x in range(x_part, x_part+partition_size, grid_resolution):
     for y in range(y_part, y_part+partition_size, grid_resolution):
@@ -83,7 +84,6 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
         dtn = distance_to_node(n, x+r2, y+r2)
         if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
-        if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute OD matrix")
         result = dijkstra_with_cutoff(graph, n, destinations, 90*60)
         #TODO return only nodes ? result.keys() ?
 

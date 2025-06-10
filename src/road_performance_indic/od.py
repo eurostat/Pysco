@@ -39,7 +39,7 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff):
     return result
 
 
-
+'''
 def compute_od_matrix(graph, origins, destinations, cutoff):
     """
     Calcule la matrice origine/destination des coûts minimaux
@@ -53,7 +53,7 @@ def compute_od_matrix(graph, origins, destinations, cutoff):
         od_matrix[origin] = costs
 
     return od_matrix
-
+'''
 
 '''
 # Exemple d'utilisation
