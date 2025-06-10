@@ -11,6 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.geotiff import geotiff_mask_by_countries, rasterise_tesselation_gpkg, combine_geotiffs
 
 
+#TODO correct 2018
 #TODO handle peloponese ? connect it ?
 
 

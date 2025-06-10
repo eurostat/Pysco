@@ -10,14 +10,12 @@ from shapely.geometry import shape, mapping
 from rtree import index
 import csv
 
-from utils.netutils import ___graph_adjacency_list_from_geodataframe, nodes_spatial_index_adjacendy_list
+from road_performance_indic.od import compute_od_matrix, dijkstra_with_cutoff
+from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_to_node, nodes_spatial_index_adjacendy_list
 from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function
 #from utils.featureutils import loadFeatures
 
 
-#TODO
-# Floyd-Warshall algorithm ?
-# exclude ferry links
 
 
 
@@ -26,6 +24,7 @@ from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_
 partition_size = 10000
 show_detailled_messages =True
 grid_resolution = 1000
+cell_network_max_distance = grid_resolution * 2
 
 # population grid
 population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
@@ -33,6 +32,8 @@ population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
 # tomtom road network
 tomtom = "/home/juju/geodata/tomtom/tomtom_202312.gpkg"
 road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/2021/nw.gpkg', 'r', driver='GPKG', bbox=bbox),
+#TODO exclude ferry links
+
 
 # output CSV
 accessible_population_csv = "/home/juju/gisco/road_transport_performance/accessible_population_2021.csv"
@@ -63,3 +64,25 @@ if show_detailled_messages: print(datetime.now(),x_part,y_part, len(graph.keys()
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "build nodes spatial index")
 idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
+node_pop_dict = {}
+# TODO: attach population grid cell centers to the nearest snappable node. assign population (sum?) to these nodes.
+
+# destination nodes: the nodes with some population
+destinations = node_pop_dict.keys()
+
+# go through cells
+r2 = grid_resolution / 2
+for x in range(x_part, x_part+partition_size, grid_resolution):
+    for y in range(y_part, y_part+partition_size, grid_resolution):
+
+        # snap cell centre to the snappable nodes, using the spatial index
+        ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
+        if ni_ == None: continue
+        n = snappable_nodes[ni_]
+
+        # compute distance from cell centre to node, and skip if too far
+        dtn = distance_to_node(n, x+r2, y+r2)
+        if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
+
+        if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute OD matrix")
+        costs = dijkstra_with_cutoff(graph, origin, destinations, 90*60)
