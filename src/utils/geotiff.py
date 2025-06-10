@@ -119,7 +119,7 @@ def combine_geotiffs(input_files, output_file, nodata_value=-9999, compress=None
     Parameters:
     - input_files: list of input GeoTIFF file paths.
     - output_file: path for the output GeoTIFF file.
-    - nodata_value: value for areas without data.
+    - nodata_value: optional value to use in the output GeoTIFF file for areas without data.
     - compress: optional compression method (e.g. 'LZW').
     - dtype: optional output data type (e.g. 'float32', 'int16'). If None, use first input file dtype.
     """
@@ -143,6 +143,14 @@ def combine_geotiffs(input_files, output_file, nodata_value=-9999, compress=None
         if len(input_dtypes) > 1:
             raise ValueError(f"Input files have different data types: {input_dtypes}. Specify a 'dtype' to convert.")
         dtype = datasets[0].dtypes[0]
+
+    # Check and resolve nodata
+    input_nodatas = set(ds.nodata for ds in datasets)
+
+    if nodata_value is None:
+        if len(input_nodatas) > 1:
+            raise ValueError(f"Input files have different nodata: {input_nodatas}. Specify a 'nodata' to convert.")
+        nodata = datasets[0].nodata
 
     # Compute combined bounds
     minxs, minys, maxxs, maxys = zip(*[ds.bounds for ds in datasets])
