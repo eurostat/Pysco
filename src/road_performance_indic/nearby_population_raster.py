@@ -149,18 +149,6 @@ pop = {
 
 for resolution in [1000]: #100
 
-    # apply fast convolution - without taking into account land mass index
-    for year in ["2018", "2021"]:
-        print("convolution", year)
-        circular_kernel_sum(
-            pop[year],
-            folder + "nearby_population_"+year+"_fast.tiff",
-            120000,
-            rasterio.uint32,
-            compress="deflate",
-            )
-
-
     print("rasterise land mass index")
     rasterise_tesselation_gpkg(
         folder + "land_mass_gridded.gpkg",
@@ -175,6 +163,16 @@ for resolution in [1000]: #100
 
     for year in ["2021", "2018"]:
         print(year)
+
+        # apply fast convolution - without taking into account land mass index
+        print("convolution (fast)", year)
+        circular_kernel_sum(
+            pop[year],
+            folder + "nearby_population_"+year+"_fast.tiff",
+            120000,
+            rasterio.uint32,
+            compress="deflate",
+        )
 
         print("combine population + land mass index")
         combine_geotiffs(
