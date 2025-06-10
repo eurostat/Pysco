@@ -151,7 +151,7 @@ pop = {
 }
 
 for resolution in [1000]: #100
-    '''
+
     print("rasterise land mass index")
     rasterise_tesselation_gpkg(
         folder + "land_mass_gridded.gpkg",
@@ -163,10 +163,10 @@ for resolution in [1000]: #100
         dtype=np.int32,
         all_touched = True
     )
-    '''
+
     for year in ["2018"]: #"2021", 
         print(year)
-        '''
+
         # apply fast convolution - without taking into account land mass index
         print("convolution (fast)", year)
         circular_kernel_sum(
@@ -187,7 +187,7 @@ for resolution in [1000]: #100
             nodata_value=-9999,
             dtype=np.int64,
         )
-        '''
+        
         print("compute convolution")
         circular_kernel_sum_per_code(
             folder + "pop_"+year+"_lmi.tiff",
