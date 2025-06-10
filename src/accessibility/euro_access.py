@@ -122,7 +122,8 @@ for service in ["education", "healthcare"]:
             geotiff,
             gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
             gpkg_column = 'CNTR_ID',
-            values_to_exclude = ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
+            values = ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
+            operation = "exclude"
             compress="deflate"
         )
 
