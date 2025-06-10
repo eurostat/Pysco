@@ -214,15 +214,14 @@ def combine_geotiffs(input_files, output_file, nodata_value=-9999, compress=None
 
 # apply mask on a geotiff based on some geometries from a vector file
 def geotiff_mask_by_countries(
-          in_tiff_path,
-          out_tiff_path,
-          gpkg,
-          gpkg_column,
-          values,
-          compress=None,
-          centre=True,
-          operation = "include", # include or exclude
-):
+            in_tiff_path,
+            out_tiff_path,
+            gpkg,
+            gpkg_column,
+            values, # the ones to keep
+            compress=None,
+            all_touched=True
+    ):
     # read input raster
     with rasterio.open(in_tiff_path) as src:
         profile = src.profile.copy()
@@ -251,7 +250,7 @@ def geotiff_mask_by_countries(
         out_shape=(height, width),
         transform=transform,
         fill=0,  # pixels with no intersection
-        all_touched= not centre,  # any intersection with pixel => burn value
+        all_touched= all_touched,  # any intersection with pixel => burn value
         dtype='uint8'
     ) == 0  # True where no intersection
 

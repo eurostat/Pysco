@@ -24,7 +24,7 @@ bbox = [ 900000, 900000, 6600000, 5400000 ]
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
 # fixed parameters
-grid_resolution = 1000
+grid_resolution = 100
 detailled_network_decomposition = grid_resolution == 100
 densification_distance = grid_resolution
 cell_network_max_distance = grid_resolution * 2
@@ -49,7 +49,6 @@ for service in ["education", "healthcare"]:
         # ouput folder
         out_folder_service = out_folder + "out_" + service + "_" + year + "_" + str(grid_resolution) + "m/"
         if not os.path.exists(out_folder_service): os.makedirs(out_folder_service)
-
 
         tomtom_year = "2019" if year == "2020" else year
         def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
@@ -122,8 +121,11 @@ for service in ["education", "healthcare"]:
             geotiff,
             gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
             gpkg_column = 'CNTR_ID',
-            values = ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
-            operation = "exclude",
+            values = [
+                "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
+                "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
+                "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO"],
+            #exclude: ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
             compress="deflate"
         )
 
