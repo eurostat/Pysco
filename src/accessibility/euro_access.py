@@ -123,7 +123,7 @@ for service in ["education", "healthcare"]:
             gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
             gpkg_column = 'CNTR_ID',
             values = ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
-            operation = "exclude"
+            operation = "exclude",
             compress="deflate"
         )
 
