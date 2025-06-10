@@ -9,12 +9,7 @@ from utils.geotiff import rename_geotiff_bands
 from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
 
-#TODO produce 1000m. before: handle case when detailled=False, for link length
-#TODO fix length for detailled=False
 #check: FEATTYP=4110 FRC 0 to 6
-#TODO crop by country - see issue on the coast
-#TODO crop by country: remove andorra, monaco, san marino
-
 #TODO healthcare: new 2023 with new EL
 
 #TODO QGIS plugin for parquet grids
