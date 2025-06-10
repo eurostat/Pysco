@@ -139,7 +139,7 @@ def circular_kernel_sum_per_code(
 
 
 
-#TODO: 100m: disaggregate 2028
+#TODO: try 100m resolution: disaggregate 2018
 folder = "/home/juju/gisco/road_transport_performance/"
 
 pop = {
