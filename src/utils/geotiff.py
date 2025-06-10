@@ -54,7 +54,7 @@ def circular_kernel_sum(
         dst.write(data, 1)
 
 
-
+'''
 # compute circular kernel sum of band 1, but only for pixel values with same band 2 values
 # use it for example, to compute neerby population in the same land mass / island
 def circular_kernel_sum_per_code(
@@ -130,8 +130,7 @@ def circular_kernel_sum_per_code(
     with rasterio.open(output_tiff, 'w', **profile) as dst:
         dst.write(output, 1)
 
-    print("Done.")
-
+'''
 
 
 def rasterise_tesselation_gpkg(
