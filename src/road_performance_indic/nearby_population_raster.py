@@ -139,15 +139,15 @@ def circular_kernel_sum_per_code(
 
 
 
+#TODO: 100m: disaggregate 2028
 
 
-for resolution in [1000, 100]:
+pop = {
+    "2018" : "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
+    "2021" : "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2_clean.tiff",
+}
 
-    pop = {
-        "2018" : "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
-        "2021" : "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2_clean.tiff",
-    }
-
+for resolution in [1000]: #100
 
     # apply fast convolution - without taking into account land mass index
     for year in ["2018", "2021"]:
