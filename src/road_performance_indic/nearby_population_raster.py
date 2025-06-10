@@ -188,7 +188,7 @@ for resolution in [1000]: #100
             nodata_value=-9999,
             dtype=np.int64,
         )
-
+        '''
         print("compute convolution")
         circular_kernel_sum_per_code(
             folder + "pop_"+year+"_lmi.tiff",
@@ -197,4 +197,5 @@ for resolution in [1000]: #100
             dtype=rasterio.int64,
             compress="deflate",
         )
+        '''
 

@@ -110,7 +110,7 @@ def rename_geotiff_bands(input_path, new_band_names, output_path=None):
 
 
 
-def combine_geotiffs(input_files, output_file, nodata_value=-9999, compress=None, dtype=None):
+def combine_geotiffs(input_files, output_file, nodata_value=None, compress=None, dtype=None):
     """
     Combine multiple GeoTIFF files (single or multi-band) into a single multi-band GeoTIFF.
     Assumes same CRS, resolution, and aligned grids.
@@ -150,7 +150,7 @@ def combine_geotiffs(input_files, output_file, nodata_value=-9999, compress=None
     if nodata_value is None:
         if len(input_nodatas) > 1:
             raise ValueError(f"Input files have different nodata: {input_nodatas}. Specify a 'nodata' to convert.")
-        nodata = datasets[0].nodata
+        nodata_value = datasets[0].nodata
 
     # Compute combined bounds
     minxs, minys, maxxs, maxys = zip(*[ds.bounds for ds in datasets])
@@ -191,6 +191,10 @@ def combine_geotiffs(input_files, output_file, nodata_value=-9999, compress=None
             for i in range(ds.count):
                 # Read data for this band
                 data = ds.read(i+1)
+
+                # Use common nodata value, for all bands
+                if ds.nodata != nodata_value:
+                    data[data == ds.nodata] = nodata_value
 
                 # Convert to desired dtype if necessary
                 if data.dtype != dtype:
