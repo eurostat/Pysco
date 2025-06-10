@@ -12,9 +12,8 @@ from utils.geotiff import geotiff_mask_by_countries, rasterise_tesselation_gpkg,
 
 
 #TODO correct 2018
+#TODO: try 100m resolution ? disaggregate 2018
 #TODO handle peloponese ? connect it ?
-
-
 
 
 
@@ -73,6 +72,8 @@ def circular_kernel_sum_per_code(
         profile = src.profile
         nodata = src.nodata
         pixel_size = src.res[0]
+
+    print(nodata)
 
     # Prepare output with nodata everywhere
     output = np.full_like(values, nodata, dtype=dtype)
@@ -140,7 +141,8 @@ def circular_kernel_sum_per_code(
 
 
 
-#TODO: try 100m resolution: disaggregate 2018
+
+
 folder = "/home/juju/gisco/road_transport_performance/"
 
 pop = {
@@ -149,7 +151,7 @@ pop = {
 }
 
 for resolution in [1000]: #100
-
+    '''
     print("rasterise land mass index")
     rasterise_tesselation_gpkg(
         folder + "land_mass_gridded.gpkg",
@@ -161,10 +163,10 @@ for resolution in [1000]: #100
         dtype=np.int32,
         all_touched = True
     )
-
-    for year in ["2021", "2018"]:
+    '''
+    for year in ["2018"]: #"2021", 
         print(year)
-
+        '''
         # apply fast convolution - without taking into account land mass index
         print("convolution (fast)", year)
         circular_kernel_sum(
@@ -174,7 +176,6 @@ for resolution in [1000]: #100
             rasterio.uint32,
             compress="deflate",
         )
-
         print("combine population + land mass index")
         combine_geotiffs(
             [
@@ -186,6 +187,7 @@ for resolution in [1000]: #100
             nodata_value=-9999,
             dtype=np.int64,
         )
+        '''
 
         print("compute convolution")
         circular_kernel_sum_per_code(
