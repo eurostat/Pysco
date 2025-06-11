@@ -14,7 +14,7 @@ from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_t
 from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function
 from utils.featureutils import iter_features
 from utils.gridutils import get_cell_xy_from_id
-from utils.networkxutils import adjacency_dict_to_networkx
+#from utils.networkxutils import adjacency_dict_to_networkx
 
 
 
@@ -154,8 +154,8 @@ accessible_populations = [] # the values corresponding to the cell identifiers
 cache = {}
 
 #convert to networkx graph
-if show_detailled_messages: print(datetime.now(),x_part,y_part, "convert to NetworkX graph")
-graph = adjacency_dict_to_networkx(graph)
+#if show_detailled_messages: print(datetime.now(),x_part,y_part, "convert to NetworkX graph")
+#graph = adjacency_dict_to_networkx(graph)
 
 # go through cells
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing for", len(populated_cells), "cells")
@@ -186,14 +186,15 @@ for pc in populated_cells:
 
     # compute dijkstra
     print(datetime.now(), n)
-    #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
-    result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
+    result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
+    #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
     print(len(result),"/",len(populated_nodes))
 
     # sum of nodes population
     sum_pop = 0
     for nn in result:
-        if nn in node_pop_dict: sum_pop += node_pop_dict[nn]
+        #if nn in node_pop_dict:
+            sum_pop += node_pop_dict[nn]
 
     # store cell value
     accessible_populations.append(sum_pop)
