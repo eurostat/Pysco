@@ -69,7 +69,7 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=Fa
 
 # bbox
 [ x_part, y_part ] = [3750000, 2720000]
-partition_size = 10000
+partition_size = 50000
 show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
