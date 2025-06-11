@@ -71,7 +71,7 @@ idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 # dictionnary that assign population to graph node
 node_pop_dict = {}
 
-# project population grid on graph nodes
+if show_detailled_messages: print(datetime.now(),x_part,y_part, "Project population grid on graph nodes")
 cells = population_grid_loader(extended_bbox)
 r2 = grid_resolution/2
 for c in cells:
@@ -93,7 +93,7 @@ del cells
 
 # destination nodes: all nodes with population
 destinations = node_pop_dict.keys()
-print(len(destinations))
+if show_detailled_messages: print(datetime.now(),x_part,y_part, len(destinations), "nodes")
 
 # go through cells
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute OD matrix")
