@@ -7,6 +7,7 @@ import os
 
 from numba import njit, types
 from numba.typed import List
+from numba import int64, float64
 
 
 
@@ -104,6 +105,7 @@ def dijkstra_with_cutoff_old(graph, origin, destinations, cutoff=None, only_node
     return result
 '''
 
+
 def prepare_graph_dict(graph):
     """
     Convert {node: [(neighbor, weight), ...]} into two numba-typed Lists:
@@ -122,8 +124,8 @@ def prepare_graph_dict(graph):
     weights = List()
 
     for _ in range(num_nodes):
-        neighbors.append(List())
-        weights.append(List())
+        neighbors.append(List.empty_list(int64))
+        weights.append(List.empty_list(float64))
 
     for node, edges in graph.items():
         i = node_to_index[node]
@@ -132,6 +134,7 @@ def prepare_graph_dict(graph):
             weights[i].append(weight)
 
     return neighbors, weights, node_to_index, index_to_node
+
 
 
 @njit
