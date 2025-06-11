@@ -1,3 +1,4 @@
+from multiprocessing import Pool
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -213,11 +214,14 @@ def __parallel_process(xy,
         # cache value, to be sure is is not computed another time
         cache[n] = sum_pop
 
-
+    with Pool() as pool:
+        results = pool.map(process_cell, populated_cells)
+    '''
     for pc in populated_cells:
         print(i,"/",nb)
         i+=1
         process_cell(pc)
+    '''
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
