@@ -1,15 +1,7 @@
-from collections import defaultdict
 import numpy as np
 import pandas as pd
-from shapely.geometry import box,Polygon
-import geopandas as gpd
 from datetime import datetime
-import networkx as nx
-#import concurrent.futures
-#import threading
-from shapely.geometry import shape, mapping
 import heapq
-
 import sys
 import os
 
@@ -63,19 +55,19 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=Fa
 
 
 #TODO cutoff also based on straight distance to origin ?
-
+#TODO restricts to populated cells ?
 
 
 
 
 # bbox
 [ x_part, y_part ] = [3750000, 2720000]
-partition_size = 125000
+partition_size = 200000
 show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 10000 #180000 #200 km
+extention_buffer = 0 #180000 #200 km
 duration_s = 60 * 90 #1h30=90min
 
 # population grid
