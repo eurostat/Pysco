@@ -180,9 +180,9 @@ for pc in populated_cells:
     if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
     # compute dijkstra
-    print(datetime.now(), n)
+    #print(datetime.now(), n)
     result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
-    print(len(result),"/",len(populated_nodes))
+    #print(len(result),"/",len(populated_nodes))
 
     # sum of nodes population
     sum_pop = 0
