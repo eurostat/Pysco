@@ -64,8 +64,8 @@ show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 0 #180000 #200 km
-duration_s = 60 * 20 #1h30=90min
+extention_buffer = 180000 # 180000 #200 km
+duration_s = 60 * 90 #1h30=90min
 
 # population grid
 population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
@@ -165,13 +165,13 @@ for pc in populated_cells:
     # snap cell centre to the snappable nodes, using the spatial index
     ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
     if ni_ == None:
-        print("graph node not found for cell", x,y)
+        print(datetime.now(),x_part,y_part, "graph node not found for cell", x,y)
         continue
     n = snappable_nodes[ni_]
 
     # check if value was not already computed - try to find it in the cache
     if n in cache:
-        #print(n, cache[n])
+        print("Node found in cache", n, cache[n])
         accessible_populations.append(cache[n])
         grd_ids.append(id) #cell_id_fun(x,y))
         continue
@@ -181,7 +181,7 @@ for pc in populated_cells:
     if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
     # compute dijkstra
-    print(datetime.now(), n)
+    #print(datetime.now(), n)
     result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
     #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
     #print(len(result),"/",len(populated_nodes))
