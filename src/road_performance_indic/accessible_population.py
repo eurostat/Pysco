@@ -136,7 +136,7 @@ for c in cells:
     else: node_pop_dict[n] = pop
 
     # store populated cells within the bbox
-    if x>=x_part and y>=y_part and x<=x_part+partition_size and y<=y_part+partition_size:
+    if x>=x_part and y>=y_part and x<x_part+partition_size and y<y_part+partition_size:
         populated_cells.append((id,x,y))
 del cells
 
@@ -155,9 +155,9 @@ cache = {}
 # go through cells
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing for", len(populated_cells), "cells")
 r2 = grid_resolution / 2
+
 #for x in range(x_part, x_part+partition_size, grid_resolution):
 #    for y in range(y_part, y_part+partition_size, grid_resolution):
-
 for pc in populated_cells:
     id, x, y = pc
 
