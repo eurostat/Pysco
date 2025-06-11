@@ -9,6 +9,8 @@ from rtree import index
 
 import sys
 import os
+
+from utils.featureutils import iter_features
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from road_performance_indic.od import dijkstra_with_cutoff
 from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_to_node, nodes_spatial_index_adjacendy_list
@@ -29,8 +31,8 @@ cell_network_max_distance = grid_resolution * 2
 population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
 
 # tomtom road network
-tomtom = "/home/juju/geodata/tomtom/tomtom_202312.gpkg"
-road_network_loader = lambda bbox: gpd.read_file('/home/juju/geodata/tomtom/2021/nw.gpkg', 'r', driver='GPKG', bbox=bbox),
+tomtom_year = "2023"
+def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
 #TODO exclude ferry links
 
 # output
@@ -40,7 +42,6 @@ accessible_population = "/home/juju/gisco/road_transport_performance/accessible_
 extention_buffer = 200000 #200 km
 # build partition extended bbox
 extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
-
 
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "make graph")
 roads = road_network_loader(extended_bbox)
