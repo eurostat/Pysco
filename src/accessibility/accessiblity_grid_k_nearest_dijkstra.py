@@ -36,11 +36,9 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=False):
 
         # Check if we've already found k closest sources for this node
         current_sources = [entry['source'] for entry in result[current_node]]
-        if origin in current_sources:
-            continue  # Avoid duplicate source per node
+        if origin in current_sources: continue  # Avoid duplicate source per node
 
-        if len(result[current_node]) >= k:
-            continue
+        if len(result[current_node]) >= k: continue
 
         # Record this source, cost, and optional path
         entry = {
