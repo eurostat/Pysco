@@ -332,13 +332,15 @@ for pc in populated_cells:
     #print(len(result),"/",len(populated_nodes))
 
     print(nodes_found)
+    nodes_found = [ index_to_node[n] for n in nodes_found ]
+    print(nodes_found)
 
     # sum of nodes population
     sum_pop = 0
-    '''for nn in result:
+    for nn in nodes_found:
         #if nn in node_pop_dict:
             sum_pop += node_pop_dict[nn]
-    '''
+    
 
     # store cell value
     accessible_populations.append(sum_pop)
