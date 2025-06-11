@@ -185,7 +185,7 @@ def dijkstra_with_cutoff_numba(neighbors, weights, origin, destinations, cutoff)
                 distances[v] = new_cost
                 heap.append((new_cost, v))
 
-    return result_nodes, result_costs
+    return result_nodes
 
 
 
@@ -327,20 +327,17 @@ for pc in populated_cells:
 
     origin = node_to_index[n]
 
-    nodes_found, costs_found = dijkstra_with_cutoff_numba(neighbors, weights, origin, populated_nodes, duration_s)
+    result = dijkstra_with_cutoff_numba(neighbors, weights, origin, populated_nodes, duration_s)
     #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
     #print(len(result),"/",len(populated_nodes))
 
-    print(nodes_found)
-    nodes_found = [ index_to_node[n] for n in nodes_found ]
-    print(nodes_found)
+    # retrieve nodes
+    result = [ index_to_node[n] for n in result ]
 
     # sum of nodes population
     sum_pop = 0
-    for nn in nodes_found:
-        #if nn in node_pop_dict:
-            sum_pop += node_pop_dict[nn]
-    
+    for nn in result:
+        sum_pop += node_pop_dict[nn]
 
     # store cell value
     accessible_populations.append(sum_pop)
