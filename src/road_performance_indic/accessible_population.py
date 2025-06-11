@@ -2,9 +2,12 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 from datetime import datetime
-import heapq
+#import heapq
 import sys
 import os
+
+from numba import njit, types
+from numba.typed import List
 
 
 
@@ -17,11 +20,10 @@ from utils.gridutils import get_cell_xy_from_id
 #from utils.networkxutils import adjacency_dict_to_networkx
 
 
-
+'''
 def dijkstra_with_cutoff(g, n, destinations, cutoff):
     """
     Ultra-fast Dijkstra for adjacency matrix to get destinations within cutoff.
-
     Parameters:
     - g: 2D numpy array (adjacency matrix with np.inf for no edge)
     - n: source node (int)
@@ -64,8 +66,9 @@ def dijkstra_with_cutoff(g, n, destinations, cutoff):
                 heapq.heappush(heap, (new_dist, v))
 
     return found_destinations
+'''
 
-
+'''
 def dijkstra_with_cutoff_old(graph, origin, destinations, cutoff=None, only_nodes=False):
     """
     graph: dict of {node: list of (neighbor, weight)}
@@ -100,6 +103,88 @@ def dijkstra_with_cutoff_old(graph, origin, destinations, cutoff=None, only_node
 
     if only_nodes: return result.keys()
     return result
+'''
+
+
+def prepare_graph_dict(graph):
+    """
+    Convert {node: [(neighbor, weight), ...]} into two lists:
+    - neighbors: list of lists of neighbors
+    - weights: list of lists of corresponding weights
+
+    Returns:
+        neighbors, weights, node_to_index, index_to_node
+    """
+    nodes = sorted(graph.keys())
+    node_to_index = {node: i for i, node in enumerate(nodes)}
+    index_to_node = {i: node for i, node in enumerate(nodes)}
+
+    num_nodes = len(nodes)
+    neighbors = [[] for _ in range(num_nodes)]
+    weights = [[] for _ in range(num_nodes)]
+
+    for node, edges in graph.items():
+        i = node_to_index[node]
+        for neighbor, weight in edges:
+            neighbors[i].append(node_to_index[neighbor])
+            weights[i].append(weight)
+
+    return neighbors, weights, node_to_index, index_to_node
+
+
+
+@njit
+def dijkstra_with_cutoff_numba(neighbors, weights, origin, destinations, cutoff):
+    num_nodes = len(neighbors)
+    max_cost = np.inf
+    distances = np.full(num_nodes, max_cost)
+    distances[origin] = 0.0
+
+    visited = np.zeros(num_nodes, dtype=np.bool_)
+    heap = List()
+    heap.append((0.0, origin))
+
+    result_nodes = List()
+    result_costs = List()
+
+    dest_mask = np.zeros(num_nodes, dtype=np.bool_)
+    for d in destinations:
+        dest_mask[d] = True
+    remaining_dest_count = len(destinations)
+
+    while heap:
+        heap.sort()
+        cost, u = heap.pop(0)
+
+        if visited[u]:
+            continue
+        visited[u] = True
+
+        if dest_mask[u]:
+            result_nodes.append(u)
+            result_costs.append(cost)
+            dest_mask[u] = False
+            remaining_dest_count -= 1
+            if remaining_dest_count == 0:
+                break
+
+        if cutoff > 0.0 and cost > cutoff:
+            continue
+
+        for i in range(len(neighbors[u])):
+            v = neighbors[u][i]
+            weight = weights[u][i]
+            if visited[v]:
+                continue
+            new_cost = cost + weight
+            if new_cost < distances[v] and (cutoff <= 0.0 or new_cost <= cutoff):
+                distances[v] = new_cost
+                heap.append((new_cost, v))
+
+    return result_nodes, result_costs
+
+
+
 
 
 # https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.dense.floyd_warshall.html
