@@ -61,7 +61,7 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=Fa
 
 
 
-
+#TODO cutoff also based on straight distance to origin ?
 
 
 
@@ -144,6 +144,9 @@ if show_detailled_messages: print(datetime.now(),x_part,y_part, len(destinations
 # output data
 grd_ids = [] #the cell identifiers
 accessible_populations = [] # the values !
+
+# a cache structure, to ensure there is no double computation for some nodes
+cache = dict(list)
 
 # go through cells
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing")
