@@ -180,4 +180,4 @@ out.to_parquet("/home/juju/gisco/road_transport_performance/accessible_populatio
 
 
 
-if show_detailled_messages: print(datetime.now(),x_part,y_part, "done")
+if show_detailled_messages: print(datetime.now(), "done")
