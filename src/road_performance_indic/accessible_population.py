@@ -26,6 +26,7 @@ partition_size = 10000
 show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
+extention_buffer = 10000 #200 km
 
 # population grid
 population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
@@ -39,7 +40,6 @@ def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/t
 accessible_population = "/home/juju/gisco/road_transport_performance/accessible_population_2021.parquet"
 
 
-extention_buffer = 200000 #200 km
 # build partition extended bbox
 extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
