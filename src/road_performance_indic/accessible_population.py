@@ -4,16 +4,15 @@ from datetime import datetime
 import networkx as nx
 #import concurrent.futures
 #import threading
-import fiona
-import fiona.transform
 from shapely.geometry import shape, mapping
 from rtree import index
-import csv
 
-from road_performance_indic.od import compute_od_matrix, dijkstra_with_cutoff
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from road_performance_indic.od import dijkstra_with_cutoff
 from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_to_node, nodes_spatial_index_adjacendy_list
-from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function
-#from utils.featureutils import loadFeatures
+#from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function
 
 
 
