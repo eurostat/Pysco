@@ -14,6 +14,41 @@ from utils.gridutils import get_cell_xy_from_id
 
 
 def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=False):
+    heap = [(0, origin)]
+    dist = {origin: 0}
+    result = {}
+
+    while heap and len(result) < len(destinations):
+        cost, node = heapq.heappop(heap)
+
+        # If we already found a better path to this node, skip it
+        if cost > dist.get(node, float('inf')):
+            continue
+
+        if node in destinations:
+            result[node] = cost
+            if len(result) == len(destinations):
+                break
+
+        if cutoff is not None and cost > cutoff:
+            continue
+
+        for neighbor, weight in graph.get(node, []):
+            new_cost = cost + weight
+            if cutoff is not None and new_cost > cutoff:
+                continue
+
+            if new_cost < dist.get(neighbor, float('inf')):
+                dist[neighbor] = new_cost
+                heapq.heappush(heap, (new_cost, neighbor))
+
+    if only_nodes:
+        return result.keys()
+    return result
+
+
+'''
+def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=False):
     """
     graph: dict of {node: list of (neighbor, weight)}
     origin: origin node
@@ -45,7 +80,7 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=Fa
 
     if only_nodes: return result.keys()
     return result
-
+'''
 
 
 # https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.dense.floyd_warshall.html
