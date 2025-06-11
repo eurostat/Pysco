@@ -116,7 +116,7 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
 
         # sum of node population
         sum = 0
-        for nn in result: sum += node_pop_dict[n]
+        for nn in result: sum += node_pop_dict[nn]
         print(sum)
 
 
