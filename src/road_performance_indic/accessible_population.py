@@ -18,7 +18,59 @@ from utils.gridutils import get_cell_xy_from_id
 
 
 
-def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=False):
+def dijkstra_with_cutoff(g, n, destinations, cutoff):
+    """
+    Ultra-fast Dijkstra for adjacency matrix to get destinations within cutoff.
+
+    Parameters:
+    - g: 2D numpy array (adjacency matrix with np.inf for no edge)
+    - n: source node (int)
+    - cutoff: maximum cost (float)
+    - destinations: list of target node indices (list of int)
+
+    Returns:
+    - List of destinations reachable within cutoff cost
+    """
+    num_nodes = g.shape[0]
+    distances = np.full(num_nodes, np.inf)
+    distances[n] = 0.0
+
+    visited = np.zeros(num_nodes, dtype=bool)
+    heap = [(0.0, n)]
+
+    dest_set = set(destinations)
+    found_destinations = []
+
+    while heap:
+        current_dist, u = heapq.heappop(heap)
+
+        if visited[u]:
+            continue
+        visited[u] = True
+
+        if u in dest_set:
+            if current_dist <= cutoff:
+                found_destinations.append(u)
+            dest_set.remove(u)
+            if not dest_set:  # early stop if all destinations found
+                break
+
+        if current_dist > cutoff:
+            continue  # no need to continue exploring this path
+
+        neighbors = np.where(np.isfinite(g[u]))[0]
+        for v in neighbors:
+            if visited[v]:
+                continue
+            new_dist = current_dist + g[u, v]
+            if new_dist < distances[v]:
+                distances[v] = new_dist
+                heapq.heappush(heap, (new_dist, v))
+
+    return found_destinations
+
+
+def dijkstra_with_cutoff_old(graph, origin, destinations, cutoff=None, only_nodes=False):
     """
     graph: dict of {node: list of (neighbor, weight)}
     origin: origin node
