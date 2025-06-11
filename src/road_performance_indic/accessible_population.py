@@ -143,11 +143,11 @@ destinations = node_pop_dict.keys()
 if show_detailled_messages: print(datetime.now(),x_part,y_part, len(destinations), "nodes")
 
 # output data
-grd_ids = [] #the cell identifiers
-accessible_populations = [] # the values !
+grd_ids = [] # the cell identifiers
+accessible_populations = [] # the values corresponding to the cell identifiers
 
 # a cache structure, to ensure there is no double computation for some nodes
-# it could happen, since some girc cells may snap to the same network node
+# it could happen, since some cells may snap to a same graph node
 cache = {}
 
 # go through cells
@@ -177,7 +177,7 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
         # compute dijkstra
         result = dijkstra_with_cutoff(graph, n, destinations, duration_s, only_nodes=True)
 
-        # sum of node population
+        # sum of nodes population
         sum_pop = 0
         for nn in result: sum_pop += node_pop_dict[nn]
 
