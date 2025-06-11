@@ -56,12 +56,10 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=Fa
     return result
 
 
+# https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.dense.floyd_warshall.html
 # computation time of dijskra: 0.7s per node -> 1h30 per 100km tile
 #TODO restricts to populated cells
 #TODO cutoff also based on straight distance to origin ?
-
-
-#https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.dense.floyd_warshall.html
 
 
 
