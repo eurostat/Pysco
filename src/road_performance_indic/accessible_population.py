@@ -36,6 +36,9 @@ tomtom_year = "2023"
 def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
 #TODO exclude ferry links
 
+# population grid
+def population_grid_loader(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
+
 # output
 accessible_population = "/home/juju/gisco/road_transport_performance/accessible_population_2021.parquet"
 
@@ -64,7 +67,11 @@ if show_detailled_messages: print(datetime.now(),x_part,y_part, "build nodes spa
 idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
 node_pop_dict = {}
-# TODO: attach population grid cell centers to the nearest snappable node. assign population (sum?) to these nodes.
+cells = population_grid_loader(extended_bbox)
+for c in cells:
+    # TODO: attach population grid cell centers to the nearest snappable node. assign population (sum?) to these nodes.
+    print(c)
+del cells
 
 # destination nodes: all nodes with population
 destinations = node_pop_dict.keys()
