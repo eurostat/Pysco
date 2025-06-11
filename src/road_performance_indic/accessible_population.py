@@ -62,12 +62,12 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=Fa
 
 # bbox
 [ x_part, y_part ] = [3750000, 2720000]
-partition_size = 200000
+partition_size = 100000
 show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 0 #180000 #200 km
+extention_buffer = 180000 #180000 #200 km
 duration_s = 60 * 90 #1h30=90min
 
 # population grid
