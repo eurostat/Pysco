@@ -44,24 +44,20 @@ def dijkstra_with_cutoff(g, n, destinations, cutoff):
     while heap:
         current_dist, u = heapq.heappop(heap)
 
-        if visited[u]:
-            continue
+        if visited[u]: continue
         visited[u] = True
 
         if u in dest_set:
             if current_dist <= cutoff:
                 found_destinations.append(u)
             dest_set.remove(u)
-            if not dest_set:  # early stop if all destinations found
-                break
+            if not dest_set: break # early stop if all destinations found
 
-        if current_dist > cutoff:
-            continue  # no need to continue exploring this path
+        if current_dist > cutoff: continue  # no need to continue exploring this path
 
         neighbors = np.where(np.isfinite(g[u]))[0]
         for v in neighbors:
-            if visited[v]:
-                continue
+            if visited[v]: continue
             new_dist = current_dist + g[u, v]
             if new_dist < distances[v]:
                 distances[v] = new_dist
