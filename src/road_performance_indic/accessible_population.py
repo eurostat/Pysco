@@ -10,11 +10,13 @@ from rtree import index
 import sys
 import os
 
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from road_performance_indic.od import dijkstra_with_cutoff
 from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_to_node, nodes_spatial_index_adjacendy_list
 from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function
 from utils.featureutils import iter_features
+from utils.gridutils import get_cell_xy_from_id
 
 
 
@@ -66,15 +68,32 @@ if show_detailled_messages: print(datetime.now(),x_part,y_part, len(graph.keys()
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "build nodes spatial index")
 idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
+# dictionnary that assign population to graph node
 node_pop_dict = {}
+
+# project population grid on graph nodes
 cells = population_grid_loader(extended_bbox)
+r2 = grid_resolution/2
 for c in cells:
-    # TODO: attach population grid cell centers to the nearest snappable node. assign population (sum?) to these nodes.
-    print(c)
+    c = c['properties']
+    pop = c['T']
+    if pop is None or pop == 0: continue
+    id = c['GRD_ID']
+    x,y = get_cell_xy_from_id(id)
+    x+=r2
+    y+=r2
+    ni = next(idx.nearest((x, y, x, y), 1), None)
+    if ni == None:
+        print("Could not find network node for grid cell", id)
+        continue
+    n = snappable_nodes[ni]
+    try: node_pop_dict[n] += pop
+    except: node_pop_dict[n] = pop
 del cells
 
 # destination nodes: all nodes with population
 destinations = node_pop_dict.keys()
+print(len(destinations))
 
 # go through cells
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute OD matrix")
