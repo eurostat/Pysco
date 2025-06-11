@@ -24,25 +24,23 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=Fa
     visited = set()
     result = {}
 
-    while heap:
+    while heap and len(result) < len(destinations):
         cost, node = heapq.heappop(heap)
 
         if node in visited: continue
+
         visited.add(node)
 
-        # if destination reached, store cost
         if node in destinations:
             result[node] = cost
-            # Optionnal : early exit is all destinations reached
-            #if len(result) == len(destinations): break
+            if len(result) == len(destinations): break
 
-        # Ignore if cost beyond cutoff
-        if cutoff is not None and cutoff>0 and cost > cutoff: continue
+        if cutoff is not None and cost > cutoff: continue
 
         for neighbor, weight in graph.get(node, []):
             if neighbor not in visited:
                 new_cost = cost + weight
-                if cutoff is not None and cutoff>0 and new_cost <= cutoff:
+                if cutoff is None or new_cost <= cutoff:
                     heapq.heappush(heap, (new_cost, neighbor))
 
     if only_nodes: return result.keys()
