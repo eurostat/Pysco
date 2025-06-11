@@ -1,3 +1,4 @@
+import pandas as pd
 from shapely.geometry import box,Polygon
 import geopandas as gpd
 from datetime import datetime
@@ -85,8 +86,7 @@ def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/t
 # population grid
 def population_grid_loader(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
 
-# output
-accessible_population = "/home/juju/gisco/road_transport_performance/accessible_population_2021.parquet"
+def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 
 
 # build partition extended bbox
@@ -139,6 +139,10 @@ del cells
 destinations = node_pop_dict.keys()
 if show_detailled_messages: print(datetime.now(),x_part,y_part, len(destinations), "nodes")
 
+# output data
+grd_ids = [] #the cell identifiers
+accessible_populations = [] # the values !
+
 # go through cells
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute OD matrix")
 r2 = grid_resolution / 2
@@ -157,9 +161,23 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
         result = dijkstra_with_cutoff(graph, n, destinations, duration_s, only_nodes=True)
 
         # sum of node population
-        sum = 0
-        for nn in result: sum += node_pop_dict[nn]
-        print(sum)
+        sum_pop = 0
+        for nn in result: sum_pop += node_pop_dict[nn]
+
+        # store cell value
+        accessible_populations.append(sum_pop)
+        grd_ids.append(cell_id_fun(x,y))
+
+print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
+
+#return [ grd_ids, accessible_populations ]
+
+if show_detailled_messages: print(datetime.now(), "save output")
+data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations }
+print(datetime.now(), "save as parquet")
+out = pd.DataFrame(data)
+out.to_parquet("/home/juju/gisco/road_transport_performance/accessible_population.parquet")
+
 
 
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "done")
