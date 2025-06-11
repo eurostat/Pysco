@@ -165,7 +165,7 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
 
         # check if value was not already computed - try to find it in the cache
         if n in cache:
-            print(n, cache[n])
+            #print(n, cache[n])
             accessible_populations.append(cache[n])
             grd_ids.append(cell_id_fun(x,y))
             continue
@@ -174,6 +174,7 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
         dtn = distance_to_node(n, x+r2, y+r2)
         if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
+        # compute dijkstra
         result = dijkstra_with_cutoff(graph, n, destinations, duration_s, only_nodes=True)
 
         # sum of node population
