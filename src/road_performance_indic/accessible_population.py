@@ -192,7 +192,12 @@ r2 = grid_resolution / 2
 
 #for x in range(x_part, x_part+partition_size, grid_resolution):
 #    for y in range(y_part, y_part+partition_size, grid_resolution):
+i=1
+nb = len(populated_cells)
 for pc in populated_cells:
+    print(i,"/",nb)
+    i+=1
+
     id, x, y = pc
 
     # snap cell centre to the snappable nodes, using the spatial index
@@ -214,10 +219,8 @@ for pc in populated_cells:
     if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
     # compute dijkstra
-    print(n)
     result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
     #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
-    #print(len(result),"/",len(populated_nodes))
 
     # sum of nodes population
     sum_pop = 0
