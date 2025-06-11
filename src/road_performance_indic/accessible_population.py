@@ -5,7 +5,7 @@ import networkx as nx
 #import concurrent.futures
 #import threading
 from shapely.geometry import shape, mapping
-from rtree import index
+import heapq
 
 import sys
 import os
@@ -17,6 +17,49 @@ from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_t
 from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function
 from utils.featureutils import iter_features
 from utils.gridutils import get_cell_xy_from_id
+
+
+
+
+
+def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=False):
+    """
+    graph: dict of {node: list of (neighbor, weight)}
+    origin: origin node
+    destinations: set of destination nodes
+    cutoff: maximal cost value - beyond, route is ignored
+    """
+    heap = [(0, origin)]
+    visited = set()
+    result = {}
+
+    while heap:
+        cost, node = heapq.heappop(heap)
+
+        if node in visited: continue
+        visited.add(node)
+
+        # if destination reached, store cost
+        if node in destinations:
+            result[node] = cost
+            # Optionnal : early exit is all destinations reached
+            #if len(result) == len(destinations): break
+
+        # Ignore if cost beyond cutoff
+        if cutoff is not None and cutoff>0 and cost > cutoff: continue
+
+        for neighbor, weight in graph.get(node, []):
+            if neighbor not in visited:
+                new_cost = cost + weight
+                if cutoff is not None and cutoff>0 and new_cost <= cutoff:
+                    heapq.heappush(heap, (new_cost, neighbor))
+
+    if only_nodes: return result.keys()
+    return result
+
+
+
+
 
 
 
