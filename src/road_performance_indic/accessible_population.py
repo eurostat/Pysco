@@ -180,6 +180,7 @@ print(datetime.now(), "save as parquet")
 parquet_out = "/home/juju/gisco/road_transport_performance/accessible_population.parquet"
 pd.DataFrame(data).to_parquet(parquet_out)
 
+# to gpkg
 parquet_grid_to_geotiff( [parquet_out], "/home/juju/gisco/road_transport_performance/accessible_population.tiff", dtype=np.int32, compress='deflate')
 
 
