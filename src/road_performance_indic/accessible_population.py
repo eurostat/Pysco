@@ -43,7 +43,7 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=Fa
 
 
 '''
-def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=False):
+def dijkstra_with_cutoff_old(graph, origin, destinations, cutoff=None, only_nodes=False):
     """
     graph: dict of {node: list of (neighbor, weight)}
     origin: origin node
