@@ -195,9 +195,11 @@ for pc in populated_cells:
     result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight')
     result = result.keys()
 
+    print(result)
+
     # sum of nodes population
     sum_pop = 0
-    for nn in result: sum_pop += float(node_pop_dict[nn])
+    for nn in result: sum_pop += node_pop_dict[nn]
 
     # store cell value
     accessible_populations.append(sum_pop)
