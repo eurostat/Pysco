@@ -1,4 +1,3 @@
-import networkx as nx
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -196,13 +195,13 @@ def dijkstra_with_cutoff_numba(neighbors, weights, origin, destinations, cutoff)
 
 # bbox
 [ x_part, y_part ] = [3750000, 2720000]
-partition_size = 100000
+partition_size = 10000
 show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 180000 #180000 #200 km
-duration_s = 60 * 90 #1h30=90min
+extention_buffer = 0 #180000 #200 km
+duration_s = 60 * 10 #1h30=90min
 
 # population grid
 population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
@@ -247,6 +246,7 @@ node_pop_dict = {}
 # the populated cells within bbox
 populated_cells = []
 
+
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "Project population grid on graph nodes")
 cells = population_grid_loader(extended_bbox)
 r2 = grid_resolution/2
@@ -286,9 +286,9 @@ accessible_populations = [] # the values corresponding to the cell identifiers
 # it could happen, since some cells may snap to a same graph node
 cache = {}
 
-#convert to networkx graph
-#if show_detailled_messages: print(datetime.now(),x_part,y_part, "convert to NetworkX graph")
-#graph = adjacency_dict_to_networkx(graph)
+if show_detailled_messages: print(datetime.now(),x_part,y_part, "Prepare graph")
+neighbors, weights, node_to_index, index_to_node = prepare_graph_dict(graph)
+populated_nodes = populated_nodes.map(node_to_index)
 
 # go through cells
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing for", len(populated_cells), "cells")
@@ -319,9 +319,14 @@ for pc in populated_cells:
 
     # compute dijkstra
     print(datetime.now(), n)
-    result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
-    #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
+
+    origin = node_to_index[n]
+    nodes_found, costs_found = dijkstra_with_cutoff_numba(neighbors, weights, origin, populated_nodes, duration_s)
+    #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
     #print(len(result),"/",len(populated_nodes))
+
+    print(nodes_found)
+    break
 
     # sum of nodes population
     sum_pop = 0
