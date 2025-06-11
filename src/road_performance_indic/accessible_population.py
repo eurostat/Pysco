@@ -113,8 +113,11 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
         if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
         result = dijkstra_with_cutoff(graph, n, destinations, duration_s, only_nodes=True)
-        #TODO return only nodes ? result.keys() ?
 
-        print(result)
+        # sum of node population
+        sum = 0
+        for nn in result: sum += node_pop_dict[n]
+        print(sum)
+
 
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "done")
