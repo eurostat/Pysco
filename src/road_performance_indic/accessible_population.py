@@ -131,8 +131,8 @@ for c in cells:
 del cells
 
 # destination nodes: all nodes with population
-destinations = node_pop_dict.keys()
-if show_detailled_messages: print(datetime.now(),x_part,y_part, len(destinations), "nodes")
+populated_nodes = node_pop_dict.keys()
+if show_detailled_messages: print(datetime.now(),x_part,y_part, len(populated_nodes), "populated nodes")
 
 # output data
 grd_ids = [] # the cell identifiers
@@ -167,7 +167,9 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
         if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
         # compute dijkstra
-        result = dijkstra_with_cutoff(graph, n, destinations, duration_s, only_nodes=True)
+        print(datetime.now(), n)
+        result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
+        print(len(result),"/",len(populated_nodes))
 
         # sum of nodes population
         sum_pop = 0
