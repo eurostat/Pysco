@@ -18,8 +18,6 @@ from utils.networkxutils import adjacency_dict_to_networkx
 
 
 
-
-
 def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=False):
     """
     graph: dict of {node: list of (neighbor, weight)}
