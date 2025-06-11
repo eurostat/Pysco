@@ -87,11 +87,8 @@ for c in cells:
         print("Could not find network node for grid cell", id)
         continue
     n = snappable_nodes[ni]
-    try:
-        node_pop_dict[n] += pop
-        print(n,pop)
-    except:
-        node_pop_dict[n] = pop
+    try: node_pop_dict[n] += pop
+    except: node_pop_dict[n] = pop
 del cells
 
 # destination nodes: all nodes with population
