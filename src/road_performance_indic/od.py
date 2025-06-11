@@ -4,12 +4,12 @@ import heapq
 
 
 
-def dijkstra_with_cutoff(graph, origin, destinations, cutoff):
+def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=False):
     """
-    graph: dict de {node: list of (neighbor, weight)}
-    origin: noeud de départ
-    destinations: set des noeuds destinations
-    cutoff: valeur maximale de coût au-delà de laquelle on ignore le chemin
+    graph: dict of {node: list of (neighbor, weight)}
+    origin: origin node
+    destinations: set of destination nodes
+    cutoff: maximal cost value - beyond, route is ignored
     """
     heap = [(0, origin)]
     visited = set()
@@ -21,21 +21,22 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff):
         if node in visited: continue
         visited.add(node)
 
-        # Si destination atteinte, enregistrer le coût
+        # if destination reached, store cost
         if node in destinations:
             result[node] = cost
-            # Optionnel : early exit si toutes les destinations atteintes
-            if len(result) == len(destinations): break
+            # Optionnal : early exit is all destinations reached
+            #if len(result) == len(destinations): break
 
-        # Ignorer si le coût dépasse le cutoff
-        if cost > cutoff: continue
+        # Ignore if cost beyond cutoff
+        if cutoff is not None and cutoff>0 and cost > cutoff: continue
 
         for neighbor, weight in graph.get(node, []):
             if neighbor not in visited:
                 new_cost = cost + weight
-                if new_cost <= cutoff:
+                if cutoff is not None and cutoff>0 and new_cost <= cutoff:
                     heapq.heappush(heap, (new_cost, neighbor))
 
+    if only_nodes: return result.keys()
     return result
 
 

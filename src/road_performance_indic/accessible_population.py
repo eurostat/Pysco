@@ -28,7 +28,9 @@ partition_size = 10000
 show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
+
 extention_buffer = 10000 #200 km
+duration_s = 90*60
 
 # population grid
 population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
@@ -110,8 +112,9 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
         dtn = distance_to_node(n, x+r2, y+r2)
         if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
-        result = dijkstra_with_cutoff(graph, n, destinations, 90*60)
+        result = dijkstra_with_cutoff(graph, n, destinations, duration_s, only_nodes=True)
         #TODO return only nodes ? result.keys() ?
 
-        #print(result)
+        print(result)
 
+if show_detailled_messages: print(datetime.now(),x_part,y_part, "done")
