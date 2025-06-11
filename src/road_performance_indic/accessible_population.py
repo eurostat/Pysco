@@ -54,8 +54,8 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=Fa
 
 
 
-#TODO cutoff also based on straight distance to origin ?
 #TODO restricts to populated cells ?
+#TODO cutoff also based on straight distance to origin ?
 
 
 
@@ -81,7 +81,7 @@ def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/t
 # population grid
 def population_grid_loader(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
 
-def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
+#def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 
 
 # build partition extended bbox
@@ -112,6 +112,7 @@ node_pop_dict = {}
 
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "Project population grid on graph nodes")
 cells = population_grid_loader(extended_bbox)
+populated_cells = []
 r2 = grid_resolution/2
 for c in cells:
     c = c['properties']
@@ -121,13 +122,17 @@ for c in cells:
     x,y = get_cell_xy_from_id(id)
     x+=r2
     y+=r2
+
     ni = next(idx.nearest((x, y, x, y), 1), None)
     if ni == None:
         print("Could not find network node for grid cell", id)
         continue
     n = snappable_nodes[ni]
-    try: node_pop_dict[n] += pop
-    except: node_pop_dict[n] = pop
+    if n in node_pop_dict: node_pop_dict[n] += pop
+    else: node_pop_dict[n] = pop
+
+    if x>=x_part and y>=y_part and x<=x_part+partition_size and y<=y_part+partition_size:
+        populated_cells.append((id,x,y))
 del cells
 
 # destination nodes: all nodes with population
@@ -143,44 +148,47 @@ accessible_populations = [] # the values corresponding to the cell identifiers
 cache = {}
 
 # go through cells
-if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing")
+if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing for", len(populated_cells), "cells")
 r2 = grid_resolution / 2
-for x in range(x_part, x_part+partition_size, grid_resolution):
-    for y in range(y_part, y_part+partition_size, grid_resolution):
+#for x in range(x_part, x_part+partition_size, grid_resolution):
+#    for y in range(y_part, y_part+partition_size, grid_resolution):
 
-        # snap cell centre to the snappable nodes, using the spatial index
-        ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
-        if ni_ == None:
-            print("graph node not found for cell", x,y)
-            continue
-        n = snappable_nodes[ni_]
+for pc in populated_cells:
+    id, x, y = pc
 
-        # check if value was not already computed - try to find it in the cache
-        if n in cache:
-            #print(n, cache[n])
-            accessible_populations.append(cache[n])
-            grd_ids.append(cell_id_fun(x,y))
-            continue
+    # snap cell centre to the snappable nodes, using the spatial index
+    ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
+    if ni_ == None:
+        print("graph node not found for cell", x,y)
+        continue
+    n = snappable_nodes[ni_]
 
-        # compute distance from cell centre to node, and skip if too far
-        dtn = distance_to_node(n, x+r2, y+r2)
-        if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
+    # check if value was not already computed - try to find it in the cache
+    if n in cache:
+        #print(n, cache[n])
+        accessible_populations.append(cache[n])
+        grd_ids.append(id) #cell_id_fun(x,y))
+        continue
 
-        # compute dijkstra
-        print(datetime.now(), n)
-        result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
-        print(len(result),"/",len(populated_nodes))
+    # compute distance from cell centre to node, and skip if too far
+    dtn = distance_to_node(n, x+r2, y+r2)
+    if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
-        # sum of nodes population
-        sum_pop = 0
-        for nn in result: sum_pop += node_pop_dict[nn]
+    # compute dijkstra
+    print(datetime.now(), n)
+    result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
+    print(len(result),"/",len(populated_nodes))
 
-        # store cell value
-        accessible_populations.append(sum_pop)
-        grd_ids.append(cell_id_fun(x,y))
+    # sum of nodes population
+    sum_pop = 0
+    for nn in result: sum_pop += node_pop_dict[nn]
 
-        # cache value, to be sure is is not computed another time
-        cache[n] = sum_pop
+    # store cell value
+    accessible_populations.append(sum_pop)
+    grd_ids.append(id) #cell_id_fun(x,y))
+
+    # cache value, to be sure is is not computed another time
+    cache[n] = sum_pop
 
 print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
