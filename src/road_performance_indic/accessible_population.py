@@ -146,7 +146,7 @@ grd_ids = [] #the cell identifiers
 accessible_populations = [] # the values !
 
 # go through cells
-if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute OD matrix")
+if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing")
 r2 = grid_resolution / 2
 for x in range(x_part, x_part+partition_size, grid_resolution):
     for y in range(y_part, y_part+partition_size, grid_resolution):
