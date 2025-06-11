@@ -94,5 +94,5 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
         result = dijkstra_with_cutoff(graph, n, destinations, 90*60)
         #TODO return only nodes ? result.keys() ?
 
-        print(result)
+        #print(result)
 
