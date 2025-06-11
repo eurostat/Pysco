@@ -1,3 +1,4 @@
+from collections import defaultdict
 import numpy as np
 import pandas as pd
 from shapely.geometry import box,Polygon
@@ -74,7 +75,7 @@ show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 180000 #200 km
+extention_buffer = 10000 #180000 #200 km
 duration_s = 60 * 90 #1h30=90min
 
 # population grid
@@ -146,7 +147,7 @@ grd_ids = [] #the cell identifiers
 accessible_populations = [] # the values !
 
 # a cache structure, to ensure there is no double computation for some nodes
-cache = dict(list)
+cache = defaultdict(list)
 
 # go through cells
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing")
@@ -156,8 +157,18 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
 
         # snap cell centre to the snappable nodes, using the spatial index
         ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
-        if ni_ == None: continue
+        if ni_ == None:
+            print("graph node not found for cell", x,y)
+            continue
         n = snappable_nodes[ni_]
+
+        # check if value was not already computed
+        v = cache[n]
+        if v is not None:
+            print("aaaa!")
+            accessible_populations.append(v)
+            grd_ids.append(cell_id_fun(x,y))
+            continue
 
         # compute distance from cell centre to node, and skip if too far
         dtn = distance_to_node(n, x+r2, y+r2)
@@ -172,6 +183,9 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
         # store cell value
         accessible_populations.append(sum_pop)
         grd_ids.append(cell_id_fun(x,y))
+
+        # cache value, to be sure is is not computed another time
+        cache[n] = sum_pop
 
 print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
