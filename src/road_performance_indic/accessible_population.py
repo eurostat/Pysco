@@ -1,4 +1,3 @@
-from multiprocessing import Pool
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -177,15 +176,17 @@ def __parallel_process(xy,
     #    for y in range(y_part, y_part+partition_size, grid_resolution):
     i=1
     nb = len(populated_cells)
+    for pc in populated_cells:
+        print(i,"/",nb)
+        i+=1
 
-    def process_cell(pc):
         id, x, y = pc
 
         # snap cell centre to the snappable nodes, using the spatial index
         ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
         if ni_ == None:
             print(datetime.now(),x_part,y_part, "graph node not found for cell", x,y)
-            return
+            continue
         n = snappable_nodes[ni_]
 
         # check if value was not already computed - try to find it in the cache
@@ -193,11 +194,11 @@ def __parallel_process(xy,
             print("Node found in cache", n, cache[n])
             accessible_populations.append(cache[n])
             grd_ids.append(id) #cell_id_fun(x,y))
-            return
+            continue
 
         # compute distance from cell centre to node, and skip if too far
         dtn = distance_to_node(n, x+r2, y+r2)
-        if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: return
+        if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
         # compute dijkstra
         result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
@@ -205,7 +206,9 @@ def __parallel_process(xy,
 
         # sum of nodes population
         sum_pop = 0
-        for nn in result: sum_pop += node_pop_dict[nn]
+        for nn in result:
+            #if nn in node_pop_dict:
+                sum_pop += node_pop_dict[nn]
 
         # store cell value
         accessible_populations.append(sum_pop)
@@ -213,15 +216,6 @@ def __parallel_process(xy,
 
         # cache value, to be sure is is not computed another time
         cache[n] = sum_pop
-
-    with Pool() as pool:
-        results = pool.map(process_cell, populated_cells)
-    '''
-    for pc in populated_cells:
-        print(i,"/",nb)
-        i+=1
-        process_cell(pc)
-    '''
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
@@ -257,7 +251,7 @@ grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
 extention_buffer = 0 # 180000 #200 km
-duration_s = 60 * 10 #1h30=90min
+duration_s = 60 * 20 #1h30=90min
 
 # population grid
 population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
