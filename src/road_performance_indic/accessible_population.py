@@ -54,7 +54,7 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=Fa
 
 
 
-#TODO restricts to populated cells ?
+#TODO restricts to populated cells
 #TODO cutoff also based on straight distance to origin ?
 
 
@@ -110,19 +110,23 @@ idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 # dictionnary that assign population to graph node
 node_pop_dict = {}
 
+# the populated cells within bbox
+populated_cells = []
+
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "Project population grid on graph nodes")
 cells = population_grid_loader(extended_bbox)
-populated_cells = []
 r2 = grid_resolution/2
 for c in cells:
     c = c['properties']
     pop = c['T']
     if pop is None or pop == 0: continue
+
     id = c['GRD_ID']
     x,y = get_cell_xy_from_id(id)
     x+=r2
     y+=r2
 
+    # get closest graph snappable node
     ni = next(idx.nearest((x, y, x, y), 1), None)
     if ni == None:
         print("Could not find network node for grid cell", id)
@@ -131,6 +135,7 @@ for c in cells:
     if n in node_pop_dict: node_pop_dict[n] += pop
     else: node_pop_dict[n] = pop
 
+    # store populated cells within the bbox
     if x>=x_part and y>=y_part and x<=x_part+partition_size and y<=y_part+partition_size:
         populated_cells.append((id,x,y))
 del cells
