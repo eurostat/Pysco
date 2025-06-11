@@ -288,7 +288,7 @@ cache = {}
 
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "Prepare graph")
 neighbors, weights, node_to_index, index_to_node = prepare_graph_dict(graph)
-populated_nodes = populated_nodes.map(node_to_index)
+populated_nodes = [node_to_index[n] for n in populated_nodes]
 
 # go through cells
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing for", len(populated_cells), "cells")
@@ -321,6 +321,9 @@ for pc in populated_cells:
     print(datetime.now(), n)
 
     origin = node_to_index[n]
+
+    print(neighbors)
+
     nodes_found, costs_found = dijkstra_with_cutoff_numba(neighbors, weights, origin, populated_nodes, duration_s)
     #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
     #print(len(result),"/",len(populated_nodes))
