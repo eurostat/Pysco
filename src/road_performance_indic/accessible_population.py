@@ -1,3 +1,4 @@
+import networkx as nx
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -6,12 +7,14 @@ import sys
 import os
 
 
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.convert import parquet_grid_to_geotiff
 from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_to_node, nodes_spatial_index_adjacendy_list
 from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function
 from utils.featureutils import iter_features
 from utils.gridutils import get_cell_xy_from_id
+from utils.networkxutils import adjacency_dict_to_networkx
 
 
 
@@ -53,16 +56,18 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=Fa
     return result
 
 
-
+# computation time of dijskra: 0.7s per node -> 1h30 per 100km tile
 #TODO restricts to populated cells
 #TODO cutoff also based on straight distance to origin ?
 
+
+#https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.dense.floyd_warshall.html
 
 
 
 # bbox
 [ x_part, y_part ] = [3750000, 2720000]
-partition_size = 100000
+partition_size = 10000
 show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
@@ -152,6 +157,10 @@ accessible_populations = [] # the values corresponding to the cell identifiers
 # it could happen, since some cells may snap to a same graph node
 cache = {}
 
+#convert to networkx graph
+if show_detailled_messages: print(datetime.now(),x_part,y_part, "convert to NetworkX graph")
+graph = adjacency_dict_to_networkx(graph)
+
 # go through cells
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing for", len(populated_cells), "cells")
 r2 = grid_resolution / 2
@@ -181,8 +190,12 @@ for pc in populated_cells:
 
     # compute dijkstra
     #print(datetime.now(), n)
-    result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
+    #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
     #print(len(result),"/",len(populated_nodes))
+    result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight')
+    print(result)
+    continue
+
 
     # sum of nodes population
     sum_pop = 0

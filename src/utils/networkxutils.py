@@ -3,6 +3,28 @@ import networkx as nx
 from utils.netutils import distance
 
 
+
+
+def adjacency_dict_to_networkx(graph):
+    """
+    Converts a directed graph stored as an adjacency dictionary
+    into a networkx.DiGraph.
+
+    Parameters:
+    - adj_dict (dict): {node: [(destination_node, weight), ...], ...}
+
+    Returns:
+    - networkx.DiGraph
+    """
+    G = nx.DiGraph()
+
+    for node1, edge in graph.items():
+        for n2, weight in edge: G.add_edge(node1, n2, weight=weight)
+    return G
+
+
+
+
 # make networkx graph from linear features
 def graph_from_geodataframe(gdf, weight = lambda feature:feature.geometry.length, coord_simp=round, edge_fun = None, detailled=False):
     graph = nx.Graph()
