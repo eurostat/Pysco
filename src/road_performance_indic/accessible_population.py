@@ -179,10 +179,10 @@ for pc in populated_cells:
     if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
     # compute dijkstra
-    print(datetime.now(), n)
+    print(n)
     result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
     #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
-    print(len(result),"/",len(populated_nodes))
+    #print(len(result),"/",len(populated_nodes))
 
     # sum of nodes population
     sum_pop = 0
