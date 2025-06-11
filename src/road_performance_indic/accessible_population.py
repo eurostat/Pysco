@@ -204,9 +204,7 @@ def __parallel_process(xy,
 
         # sum of nodes population
         sum_pop = 0
-        for nn in result:
-            #if nn in node_pop_dict:
-                sum_pop += node_pop_dict[nn]
+        for nn in result: sum_pop += node_pop_dict[nn]
 
         # store cell value
         accessible_populations.append(sum_pop)
