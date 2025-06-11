@@ -1,11 +1,10 @@
 import numpy as np
 import pandas as pd
 from datetime import datetime
-#import heapq
 import sys
 import os
 
-from numba import njit, types
+from numba import njit
 from numba.typed import List
 from numba import int64, float64
 
@@ -205,8 +204,8 @@ show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 0 #180000 #200 km
-duration_s = 60 * 10 #1h30=90min
+extention_buffer = 180 #180000 #200 km
+duration_s = 60 * 90 #1h30=90min
 
 # population grid
 population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
@@ -242,6 +241,11 @@ if show_detailled_messages: print(datetime.now(),x_part,y_part, len(graph.keys()
 #if(len(snappable_nodes)==0): return #TODO add that
 #if(len(graph.keys())==0): return
 
+if show_detailled_messages: print(datetime.now(),x_part,y_part, "Prepare graph")
+neighbors, weights, node_to_index, index_to_node = prepare_graph_dict(graph)
+del graph
+
+
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "build nodes spatial index")
 idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
@@ -250,7 +254,6 @@ node_pop_dict = {}
 
 # the populated cells within bbox
 populated_cells = []
-
 
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "Project population grid on graph nodes")
 cells = population_grid_loader(extended_bbox)
@@ -280,7 +283,7 @@ for c in cells:
 del cells
 
 # destination nodes: all nodes with population
-populated_nodes = node_pop_dict.keys()
+populated_nodes = [ node_to_index[n] for n in node_pop_dict.keys() ]
 if show_detailled_messages: print(datetime.now(),x_part,y_part, len(populated_nodes), "populated nodes")
 
 # output data
@@ -290,10 +293,6 @@ accessible_populations = [] # the values corresponding to the cell identifiers
 # a cache structure, to ensure there is no double computation for some nodes
 # it could happen, since some cells may snap to a same graph node
 cache = {}
-
-if show_detailled_messages: print(datetime.now(),x_part,y_part, "Prepare graph")
-neighbors, weights, node_to_index, index_to_node = prepare_graph_dict(graph)
-populated_nodes = [node_to_index[n] for n in populated_nodes]
 
 # go through cells
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing for", len(populated_cells), "cells")
@@ -326,9 +325,7 @@ for pc in populated_cells:
     print(datetime.now(), n)
 
     origin = node_to_index[n]
-
     result = dijkstra_with_cutoff_numba(neighbors, weights, origin, populated_nodes, duration_s)
-    #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
     #print(len(result),"/",len(populated_nodes))
 
     # retrieve nodes
