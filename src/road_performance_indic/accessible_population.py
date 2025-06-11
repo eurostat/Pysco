@@ -147,7 +147,8 @@ grd_ids = [] #the cell identifiers
 accessible_populations = [] # the values !
 
 # a cache structure, to ensure there is no double computation for some nodes
-cache = defaultdict(list)
+# it could happen, since some girc cells may snap to the same network node
+cache = {}
 
 # go through cells
 if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing")
@@ -162,11 +163,10 @@ for x in range(x_part, x_part+partition_size, grid_resolution):
             continue
         n = snappable_nodes[ni_]
 
-        # check if value was not already computed
-        v = cache[n]
-        if v is not None:
-            print("aaaa!")
-            accessible_populations.append(v)
+        # check if value was not already computed - try to find it in the cache
+        if n in cache:
+            print(n, cache[n])
+            accessible_populations.append(cache[n])
             grd_ids.append(cell_id_fun(x,y))
             continue
 
