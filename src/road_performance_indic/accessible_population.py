@@ -104,13 +104,11 @@ def dijkstra_with_cutoff_old(graph, origin, destinations, cutoff=None, only_node
     return result
 '''
 
-
 def prepare_graph_dict(graph):
     """
-    Convert {node: [(neighbor, weight), ...]} into two lists:
-    - neighbors: list of lists of neighbors
-    - weights: list of lists of corresponding weights
-
+    Convert {node: [(neighbor, weight), ...]} into two numba-typed Lists:
+    - neighbors: List of Lists of int64
+    - weights: List of Lists of float64
     Returns:
         neighbors, weights, node_to_index, index_to_node
     """
@@ -119,8 +117,13 @@ def prepare_graph_dict(graph):
     index_to_node = {i: node for i, node in enumerate(nodes)}
 
     num_nodes = len(nodes)
-    neighbors = [[] for _ in range(num_nodes)]
-    weights = [[] for _ in range(num_nodes)]
+
+    neighbors = List()
+    weights = List()
+
+    for _ in range(num_nodes):
+        neighbors.append(List())
+        weights.append(List())
 
     for node, edges in graph.items():
         i = node_to_index[node]
@@ -129,7 +132,6 @@ def prepare_graph_dict(graph):
             weights[i].append(weight)
 
     return neighbors, weights, node_to_index, index_to_node
-
 
 
 @njit
@@ -321,8 +323,6 @@ for pc in populated_cells:
     print(datetime.now(), n)
 
     origin = node_to_index[n]
-
-    print(neighbors)
 
     nodes_found, costs_found = dijkstra_with_cutoff_numba(neighbors, weights, origin, populated_nodes, duration_s)
     #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
