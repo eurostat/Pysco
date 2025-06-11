@@ -72,8 +72,8 @@ show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 180000 #180000 #200 km
-duration_s = 60 * 90 #1h30=90min
+extention_buffer = 0 #180000 #200 km
+duration_s = 60 * 15 #1h30=90min
 
 # population grid
 population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
