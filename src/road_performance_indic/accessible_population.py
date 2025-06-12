@@ -193,7 +193,7 @@ def __parallel_process(xy,
     node_pop_dict = {}
 
     # the populated cells within bbox
-    populated_cells = []
+    #populated_cells = []
 
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "Project population grid on graph nodes")
     cells = population_grid_loader(extended_bbox)
@@ -218,29 +218,24 @@ def __parallel_process(xy,
         else: node_pop_dict[n] = pop
 
         # store populated cells within the bbox
-        if x>=x_part and y>=y_part and x<x_part+partition_size and y<y_part+partition_size:
-            populated_cells.append((id,x,y))
+        #if x>=x_part and y>=y_part and x<x_part+partition_size and y<y_part+partition_size:
+        #    populated_cells.append((id,x,y))
     del cells
 
-    # destination nodes: all nodes with population
-    populated_nodes = node_pop_dict.keys()
-    if show_detailled_messages: print(datetime.now(),x_part,y_part, len(populated_nodes), "populated nodes")
-
-    # get destination indices as a numpy array - it is faster
-    dest_indices = np.array([node_id_to_index[dest_id] for dest_id in populated_nodes if dest_id in node_id_to_index], dtype=np.int32)
+    # destination nodes: all nodes with population - get destination indices as a numpy array - it is faster
+    if show_detailled_messages: print(datetime.now(),x_part,y_part, "prepare populated nodes")
+    dest_indices = np.array([node_id_to_index[dest_id] for dest_id in node_pop_dict.keys() if dest_id in node_id_to_index], dtype=np.int32)
 
     # output data
     grd_ids = [] # the cell identifiers
     accessible_populations = [] # the values corresponding to the cell identifiers
 
-    # a cache structure, to ensure there is no double computation for some nodes
-    # it could happen, since some cells may snap to a same graph node
+    # a cache structure, to ensure there is no double computation for some nodes. it could happen, since some cells may snap to a same graph node
     cache = {}
 
     # go through cells
-    if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing for", len(populated_cells), "cells")
+    if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing")
     r2 = grid_resolution / 2
-
     for x in range(x_part, x_part+partition_size, grid_resolution):
         print(datetime.now(), x)
         for y in range(y_part, y_part+partition_size, grid_resolution):
