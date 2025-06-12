@@ -168,7 +168,7 @@ def __parallel_process(xy,
             # convert distance property map to numpy array
             dist_array = dist_map.a
             # mask of which destinations are reachable
-            reachable_mask = dist_array[dest_indices] < float('inf')
+            reachable_mask = dist_array[dest_indices] < float('inf') #TODO: duration_s ?
             reachable = [ index_to_node_id[nn] for nn in np.where(reachable_mask)[0] ]
 
             # sum of nodes population
