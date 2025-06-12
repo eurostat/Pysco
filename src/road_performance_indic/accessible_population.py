@@ -81,7 +81,7 @@ def dijkstra_with_cutoff_old(graph, origin, destinations, cutoff=None, only_node
 
 def build_graph_tool_graph(graph):
     g = gt.Graph(directed=True)
-    weight_prop = g.new_edge_property("double")
+    weight_prop = g.new_edge_property("double") #TODO int !
 
     # Map your unique node ids to graph-tool vertex indices
     node_id_to_index = {}
@@ -104,17 +104,20 @@ def build_graph_tool_graph(graph):
 
 
 def run_dijkstra_reachability(g, weight_prop, node_id_to_index, origin_id, destination_ids, cutoff=None):
+    # get origin node index
     origin_idx = node_id_to_index[origin_id]
+
+    # run dijskra
     dist_map = gt.shortest_distance(g, source=g.vertex(origin_idx), weights=weight_prop, max_dist=cutoff)
 
+    # extract list of reached nodes among destination nodes
     reached = []
     for dest_id in destination_ids:
         dest_idx = node_id_to_index.get(dest_id)
-        if dest_idx is not None:
-            dist = dist_map[g.vertex(dest_idx)]
-            if dist < float('inf'):
-                reached.append(dest_id)
-    
+        if dest_idx is None: continue
+        dist = dist_map[g.vertex(dest_idx)]
+        if dist < float('inf'): reached.append(dest_id)
+
     return reached
 
 
