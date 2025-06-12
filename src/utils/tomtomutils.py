@@ -21,7 +21,7 @@ def weight_function(feature, length):
     else: kph = p['KPH']
     if kph==0: return -1
     # duration in seconds
-    return round(1.1 * length / kph * 3.6)
+    return 1.1 * length / kph * 3.6
 def is_not_snappable_fun(f):
     p = f['properties']
     return p['FOW'] in [1,10,12,6] or p['FREEWAY'] == 1 or (p['FOW']==-1 and p['FEATTYP']==4130)
