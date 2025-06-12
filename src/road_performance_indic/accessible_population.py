@@ -245,9 +245,6 @@ def __parallel_process(xy,
 
         # compute dijkstra
         result = run_dijkstra_reachability(g, weight_prop, node_id_to_index, index_to_node_id, n, populated_nodes, duration_s)
-        print(result)
-        continue
-
         #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
         #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
 
@@ -292,7 +289,7 @@ def __parallel_process(xy,
 
 # bbox
 xy = [3700000, 2500000]
-partition_size = 10000
+partition_size = 50000
 show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
