@@ -266,20 +266,7 @@ def __parallel_process(xy,
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
-    #return [ grd_ids, accessible_populations ]
-
-    if show_detailled_messages: print(datetime.now(), "save output")
-    data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations }
-    print(datetime.now(), "save as parquet")
-    parquet_out = "/home/juju/gisco/road_transport_performance/accessible_population.parquet"
-    pd.DataFrame(data).to_parquet(parquet_out)
-
-    # to gpkg
-    parquet_grid_to_geotiff( [parquet_out], "/home/juju/gisco/road_transport_performance/accessible_population.tiff", dtype=np.int32, compress='deflate')
-
-
-    if show_detailled_messages: print(datetime.now(), "done")
-
+    return [ grd_ids, accessible_populations ]
 
 
 
@@ -313,7 +300,7 @@ def population_grid_loader(bbox): return iter_features("/home/juju/geodata/censu
 
 # def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 
-__parallel_process(xy,
+[ grd_ids, accessible_populations ] = __parallel_process(xy,
             extention_buffer,
             partition_size,
             road_network_loader,
@@ -328,3 +315,10 @@ __parallel_process(xy,
             densification_distance = None,
             show_detailled_messages = True,
             )
+
+
+print(datetime.now(), "save output")
+data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations }
+parquet_out = "/home/juju/gisco/road_transport_performance/accessible_population.parquet"
+pd.DataFrame(data).to_parquet(parquet_out)
+parquet_grid_to_geotiff( [parquet_out], "/home/juju/gisco/road_transport_performance/accessible_population.tiff", dtype=np.int32, compress='deflate')
