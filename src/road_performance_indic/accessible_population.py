@@ -246,10 +246,11 @@ def __parallel_process(xy,
     r2 = grid_resolution / 2
 
     for x in range(x_part, x_part+partition_size, grid_resolution):
+        print(datetime.now(), x)
         for y in range(y_part, y_part+partition_size, grid_resolution):
         #for pc in populated_cells:
             #id, x, y = pc
-            print(datetime.now(),"start")
+            #print(datetime.now(),"start")
 
             # snap cell centre to the snappable nodes, using the spatial index
             ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
@@ -269,37 +270,28 @@ def __parallel_process(xy,
             dtn = distance_to_node(n, x+r2, y+r2)
             if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
-            # compute dijkstra
-            #result = run_dijkstra_reachability(graph, weight_prop, node_id_to_index, n, populated_nodes, duration_s)
-            #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
-            #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
-
             # get origin node index
             origin_idx = node_id_to_index[n]
 
-            # run dijskra
-            print(datetime.now())
+            # compute dijkstra
+            #print(datetime.now())
             dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
-            print(datetime.now())
+            #print(datetime.now())
 
             # convert distance property map to numpy array
             dist_array = dist_map.a
-
             # mask of which destinations are reachable
             reachable_mask = dist_array[dest_indices] < float('inf')
-
-            # extract reachable destination IDs in one shot
-            reachable = [index_to_node_id[nn] for nn in np.where(reachable_mask)[0]]
 
             # sum of nodes population
             sum_pop = 0
             #TODO add population of the current node ?!
             #print(n in node_pop_dict)
             #if n not in reachable: sum_pop += node_pop_dict[n]
-            for nn in reachable:
+            for nn in np.where(reachable_mask)[0]:
+                nn = index_to_node_id[nn]
                 if nn in node_pop_dict:
                     sum_pop += node_pop_dict[nn]
-            #print(sum_pop)
 
             # store cell value
             accessible_populations.append(sum_pop)
@@ -307,7 +299,7 @@ def __parallel_process(xy,
 
             # cache value, to be sure is is not computed another time
             cache[n] = sum_pop
-            print(datetime.now(),"end")
+            #print(datetime.now(),"end")
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
@@ -315,9 +307,6 @@ def __parallel_process(xy,
 
 
 
-
-# https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.shortest_paths.dense.floyd_warshall.html
-# computation time of dijskra: 0.7s per node -> 1h30 per 100km tile
 #TODO restricts to populated cells
 #TODO compute population <1H30 AND < 120km
 
@@ -329,8 +318,8 @@ show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 0 # 180000 #200 km
-duration_s = 60 * 20 #1h30=90min
+extention_buffer = 180000 # 180000 #200 km
+duration_s = 60 * 90 #1h30=90min
 
 # population grid
 population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
