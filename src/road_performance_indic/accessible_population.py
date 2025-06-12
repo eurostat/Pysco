@@ -252,7 +252,7 @@ def __parallel_process(xy,
         print(i,"/",nb)
         i+=1
 
-        print(datetime.now(),"start")
+        #print(datetime.now(),"start")
 
         id, x, y = pc
 
@@ -284,9 +284,9 @@ def __parallel_process(xy,
         origin_idx = node_id_to_index[n]
 
         # run dijskra
-        print(datetime.now())
+        #print(datetime.now())
         dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
-        print(datetime.now())
+        #print(datetime.now())
 
         # convert distance property map to numpy array
         dist_array = dist_map.a
@@ -301,8 +301,8 @@ def __parallel_process(xy,
         sum_pop = 0
         for nn in np.where(reachable_mask)[0]:
             nn = index_to_node_id[nn]
-            if nn not in node_pop_dict: continue
-            sum_pop += node_pop_dict[nn]
+            if nn in node_pop_dict:
+                sum_pop += node_pop_dict[nn]
 
 
         '''
@@ -323,7 +323,7 @@ def __parallel_process(xy,
 
         # cache value, to be sure is is not computed another time
         cache[n] = sum_pop
-        print(datetime.now(),"end")
+        #print(datetime.now(),"end")
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
