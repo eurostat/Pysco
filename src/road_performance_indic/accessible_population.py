@@ -7,76 +7,12 @@ import os
 import graph_tool.all as gt
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.convert import parquet_grid_to_geotiff
+#from utils.convert import parquet_grid_to_geotiff
 from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_to_node, nodes_spatial_index_adjacendy_list
 from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function
 from utils.featureutils import iter_features
 from utils.gridutils import get_cell_xy_from_id
 
-'''
-def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=False):
-    heap = [(0, origin)]
-    dist = {origin: 0}
-    result = {}
-
-    while heap and len(result) < len(destinations):
-        cost, node = heapq.heappop(heap)
-
-        # If we already found a better path to this node, skip it
-        if cost > dist.get(node, float('inf')): continue
-
-        if node in destinations:
-            result[node] = cost
-            if len(result) == len(destinations): break
-
-        if cutoff is not None and cost > cutoff: continue
-
-        for neighbor, weight in graph.get(node, []):
-            new_cost = cost + weight
-            if cutoff is not None and new_cost > cutoff: continue
-
-            if new_cost < dist.get(neighbor, float('inf')):
-                dist[neighbor] = new_cost
-                heapq.heappush(heap, (new_cost, neighbor))
-
-    if only_nodes: return result.keys()
-    return result
-'''
-
-'''
-def dijkstra_with_cutoff_old(graph, origin, destinations, cutoff=None, only_nodes=False):
-    """
-    graph: dict of {node: list of (neighbor, weight)}
-    origin: origin node
-    destinations: set of destination nodes
-    cutoff: maximal cost value - beyond, route is ignored
-    """
-    heap = [(0, origin)]
-    visited = set()
-    result = {}
-
-    while heap and len(result) < len(destinations):
-        cost, node = heapq.heappop(heap)
-
-        if node in visited: continue
-
-        visited.add(node)
-
-        if node in destinations:
-            result[node] = cost
-            if len(result) == len(destinations): break
-
-        if cutoff is not None and cost > cutoff: continue
-
-        for neighbor, weight in graph.get(node, []):
-            if neighbor not in visited:
-                new_cost = cost + weight
-                if cutoff is None or new_cost <= cutoff:
-                    heapq.heappush(heap, (new_cost, neighbor))
-
-    if only_nodes: return result.keys()
-    return result
-'''
 
 
 def build_graph_tool_graph(graph):
@@ -346,4 +282,4 @@ print(datetime.now(), "save output")
 data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations }
 parquet_out = "/home/juju/gisco/road_transport_performance/accessible_population.parquet"
 pd.DataFrame(data).to_parquet(parquet_out)
-parquet_grid_to_geotiff( [parquet_out], "/home/juju/gisco/road_transport_performance/accessible_population.tiff", dtype=np.int32, compress='deflate')
+#parquet_grid_to_geotiff( [parquet_out], "/home/juju/gisco/road_transport_performance/accessible_population.tiff", dtype=np.int32, compress='deflate')
