@@ -158,6 +158,7 @@ def __parallel_process(xy,
             detailled = False,
             densification_distance = None,
             show_detailled_messages = False,
+            cell_id_fun = lambda x,y:str(x)+"_"+str(y)
             ):
 
     x_part, y_part = xy
@@ -244,75 +245,69 @@ def __parallel_process(xy,
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing for", len(populated_cells), "cells")
     r2 = grid_resolution / 2
 
-    #for x in range(x_part, x_part+partition_size, grid_resolution):
-    #    for y in range(y_part, y_part+partition_size, grid_resolution):
-    i=1
-    nb = len(populated_cells)
-    for pc in populated_cells:
-        print(i,"/",nb)
-        i+=1
+    for x in range(x_part, x_part+partition_size, grid_resolution):
+        for y in range(y_part, y_part+partition_size, grid_resolution):
+        #for pc in populated_cells:
+            #id, x, y = pc
+            print(datetime.now(),"start")
 
-        print(datetime.now(),"start")
+            # snap cell centre to the snappable nodes, using the spatial index
+            ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
+            if ni_ == None:
+                print(datetime.now(),x_part,y_part, "graph node not found for cell", x,y)
+                continue
+            n = snappable_nodes[ni_]
 
-        id, x, y = pc
+            # check if value was not already computed - try to find it in the cache
+            if n in cache:
+                print("Node found in cache", n, cache[n])
+                accessible_populations.append(cache[n])
+                grd_ids.append(cell_id_fun(x,y))
+                continue
 
-        # snap cell centre to the snappable nodes, using the spatial index
-        ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
-        if ni_ == None:
-            print(datetime.now(),x_part,y_part, "graph node not found for cell", x,y)
-            continue
-        n = snappable_nodes[ni_]
+            # compute distance from cell centre to node, and skip if too far
+            dtn = distance_to_node(n, x+r2, y+r2)
+            if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
-        # check if value was not already computed - try to find it in the cache
-        if n in cache:
-            print("Node found in cache", n, cache[n])
-            accessible_populations.append(cache[n])
-            grd_ids.append(id) #cell_id_fun(x,y))
-            continue
+            # compute dijkstra
+            #result = run_dijkstra_reachability(graph, weight_prop, node_id_to_index, n, populated_nodes, duration_s)
+            #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
+            #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
 
-        # compute distance from cell centre to node, and skip if too far
-        dtn = distance_to_node(n, x+r2, y+r2)
-        if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
+            # get origin node index
+            origin_idx = node_id_to_index[n]
 
-        # compute dijkstra
-        #result = run_dijkstra_reachability(graph, weight_prop, node_id_to_index, n, populated_nodes, duration_s)
-        #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
-        #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
+            # run dijskra
+            print(datetime.now())
+            dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
+            print(datetime.now())
 
-        # get origin node index
-        origin_idx = node_id_to_index[n]
+            # convert distance property map to numpy array
+            dist_array = dist_map.a
 
-        # run dijskra
-        print(datetime.now())
-        dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
-        print(datetime.now())
+            # mask of which destinations are reachable
+            reachable_mask = dist_array[dest_indices] < float('inf')
 
-        # convert distance property map to numpy array
-        dist_array = dist_map.a
+            # extract reachable destination IDs in one shot
+            reachable = [index_to_node_id[nn] for nn in np.where(reachable_mask)[0]]
 
-        # mask of which destinations are reachable
-        reachable_mask = dist_array[dest_indices] < float('inf')
+            # sum of nodes population
+            sum_pop = 0
+            #TODO add population of the current node ?!
+            #print(n in node_pop_dict)
+            #if n not in reachable: sum_pop += node_pop_dict[n]
+            for nn in reachable:
+                if nn in node_pop_dict:
+                    sum_pop += node_pop_dict[nn]
+            #print(sum_pop)
 
-        # extract reachable destination IDs in one shot
-        reachable = [index_to_node_id[nn] for nn in np.where(reachable_mask)[0]]
+            # store cell value
+            accessible_populations.append(sum_pop)
+            grd_ids.append(cell_id_fun(x,y))
 
-        # sum of nodes population
-        sum_pop = 0
-        #TODO add population of the current node ?!
-        #print(n in node_pop_dict)
-        #if n not in reachable: sum_pop += node_pop_dict[n]
-        for nn in reachable:
-            if nn in node_pop_dict:
-                sum_pop += node_pop_dict[nn]
-        #print(sum_pop)
-
-        # store cell value
-        accessible_populations.append(sum_pop)
-        grd_ids.append(id) #cell_id_fun(x,y))
-
-        # cache value, to be sure is is not computed another time
-        cache[n] = sum_pop
-        print(datetime.now(),"end")
+            # cache value, to be sure is is not computed another time
+            cache[n] = sum_pop
+            print(datetime.now(),"end")
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
@@ -348,7 +343,7 @@ def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/t
 # population grid
 def population_grid_loader(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
 
-# def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
+def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 
 [ grd_ids, accessible_populations ] = __parallel_process(xy,
             extention_buffer,
@@ -364,6 +359,7 @@ def population_grid_loader(bbox): return iter_features("/home/juju/geodata/censu
             detailled = False,
             densification_distance = None,
             show_detailled_messages = True,
+            cell_id_fun = cell_id_fun,
             )
 
 
