@@ -81,7 +81,7 @@ def dijkstra_with_cutoff_old(graph, origin, destinations, cutoff=None, only_node
 
 def build_graph_tool_graph(graph):
     g = gt.Graph(directed=True)
-    weight_prop = g.new_edge_property("double") #TODO int !
+    weight_prop = g.new_edge_property("int") #TODO int !
 
     # Map your unique node ids to graph-tool vertex indices
     node_id_to_index = {}
@@ -299,8 +299,10 @@ def __parallel_process(xy,
 
         # sum of nodes population
         sum_pop = 0
-        for i in np.where(reachable_mask)[0]:
-            sum_pop += node_pop_dict[populated_nodes[i]]
+        for nn in np.where(reachable_mask)[0]:
+            nn = index_to_node_id[nn]
+            if nn not in node_pop_dict: continue
+            sum_pop += node_pop_dict[nn]
 
 
         '''
@@ -338,12 +340,12 @@ def __parallel_process(xy,
 
 # bbox
 xy = [3700000, 2500000]
-partition_size = 100000
+partition_size = 10000
 show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 180000 # 180000 #200 km
+extention_buffer = 0 # 180000 #200 km
 duration_s = 60 * 90 #1h30=90min
 
 # population grid
