@@ -185,10 +185,6 @@ def __parallel_process(xy,
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "build graph-tool graph")
     graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
 
-
-    # get destination indices as a numpy array
-    dest_indices = np.array([node_id_to_index[dest_id] for dest_id in populated_nodes if dest_id in node_id_to_index], dtype=np.int32)
-
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
@@ -228,6 +224,9 @@ def __parallel_process(xy,
     # destination nodes: all nodes with population
     populated_nodes = node_pop_dict.keys()
     if show_detailled_messages: print(datetime.now(),x_part,y_part, len(populated_nodes), "populated nodes")
+
+    # get destination indices as a numpy array - it is faster
+    dest_indices = np.array([node_id_to_index[dest_id] for dest_id in populated_nodes if dest_id in node_id_to_index], dtype=np.int32)
 
     # output data
     grd_ids = [] # the cell identifiers
