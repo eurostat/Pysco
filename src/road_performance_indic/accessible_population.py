@@ -17,15 +17,15 @@ from utils.gridutils import get_cell_xy_from_id
 
 def build_graph_tool_graph(graph):
     g = gt.Graph(directed=True)
-    weight_prop = g.new_edge_property("double") #TODO int !
+    weight_prop = g.new_edge_property("double") #TODO int !?
 
-    # Map your unique node ids to graph-tool vertex indices
+    # Map node ids to graph-tool vertex indices
     node_id_to_index = {}
     index_to_node_id = {}
-    for i, node_id in enumerate(graph.keys()):
-        v = g.add_vertex()
-        node_id_to_index[node_id] = int(v)
-        index_to_node_id[int(v)] = node_id
+    for node_id in graph.keys():
+        v = int(g.add_vertex())
+        node_id_to_index[node_id] = v
+        index_to_node_id[v] = node_id
 
     # Add edges with weights
     for source_id, neighbors in graph.items():
@@ -38,46 +38,6 @@ def build_graph_tool_graph(graph):
     return g, weight_prop, node_id_to_index, index_to_node_id
 
 
-'''
-def run_dijkstra_reachability(g, weight_prop, node_id_to_index, origin_id, destination_ids, cutoff=None):
-    # get origin node index
-    origin_idx = node_id_to_index[origin_id]
-
-    # run dijskra
-    print(datetime.now())
-    dist_map = gt.shortest_distance(g, source=g.vertex(origin_idx), weights=weight_prop, max_dist=cutoff)
-    print(datetime.now())
-
-    # extract list of reached nodes among destination nodes
-    reached = []
-    for dest_id in destination_ids:
-        dest_idx = node_id_to_index.get(dest_id)
-        if dest_idx is None: continue
-        dist = dist_map[g.vertex(dest_idx)]
-        if dist < float('inf'): reached.append(dest_id)
-
-    return reached
-'''
-
-'''
-def run_dijkstra_reachability(g, weight_prop, node_id_to_index, origin_id, destination_ids, cutoff=None):
-    origin_idx = node_id_to_index[origin_id]
-    dist_map = gt.shortest_distance(g, source=g.vertex(origin_idx), weights=weight_prop, max_dist=cutoff)
-
-    # convert distance property map to numpy array
-    dist_array = dist_map.a
-
-    # get destination indices as a numpy array
-    dest_indices = np.array([node_id_to_index[dest_id] for dest_id in destination_ids if dest_id in node_id_to_index], dtype=np.int32)
-
-    # mask of which destinations are reachable
-    reachable_mask = dist_array[dest_indices] < float('inf')
-
-    # extract reachable destination IDs in one shot
-    reachable = [destination_ids[i] for i in np.where(reachable_mask)[0]]
-
-    return reachable
-'''
 
 
 def __parallel_process(xy,
