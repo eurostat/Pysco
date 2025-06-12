@@ -157,7 +157,7 @@ def __parallel_process(xy,
     #if(len(graph.keys())==0): return
 
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "build graph-tool graph")
-    g, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
+    graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
 
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
@@ -244,7 +244,7 @@ def __parallel_process(xy,
         if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
         # compute dijkstra
-        result = run_dijkstra_reachability(g, weight_prop, node_id_to_index, index_to_node_id, n, populated_nodes, duration_s)
+        result = run_dijkstra_reachability(graph, weight_prop, node_id_to_index, index_to_node_id, n, populated_nodes, duration_s)
         #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
         #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
 
