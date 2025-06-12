@@ -13,7 +13,7 @@ from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_
 from utils.featureutils import iter_features
 from utils.gridutils import get_cell_xy_from_id
 
-
+'''
 def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=False):
     heap = [(0, origin)]
     dist = {origin: 0}
@@ -41,7 +41,7 @@ def dijkstra_with_cutoff(graph, origin, destinations, cutoff=None, only_nodes=Fa
 
     if only_nodes: return result.keys()
     return result
-
+'''
 
 '''
 def dijkstra_with_cutoff_old(graph, origin, destinations, cutoff=None, only_nodes=False):
@@ -77,6 +77,45 @@ def dijkstra_with_cutoff_old(graph, origin, destinations, cutoff=None, only_node
     if only_nodes: return result.keys()
     return result
 '''
+
+
+def build_graph_tool_graph(graph):
+    g = gt.Graph(directed=True)
+    weight_prop = g.new_edge_property("double")
+
+    # Map your unique node ids to graph-tool vertex indices
+    node_id_to_index = {}
+    index_to_node_id = {}
+    for i, node_id in enumerate(graph.keys()):
+        v = g.add_vertex()
+        node_id_to_index[node_id] = int(v)
+        index_to_node_id[int(v)] = node_id
+
+    # Add edges with weights
+    for source_id, neighbors in graph.items():
+        u_idx = node_id_to_index[source_id]
+        for dest_id, w in neighbors:
+            v_idx = node_id_to_index[dest_id]
+            e = g.add_edge(u_idx, v_idx)
+            weight_prop[e] = w
+
+    return g, weight_prop, node_id_to_index, index_to_node_id
+
+
+
+def run_dijkstra_reachability(g, weight_prop, node_id_to_index, index_to_node_id, origin_id, destination_ids, cutoff=None):
+    origin_idx = node_id_to_index[origin_id]
+    dist_map = gt.shortest_distance(g, source=g.vertex(origin_idx), weights=weight_prop, max_dist=cutoff)
+
+    reached = []
+    for dest_id in destination_ids:
+        dest_idx = node_id_to_index.get(dest_id)
+        if dest_idx is not None:
+            dist = dist_map[g.vertex(dest_idx)]
+            if dist < float('inf'):
+                reached.append(dest_id)
+    
+    return reached
 
 
 def __parallel_process(xy,
@@ -116,6 +155,9 @@ def __parallel_process(xy,
     if show_detailled_messages: print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
     #if(len(snappable_nodes)==0): return #TODO add that
     #if(len(graph.keys())==0): return
+
+    if show_detailled_messages: print(datetime.now(),x_part,y_part, "build graph-tool graph")
+    g, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
 
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
@@ -202,7 +244,11 @@ def __parallel_process(xy,
         if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
         # compute dijkstra
-        result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
+        result = run_dijkstra_reachability(g, weight_prop, node_id_to_index, index_to_node_id, n, populated_nodes, duration_s)
+        print(result)
+        continue
+
+        #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
         #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
 
         # sum of nodes population
