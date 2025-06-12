@@ -7,7 +7,7 @@ import os
 import graph_tool.all as gt
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-#from utils.convert import parquet_grid_to_geotiff
+from utils.convert import parquet_grid_to_geotiff
 from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_to_node, nodes_spatial_index_adjacendy_list
 from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function
 from utils.featureutils import iter_features
@@ -242,4 +242,4 @@ print(datetime.now(), "save output")
 data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations }
 parquet_out = "/home/juju/gisco/road_transport_performance/accessible_population.parquet"
 pd.DataFrame(data).to_parquet(parquet_out)
-#parquet_grid_to_geotiff( [parquet_out], "/home/juju/gisco/road_transport_performance/accessible_population.tiff", dtype=np.int32, compress='deflate')
+parquet_grid_to_geotiff( [parquet_out], "/home/juju/gisco/road_transport_performance/accessible_population.tiff", dtype=np.int32, compress='deflate')
