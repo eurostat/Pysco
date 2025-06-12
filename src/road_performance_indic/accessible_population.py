@@ -282,16 +282,15 @@ def __parallel_process(xy,
             dist_array = dist_map.a
             # mask of which destinations are reachable
             reachable_mask = dist_array[dest_indices] < float('inf')
-            reachable = np.where(reachable_mask)[0]
-            reachable = [ index_to_node_id[nn] for nn in reachable ]
+            reachable = [ index_to_node_id[nn] for nn in np.where(reachable_mask)[0] ]
 
             # sum of nodes population
             sum_pop = 0
-            # check if origin node is among the reachable node
-            if n not in reachable and n in node_pop_dict: sum_pop += node_pop_dict[n]
             for nn in reachable:
                 if nn in node_pop_dict:
                     sum_pop += node_pop_dict[nn]
+            # check if origin node is among the reachable node
+            if n not in reachable and n in node_pop_dict: sum_pop += node_pop_dict[n]
 
             # store cell value
             accessible_populations.append(sum_pop)
