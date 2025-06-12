@@ -123,6 +123,27 @@ def run_dijkstra_reachability(g, weight_prop, node_id_to_index, origin_id, desti
     return reached
 '''
 
+'''
+def run_dijkstra_reachability(g, weight_prop, node_id_to_index, origin_id, destination_ids, cutoff=None):
+    origin_idx = node_id_to_index[origin_id]
+    dist_map = gt.shortest_distance(g, source=g.vertex(origin_idx), weights=weight_prop, max_dist=cutoff)
+
+    # convert distance property map to numpy array
+    dist_array = dist_map.a
+
+    # get destination indices as a numpy array
+    dest_indices = np.array([node_id_to_index[dest_id] for dest_id in destination_ids if dest_id in node_id_to_index], dtype=np.int32)
+
+    # mask of which destinations are reachable
+    reachable_mask = dist_array[dest_indices] < float('inf')
+
+    # extract reachable destination IDs in one shot
+    reachable = [destination_ids[i] for i in np.where(reachable_mask)[0]]
+
+    return reachable
+'''
+
+
 def __parallel_process(xy,
             extention_buffer,
             partition_size,
@@ -264,6 +285,26 @@ def __parallel_process(xy,
         dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
         print(datetime.now())
 
+
+        # convert distance property map to numpy array
+        dist_array = dist_map.a
+
+        # get destination indices as a numpy array
+        dest_indices = np.array([node_id_to_index[dest_id] for dest_id in populated_nodes if dest_id in node_id_to_index], dtype=np.int32)
+
+        # mask of which destinations are reachable
+        reachable_mask = dist_array[dest_indices] < float('inf')
+
+        # extract reachable destination IDs in one shot
+        #reachable = [populated_nodes[i] for i in np.where(reachable_mask)[0]]
+
+        # sum of nodes population
+        sum_pop = 0
+        for i in np.where(reachable_mask)[0]:
+            sum_pop += node_pop_dict[populated_nodes[i]]
+
+
+        '''
         # sum of nodes population
         sum_pop = 0
         inf = float('inf')
@@ -271,6 +312,9 @@ def __parallel_process(xy,
             #dest_idx = node_id_to_index.get(dest_id)
             #if dest_idx is None: continue
             if dist_map[graph.vertex( node_id_to_index.get(dest_id) )] < inf: sum_pop += node_pop_dict[dest_id]
+        '''
+
+
 
         # store cell value
         accessible_populations.append(sum_pop)
