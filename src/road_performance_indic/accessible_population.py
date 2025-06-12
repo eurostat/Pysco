@@ -269,7 +269,7 @@ def __parallel_process(xy,
         for dest_id in populated_nodes:
             dest_idx = node_id_to_index.get(dest_id)
             if dest_idx is None: continue
-            dist = dist_map[g.vertex(dest_idx)]
+            dist = dist_map[graph.vertex(dest_idx)]
             if dist < float('inf'): sum_pop += node_pop_dict[dest_id]
 
         # store cell value
