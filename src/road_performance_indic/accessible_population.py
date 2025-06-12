@@ -103,7 +103,7 @@ def build_graph_tool_graph(graph):
 
 
 
-def run_dijkstra_reachability(g, weight_prop, node_id_to_index, index_to_node_id, origin_id, destination_ids, cutoff=None):
+def run_dijkstra_reachability(g, weight_prop, node_id_to_index, origin_id, destination_ids, cutoff=None):
     origin_idx = node_id_to_index[origin_id]
     dist_map = gt.shortest_distance(g, source=g.vertex(origin_idx), weights=weight_prop, max_dist=cutoff)
 
@@ -244,7 +244,7 @@ def __parallel_process(xy,
         if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
         # compute dijkstra
-        result = run_dijkstra_reachability(graph, weight_prop, node_id_to_index, index_to_node_id, n, populated_nodes, duration_s)
+        result = run_dijkstra_reachability(graph, weight_prop, node_id_to_index, n, populated_nodes, duration_s)
         #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
         #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
 
@@ -308,7 +308,7 @@ def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/t
 # population grid
 def population_grid_loader(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
 
-#def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
+# def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 
 __parallel_process(xy,
             extention_buffer,
