@@ -226,6 +226,8 @@ def __parallel_process(xy,
         print(i,"/",nb)
         i+=1
 
+        print(datetime.now(),"start")
+
         id, x, y = pc
 
         # snap cell centre to the snappable nodes, using the spatial index
@@ -247,9 +249,11 @@ def __parallel_process(xy,
         if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
         # compute dijkstra
+        print(datetime.now())
         result = run_dijkstra_reachability(graph, weight_prop, node_id_to_index, n, populated_nodes, duration_s)
         #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
         #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
+        print(datetime.now())
 
         # sum of nodes population
         sum_pop = 0
@@ -263,6 +267,7 @@ def __parallel_process(xy,
 
         # cache value, to be sure is is not computed another time
         cache[n] = sum_pop
+        print(datetime.now(),"end")
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
