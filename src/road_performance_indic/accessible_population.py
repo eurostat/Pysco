@@ -4,6 +4,7 @@ from datetime import datetime
 import heapq
 import sys
 import os
+import graph_tool.all as gt
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.convert import parquet_grid_to_geotiff
@@ -250,7 +251,7 @@ show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 0 # 180000 #200 km
+extention_buffer = 10000 # 180000 #200 km
 duration_s = 60 * 20 #1h30=90min
 
 # population grid
