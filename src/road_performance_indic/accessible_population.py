@@ -81,7 +81,7 @@ def dijkstra_with_cutoff_old(graph, origin, destinations, cutoff=None, only_node
 
 def build_graph_tool_graph(graph):
     g = gt.Graph(directed=True)
-    weight_prop = g.new_edge_property("int") #TODO int !
+    weight_prop = g.new_edge_property("double") #TODO int !
 
     # Map your unique node ids to graph-tool vertex indices
     node_id_to_index = {}
@@ -252,7 +252,7 @@ def __parallel_process(xy,
         print(i,"/",nb)
         i+=1
 
-        #print(datetime.now(),"start")
+        print(datetime.now(),"start")
 
         id, x, y = pc
 
@@ -279,14 +279,13 @@ def __parallel_process(xy,
         #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
         #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
 
-
         # get origin node index
         origin_idx = node_id_to_index[n]
 
         # run dijskra
-        #print(datetime.now())
+        print(datetime.now())
         dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
-        #print(datetime.now())
+        print(datetime.now())
 
         # convert distance property map to numpy array
         dist_array = dist_map.a
@@ -295,27 +294,17 @@ def __parallel_process(xy,
         reachable_mask = dist_array[dest_indices] < float('inf')
 
         # extract reachable destination IDs in one shot
-        #reachable = [populated_nodes[i] for i in np.where(reachable_mask)[0]]
+        reachable = [index_to_node_id[nn] for nn in np.where(reachable_mask)[0]]
 
         # sum of nodes population
         sum_pop = 0
-        for nn in np.where(reachable_mask)[0]:
-            nn = index_to_node_id[nn]
+        #TODO add population of the current node ?!
+        #print(n in node_pop_dict)
+        #if n not in reachable: sum_pop += node_pop_dict[n]
+        for nn in reachable:
             if nn in node_pop_dict:
                 sum_pop += node_pop_dict[nn]
-
-
-        '''
-        # sum of nodes population
-        sum_pop = 0
-        inf = float('inf')
-        for dest_id in populated_nodes:
-            #dest_idx = node_id_to_index.get(dest_id)
-            #if dest_idx is None: continue
-            if dist_map[graph.vertex( node_id_to_index.get(dest_id) )] < inf: sum_pop += node_pop_dict[dest_id]
-        '''
-
-
+        #print(sum_pop)
 
         # store cell value
         accessible_populations.append(sum_pop)
@@ -323,7 +312,7 @@ def __parallel_process(xy,
 
         # cache value, to be sure is is not computed another time
         cache[n] = sum_pop
-        #print(datetime.now(),"end")
+        print(datetime.now(),"end")
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
@@ -345,8 +334,8 @@ show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 180000 # 180000 #200 km
-duration_s = 60 * 90 #1h30=90min
+extention_buffer = 0 # 180000 #200 km
+duration_s = 60 * 20 #1h30=90min
 
 # population grid
 population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
