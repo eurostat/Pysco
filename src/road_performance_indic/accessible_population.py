@@ -185,6 +185,10 @@ def __parallel_process(xy,
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "build graph-tool graph")
     graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
 
+
+    # get destination indices as a numpy array
+    dest_indices = np.array([node_id_to_index[dest_id] for dest_id in populated_nodes if dest_id in node_id_to_index], dtype=np.int32)
+
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
@@ -285,12 +289,8 @@ def __parallel_process(xy,
         dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
         print(datetime.now())
 
-
         # convert distance property map to numpy array
         dist_array = dist_map.a
-
-        # get destination indices as a numpy array
-        dest_indices = np.array([node_id_to_index[dest_id] for dest_id in populated_nodes if dest_id in node_id_to_index], dtype=np.int32)
 
         # mask of which destinations are reachable
         reachable_mask = dist_array[dest_indices] < float('inf')
