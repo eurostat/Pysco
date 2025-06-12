@@ -237,10 +237,6 @@ def __parallel_process(xy,
     # it could happen, since some cells may snap to a same graph node
     cache = {}
 
-    #convert to networkx graph
-    #if show_detailled_messages: print(datetime.now(),x_part,y_part, "convert to NetworkX graph")
-    #graph = adjacency_dict_to_networkx(graph)
-
     # go through cells
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing for", len(populated_cells), "cells")
     r2 = grid_resolution / 2
@@ -261,7 +257,7 @@ def __parallel_process(xy,
 
             # check if value was not already computed - try to find it in the cache
             if n in cache:
-                print("Node found in cache", n, cache[n])
+                #print("Node found in cache", n, cache[n])
                 accessible_populations.append(cache[n])
                 grd_ids.append(cell_id_fun(x,y))
                 continue
