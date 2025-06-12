@@ -261,7 +261,7 @@ def __parallel_process(xy,
 
         # run dijskra
         print(datetime.now())
-        dist_map = gt.shortest_distance(g, source=g.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
+        dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
         print(datetime.now())
 
         # sum of nodes population
