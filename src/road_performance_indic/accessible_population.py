@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from datetime import datetime
-import heapq
+#import heapq
 import sys
 import os
 import graph_tool.all as gt
@@ -102,7 +102,7 @@ def build_graph_tool_graph(graph):
     return g, weight_prop, node_id_to_index, index_to_node_id
 
 
-
+'''
 def run_dijkstra_reachability(g, weight_prop, node_id_to_index, origin_id, destination_ids, cutoff=None):
     # get origin node index
     origin_idx = node_id_to_index[origin_id]
@@ -121,7 +121,7 @@ def run_dijkstra_reachability(g, weight_prop, node_id_to_index, origin_id, desti
         if dist < float('inf'): reached.append(dest_id)
 
     return reached
-
+'''
 
 def __parallel_process(xy,
             extention_buffer,
@@ -251,15 +251,26 @@ def __parallel_process(xy,
         if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
         # compute dijkstra
-        result = run_dijkstra_reachability(graph, weight_prop, node_id_to_index, n, populated_nodes, duration_s)
+        #result = run_dijkstra_reachability(graph, weight_prop, node_id_to_index, n, populated_nodes, duration_s)
         #result = dijkstra_with_cutoff(graph, n, populated_nodes, duration_s, only_nodes=True)
         #result = nx.single_source_dijkstra_path_length(graph, n, cutoff=duration_s, weight='weight').keys()
 
+
+        # get origin node index
+        origin_idx = node_id_to_index[n]
+
+        # run dijskra
+        print(datetime.now())
+        dist_map = gt.shortest_distance(g, source=g.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
+        print(datetime.now())
+
         # sum of nodes population
         sum_pop = 0
-        for nn in result:
-            #if nn in node_pop_dict:
-                sum_pop += node_pop_dict[nn]
+        for dest_id in populated_nodes:
+            dest_idx = node_id_to_index.get(dest_id)
+            if dest_idx is None: continue
+            dist = dist_map[g.vertex(dest_idx)]
+            if dist < float('inf'): sum_pop += node_pop_dict[dest_id]
 
         # store cell value
         accessible_populations.append(sum_pop)
@@ -284,12 +295,12 @@ def __parallel_process(xy,
 
 # bbox
 xy = [3700000, 2500000]
-partition_size = 100000
+partition_size = 50000
 show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 180000 # 180000 #200 km
+extention_buffer = 0 # 180000 #200 km
 duration_s = 60 * 90 #1h30=90min
 
 # population grid
