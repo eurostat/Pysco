@@ -306,8 +306,8 @@ def __parallel_process(xy,
     return [ grd_ids, accessible_populations ]
 
 
-
-#TODO restricts to populated cells
+#TODO test 100m
+#TODO (restricts to populated cells)
 #TODO compute population <1H30 AND < 120km
 
 
