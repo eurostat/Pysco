@@ -214,8 +214,6 @@ def __parallel_process(xy,
             # sum population where reachable
             sum_pop = np.sum(populated_pops[reachable_mask])
 
-            print(sum_pop)
-
             # store cell value
             accessible_populations.append(sum_pop)
             grd_ids.append(cell_id_fun(x,y))
