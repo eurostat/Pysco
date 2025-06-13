@@ -197,7 +197,7 @@ def __parallel_process(xy,
                 for nn in populated_nodes:
                     dist = dist_map[graph_id_to_vertex[nn]]
                     if dist < inf:
-                        #TODO check node is in list
+                        # check node is in list
                         #if nn == n: print("ok", dist)
                         sum_pop += node_pop_dict[nn]
 
@@ -281,8 +281,6 @@ def accessiblity_population(
 
 
 
-
-# 23+8 minutes per 100km tile
 #TODO test 100m ?
 #TODO compute population <1H30 AND < 120km
 
@@ -300,9 +298,10 @@ bbox = [ 900000, 900000, 6600000, 5400000 ]
 #greece
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
-file_size = 200000
-extention_buffer = 0 # 180000
-duration_s = 60 * 15 #1h30=90min
+file_size = 100000
+extention_buffer = 180000 # 180000
+duration_s = 60 * 90 #1h30=90min
+num_processors_to_use = 7
 
 def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
@@ -318,27 +317,28 @@ for year in ["2021"]:
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
     population_grid_loader = population_grid_loader_2021 if year == "2021" else None
 
-    accessiblity_population(
-                        road_network_loader,
-                        bbox = bbox,
-                        out_folder = out_folder_year,
-                        duration_s = duration_s,
-                        weight_function = weight_function,
-                        direction_fun = direction_fun,
-                        is_not_snappable_fun = is_not_snappable_fun,
-                        initial_node_level_fun = initial_node_level_fun,
-                        final_node_level_fun = final_node_level_fun,
-                        cell_id_fun = cell_id_fun,
-                        grid_resolution = grid_resolution,
-                        cell_network_max_distance = grid_resolution * 2,
-                        file_size = file_size,
-                        extention_buffer = extention_buffer,
-                        detailled = False,
-                        densification_distance = None,
-                        num_processors_to_use = 8,
-                        shuffle = True,
-                        show_detailled_messages = False,
-                        )
+    if True:
+        accessiblity_population(
+                            road_network_loader,
+                            bbox = bbox,
+                            out_folder = out_folder_year,
+                            duration_s = duration_s,
+                            weight_function = weight_function,
+                            direction_fun = direction_fun,
+                            is_not_snappable_fun = is_not_snappable_fun,
+                            initial_node_level_fun = initial_node_level_fun,
+                            final_node_level_fun = final_node_level_fun,
+                            cell_id_fun = cell_id_fun,
+                            grid_resolution = grid_resolution,
+                            cell_network_max_distance = grid_resolution * 2,
+                            file_size = file_size,
+                            extention_buffer = extention_buffer,
+                            detailled = False,
+                            densification_distance = None,
+                            num_processors_to_use = num_processors_to_use,
+                            shuffle = True,
+                            show_detailled_messages = False,
+                            )
 
     # combine parquet files to a single tiff file
     geotiff = out_folder + "accessible_population_" + year + "_" + str(grid_resolution) + "m.tif"
