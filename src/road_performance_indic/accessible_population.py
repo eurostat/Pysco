@@ -185,7 +185,7 @@ def __parallel_process(xy,
             sum_pop = 0
             for nn in populated_nodes:
                 dest_idx = node_id_to_index[nn]
-                dist = dist_map[g.vertex(dest_idx)]
+                dist = dist_map[graph.vertex(dest_idx)]
                 if dist < float('inf'):
                     if nn == n: print("ok", dist)
                     sum_pop += node_pop_dict[nn]
