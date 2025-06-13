@@ -83,8 +83,7 @@ def __parallel_process(xy,
     snappable_nodes = gb_['snappable_nodes']
     del gb_, roads
     if show_detailled_messages: print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
-    #if(len(snappable_nodes)==0): return #TODO add that
-    #if(len(graph.keys())==0): return
+    if(len(snappable_nodes)==0): return
 
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "build graph-tool graph")
     graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
@@ -214,10 +213,6 @@ def __parallel_process(xy,
     return [ grd_ids, accessible_populations ]
 
 
-# 23+8 minutes per 100km tile
-#TODO parallelisation
-#TODO test 100m ?
-#TODO compute population <1H30 AND < 120km
 
 
 
@@ -295,6 +290,11 @@ def accessiblity_population(
     out.to_parquet(out_parquet_file)
 
 
+
+
+# 23+8 minutes per 100km tile
+#TODO test 100m ?
+#TODO compute population <1H30 AND < 120km
 
 
 # where to store the outputs
