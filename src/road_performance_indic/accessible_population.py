@@ -320,6 +320,7 @@ duration_s = 60 * 20 #1h30=90min
 # clamp bbox to fit with tile_file_size_m
 clamp = lambda v : floor(v/tile_file_size_m)*tile_file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
+bbox = [xmin,ymin,xmax+tile_file_size_m,ymax+tile_file_size_m]
 
 def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
@@ -386,10 +387,6 @@ for year in ["2021"]:
         files,
         geotiff,
         bbox = bbox,
-        #attributes=["duration_s_1", "duration_average_s_3"],
-        parquet_nodata_values=[-1],
         dtype=np.int32,
-        #value_fun= lambda v:v if v<32767 else 32767, # np.int16(v),
         compress='deflate'
     )
-

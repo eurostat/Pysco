@@ -163,8 +163,6 @@ def parquet_grid_to_geotiff(
     width = ceil((maxx - minx) / resolution)
     height = ceil((maxy - miny) / resolution)
 
-    print(f"Raster size: {width} x {height} cells")
-
     # Prepare raster bands
     band_arrays = {
         attr: np.full((height, width), tiff_nodata_value, dtype=dtype)
