@@ -331,8 +331,8 @@ accessiblity_population(
                        extention_buffer = 180000, # 180000
                        detailled = False,
                        densification_distance = None,
-                       num_processors_to_use = 10,
-                       show_detailled_messages = False,
+                       num_processors_to_use = 5,
+                       show_detailled_messages = True,
                        )
 
 parquet_grid_to_geotiff( [parquet_out], "/home/juju/gisco/road_transport_performance/accessible_population.tiff", dtype=np.int32, compress='deflate')
