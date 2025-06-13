@@ -216,13 +216,11 @@ def __parallel_process(xy,
                 cache[n] = sum_pop
                 #print(datetime.now(),"end")
 
-    print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
-
-    # save output
-    print(datetime.now(), "save as parquet")
+    # save output as parquet
     data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations }
     pd.DataFrame(data).to_parquet(out_file)
 
+    print(datetime.now(), x_part, y_part, len(grd_ids), "cells saved")
 
 
 
