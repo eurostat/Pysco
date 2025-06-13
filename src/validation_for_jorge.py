@@ -1,42 +1,38 @@
 import geopandas as gpd
-from shapely.geometry import Polygon, MultiPolygon
-from shapely.strtree import STRtree
-import os
+from rtree import index
 
-def check_no_overlaps(gpkg_path, layer=None):
-    if not os.path.isfile(gpkg_path): raise FileNotFoundError(f"File not found: {gpkg_path}")
+import geopandas as gpd
+from rtree import index
 
-    # Load GeoPackage
-    gdf = gpd.read_file(gpkg_path, layer=layer)
+def check_overlaps(gpkg_path):
+    print("load")
+    gdf = gpd.read_file(gpkg_path)
 
-    # Explode MultiPolygons into individual Polygons
-    gdf = gdf.explode(ignore_index=True)
+    print("decompose to polygons")
+    gdf = gdf.explode(index_parts=False)["geometry"]
 
-    # Ensure only polygon geometries
-    gdf = gdf[gdf.geometry.type == 'Polygon']
+    print('build index')
+    idx = index.Index()
+    for idx_val, geometry in enumerate(gdf.geometry):
+        idx.insert(idx_val, geometry.bounds)
 
-    # Build a list of geometries and their original index
-    polygons = list(gdf.geometry)
-    str_tree = STRtree(polygons)
-
-    # Test each polygon against its neighbors via spatial index
-    overlaps = []
-    for i, poly in enumerate(polygons):
-        # Query index for possible overlaps
-        possible_matches = str_tree.query(poly)
-        for other in possible_matches:
-            if poly == other: continue
-            if poly.intersects(other): overlaps.append((i, polygons.index(other)))
+    print("check overlaps")
+    overlaps = set()
+    for geom_id in range(len(gdf)):
+        print(geom_id)
+        for other_geom_id in list(idx.intersection(gdf.geometry[geom_id].bounds)):
+            if geom_id != other_geom_id and gdf.geometry[geom_id].overlaps(gdf.geometry[other_geom_id]):
+                overlaps.add((geom_id, other_geom_id))
 
     if overlaps:
-        print(f"Found {len(overlaps)} overlapping pairs.")
-        return overlaps  # List of (index1, index2)
-    else:
-        print("No overlaps found.")
+        print("Overlaps detected.")
         return True
+    else:
+        print("No overlaps detected.")
+        return False
 
 
 
 gf = "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg"
-check_no_overlaps(gf)
+check_overlaps(gf)
 
