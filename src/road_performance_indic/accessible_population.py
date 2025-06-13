@@ -44,6 +44,7 @@ def build_graph_tool_graph(graph):
 
 
 def __parallel_process(xy,
+            out_folder,
             duration_s,
             extention_buffer,
             partition_size,
@@ -63,6 +64,11 @@ def __parallel_process(xy,
 
     # get partition position
     [ x_part, y_part ] = xy
+
+    # output file
+    out_file = out_folder + "ap_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
+    # skip if output file was already produced
+    if os.path.isfile(out_file): return
 
     if not show_detailled_messages: print(datetime.now(),x_part,y_part)
 
@@ -210,7 +216,16 @@ def __parallel_process(xy,
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
-    return [ grd_ids, accessible_populations ]
+    print(datetime.now(), len(grd_ids), "cells")
+    #if len(cell_geometries) == 0: return
+
+    # make output dataframe
+    data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations }
+
+    # save output
+    print(datetime.now(), "save as parquet")
+    out = pd.DataFrame(data)
+    out.to_parquet(out_file)
 
 
 
@@ -219,7 +234,7 @@ def __parallel_process(xy,
 def accessiblity_population(
                        road_network_loader,
                        bbox,
-                       out_parquet_file,
+                       out_folder,
                        duration_s,
                        weight_function = lambda feature,sl:sl,
                        direction_fun=lambda feature:"both", #('both', 'oneway', 'forward', 'backward')
@@ -239,9 +254,11 @@ def accessiblity_population(
 
     # launch parallel computation   
     processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
+    # TODO shuffle ?
     processes_params = [
         (
             xy,
+            out_folder,
             duration_s,
             extention_buffer,
             partition_size,
@@ -262,32 +279,8 @@ def accessiblity_population(
         ]
 
     print(datetime.now(), "launch", len(processes_params), "processes on", num_processors_to_use, "processor(s)")
-    outputs = Pool(num_processors_to_use).starmap(__parallel_process, processes_params)
+    Pool(num_processors_to_use).starmap(__parallel_process, processes_params)
 
-    print(datetime.now(), "combine", len(outputs), "outputs")
-    grd_ids = []
-    accessible_populations = []
-
-    for out in outputs:
-        # skip if empty result
-        if out==None : continue
-        if len(out[0])==0: continue
-
-        # combine results
-        grd_ids += out[0]
-        accessible_populations += out[1]
-
-    print(datetime.now(), len(grd_ids), "cells")
-
-    #if len(cell_geometries) == 0: return
-
-    # make output dataframe
-    data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations }
-
-    # save output
-    print(datetime.now(), "save as parquet")
-    out = pd.DataFrame(data)
-    out.to_parquet(out_parquet_file)
 
 
 
@@ -336,41 +329,26 @@ for year in ["2021"]:
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
     population_grid_loader = population_grid_loader_2021 if year == "2021" else None
 
-    parquet_out = "/home/juju/gisco/road_transport_performance/accessible_population.parquet"
-
-    # launch process for each tile file
-    for x in range(xmin, xmax+1, tile_file_size_m):
-        for y in range(ymin, ymax+1, tile_file_size_m):
-
-            # output file
-            out_file = out_folder_year + "ap_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
-
-            # skip if output file was already produced
-            if os.path.isfile(out_file): continue
-
-            print(year, " - Tile file", x, y)
-
-            accessiblity_population(
-                                road_network_loader,
-                                bbox = [x, y, x+tile_file_size_m, y+tile_file_size_m],
-                                out_parquet_file = out_file,
-                                duration_s = duration_s,
-                                weight_function = weight_function,
-                                direction_fun = direction_fun,
-                                is_not_snappable_fun = is_not_snappable_fun,
-                                initial_node_level_fun = initial_node_level_fun,
-                                final_node_level_fun = final_node_level_fun,
-                                cell_id_fun = cell_id_fun,
-                                grid_resolution = grid_resolution,
-                                cell_network_max_distance = grid_resolution * 2,
-                                partition_size = partition_size,
-                                extention_buffer = extention_buffer,
-                                detailled = False,
-                                densification_distance = None,
-                                num_processors_to_use = 7,
-                                show_detailled_messages = True,
-                                )
-
+    accessiblity_population(
+                        road_network_loader,
+                        bbox = bbox,
+                        out_folder = out_folder_year,
+                        duration_s = duration_s,
+                        weight_function = weight_function,
+                        direction_fun = direction_fun,
+                        is_not_snappable_fun = is_not_snappable_fun,
+                        initial_node_level_fun = initial_node_level_fun,
+                        final_node_level_fun = final_node_level_fun,
+                        cell_id_fun = cell_id_fun,
+                        grid_resolution = grid_resolution,
+                        cell_network_max_distance = grid_resolution * 2,
+                        partition_size = partition_size,
+                        extention_buffer = extention_buffer,
+                        detailled = False,
+                        densification_distance = None,
+                        num_processors_to_use = 7,
+                        show_detailled_messages = True,
+                        )
 
     # combine parquet files to a single tiff file
     geotiff = out_folder + "accessible_population_" + year + "_" + str(grid_resolution) + "m.tif"
