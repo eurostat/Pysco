@@ -66,7 +66,7 @@ def __parallel_process(xy,
     [ x_part, y_part ] = xy
 
     # output file
-    out_file = out_folder + "ap_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
+    out_file = out_folder + "ap_" + str(grid_resolution) + "m_" + str(x_part) + "_" + str(y_part) + ".parquet"
     # skip if output file was already produced
     if os.path.isfile(out_file): return
 
