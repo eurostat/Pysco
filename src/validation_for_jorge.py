@@ -1,5 +1,6 @@
 import geopandas as gpd
 from rtree import index
+from shapely.geometry import Point, LineString, Polygon
 from shapely.ops import polygonize, unary_union
 
 
@@ -7,11 +8,16 @@ def check_validity(gpkg_path):
     print("load")
     gdf = gpd.read_file(gpkg_path)["geometry"]
     gdf = gdf.geometry.tolist()
+    print(len(gdf), "geometries")
 
     for g in gdf:
         v = g.is_valid
-        if v: continue
-        print("Non valide geometry around: ", g.centroid)
+        if not v: print("Non valide geometry around: ", g.centroid)
+        g_ = g.buffer(0)
+        nb = count_vertices(g)
+        nb_ = count_vertices(g_)
+        if nb != nb_: print("Issue for geometry around: ", g.centroid)
+
 
 
 
@@ -69,6 +75,24 @@ def check_polygonise(gpkg_path):
         if poly_.is_empty:
             print("Issue around:", poly.centroid)
 
+
+def count_vertices(geometry):
+    if geometry.geom_type == 'Point':
+        return 1
+    elif geometry.geom_type == 'LineString':
+        return len(geometry.coords)
+    elif geometry.geom_type == 'Polygon':
+        exterior_coords = list(geometry.exterior.coords)
+        num_vertices = len(exterior_coords)
+        # Subtract 1 because the first and last vertices of a polygon's exterior ring are the same
+        return num_vertices - 1 if num_vertices > 0 else 0
+    elif geometry.geom_type == 'MultiPolygon':
+        num_vertices = 0
+        for polygon in geometry.geoms:
+            num_vertices += count_vertices(polygon)
+        return num_vertices
+    else:
+        raise ValueError(f"Unsupported geometry type: {geometry.geom_type}")
 
 
 
