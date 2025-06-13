@@ -119,8 +119,9 @@ def __parallel_process(xy,
     del cells
 
     # destination nodes: all nodes with population - get destination indices as a numpy array - it is faster
-    if show_detailled_messages: print(datetime.now(),x_part,y_part, "prepare populated nodes")
-    dest_indices = np.array([node_id_to_index[dest_id] for dest_id in node_pop_dict.keys() if dest_id in node_id_to_index], dtype=np.int32)
+    populated_nodes = node_pop_dict.keys()
+    #if show_detailled_messages: print(datetime.now(),x_part,y_part, "prepare populated nodes")
+    #dest_indices = np.array([node_id_to_index[dest_id] for dest_id in populated_nodes if dest_id in node_id_to_index], dtype=np.int32)
 
     # output data
     grd_ids = [] # the cell identifiers
@@ -165,6 +166,7 @@ def __parallel_process(xy,
             dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
             #print(datetime.now())
 
+            '''
             # convert distance property map to numpy array
             dist_array = dist_map.a
             # mask of which destinations are reachable
@@ -178,6 +180,15 @@ def __parallel_process(xy,
                     sum_pop += node_pop_dict[nn]
             # check if origin node is among the reachable node
             if n not in reachable and n in node_pop_dict: sum_pop += node_pop_dict[n]
+            '''
+
+            sum_pop = 0
+            for nn in populated_nodes:
+                dest_idx = node_id_to_index(nn)
+                dist = dist_map[g.vertex(dest_idx)]
+                if dist < float('inf'):
+                    if nn == n: print(ok, dist)
+                    sum_pop += node_pop_dict[nn]
 
             # store cell value
             accessible_populations.append(sum_pop)
@@ -205,8 +216,8 @@ show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 180000 # 180000 #200 km
-duration_s = 60 * 90 #1h30=90min
+extention_buffer = 0 # 180000 #200 km
+duration_s = 60 * 10 #1h30=90min
 
 # population grid
 population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
