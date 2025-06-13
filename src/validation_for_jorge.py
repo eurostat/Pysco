@@ -96,8 +96,34 @@ def count_vertices(geometry):
 
 
 
+def check_noding(gpkg_path):
+
+    # get polygon contours
+    gdf = gpd.read_file(gpkg_path)
+    gdf = gdf.explode(index_parts=True)
+    print(len(gdf))
+    gdf = gdf.geometry.boundary
+    gdf = gdf.geometry.tolist()
+    print(len(gdf), "lines")
+
+    epsilon = 0.001
+
+    # make list of segments
+    # make spatial index of segments
+
+    # show list of small segments
+
+    # get list of nodes
+    # for each node, get segments around
+    # project node on segment
+    # if projected not one of the segment nodes, continue
+    # print noding issue - node position
+
+
+
 gf = "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg"
-check_validity(gf)
+check_noding(gf)
+#check_validity(gf)
 #check_intersections(gf)
 #check_polygonise(gf)
 
