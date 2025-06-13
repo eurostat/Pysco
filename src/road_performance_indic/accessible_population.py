@@ -144,7 +144,7 @@ def __parallel_process(xy,
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing")
     r2 = grid_resolution / 2
     for x in range(x_part, x_part+partition_size, grid_resolution):
-        print(datetime.now(), x)
+        #print(datetime.now(), x)
         for y in range(y_part, y_part+partition_size, grid_resolution):
         #for pc in populated_cells:
             #id, x, y = pc
@@ -315,7 +315,7 @@ accessiblity_population(
                        road_network_loader,
                        bbox,
                        parquet_out,
-                       duration_s = 60 * 90, #1h30=90min
+                       duration_s = 60 * 10, #1h30=90min
                        weight_function = weight_function,
                        direction_fun=direction_fun,
                        is_not_snappable_fun = is_not_snappable_fun,
@@ -325,11 +325,11 @@ accessiblity_population(
                        grid_resolution = grid_resolution,
                        cell_network_max_distance = grid_resolution * 2,
                        partition_size = 10000, # 100000
-                       extention_buffer = 10000, # 180000
+                       extention_buffer = 20000, # 180000
                        detailled = False,
                        densification_distance = None,
                        num_processors_to_use = 10,
-                       show_detailled_messages = True,
+                       show_detailled_messages = False,
                        )
 
 parquet_grid_to_geotiff( [parquet_out], "/home/juju/gisco/road_transport_performance/accessible_population.tiff", dtype=np.int32, compress='deflate')
