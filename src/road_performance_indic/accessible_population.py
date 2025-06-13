@@ -218,16 +218,10 @@ def __parallel_process(xy,
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
-    print(datetime.now(), len(grd_ids), "cells")
-    #if len(cell_geometries) == 0: return
-
-    # make output dataframe
-    data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations }
-
     # save output
     print(datetime.now(), "save as parquet")
-    out = pd.DataFrame(data)
-    out.to_parquet(out_file)
+    data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations }
+    pd.DataFrame(data).to_parquet(out_file)
 
 
 
