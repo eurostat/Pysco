@@ -245,11 +245,12 @@ def accessiblity_population(
                        densification_distance = None,
                        num_processors_to_use = 1,
                        show_detailled_messages = False,
+                       shuffle = True,
                        ):
 
     # launch parallel computation   
     processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], file_size)
-    random.shuffle(processes_params)
+    if shuffle: random.shuffle(processes_params)
 
     processes_params = [
         (
@@ -335,6 +336,7 @@ for year in ["2021"]:
                         detailled = False,
                         densification_distance = None,
                         num_processors_to_use = 8,
+                        shuffle = True,
                         show_detailled_messages = False,
                         )
 
