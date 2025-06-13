@@ -168,16 +168,16 @@ def __parallel_process(xy,
                     continue
                 n = snappable_nodes[ni_]
 
+                # compute distance from cell centre to node, and skip if too far
+                dtn = distance_to_node(n, x+r2, y+r2)
+                if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
+
                 # check if value was not already computed - try to find it in the cache
                 if n in cache:
                     #print("Node found in cache", n, cache[n])
                     accessible_populations.append(cache[n])
                     grd_ids.append(cell_id_fun(x,y))
                     continue
-
-                # compute distance from cell centre to node, and skip if too far
-                dtn = distance_to_node(n, x+r2, y+r2)
-                if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
                 # get origin node index
                 origin_idx = node_id_to_index[n]
