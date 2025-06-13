@@ -313,8 +313,8 @@ bbox = [4030000, 2930000, 4060000, 2960000]
 tile_file_size_m = 100000
 # should be a divisor of tile_file_size_m
 partition_size = 100000
-extention_buffer=180000, # 180000
-duration_s = 60 * 90, #1h30=90min
+extention_buffer = 0, # 180000
+duration_s = 60 * 20, #1h30=90min
 
 
 # clamp bbox to fit with tile_file_size_m
