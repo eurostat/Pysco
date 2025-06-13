@@ -125,7 +125,10 @@ def __parallel_process(xy,
     # index graph vertexes by populated node codes
     graph_id_to_vertex = {}
     for nn in populated_nodes: graph_id_to_vertex[nn] = graph.vertex(node_id_to_index[nn])
-
+    # create numpy arrays for lookups
+    populated_vertex_indices = np.array([graph_id_to_vertex[nn] for nn in populated_nodes], dtype=np.int64)
+    populated_pops = np.array([node_pop_dict[nn] for nn in populated_nodes], dtype=np.int64)
+    del graph_id_to_vertex
 
     # output data
     grd_ids = [] # the cell identifiers
@@ -189,6 +192,7 @@ def __parallel_process(xy,
             #print(dist_map)
             #exit()
 
+            '''
             sum_pop = 0
             inf = float('inf')
             for nn in populated_nodes:
@@ -199,13 +203,16 @@ def __parallel_process(xy,
                     sum_pop += node_pop_dict[nn]
 
             print(sum_pop)
+            '''
 
-            dist_map_np = np.array(dist_map)
-            node_pop_np = np.array([node_pop_dict[nn] for nn in populated_nodes])
-            vertex_ids_np = np.array([graph_id_to_vertex[nn] for nn in populated_nodes])
+            # convert dist_map to numpy array once
+            dist_arr = dist_map.get_array()
 
-            mask = dist_map_np[vertex_ids_np] < np.inf
-            sum_pop = np.sum(node_pop_np[mask])
+            # mask distances under inf
+            reachable_mask = dist_arr[populated_vertex_indices] < np.inf
+
+            # sum population where reachable
+            sum_pop = np.sum(populated_pops[reachable_mask])
 
             print(sum_pop)
 
