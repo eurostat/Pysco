@@ -60,7 +60,10 @@ def __parallel_process(xy,
             cell_id_fun = lambda x,y:str(x)+"_"+str(y)
             ):
 
-    x_part, y_part = xy
+    # get partition position
+    [ x_part, y_part ] = xy
+
+    if not show_detailled_messages: print(datetime.now(),x_part,y_part)
 
     # build partition extended bbox
     extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
@@ -298,7 +301,7 @@ def accessiblity_population(
 
 
 # bbox
-size = 100000
+size = 500000
 bbox = [3700000, 2500000, 3700000+size, 2500000+size]
 grid_resolution = 1000
 
@@ -315,7 +318,7 @@ accessiblity_population(
                        road_network_loader,
                        bbox,
                        parquet_out,
-                       duration_s = 60 * 10, #1h30=90min
+                       duration_s = 60 * 90, #1h30=90min
                        weight_function = weight_function,
                        direction_fun=direction_fun,
                        is_not_snappable_fun = is_not_snappable_fun,
@@ -324,8 +327,8 @@ accessiblity_population(
                        cell_id_fun = cell_id_fun,
                        grid_resolution = grid_resolution,
                        cell_network_max_distance = grid_resolution * 2,
-                       partition_size = 10000, # 100000
-                       extention_buffer = 20000, # 180000
+                       partition_size = 125000, # 100000
+                       extention_buffer = 180000, # 180000
                        detailled = False,
                        densification_distance = None,
                        num_processors_to_use = 10,
