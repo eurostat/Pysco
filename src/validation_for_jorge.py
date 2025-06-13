@@ -10,26 +10,27 @@ def check_overlaps(gpkg_path):
 
     print("decompose to polygons")
     gdf = gdf.explode(index_parts=False)["geometry"]
+    gdf = gdf.geometry.tolist()
 
     print('build index')
-    idx = index.Index()
-    for idx_val, geometry in enumerate(gdf.geometry):
-        idx.insert(idx_val, geometry.bounds)
+    items = []
+    for i in range(len(gdf)):
+        g = gdf[i]
+        items.append((i, g.bounds, None))
+    idx = index.Index(((i, box, obj) for i, box, obj in items))
+    del items
 
     print("check overlaps")
     overlaps = set()
-    for geom_id in range(len(gdf)):
-        print(geom_id)
-        for other_geom_id in list(idx.intersection(gdf.geometry[geom_id].bounds)):
-            if geom_id != other_geom_id and gdf.geometry[geom_id].overlaps(gdf.geometry[other_geom_id]):
-                overlaps.add((geom_id, other_geom_id))
-
-    if overlaps:
-        print("Overlaps detected.")
-        return True
-    else:
-        print("No overlaps detected.")
-        return False
+    for i in range(len(gdf)):
+        g = gdf[i]
+        intersl = list(idx.intersection(g.bounds))
+        for j in intersl:
+            if i<=j: continue
+            gj = gdf[j]
+            inte = g.intersects(gj)
+            if not inte: continue
+            print("intersection",i,j)
 
 
 
