@@ -298,7 +298,7 @@ bbox = [ 900000, 900000, 6600000, 5400000 ]
 #greece
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
-file_size = 100000
+file_size = 200000
 extention_buffer = 180000 # 180000
 duration_s = 60 * 90 #1h30=90min
 num_processors_to_use = 7
