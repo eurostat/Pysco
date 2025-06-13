@@ -37,3 +37,6 @@ def check_no_overlaps(gpkg_path, layer=None):
 
 
 
+gf = "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg"
+check_no_overlaps(gf)
+
