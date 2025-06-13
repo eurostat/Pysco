@@ -89,7 +89,7 @@ def __parallel_process(xy,
     snappable_nodes = gb_['snappable_nodes']
     del gb_, roads
     if show_detailled_messages: print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
-    if(len(snappable_nodes)==0): return
+    #if(len(snappable_nodes)==0): return
 
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "build graph-tool graph")
     graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
@@ -149,70 +149,72 @@ def __parallel_process(xy,
     # a cache structure, to ensure there is no double computation for some nodes. it could happen, since some cells may snap to a same graph node
     cache = {}
 
-    # go through cells
-    if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing")
-    r2 = grid_resolution / 2
-    for x in range(x_part, x_part+file_size, grid_resolution):
-        #print(datetime.now(), x)
-        for y in range(y_part, y_part+file_size, grid_resolution):
-        #for pc in populated_cells:
-            #id, x, y = pc
-            #print(datetime.now(),"start")
+    if len(snappable_nodes)>0:
 
-            # snap cell centre to the snappable nodes, using the spatial index
-            ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
-            if ni_ == None:
-                print(datetime.now(),x_part,y_part, "graph node not found for cell", x,y)
-                continue
-            n = snappable_nodes[ni_]
+        # go through cells
+        if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing")
+        r2 = grid_resolution / 2
+        for x in range(x_part, x_part+file_size, grid_resolution):
+            #print(datetime.now(), x)
+            for y in range(y_part, y_part+file_size, grid_resolution):
+            #for pc in populated_cells:
+                #id, x, y = pc
+                #print(datetime.now(),"start")
 
-            # check if value was not already computed - try to find it in the cache
-            if n in cache:
-                #print("Node found in cache", n, cache[n])
-                accessible_populations.append(cache[n])
+                # snap cell centre to the snappable nodes, using the spatial index
+                ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
+                if ni_ == None:
+                    print(datetime.now(),x_part,y_part, "graph node not found for cell", x,y)
+                    continue
+                n = snappable_nodes[ni_]
+
+                # check if value was not already computed - try to find it in the cache
+                if n in cache:
+                    #print("Node found in cache", n, cache[n])
+                    accessible_populations.append(cache[n])
+                    grd_ids.append(cell_id_fun(x,y))
+                    continue
+
+                # compute distance from cell centre to node, and skip if too far
+                dtn = distance_to_node(n, x+r2, y+r2)
+                if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
+
+                # get origin node index
+                origin_idx = node_id_to_index[n]
+
+                # compute dijkstra
+                #print(datetime.now())
+                dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
+                #print(datetime.now())
+
+                #check node n is reached
+                #print("origin node:", dist_map[graph.vertex(origin_idx)])
+
+                '''
+                sum_pop = 0
+                inf = float('inf')
+                for nn in populated_nodes:
+                    dist = dist_map[graph_id_to_vertex[nn]]
+                    if dist < inf:
+                        #TODO check node is in list
+                        #if nn == n: print("ok", dist)
+                        sum_pop += node_pop_dict[nn]
+
+                print(sum_pop)
+                '''
+
+                # compute population sum for reached nodes
+                dist_arr = dist_map.get_array()
+                reachable_mask = dist_arr[populated_vertex_indices] < np.inf
+                sum_pop = np.sum(populated_pops[reachable_mask])
+
+                # store cell value
+                accessible_populations.append(sum_pop)
                 grd_ids.append(cell_id_fun(x,y))
-                continue
 
-            # compute distance from cell centre to node, and skip if too far
-            dtn = distance_to_node(n, x+r2, y+r2)
-            if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
-
-            # get origin node index
-            origin_idx = node_id_to_index[n]
-
-            # compute dijkstra
-            #print(datetime.now())
-            dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
-            #print(datetime.now())
-
-            #check node n is reached
-            #print("origin node:", dist_map[graph.vertex(origin_idx)])
-
-            '''
-            sum_pop = 0
-            inf = float('inf')
-            for nn in populated_nodes:
-                dist = dist_map[graph_id_to_vertex[nn]]
-                if dist < inf:
-                    #TODO check node is in list
-                    #if nn == n: print("ok", dist)
-                    sum_pop += node_pop_dict[nn]
-
-            print(sum_pop)
-            '''
-
-            # compute population sum for reached nodes
-            dist_arr = dist_map.get_array()
-            reachable_mask = dist_arr[populated_vertex_indices] < np.inf
-            sum_pop = np.sum(populated_pops[reachable_mask])
-
-            # store cell value
-            accessible_populations.append(sum_pop)
-            grd_ids.append(cell_id_fun(x,y))
-
-            # cache value, to be sure is is not computed another time
-            cache[n] = sum_pop
-            #print(datetime.now(),"end")
+                # cache value, to be sure is is not computed another time
+                cache[n] = sum_pop
+                #print(datetime.now(),"end")
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
@@ -303,9 +305,9 @@ bbox = [ 900000, 900000, 6600000, 5400000 ]
 #greece
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
-file_size = 100000
-extention_buffer = 180000 # 180000
-duration_s = 60 * 90 #1h30=90min
+file_size = 200000
+extention_buffer = 0 # 180000
+duration_s = 60 * 15 #1h30=90min
 
 def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
@@ -338,7 +340,7 @@ for year in ["2021"]:
                         extention_buffer = extention_buffer,
                         detailled = False,
                         densification_distance = None,
-                        num_processors_to_use = 7,
+                        num_processors_to_use = 8,
                         show_detailled_messages = False,
                         )
 
