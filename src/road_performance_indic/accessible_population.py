@@ -194,6 +194,7 @@ def __parallel_process(xy,
             for nn in populated_nodes:
                 dist = dist_map[graph_id_to_vertex[nn]]
                 if dist < inf:
+                    #TODO check node is in list
                     #if nn == n: print("ok", dist)
                     sum_pop += node_pop_dict[nn]
 
@@ -218,13 +219,13 @@ def __parallel_process(xy,
 
 # bbox
 xy = [3700000, 2500000]
-partition_size = 50000
+partition_size = 100000
 show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
 extention_buffer = 0 # 180000 #200 km
-duration_s = 60 * 10 #1h30=90min
+duration_s = 60 * 20 #1h30=90min
 
 # population grid
 population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
