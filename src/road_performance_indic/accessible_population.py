@@ -173,24 +173,8 @@ def __parallel_process(xy,
             dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
             #print(datetime.now())
 
-            '''
-            # convert distance property map to numpy array
-            dist_array = dist_map.a
-            # mask of which destinations are reachable
-            reachable_mask = dist_array[dest_indices] < float('inf') #TODO: duration_s ?
-            reachable = [ index_to_node_id[nn] for nn in np.where(reachable_mask)[0] ]
-
-            # sum of nodes population
-            sum_pop = 0
-            for nn in reachable:
-                if nn in node_pop_dict:
-                    sum_pop += node_pop_dict[nn]
-            # check if origin node is among the reachable node
-            if n not in reachable and n in node_pop_dict: sum_pop += node_pop_dict[n]
-            '''
-
-            #print(dist_map)
-            #exit()
+            #TODO check node n is reached
+            print(x,y,"origin node:", dist_map[graph_id_to_vertex[n]])
 
             '''
             sum_pop = 0
@@ -205,13 +189,9 @@ def __parallel_process(xy,
             print(sum_pop)
             '''
 
-            # convert dist_map to numpy array once
+            # compute population sum for reached nodes
             dist_arr = dist_map.get_array()
-
-            # mask distances under inf
             reachable_mask = dist_arr[populated_vertex_indices] < np.inf
-
-            # sum population where reachable
             sum_pop = np.sum(populated_pops[reachable_mask])
 
             # store cell value
@@ -227,8 +207,9 @@ def __parallel_process(xy,
     return [ grd_ids, accessible_populations ]
 
 
-#TODO improve efficiency
-#TODO test 100m
+#TODO 23+8 minutes per 100km tile
+#TODO check node is reached
+#TODO test 100m ?
 #TODO (restricts to populated cells)
 #TODO compute population <1H30 AND < 120km
 
