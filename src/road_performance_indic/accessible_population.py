@@ -228,7 +228,7 @@ population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
 # tomtom road network
 tomtom_year = "2023"
 def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
-#TODO exclude ferry links
+#TODO check exclude ferry links
 
 # population grid
 def population_grid_loader(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
