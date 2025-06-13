@@ -324,8 +324,8 @@ accessiblity_population(
                        cell_id_fun = cell_id_fun,
                        grid_resolution = grid_resolution,
                        cell_network_max_distance = grid_resolution * 2,
-                       partition_size = 100000,
-                       extention_buffer = 180000,
+                       partition_size = 10000, # 100000
+                       extention_buffer = 10000, # 180000
                        detailled = False,
                        densification_distance = None,
                        num_processors_to_use = 10,
