@@ -165,13 +165,16 @@ def __parallel_process(xy,
             dtn = distance_to_node(n, x+r2, y+r2)
             if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
+            # get origin node index
+            origin_idx = node_id_to_index[n]
+
             # compute dijkstra
             #print(datetime.now())
-            dist_map = gt.shortest_distance(graph, source=graph_id_to_vertex[n], weights=weight_prop, max_dist=duration_s)
+            dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
             #print(datetime.now())
 
             #TODO check node n is reached
-            print(x,y,"origin node:", dist_map[graph_id_to_vertex[n]])
+            print("origin node:", dist_map[graph.vertex(origin_idx)])
 
             '''
             sum_pop = 0
