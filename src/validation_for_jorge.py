@@ -1,10 +1,9 @@
 import geopandas as gpd
 from rtree import index
+from shapely.ops import polygonize, unary_union
 
-import geopandas as gpd
-from rtree import index
 
-def check_overlaps(gpkg_path):
+def check_intersections(gpkg_path):
     print("load")
     gdf = gpd.read_file(gpkg_path)
 
@@ -30,10 +29,35 @@ def check_overlaps(gpkg_path):
             gj = gdf[j]
             inte = g.intersects(gj)
             if not inte: continue
-            print("intersection",i,j)
+            inte = g.intersection(gj).area
+            if inte == 0: continue
+            print("intersection",inte)
+
+
+def polyg(gpkg_path):
+
+    # get polygon contours
+    gdf = gpd.read_file(gpkg_path)
+    gdf = gdf.explode(index_parts=True)
+    gdf = gdf.geometry.boundary
+    gdf = gdf.geometry.tolist()
+    print(len(gdf), "lines")
+
+    #gdf = unary_union(gdf)
+
+    polygons = list(polygonize(gdf))
+
+    print(len(polygons), "polygons")
+
+    for poly in polygons:
+        poly = poly.buffer(-0.001)
+        if poly.is_empty:
+            print("found")
+            print(poly.centroid)
+
 
 
 
 gf = "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg"
-check_overlaps(gf)
-
+#check_intersections(gf)
+polyg(gf)
