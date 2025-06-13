@@ -304,17 +304,17 @@ grid_resolution = 1000
 
 # define output bounding box
 # whole europe
-#bbox = [ 900000, 900000, 6600000, 5400000 ]
+bbox = [ 900000, 900000, 6600000, 5400000 ]
 #luxembourg
-bbox = [4030000, 2930000, 4060000, 2960000]
+#bbox = [4030000, 2930000, 4060000, 2960000]
 #greece
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
-tile_file_size_m = 100000
+tile_file_size_m = 500000
 # should be a divisor of tile_file_size_m
-partition_size = 10000
-extention_buffer = 10000 # 180000
-duration_s = 60 * 10 #1h30=90min
+partition_size = 125000
+extention_buffer = 180000 # 180000
+duration_s = 60 * 90 #1h30=90min
 
 
 # clamp bbox to fit with tile_file_size_m
