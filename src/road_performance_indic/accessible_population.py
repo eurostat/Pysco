@@ -1,12 +1,14 @@
+from multiprocessing import Pool
 import numpy as np
 import pandas as pd
 from datetime import datetime
-#import heapq
 import sys
 import os
 import graph_tool.all as gt
 
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.utils import cartesian_product_comp
 from utils.convert import parquet_grid_to_geotiff
 from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_to_node, nodes_spatial_index_adjacendy_list
 from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function
@@ -41,6 +43,7 @@ def build_graph_tool_graph(graph):
 
 
 def __parallel_process(xy,
+            duration_s,
             extention_buffer,
             partition_size,
             road_network_loader,
@@ -213,30 +216,34 @@ def __parallel_process(xy,
 #TODO compute population <1H30 AND < 120km
 
 
-# bbox
-xy = [3700000, 2500000]
-partition_size = 100000
-show_detailled_messages =True
-grid_resolution = 1000
-cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 180000 # 180000 #200 km
-duration_s = 60 * 90 #1h30=90min
+def accessiblity_population(
+                       road_network_loader,
+                       bbox,
+                       out_parquet_file,
+                       duration_s,
+                       weight_function = lambda feature,sl:sl,
+                       direction_fun=lambda feature:"both", #('both', 'oneway', 'forward', 'backward')
+                       is_not_snappable_fun = None,
+                       initial_node_level_fun=None,
+                       final_node_level_fun=None,
+                       cell_id_fun=lambda x,y:str(x)+"_"+str(y),
+                       grid_resolution=1000,
+                       cell_network_max_distance=-1,
+                       partition_size = 100000,
+                       extention_buffer = 30000,
+                       detailled = False,
+                       densification_distance = None,
+                       num_processors_to_use = 1,
+                       show_detailled_messages = False,
+                       ):
 
-# population grid
-population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
-
-# tomtom road network
-tomtom_year = "2023"
-def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
-#TODO check exclude ferry links
-
-# population grid
-def population_grid_loader(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
-
-def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
-
-[ grd_ids, accessible_populations ] = __parallel_process(xy,
+    # launch parallel computation   
+    processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
+    processes_params = [
+        (
+            xy,
+            duration_s,
             extention_buffer,
             partition_size,
             road_network_loader,
@@ -246,16 +253,84 @@ def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+
             initial_node_level_fun,
             final_node_level_fun,
             grid_resolution,
-            cell_network_max_distance = None,
-            detailled = False,
-            densification_distance = None,
-            show_detailled_messages = True,
-            cell_id_fun = cell_id_fun,
-            )
+            cell_network_max_distance,
+            detailled,
+            densification_distance,
+            show_detailled_messages,
+            cell_id_fun
+        )
+        for xy in processes_params
+        ]
+
+    print(datetime.now(), "launch", len(processes_params), "processes on", num_processors_to_use, "processor(s)")
+    outputs = Pool(num_processors_to_use).starmap(__parallel_process, processes_params)
+
+    print(datetime.now(), "combine", len(outputs), "outputs")
+    grd_ids = []
+    accessible_populations = []
+
+    for out in outputs:
+        # skip if empty result
+        if out==None : continue
+        if len(out[0])==0: continue
+
+        # combine results
+        grd_ids += out[0]
+        accessible_populations += out[1]
+
+    print(datetime.now(), len(grd_ids), "cells")
+
+    #if len(cell_geometries) == 0: return
+
+    # make output dataframe
+    data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations }
+
+    # save output
+    print(datetime.now(), "save as parquet")
+    out = pd.DataFrame(data)
+    out.to_parquet(out_parquet_file)
 
 
-print(datetime.now(), "save output")
-data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations }
+
+
+
+
+
+
+# bbox
+size = 100000
+bbox = [3700000, 2500000, 3700000+size, 2500000+size]
+grid_resolution = 1000
+
+# tomtom road network
+tomtom_year = "2023"
+def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
+#TODO check exclude ferry links
+# population grid
+def population_grid_loader(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
+def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 parquet_out = "/home/juju/gisco/road_transport_performance/accessible_population.parquet"
-pd.DataFrame(data).to_parquet(parquet_out)
+
+accessiblity_population(
+                       road_network_loader,
+                       bbox,
+                       parquet_out,
+                       duration_s = 60 * 90, #1h30=90min
+                       weight_function = weight_function,
+                       direction_fun=direction_fun,
+                       is_not_snappable_fun = is_not_snappable_fun,
+                       initial_node_level_fun=initial_node_level_fun,
+                       final_node_level_fun=final_node_level_fun,
+                       cell_id_fun = cell_id_fun,
+                       grid_resolution = grid_resolution,
+                       cell_network_max_distance = grid_resolution * 2,
+                       partition_size = 100000,
+                       extention_buffer = 180000,
+                       detailled = False,
+                       densification_distance = None,
+                       num_processors_to_use = 10,
+                       show_detailled_messages = True,
+                       )
+
 parquet_grid_to_geotiff( [parquet_out], "/home/juju/gisco/road_transport_performance/accessible_population.tiff", dtype=np.int32, compress='deflate')
+
