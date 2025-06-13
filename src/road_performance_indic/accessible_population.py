@@ -17,7 +17,7 @@ from utils.gridutils import get_cell_xy_from_id
 
 def build_graph_tool_graph(graph):
     g = gt.Graph(directed=True)
-    weight_prop = g.new_edge_property("double") #TODO int !?
+    weight_prop = g.new_edge_property("double")
 
     # Map node ids to graph-tool vertex indices
     node_id_to_index = {}
@@ -122,6 +122,10 @@ def __parallel_process(xy,
     populated_nodes = node_pop_dict.keys()
     #if show_detailled_messages: print(datetime.now(),x_part,y_part, "prepare populated nodes")
     #dest_indices = np.array([node_id_to_index[dest_id] for dest_id in populated_nodes if dest_id in node_id_to_index], dtype=np.int32)
+    # index graph vertexes by populated node codes
+    graph_id_to_vertex = {}
+    for nn in populated_nodes: graph_id_to_vertex[nn] = graph.vertex(node_id_to_index[nn])
+
 
     # output data
     grd_ids = [] # the cell identifiers
@@ -182,12 +186,15 @@ def __parallel_process(xy,
             if n not in reachable and n in node_pop_dict: sum_pop += node_pop_dict[n]
             '''
 
+            #print(dist_map)
+            #exit()
+
             sum_pop = 0
+            inf = float('inf')
             for nn in populated_nodes:
-                dest_idx = node_id_to_index[nn]
-                dist = dist_map[graph.vertex(dest_idx)]
-                if dist < float('inf'):
-                    if nn == n: print("ok", dist)
+                dist = dist_map[graph_id_to_vertex[nn]]
+                if dist < inf:
+                    #if nn == n: print("ok", dist)
                     sum_pop += node_pop_dict[nn]
 
             # store cell value
@@ -211,7 +218,7 @@ def __parallel_process(xy,
 
 # bbox
 xy = [3700000, 2500000]
-partition_size = 100000
+partition_size = 50000
 show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
