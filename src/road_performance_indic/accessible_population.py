@@ -208,6 +208,7 @@ def __parallel_process(xy,
 
 
 # 23+8 minutes per 100km tile
+#TODO parallelisation
 #TODO test 100m ?
 #TODO compute population <1H30 AND < 120km
 
