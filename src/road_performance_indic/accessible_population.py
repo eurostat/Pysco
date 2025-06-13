@@ -1,5 +1,6 @@
 from math import floor
 from multiprocessing import Pool
+import random
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -248,7 +249,8 @@ def accessiblity_population(
 
     # launch parallel computation   
     processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], file_size)
-    # TODO shuffle ?
+    random.shuffle(processes_params)
+
     processes_params = [
         (
             xy,
