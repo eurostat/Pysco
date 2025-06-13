@@ -304,15 +304,18 @@ grid_resolution = 1000
 
 # define output bounding box
 # whole europe
-bbox = [ 900000, 900000, 6600000, 5400000 ]
+#bbox = [ 900000, 900000, 6600000, 5400000 ]
 #luxembourg
-#bbox = [4030000, 2930000, 4060000, 2960000]
+bbox = [4030000, 2930000, 4060000, 2960000]
 #greece
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
-tile_file_size_m = 500000 if grid_resolution == 100 else 1000000
+tile_file_size_m = 100000
 # should be a divisor of tile_file_size_m
-partition_size = 125000 if grid_resolution == 100 else 200000
+partition_size = 100000
+extention_buffer=180000, # 180000
+duration_s = 60 * 90, #1h30=90min
+
 
 # clamp bbox to fit with tile_file_size_m
 clamp = lambda v : floor(v/tile_file_size_m)*tile_file_size_m
@@ -350,7 +353,7 @@ for year in ["2021"]:
                                 road_network_loader,
                                 bbox = [x, y, x+tile_file_size_m, y+tile_file_size_m],
                                 out_parquet_file = out_file,
-                                duration_s = 60 * 90, #1h30=90min
+                                duration_s = duration_s,
                                 weight_function = weight_function,
                                 direction_fun = direction_fun,
                                 is_not_snappable_fun = is_not_snappable_fun,
@@ -360,7 +363,7 @@ for year in ["2021"]:
                                 grid_resolution = grid_resolution,
                                 cell_network_max_distance = grid_resolution * 2,
                                 partition_size = partition_size,
-                                extention_buffer = 180000, # 180000
+                                extention_buffer = extention_buffer,
                                 detailled = False,
                                 densification_distance = None,
                                 num_processors_to_use = 7,
