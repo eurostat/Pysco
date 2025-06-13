@@ -187,7 +187,7 @@ def __parallel_process(xy,
                 dest_idx = node_id_to_index[nn]
                 dist = dist_map[g.vertex(dest_idx)]
                 if dist < float('inf'):
-                    if nn == n: print(ok, dist)
+                    if nn == n: print("ok", dist)
                     sum_pop += node_pop_dict[nn]
 
             # store cell value
