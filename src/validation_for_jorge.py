@@ -43,7 +43,8 @@ def polyg(gpkg_path):
     gdf = gdf.geometry.tolist()
     print(len(gdf), "lines")
 
-    #gdf = unary_union(gdf)
+    gdf = unary_union(gdf)
+    print(len(gdf), "lines")
 
     polygons = list(polygonize(gdf))
 
