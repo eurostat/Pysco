@@ -173,8 +173,8 @@ def __parallel_process(xy,
             dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
             #print(datetime.now())
 
-            #TODO check node n is reached
-            print("origin node:", dist_map[graph.vertex(origin_idx)])
+            #check node n is reached
+            #print("origin node:", dist_map[graph.vertex(origin_idx)])
 
             '''
             sum_pop = 0
@@ -207,10 +207,8 @@ def __parallel_process(xy,
     return [ grd_ids, accessible_populations ]
 
 
-#TODO 23+8 minutes per 100km tile
-#TODO check node is reached
+# 23+8 minutes per 100km tile
 #TODO test 100m ?
-#TODO (restricts to populated cells)
 #TODO compute population <1H30 AND < 120km
 
 
@@ -229,7 +227,7 @@ population_grid = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
 
 # tomtom road network
 tomtom_year = "2023"
-def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
+def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
 #TODO exclude ferry links
 
 # population grid
