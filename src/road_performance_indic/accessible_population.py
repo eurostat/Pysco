@@ -1,3 +1,4 @@
+from math import floor
 from multiprocessing import Pool
 import numpy as np
 import pandas as pd
@@ -296,44 +297,96 @@ def accessiblity_population(
 
 
 
+# where to store the outputs
+out_folder = '/home/juju/gisco/road_transport_performance/'
 
-
-
-
-# bbox
-size = 500000
-bbox = [3700000, 2500000, 3700000+size, 2500000+size]
 grid_resolution = 1000
 
-# tomtom road network
-tomtom_year = "2023"
-def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
-#TODO check exclude ferry links
-# population grid
-def population_grid_loader(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
+# define output bounding box
+# whole europe
+bbox = [ 900000, 900000, 6600000, 5400000 ]
+#luxembourg
+#bbox = [4030000, 2930000, 4060000, 2960000]
+#greece
+#bbox = [ 5000000, 1500000, 5500000, 2000000 ]
+
+tile_file_size_m = 500000 if grid_resolution == 100 else 1000000
+# should be a divisor of tile_file_size_m
+partition_size = 125000 if grid_resolution == 100 else 200000
+
+# clamp bbox to fit with tile_file_size_m
+clamp = lambda v : floor(v/tile_file_size_m)*tile_file_size_m
+[xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
+
+def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
-parquet_out = "/home/juju/gisco/road_transport_performance/accessible_population.parquet"
 
-accessiblity_population(
-                       road_network_loader,
-                       bbox,
-                       parquet_out,
-                       duration_s = 60 * 90, #1h30=90min
-                       weight_function = weight_function,
-                       direction_fun=direction_fun,
-                       is_not_snappable_fun = is_not_snappable_fun,
-                       initial_node_level_fun=initial_node_level_fun,
-                       final_node_level_fun=final_node_level_fun,
-                       cell_id_fun = cell_id_fun,
-                       grid_resolution = grid_resolution,
-                       cell_network_max_distance = grid_resolution * 2,
-                       partition_size = 125000, # 100000
-                       extention_buffer = 180000, # 180000
-                       detailled = False,
-                       densification_distance = None,
-                       num_processors_to_use = 5,
-                       show_detailled_messages = True,
-                       )
 
-parquet_grid_to_geotiff( [parquet_out], "/home/juju/gisco/road_transport_performance/accessible_population.tiff", dtype=np.int32, compress='deflate')
+for year in ["2021"]:
+
+    # ouput folder
+    out_folder_year = out_folder + "out_" + year + "_" + str(grid_resolution) + "m/"
+    if not os.path.exists(out_folder_year): os.makedirs(out_folder_year)
+
+    tomtom_year = "2023" if year == "2021" else None
+    def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
+    population_grid_loader = population_grid_loader_2021 if year == "2021" else None
+
+    parquet_out = "/home/juju/gisco/road_transport_performance/accessible_population.parquet"
+
+    # launch process for each tile file
+    for x in range(xmin, xmax+1, tile_file_size_m):
+        for y in range(ymin, ymax+1, tile_file_size_m):
+
+            # output file
+            out_file = out_folder_year + "ap_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
+
+            # skip if output file was already produced
+            if os.path.isfile(out_file): continue
+
+            print(year, " - Tile file", x, y)
+
+            accessiblity_population(
+                                road_network_loader,
+                                bbox = [x, y, x+tile_file_size_m, y+tile_file_size_m],
+                                out_parquet_file = out_file,
+                                duration_s = 60 * 90, #1h30=90min
+                                weight_function = weight_function,
+                                direction_fun = direction_fun,
+                                is_not_snappable_fun = is_not_snappable_fun,
+                                initial_node_level_fun = initial_node_level_fun,
+                                final_node_level_fun = final_node_level_fun,
+                                cell_id_fun = cell_id_fun,
+                                grid_resolution = grid_resolution,
+                                cell_network_max_distance = grid_resolution * 2,
+                                partition_size = partition_size,
+                                extention_buffer = 180000, # 180000
+                                detailled = False,
+                                densification_distance = None,
+                                num_processors_to_use = 7,
+                                show_detailled_messages = True,
+                                )
+
+
+    # combine parquet files to a single tiff file
+    geotiff = out_folder + "accessible_population_" + year + "_" + str(grid_resolution) + "m.tif"
+
+    # check if tiff file was already produced
+    if os.path.isfile(geotiff): continue
+
+    # get all parquet files in the output folder
+    files = [os.path.join(out_folder_year, f) for f in os.listdir(out_folder_year) if f.endswith('.parquet')]
+    if len(files)==0: continue
+
+    print("transforming", len(files), "parquet files into tif for", year)
+    parquet_grid_to_geotiff(
+        files,
+        geotiff,
+        bbox = bbox,
+        #attributes=["duration_s_1", "duration_average_s_3"],
+        parquet_nodata_values=[-1],
+        dtype=np.int32,
+        #value_fun= lambda v:v if v<32767 else 32767, # np.int16(v),
+        compress='deflate'
+    )
 
