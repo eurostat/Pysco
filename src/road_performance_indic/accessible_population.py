@@ -198,6 +198,17 @@ def __parallel_process(xy,
                     #if nn == n: print("ok", dist)
                     sum_pop += node_pop_dict[nn]
 
+            print(sum_pop)
+
+            dist_map_np = np.array(dist_map)
+            node_pop_np = np.array([node_pop_dict[nn] for nn in populated_nodes])
+            vertex_ids_np = np.array([graph_id_to_vertex[nn] for nn in populated_nodes])
+
+            mask = dist_map_np[vertex_ids_np] < np.inf
+            sum_pop = np.sum(node_pop_np[mask])
+
+            print(sum_pop)
+
             # store cell value
             accessible_populations.append(sum_pop)
             grd_ids.append(cell_id_fun(x,y))
@@ -211,7 +222,7 @@ def __parallel_process(xy,
     return [ grd_ids, accessible_populations ]
 
 
-#TODO check ! bug ???
+#TODO improve efficiency
 #TODO test 100m
 #TODO (restricts to populated cells)
 #TODO compute population <1H30 AND < 120km
@@ -224,7 +235,7 @@ show_detailled_messages =True
 grid_resolution = 1000
 cell_network_max_distance = grid_resolution * 2
 
-extention_buffer = 180000 # 180000 #200 km
+extention_buffer = 0 # 180000 #200 km
 duration_s = 60 * 90 #1h30=90min
 
 # population grid
