@@ -138,7 +138,7 @@ def __parallel_process(xy,
         for y in range(y_part, y_part+partition_size, grid_resolution):
         #for pc in populated_cells:
             #id, x, y = pc
-            #print(datetime.now(),"start")
+            print(datetime.now(),"start")
 
             # snap cell centre to the snappable nodes, using the spatial index
             ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
@@ -162,9 +162,9 @@ def __parallel_process(xy,
             origin_idx = node_id_to_index[n]
 
             # compute dijkstra
-            #print(datetime.now())
+            print(datetime.now())
             dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
-            #print(datetime.now())
+            print(datetime.now())
 
             '''
             # convert distance property map to numpy array
@@ -196,7 +196,7 @@ def __parallel_process(xy,
 
             # cache value, to be sure is is not computed another time
             cache[n] = sum_pop
-            #print(datetime.now(),"end")
+            print(datetime.now(),"end")
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
 
