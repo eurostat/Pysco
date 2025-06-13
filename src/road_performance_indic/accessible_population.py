@@ -47,7 +47,7 @@ def __parallel_process(xy,
             out_folder,
             duration_s,
             extention_buffer,
-            partition_size,
+            file_size,
             road_network_loader,
             weight_function,
             direction_fun,
@@ -62,7 +62,7 @@ def __parallel_process(xy,
             cell_id_fun = lambda x,y:str(x)+"_"+str(y)
             ):
 
-    # get partition position
+    # get position
     [ x_part, y_part ] = xy
 
     # output file
@@ -72,8 +72,8 @@ def __parallel_process(xy,
 
     if not show_detailled_messages: print(datetime.now(),x_part,y_part)
 
-    # build partition extended bbox
-    extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
+    # build extended bbox
+    extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+file_size+extention_buffer, y_part+file_size+extention_buffer)
 
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "make graph")
     roads = road_network_loader(extended_bbox)
@@ -152,9 +152,9 @@ def __parallel_process(xy,
     # go through cells
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing")
     r2 = grid_resolution / 2
-    for x in range(x_part, x_part+partition_size, grid_resolution):
+    for x in range(x_part, x_part+file_size, grid_resolution):
         #print(datetime.now(), x)
-        for y in range(y_part, y_part+partition_size, grid_resolution):
+        for y in range(y_part, y_part+file_size, grid_resolution):
         #for pc in populated_cells:
             #id, x, y = pc
             #print(datetime.now(),"start")
@@ -244,7 +244,7 @@ def accessiblity_population(
                        cell_id_fun=lambda x,y:str(x)+"_"+str(y),
                        grid_resolution=1000,
                        cell_network_max_distance=-1,
-                       partition_size = 100000,
+                       file_size = 100000,
                        extention_buffer = 30000,
                        detailled = False,
                        densification_distance = None,
@@ -253,7 +253,7 @@ def accessiblity_population(
                        ):
 
     # launch parallel computation   
-    processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
+    processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], file_size)
     # TODO shuffle ?
     processes_params = [
         (
@@ -261,7 +261,7 @@ def accessiblity_population(
             out_folder,
             duration_s,
             extention_buffer,
-            partition_size,
+            file_size,
             road_network_loader,
             weight_function,
             direction_fun,
@@ -303,17 +303,9 @@ bbox = [ 900000, 900000, 6600000, 5400000 ]
 #greece
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
-tile_file_size_m = 500000
-# should be a divisor of tile_file_size_m
-partition_size = 125000
+file_size = 100000
 extention_buffer = 180000 # 180000
 duration_s = 60 * 90 #1h30=90min
-
-
-# clamp bbox to fit with tile_file_size_m
-clamp = lambda v : floor(v/tile_file_size_m)*tile_file_size_m
-[xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
-bbox = [xmin,ymin,xmax+tile_file_size_m,ymax+tile_file_size_m]
 
 def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
@@ -342,7 +334,7 @@ for year in ["2021"]:
                         cell_id_fun = cell_id_fun,
                         grid_resolution = grid_resolution,
                         cell_network_max_distance = grid_resolution * 2,
-                        partition_size = partition_size,
+                        file_size = file_size,
                         extention_buffer = extention_buffer,
                         detailled = False,
                         densification_distance = None,
