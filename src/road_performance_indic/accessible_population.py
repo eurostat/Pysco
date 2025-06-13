@@ -339,7 +339,7 @@ for year in ["2021"]:
                         detailled = False,
                         densification_distance = None,
                         num_processors_to_use = 7,
-                        show_detailled_messages = True,
+                        show_detailled_messages = False,
                         )
 
     # combine parquet files to a single tiff file
