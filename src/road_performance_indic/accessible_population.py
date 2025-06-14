@@ -334,7 +334,7 @@ for year in ["2021"]:
                             file_size = file_size,
                             extention_buffer = extention_buffer,
                             detailled = False,
-                            densification_distance = None,
+                            densification_distance = grid_resolution,
                             num_processors_to_use = num_processors_to_use,
                             shuffle = True,
                             show_detailled_messages = False,
