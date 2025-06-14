@@ -289,6 +289,11 @@ def accessiblity_population(
 out_folder = '/home/juju/gisco/road_transport_performance/'
 
 grid_resolution = 1000
+detailled = False
+densification_distance = grid_resolution
+shuffle = True
+show_detailled_messages = False
+
 
 # define output bounding box
 # whole europe
@@ -333,11 +338,11 @@ for year in ["2021"]:
                             cell_network_max_distance = grid_resolution * 2,
                             file_size = file_size,
                             extention_buffer = extention_buffer,
-                            detailled = False,
-                            densification_distance = grid_resolution,
+                            detailled = detailled,
+                            densification_distance = densification_distance,
                             num_processors_to_use = num_processors_to_use,
-                            shuffle = True,
-                            show_detailled_messages = False,
+                            shuffle = shuffle,
+                            show_detailled_messages = show_detailled_messages,
                             )
 
     # combine parquet files to a single tiff file
