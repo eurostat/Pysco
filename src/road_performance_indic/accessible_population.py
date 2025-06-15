@@ -322,7 +322,7 @@ for year in ["2021"]:
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
     population_grid_loader = population_grid_loader_2021 if year == "2021" else None
 
-    if True:
+    if False:
         accessiblity_population(
                             road_network_loader,
                             bbox = bbox,
@@ -349,7 +349,7 @@ for year in ["2021"]:
     geotiff = out_folder + "accessible_population_" + year + "_" + str(grid_resolution) + "m.tif"
 
     # check if tiff file was already produced
-    if os.path.isfile(geotiff): continue
+    #if os.path.isfile(geotiff): continue
 
     # get all parquet files in the output folder
     files = [os.path.join(out_folder_year, f) for f in os.listdir(out_folder_year) if f.endswith('.parquet')]
