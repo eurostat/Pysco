@@ -278,7 +278,7 @@ def accessiblity_population_parallel(
 
 
 
-
+#TODO check bug - why discontinuities ?
 #TODO test 100m ?
 #TODO compute population <1H30 AND < 120km
 
