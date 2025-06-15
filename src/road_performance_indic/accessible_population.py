@@ -101,9 +101,6 @@ def accessiblity_population(xy,
     # dictionnary that assign population to graph node
     node_pop_dict = {}
 
-    # the populated cells within bbox
-    #populated_cells = []
-
     if show_detailled_messages: print(datetime.now(),x_part,y_part, "Project population grid on graph nodes")
     cells = population_grid_loader(extended_bbox)
     r2 = grid_resolution/2
