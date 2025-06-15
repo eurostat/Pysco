@@ -44,7 +44,7 @@ def build_graph_tool_graph(graph):
 
 
 
-def __parallel_process(xy,
+def accessiblity_population(xy,
             out_folder,
             duration_s,
             extention_buffer,
@@ -226,7 +226,7 @@ def __parallel_process(xy,
 
 
 
-def accessiblity_population(
+def accessiblity_population_parallel(
                        road_network_loader,
                        bbox,
                        out_folder,
@@ -276,7 +276,8 @@ def accessiblity_population(
         ]
 
     print(datetime.now(), "launch", len(processes_params), "processes on", num_processors_to_use, "processor(s)")
-    Pool(num_processors_to_use).starmap(__parallel_process, processes_params)
+    Pool(num_processors_to_use).starmap(accessiblity_population, processes_params)
+
 
 
 
@@ -322,8 +323,8 @@ for year in ["2021"]:
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
     population_grid_loader = population_grid_loader_2021 if year == "2021" else None
 
-    if False:
-        accessiblity_population(
+    if True:
+        accessiblity_population_parallel(
                             road_network_loader,
                             bbox = bbox,
                             out_folder = out_folder_year,
