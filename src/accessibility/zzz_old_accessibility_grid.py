@@ -35,28 +35,28 @@ def accessibility_grid(pois_loader,
         #partition extended bbox
         extended_bbox = box(x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
 
-        print(datetime.now(),x_part,y_part, "load POIs")
+        print(datetime.now(), x_part, y_part, "load POIs")
         pois = pois_loader(extended_bbox)
         print(len(pois))
         if(len(pois)==0): return
 
-        print(datetime.now(),x_part,y_part, "load and filter network links")
+        print(datetime.now(), x_part, y_part, "load and filter network links")
         links = road_network_loader(extended_bbox)
         print(len(links), "links")
         if(len(links)==0): return
 
-        print(datetime.now(),x_part,y_part, "make graph")
+        print(datetime.now(), x_part, y_part, "make graph")
         graph = graph_from_geodataframe(links, weight_function, detailled=detailled)
         del links
         print(graph.number_of_edges(), "edges")
 
-        print(datetime.now(),x_part,y_part, "keep larger connex component")
+        print(datetime.now(), x_part, y_part, "keep larger connex component")
         connected_components = list(nx.connected_components(graph))
         largest_component = max(connected_components, key=len)
         graph = graph.subgraph(largest_component)
         print(graph.number_of_edges())
 
-        print(datetime.now(),x_part,y_part, "get POI nodes")
+        print(datetime.now(), x_part, y_part, "get POI nodes")
 
         #make list of nodes
         nodes_ = []
@@ -74,10 +74,10 @@ def accessibility_grid(pois_loader,
 
         #TODO check pois are not too far from their node ?
 
-        print(datetime.now(),x_part,y_part, "compute multi source dijkstra")
+        print(datetime.now(), x_part, y_part, "compute multi source dijkstra")
         duration = nx.multi_source_dijkstra_path_length(graph, sources, weight='weight')
 
-        print(datetime.now(),x_part,y_part, "extract cell accessibility data")
+        print(datetime.now(), x_part, y_part, "extract cell accessibility data")
         cell_geometries = [] #the cell geometries
         grd_ids = [] #the cell identifiers
         durations = [] #the durations

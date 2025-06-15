@@ -60,7 +60,7 @@ def accessiblity_population(xy,
             detailled = False,
             densification_distance = None,
             show_detailled_messages = False,
-            cell_id_fun = lambda x,y:str(x)+"_"+str(y)
+            cell_id_fun = lambda x,y : str(x)+"_"+str(y)
             ):
 
     # get position
@@ -71,12 +71,12 @@ def accessiblity_population(xy,
     # skip if output file was already produced
     if os.path.isfile(out_file): return
 
-    if not show_detailled_messages: print(datetime.now(),x_part,y_part)
+    if not show_detailled_messages: print(datetime.now(), x_part, y_part)
 
     # build extended bbox
     extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+file_size+extention_buffer, y_part+file_size+extention_buffer)
 
-    if show_detailled_messages: print(datetime.now(),x_part,y_part, "make graph")
+    if show_detailled_messages: print(datetime.now(), x_part, y_part, "make graph")
     roads = road_network_loader(extended_bbox)
     gb_ = ___graph_adjacency_list_from_geodataframe(roads,
                                                         weight_fun = weight_function,
@@ -89,19 +89,19 @@ def accessiblity_population(xy,
     graph = gb_['graph']
     snappable_nodes = gb_['snappable_nodes']
     del gb_, roads
-    if show_detailled_messages: print(datetime.now(),x_part,y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
+    if show_detailled_messages: print(datetime.now(), x_part, y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
     #if(len(snappable_nodes)==0): return
 
-    if show_detailled_messages: print(datetime.now(),x_part,y_part, "build graph-tool graph")
+    if show_detailled_messages: print(datetime.now(), x_part, y_part, "build graph-tool graph")
     graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
 
-    if show_detailled_messages: print(datetime.now(),x_part,y_part, "build nodes spatial index")
+    if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
     # dictionnary that assign population to graph node
     node_pop_dict = {}
 
-    if show_detailled_messages: print(datetime.now(),x_part,y_part, "Project population grid on graph nodes")
+    if show_detailled_messages: print(datetime.now(), x_part, y_part, "Project population grid on graph nodes")
     cells = population_grid_loader(extended_bbox)
     r2 = grid_resolution/2
     for c in cells:
@@ -130,7 +130,7 @@ def accessiblity_population(xy,
 
     # destination nodes: all nodes with population - get destination indices as a numpy array - it is faster
     populated_nodes = node_pop_dict.keys()
-    #if show_detailled_messages: print(datetime.now(),x_part,y_part, "prepare populated nodes")
+    #if show_detailled_messages: print(datetime.now(), x_part, y_part, "prepare populated nodes")
     #dest_indices = np.array([node_id_to_index[dest_id] for dest_id in populated_nodes if dest_id in node_id_to_index], dtype=np.int32)
     # index graph vertexes by populated node codes
     graph_id_to_vertex = {}
@@ -150,7 +150,7 @@ def accessiblity_population(xy,
     if len(snappable_nodes)>0:
 
         # go through cells
-        if show_detailled_messages: print(datetime.now(),x_part,y_part, "compute routing")
+        if show_detailled_messages: print(datetime.now(), x_part, y_part, "compute routing")
         r2 = grid_resolution / 2
         for x in range(x_part, x_part+file_size, grid_resolution):
             #print(datetime.now(), x)
@@ -162,7 +162,7 @@ def accessiblity_population(xy,
                 # snap cell centre to the snappable nodes, using the spatial index
                 ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
                 if ni_ == None:
-                    print(datetime.now(),x_part,y_part, "graph node not found for cell", x,y)
+                    print(datetime.now(), x_part, y_part, "graph node not found for cell", x,y)
                     continue
                 n = snappable_nodes[ni_]
 
