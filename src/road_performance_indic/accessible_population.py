@@ -348,6 +348,7 @@ for year in ["2021"]:
     # combine parquet files to a single tiff file
     geotiff = out_folder + "accessible_population_" + year + "_" + str(grid_resolution) + "m.tif"
 
+
     # check if tiff file was already produced
     if os.path.isfile(geotiff): continue
 
