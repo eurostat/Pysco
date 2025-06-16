@@ -96,10 +96,10 @@ def count_vertices(geometry):
 
 
 
-def check_noding(gpkg_path):
+def check_noding(gpkg_path, bbox=None):
 
     # get polygon contours
-    gdf = gpd.read_file(gpkg_path)
+    gdf = gpd.read_file(gpkg_path, bbox=bbox)
     gdf = gdf.explode(index_parts=True)
     print(len(gdf))
     gdf = gdf.geometry.boundary
@@ -109,6 +109,10 @@ def check_noding(gpkg_path):
     epsilon = 0.001
 
     # make list of segments
+    for line in gdf:
+        for coord in line.coords:
+            print(coord)
+
     # make spatial index of segments
 
     # show list of small segments
