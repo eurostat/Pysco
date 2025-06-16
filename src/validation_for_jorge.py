@@ -104,10 +104,11 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     print(len(gdf), "polygons")
     gdf = gdf.geometry.boundary
 
-    print("check coutour line types")
-    for line in gdf:
-        if line.geom_type == "LineString": continue
-        issues.append(["Unexpected contour type " + line.geom_type, line.centroid])
+    if False:
+        print("check coutour line types")
+        for line in gdf:
+            if line.geom_type == "LineString": continue
+            issues.append(["Unexpected contour type " + line.geom_type, line.centroid])
 
     gdf = gdf.explode(index_parts=True)
     gdf = gdf.geometry.tolist()
@@ -127,10 +128,11 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
             c0 = c1
     print(len(nodes), "nodes", len(segments), "segments")
 
-    print("detect microscopic segments")
-    for seg in segments:
-        if seg.length < epsilon:
-            issues.append(["Microscopic segment. length =" + str(seg.length), seg.centroid])
+    if False:
+        print("detect microscopic segments")
+        for seg in segments:
+            if seg.length < epsilon:
+                issues.append(["Microscopic segment. length =" + str(seg.length), seg.centroid])
 
     print('build index of segments')
     items = []
@@ -146,7 +148,9 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
         pt = Point(n)
         pos = nearest_points(pt, line)[1]
         dist = pt.distance(pos)
-        #print(dist)
+        if dist == 0: continue
+        if dist > epsilon: continue
+        print(n, dist)
 
 
 
