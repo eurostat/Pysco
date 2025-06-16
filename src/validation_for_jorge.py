@@ -160,7 +160,7 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
 
 
 gf = "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg"
-bbox = (4588000, 3902000, 4595000, 3930000)
+bbox = (4580000, 3902000, 4595000, 3930000)
 check_noding(gf, "/home/juju/Bureau/jorge_stuff/issues.gpkg", bbox=bbox)
 #check_validity(gf)
 #check_intersections(gf)
