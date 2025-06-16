@@ -3,6 +3,8 @@ from rtree import index
 from shapely.geometry import Point, LineString
 from shapely.ops import polygonize, unary_union, nearest_points
 
+
+
 def check_validity(gpkg_path):
     print("load")
     gdf = gpd.read_file(gpkg_path)["geometry"]
@@ -37,7 +39,6 @@ def check_intersections(gpkg_path):
     del items
 
     print("check overlaps")
-    overlaps = set()
     for i in range(len(gdf)):
         g = gdf[i]
         intersl = list(idx.intersection(g.bounds))
@@ -51,13 +52,15 @@ def check_intersections(gpkg_path):
             print("intersection",inte)
 
 
-def check_polygonise(gpkg_path):
 
-    # get polygon contours
-    gdf = gpd.read_file(gpkg_path)
+def check_polygonise(gpkg_path, bbox=None):
+
+    print("load and prepare geometries")
+    gdf = gpd.read_file(gpkg_path, bbox=bbox)
     gdf = gdf.explode(index_parts=True)
-    print(len(gdf))
+    print(len(gdf), "polygons")
     gdf = gdf.geometry.boundary
+    gdf = gdf.explode(index_parts=True)
     gdf = gdf.geometry.tolist()
     print(len(gdf), "lines")
 
@@ -132,7 +135,7 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
             if seg.length < epsilon:
                 issues.append(["Microscopic segment. length =" + str(seg.length), "micro_segment", seg.centroid])
 
-    if True:
+    if False:
         print('build index of nodes')
         items = []
         for i in range(len(nodes)):
@@ -150,11 +153,13 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
                 dist = cn.distance(pos)
                 if dist == 0: continue
                 if dist > epsilon: continue
-                print(cn, dist)
+                #print(cn, dist)
                 issues.append(["Noding issue. dist =" + str(dist), "noding", cn])
 
     print("save issues as gpkg", len(issues))
     gdf = gpd.GeoDataFrame(issues, columns=["description", "type", "geometry"], crs="EPSG:3035" )
+    print("    without duplicates:", len(gdf))
+    gdf = gdf.drop_duplicates()
     gdf.to_file(output_gpkg, layer="issues", driver="GPKG")
 
 
@@ -164,5 +169,5 @@ bbox = None #(4580000, 3900000, 4599000, 3970000)
 check_noding(gf, "/home/juju/Bureau/jorge_stuff/issues.gpkg", bbox=bbox)
 #check_validity(gf)
 #check_intersections(gf)
-#check_polygonise(gf)
+#check_polygonise(gf, bbox=bbox)
 
