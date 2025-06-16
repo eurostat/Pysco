@@ -120,14 +120,26 @@ def check_noding(gpkg_path, bbox=None):
             c0 = c1
     print(len(segments), "segments")
 
-    # make spatial index of segments
+    print("small segments")
+    for seg in segments:
+        if seg.length < epsilon:
+            print(seg.centre, seg.length)
+
+    print('build index of segments')
+    items = []
+    for i in range(len(segments)):
+        s = segments[i]
+        items.append((i, s.bounds, None))
+    idx_seg = index.Index(((i, box, obj) for i, box, obj in items))
+    del items
+
 
 
 
 
     # Find the nearest point on the line to the point
-    nearest_point_on_line = nearest_points(Point(0, 0), line)[1]
-    print(nearest_point_on_line)
+    #nearest_point_on_line = nearest_points(Point(0, 0), line)[1]
+    #print(nearest_point_on_line)
 
 
     # show list of small segments
