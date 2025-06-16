@@ -103,6 +103,7 @@ def check_noding(gpkg_path, bbox=None):
     gdf = gdf.explode(index_parts=True)
     print(len(gdf))
     gdf = gdf.geometry.boundary
+    gdf = gdf.explode(index_parts=True)
     gdf = gdf.geometry.tolist()
     print(len(gdf), "lines")
 
