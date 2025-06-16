@@ -135,8 +135,7 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     print('build index of segments')
     items = []
     for i in range(len(segments)):
-        s = segments[i]
-        items.append((i, s.bounds, None))
+        items.append((i, segments[i].bounds, None))
     idx_seg = index.Index(((i, box, obj) for i, box, obj in items))
     del items
 
@@ -147,7 +146,7 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
         pt = Point(n)
         pos = nearest_points(pt, line)[1]
         dist = pt.distance(pos)
-        print(dist)
+        #print(dist)
 
 
 
