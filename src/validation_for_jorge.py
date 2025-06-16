@@ -182,10 +182,10 @@ validate_polygonal_tesselation(
             "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg",
             "/home/juju/Bureau/jorge_stuff/issues.gpkg",
             bbox=None, #(4580000, 3900000, 4599000, 3970000),
-            epsilon = 0.001,
+            epsilon = 0.01,
             check_ogc_validity=True,
             check_intersection=True,
             check_polygonisation=True,
-            detect_microscopic_segments=False,
-            detect_noding=False,
+            detect_microscopic_segments=True,
+            detect_noding=True,
             )
