@@ -113,16 +113,19 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     gdf = gdf.geometry.tolist()
     print(len(gdf), "lines")
 
-    print("Make list of segments")
+    print("Make list of segments and nodes")
     segments = []
+    nodes = []
     for line in gdf:
         cs = list(line.coords)
         c0 = cs[0]
+        nodes.append(c0)
         for i in range(1, len(cs)):
             c1 = cs[i]
+            nodes.append(c1)
             segments.append( LineString([c0, c1]) )
             c0 = c1
-    print(len(segments), "segments")
+    print(len(nodes), "nodes", len(segments), "segments")
 
     print("detect microscopic segments")
     for seg in segments:
@@ -137,21 +140,16 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     idx_seg = index.Index(((i, box, obj) for i, box, obj in items))
     del items
 
+    print("compute node to segment analysis")
+    for n in nodes:
+        seg = next(idx_seg.nearest((n[0], n[1], n[0], n[1]), 1), None)
+        print(seg)
+        seg = segments[seg]
+        print(seg)
+        pt = Point(n)
+        pos = nearest_points(pt, line)[1]
+        print(pos)
 
-
-
-
-    # Find the nearest point on the line to the point
-    #nearest_point_on_line = nearest_points(Point(0, 0), line)[1]
-    #print(nearest_point_on_line)
-
-
-
-    # get list of nodes
-    # for each node, get segments around
-    # project node on segment
-    # if projected not one of the segment nodes, continue
-    # print noding issue - node position
 
 
 
