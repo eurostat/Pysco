@@ -212,7 +212,7 @@ def count_vertices(geometry):
 validate_polygonal_tesselation(
             "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg",
             "/home/juju/Bureau/jorge_stuff/issues.gpkg",
-            bbox=None, #(4580000, 3900000, 4599000, 3970000),
+            bbox=(4580000, 3900000, 4599000, 3970000),
             epsilon = 0.01,
             check_ogc_validity=False,
             check_thin_parts=True,
