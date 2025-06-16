@@ -51,7 +51,6 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
         print(len(gdf), "polygons")
 
         r = 1.5
-        at = r*r*epsilon*epsilon *2
         for p in polys:
             p2 = p.buffer(-r*epsilon).buffer(r*epsilon)
             d = p.hausdorff_distance(p2)
@@ -62,7 +61,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
             else: diff = diff.geoms
             for part in diff:
                 a = part.area
-                if a < at: continue
+                if a < r*r*epsilon*epsilon * 2: continue
                 print(part.area)
                 issues.append(["Thin polygon part. area="+str(a), "thin_polygon_part", part.centroid])
 
