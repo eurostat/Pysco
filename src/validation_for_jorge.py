@@ -98,7 +98,7 @@ def count_vertices(geometry):
 
 
 
-def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
+def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None, detect_microscopic_segments=True, detect_noding=True):
     issues = []
 
     print("load and prepare geometries")
@@ -129,13 +129,13 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
     #nodes = gseries.drop_duplicates().tolist()
     #del gseries
 
-    if True:
+    if detect_microscopic_segments:
         print("detect microscopic segments")
         for seg in segments:
             if seg.length < epsilon:
                 issues.append(["Microscopic segment. length =" + str(seg.length), "micro_segment", seg.centroid])
 
-    if False:
+    if detect_noding:
         print('build index of nodes')
         items = []
         for i in range(len(nodes)):
