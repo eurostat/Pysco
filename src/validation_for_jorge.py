@@ -2,7 +2,7 @@ import geopandas as gpd
 from rtree import index
 from shapely.geometry import Point, LineString
 from shapely.ops import polygonize, unary_union, nearest_points
-from shapely import hausdorff_distance
+#from shapely import hausdorff_distance
 
 
 
@@ -12,8 +12,8 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
              check_thin_parts=True,
              check_intersection=True,
              check_polygonisation=True,
-             detect_microscopic_segments=True,
-             detect_noding=True,
+             check_microscopic_segments=True,
+             check_noding_issues=True,
              ):
 
     # list of issues
@@ -45,6 +45,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
 
 
     if check_thin_parts:
+        print("check thin parts")
 
         print("decompose multi polygons into simple polygons")
         polys = gdf.explode(index_parts=False)["geometry"]
@@ -69,11 +70,13 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
             # check parts: raise issue for the large ones
             for part in diff:
                 a = part.area
-                if a < r*r*epsilon*epsilon * 5: continue
+                if a < r*r*epsilon*epsilon * 7: continue
                 issues.append(["Thin polygon part. area="+str(a), "thin_polygon_part", part.centroid])
 
 
     if check_intersection:
+        print("check intersection")
+
         print("decompose multi polygons into simple polygons")
         polys = gdf.explode(index_parts=False)["geometry"]
         polys = polys.geometry.tolist()
@@ -109,6 +112,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
 
 
     if check_polygonisation:
+        print("check thin polygons")
 
         # unionise lines, to remove duplicates
         # TODO: check without it ?
@@ -129,7 +133,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
         del polygons
 
 
-    if detect_noding or detect_microscopic_segments:
+    if check_noding_issues or check_microscopic_segments:
         print("make list of segments and nodes")
         segments = []
         nodes = []
@@ -149,13 +153,14 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
         #nodes = gseries.drop_duplicates().tolist()
         #del gseries
 
-    if detect_microscopic_segments:
-        print("detect microscopic segments")
+    if check_microscopic_segments:
+        print("check microscopic segments")
         for seg in segments:
             if seg.length < epsilon:
                 issues.append(["Microscopic segment. length =" + str(seg.length), "micro_segment", seg.centroid])
 
-    if detect_noding:
+    if check_noding_issues:
+        print("check noding issues")
 
         print('build index of nodes')
         items = []
@@ -212,13 +217,13 @@ def count_vertices(geometry):
 validate_polygonal_tesselation(
             "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg",
             "/home/juju/Bureau/jorge_stuff/issues.gpkg",
-            bbox=(4580000, 3900000, 4599000, 3970000),
+            bbox = None, #(4500000, 3900000, 4600000, 3970000),
             epsilon = 0.01,
-            check_ogc_validity=False,
+            check_ogc_validity=True,
             check_thin_parts=True,
-            check_intersection=False,
-            check_polygonisation=False,
-            detect_microscopic_segments=False,
-            detect_noding=False,
+            check_intersection=True,
+            check_polygonisation=True,
+            check_microscopic_segments=True,
+            check_noding_issues=True,
             )
 
