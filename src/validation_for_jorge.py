@@ -95,7 +95,7 @@ def count_vertices(geometry):
 
 
 
-def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
+def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
     issues = []
 
     print("load and prepare geometries")
@@ -104,7 +104,7 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     print(len(gdf), "polygons")
     gdf = gdf.geometry.boundary
 
-    if False:
+    if True:
         print("check coutour line types")
         for line in gdf:
             if line.geom_type == "LineString": continue
@@ -128,7 +128,7 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
             c0 = c1
     print(len(nodes), "nodes", len(segments), "segments")
 
-    if False:
+    if True:
         print("detect microscopic segments")
         for seg in segments:
             if seg.length < epsilon:
@@ -141,22 +141,27 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     idx_seg = index.Index(((i, box, obj) for i, box, obj in items))
     del items
 
-    print("compute node to segment analysis")
-    for n in nodes:
-        seg = next(idx_seg.nearest((n[0], n[1], n[0], n[1]), 1), None)
-        seg = segments[seg]
-        pt = Point(n)
-        pos = nearest_points(pt, line)[1]
-        dist = pt.distance(pos)
-        if dist == 0: continue
-        if dist > epsilon: continue
-        print(n, dist)
+    if False:
+        print("compute node to segment analysis")
+        for n in nodes:
+            seg = next(idx_seg.nearest((n[0], n[1], n[0], n[1]), 1), None)
+            seg = segments[seg]
+            pt = Point(n)
+            pos = nearest_points(pt, line)[1]
+            dist = pt.distance(pos)
+            if dist == 0: continue
+            if dist > epsilon: continue
+            print(n, dist)
 
+
+    print("save issues as gpkg", len(issues))
+    gdf = gpd.GeoDataFrame(issues, columns=["description", "geometry"], crs="EPSG:3035" )
+    gdf.to_file(output_gpkg, layer="issues", driver="GPKG")
 
 
 
 gf = "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg"
-check_noding(gf)
+check_noding(gf, "/home/juju/Bureau/jorge_stuff/issues.gpkg")
 #check_validity(gf)
 #check_intersections(gf)
 #check_polygonise(gf)
