@@ -98,13 +98,13 @@ def count_vertices(geometry):
 def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     issues = []
 
-    # get polygon contours
+    print("load and prepare geometries")
     gdf = gpd.read_file(gpkg_path, bbox=bbox)
     gdf = gdf.explode(index_parts=True)
     print(len(gdf), "polygons")
     gdf = gdf.geometry.boundary
 
-    print("Check coutour line types")
+    print("check coutour line types")
     for line in gdf:
         if line.geom_type == "LineString": continue
         issues.append(["Unexpected contour type " + line.geom_type, line.centroid])
@@ -113,7 +113,7 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     gdf = gdf.geometry.tolist()
     print(len(gdf), "lines")
 
-    print("Make list of segments and nodes")
+    print("make list of segments and nodes")
     segments = []
     nodes = []
     for line in gdf:
@@ -143,12 +143,13 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     print("compute node to segment analysis")
     for n in nodes:
         seg = next(idx_seg.nearest((n[0], n[1], n[0], n[1]), 1), None)
-        print(seg)
+        #print(seg)
         seg = segments[seg]
-        print(seg)
+        #print(seg)
         pt = Point(n)
         pos = nearest_points(pt, line)[1]
-        print(pos)
+        dist = pt.distance(pos)
+        print(dist)
 
 
 
