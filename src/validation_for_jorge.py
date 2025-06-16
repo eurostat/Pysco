@@ -98,24 +98,25 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
         del polygons
 
 
-    print("make list of segments and nodes")
-    segments = []
-    nodes = []
-    for line in gdf:
-        cs = list(line.coords)
-        c0 = cs[0]
-        nodes.append(Point(c0))
-        for i in range(1, len(cs)):
-            c1 = cs[i]
-            nodes.append(Point(c1))
-            segments.append( LineString([c0, c1]) )
-            c0 = c1
-    print(len(nodes), "nodes", len(segments), "segments")
+    if detect_noding or detect_microscopic_segments:
+        print("make list of segments and nodes")
+        segments = []
+        nodes = []
+        for line in gdf:
+            cs = list(line.coords)
+            c0 = cs[0]
+            nodes.append(Point(c0))
+            for i in range(1, len(cs)):
+                c1 = cs[i]
+                nodes.append(Point(c1))
+                segments.append( LineString([c0, c1]) )
+                c0 = c1
+        print(len(nodes), "nodes", len(segments), "segments")
 
-    #TODO remove duplicate nodes and segments ?
-    #gseries = gpd.GeoSeries(nodes)
-    #nodes = gseries.drop_duplicates().tolist()
-    #del gseries
+        #TODO remove duplicate nodes and segments ?
+        #gseries = gpd.GeoSeries(nodes)
+        #nodes = gseries.drop_duplicates().tolist()
+        #del gseries
 
     if detect_microscopic_segments:
         print("detect microscopic segments")
@@ -177,15 +178,14 @@ def count_vertices(geometry):
 
 
 
-
 validate_polygonal_tesselation(
             "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg",
-             "/home/juju/Bureau/jorge_stuff/issues.gpkg",
-             bbox=None, #(4580000, 3900000, 4599000, 3970000),
-             epsilon = 0.001,
-             check_ogc_validity=False,
-             check_intersection=False,
-             detect_microscopic_segments=False,
-             detect_noding=False,
-             check_polygonisation=False,
-             )
+            "/home/juju/Bureau/jorge_stuff/issues.gpkg",
+            bbox=None, #(4580000, 3900000, 4599000, 3970000),
+            epsilon = 0.001,
+            check_ogc_validity=True,
+            check_intersection=False,
+            detect_microscopic_segments=False,
+            detect_noding=False,
+            check_polygonisation=False,
+            )
