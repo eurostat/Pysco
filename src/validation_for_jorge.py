@@ -10,9 +10,9 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
              epsilon = 0.001,
              check_ogc_validity=True,
              check_intersection=True,
+             check_polygonisation=True,
              detect_microscopic_segments=True,
              detect_noding=True,
-             check_polygonisation=True,
              ):
 
     # list of issues
@@ -184,8 +184,8 @@ validate_polygonal_tesselation(
             bbox=None, #(4580000, 3900000, 4599000, 3970000),
             epsilon = 0.001,
             check_ogc_validity=True,
-            check_intersection=False,
+            check_intersection=True,
+            check_polygonisation=True,
             detect_microscopic_segments=False,
             detect_noding=False,
-            check_polygonisation=False,
             )
