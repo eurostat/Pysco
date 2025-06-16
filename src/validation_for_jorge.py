@@ -6,39 +6,47 @@ from shapely.ops import polygonize, unary_union, nearest_points
 
 
 
+def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
+             epsilon = 0.001,
+             check_ogc_validity=True,
+             check_intersection=True,
+             detect_microscopic_segments=True,
+             detect_noding=True,
+             check_polygonisation=True,
+             ):
 
-
-def validate(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None, detect_microscopic_segments=True, detect_noding=True, check_polygonisation=True, check_sf_validity=True):
     # list of issues
     issues = []
 
     print("load features")
     gdf = gpd.read_file(gpkg_path, bbox=bbox)
 
-    if check_sf_validity:
+    # check OGC validity
+    if check_ogc_validity:
         print("get feature geometries")
         mps = gdf["geometry"].geometry.tolist()
-        print(len(mps), "features")
+        print(len(mps), "feature geometries")
 
         for g in mps:
             v = g.is_valid
-            if not v: print("Non valid geometry around: ", g.centroid)
+            if not v:
+                issues.append(["Non valid geometry", "validity", g.centroid])
             # in addition, check effect of the buffer_0.
             # Buffer_0 operation cleans geometries. It removes duplicate vertices.
             g_ = g.buffer(0)
             if count_vertices(g) != count_vertices(g_):
-                print("Issue for geometry around: ", g.centroid)
+                issues.append(["Non valid geometry - buffer0", "validity_buffer0", g.centroid])
         del mps
 
-    # convert to line geometries
+    # get polygons
     gdf = gdf.explode(index_parts=True)
     print(len(gdf), "polygons")
 
-
-    if True:
-        print("decompose multi polygons to simple polygons")
+    if check_intersection:
+        print("decompose multi polygons into simple polygons")
         polys = gdf.explode(index_parts=False)["geometry"]
-        polys = gdf.geometry.tolist()
+        polys = polys.geometry.tolist()
+        print(len(gdf), "polygons")
 
         print('make spatial index')
         items = []
@@ -59,11 +67,10 @@ def validate(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None, detect_microsco
                 if not inte: continue
                 inte = g.intersection(gj)
                 if inte.area == 0: continue
-                print("intersection around", inte.centroid, "area=", inte.area)
+                issues.append(["Polygon intersection - area="+str(inte.area), "intersection", inte.centroid])
         del polys
 
-
-
+    # get lines
     gdf = gdf.geometry.boundary
     gdf = gdf.explode(index_parts=True)
     gdf = gdf.geometry.tolist()
@@ -73,6 +80,7 @@ def validate(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None, detect_microsco
     if check_polygonisation:
 
         # unionise lines, to remove duplicates
+        # TODO: check without it ?
         lines = unary_union(gdf)
         lines = list(lines.geoms)
         print(len(lines), "lines")
@@ -170,10 +178,14 @@ def count_vertices(geometry):
 
 
 
-gf = "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg"
-bbox = None #(4580000, 3900000, 4599000, 3970000)
-validate(gf, "/home/juju/Bureau/jorge_stuff/issues.gpkg", bbox=bbox)
-#check_validity(gf)
-#check_intersections(gf)
-#check_polygonise(gf, bbox=bbox)
-
+validate_polygonal_tesselation(
+            "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg",
+             "/home/juju/Bureau/jorge_stuff/issues.gpkg",
+             bbox=None, #(4580000, 3900000, 4599000, 3970000),
+             epsilon = 0.001,
+             check_ogc_validity=False,
+             check_intersection=False,
+             detect_microscopic_segments=False,
+             detect_noding=False,
+             check_polygonisation=False,
+             )
