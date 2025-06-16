@@ -102,7 +102,14 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     gdf = gdf.explode(index_parts=True)
     print(len(gdf), "polygons")
     gdf = gdf.geometry.boundary
-    gdf = gdf.explode(index_parts=True) #TODO - strange: there is a MLS here ! check that
+
+    print("Check coutour line types")
+    for line in gdf:
+        print(line.geom_type)
+
+
+
+    gdf = gdf.explode(index_parts=True)
     gdf = gdf.geometry.tolist()
     print(len(gdf), "lines")
 
