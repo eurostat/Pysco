@@ -143,16 +143,15 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
         print("compute node to segment analysis")
         for seg in segments:
             candidate_nodes = list(idx.intersection(seg.bounds, 1))
-            print(len(candidate_nodes))
-            break
-            seg = segments[seg]
-            pt = Point(n)
-            pos = nearest_points(pt, line)[1]
-            dist = pt.distance(pos)
-            if dist == 0: continue
-            if dist > epsilon: continue
-            print(n, dist)
-
+            #print(len(candidate_nodes))
+            for cn in candidate_nodes:
+                cn = nodes[cn]
+                pos = nearest_points(cn, seg)[1]
+                dist = cn.distance(pos)
+                if dist == 0: continue
+                if dist > epsilon: continue
+                print(cn, dist)
+                issues.append(["Noding issue. dist =" + str(dist), "noding", cn])
 
     print("save issues as gpkg", len(issues))
     gdf = gpd.GeoDataFrame(issues, columns=["description", "type", "geometry"], crs="EPSG:3035" )
