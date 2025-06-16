@@ -148,6 +148,7 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
                 cn = nodes[cn]
                 pos = nearest_points(cn, seg)[1]
                 dist = cn.distance(pos)
+                print(dist)
                 if dist == 0: continue
                 if dist > epsilon: continue
                 print(cn, dist)
