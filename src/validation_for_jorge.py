@@ -108,7 +108,7 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
         print("check coutour line types")
         for line in gdf:
             if line.geom_type == "LineString": continue
-            issues.append(["Unexpected contour type " + line.geom_type, line.centroid])
+            issues.append(["Unexpected outline type " + line.geom_type, "outline "+line.geom_type, line.centroid])
 
     gdf = gdf.explode(index_parts=True)
     gdf = gdf.geometry.tolist()
@@ -132,7 +132,7 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
         print("detect microscopic segments")
         for seg in segments:
             if seg.length < epsilon:
-                issues.append(["Microscopic segment. length =" + str(seg.length), seg.centroid])
+                issues.append(["Microscopic segment. length =" + str(seg.length), "micro_segment", seg.centroid])
 
     if False:
         print('build index of segments')
@@ -155,7 +155,7 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
 
 
     print("save issues as gpkg", len(issues))
-    gdf = gpd.GeoDataFrame(issues, columns=["description", "geometry"], crs="EPSG:3035" )
+    gdf = gpd.GeoDataFrame(issues, columns=["description", "type", "geometry"], crs="EPSG:3035" )
     gdf.to_file(output_gpkg, layer="issues", driver="GPKG")
 
 
