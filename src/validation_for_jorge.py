@@ -2,13 +2,14 @@ import geopandas as gpd
 from rtree import index
 from shapely.geometry import Point, LineString
 from shapely.ops import polygonize, unary_union, nearest_points
-
+from shapely import hausdorff_distance
 
 
 
 def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
              epsilon = 0.001,
              check_ogc_validity=True,
+             check_thin_parts=True,
              check_intersection=True,
              check_polygonisation=True,
              detect_microscopic_segments=True,
@@ -41,6 +42,29 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
     # get polygons
     gdf = gdf.explode(index_parts=True)
     print(len(gdf), "polygons")
+
+
+    if check_thin_parts:
+        print("decompose multi polygons into simple polygons")
+        polys = gdf.explode(index_parts=False)["geometry"]
+        polys = polys.geometry.tolist()
+        print(len(gdf), "polygons")
+
+        r = 1.5
+        for p in polys:
+            p2 = polys.buffer(-r*epsilon).buffer(r*epsilon)
+            d = p.hausdorff_distance(p2)
+            if d>=epsilon: continue
+            # compute difference
+            diff = p.difference(p2)
+            if diff.geom_type == "Polygon": diff = []
+            else: diff = diff.geoms
+            for part in diff:
+                print(part.area)
+                issues.append(["Thin polygon part. area="+part.area, "thin_polygon_part", part.centroid])
+
+
+
 
     if check_intersection:
         print("decompose multi polygons into simple polygons")
@@ -184,8 +208,10 @@ validate_polygonal_tesselation(
             bbox=None, #(4580000, 3900000, 4599000, 3970000),
             epsilon = 0.01,
             check_ogc_validity=True,
-            check_intersection=True,
-            check_polygonisation=True,
-            detect_microscopic_segments=True,
-            detect_noding=True,
+            check_thin_parts=True,
+            check_intersection=False,
+            check_polygonisation=False,
+            detect_microscopic_segments=False,
+            detect_noding=False,
             )
+
