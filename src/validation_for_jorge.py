@@ -58,6 +58,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
             if d>=epsilon: continue
             # compute difference
             diff = p.difference(p2)
+            if diff < epsilon * r * 2: continue
             if diff.geom_type == "Polygon": diff = []
             else: diff = diff.geoms
             for part in diff:
