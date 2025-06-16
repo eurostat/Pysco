@@ -158,8 +158,8 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None, detect_micr
 
     print("save issues as gpkg", len(issues))
     gdf = gpd.GeoDataFrame(issues, columns=["description", "type", "geometry"], crs="EPSG:3035" )
-    gdf = gdf.drop_duplicates()
-    print("    without duplicates:", len(gdf))
+    #gdf = gdf.drop_duplicates()
+    #print("    without duplicates:", len(gdf))
     gdf.to_file(output_gpkg, layer="issues", driver="GPKG")
 
 
