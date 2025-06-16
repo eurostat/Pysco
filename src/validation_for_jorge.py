@@ -127,7 +127,6 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     print("detect microscopic segments")
     for seg in segments:
         if seg.length < epsilon:
-            print()
             issues.append(["Microscopic segment. length =" + str(seg.length), seg.centroid])
 
     print('build index of segments')
