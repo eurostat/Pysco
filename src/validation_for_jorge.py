@@ -103,13 +103,6 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
     gdf = gdf.explode(index_parts=True)
     print(len(gdf), "polygons")
     gdf = gdf.geometry.boundary
-
-    if True:
-        print("check coutour line types")
-        for line in gdf:
-            if line.geom_type == "LineString": continue
-            issues.append(["Unexpected outline type " + line.geom_type, "outline "+line.geom_type, line.centroid])
-
     gdf = gdf.explode(index_parts=True)
     gdf = gdf.geometry.tolist()
     print(len(gdf), "lines")
@@ -134,17 +127,19 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
             if seg.length < epsilon:
                 issues.append(["Microscopic segment. length =" + str(seg.length), "micro_segment", seg.centroid])
 
-    if False:
-        print('build index of segments')
+    if True:
+        print('build index of nodes')
         items = []
-        for i in range(len(segments)):
-            items.append((i, segments[i].bounds, None))
-        idx_seg = index.Index(((i, box, obj) for i, box, obj in items))
+        for i in range(len(nodes)):
+            items.append((i, nodes[i].bounds, None))
+        idx = index.Index(((i, box, obj) for i, box, obj in items))
         del items
 
         print("compute node to segment analysis")
-        for n in nodes:
-            seg = next(idx_seg.nearest((n[0], n[1], n[0], n[1]), 1), None)
+        for seg in segments:
+            candidate_nodes = list(idx.intersection(seg.bounds, 1))
+            print(len(candidate_nodes))
+            break
             seg = segments[seg]
             pt = Point(n)
             pos = nearest_points(pt, line)[1]
