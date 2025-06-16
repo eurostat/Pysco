@@ -4,33 +4,34 @@ from shapely.geometry import Point, LineString
 from shapely.ops import polygonize, unary_union, nearest_points
 
 
-
-def check_validity(gpkg_path):
+# check all geometries of the input file are valid
+def check_validity(gpkg_path, bbox=None):
     print("load")
-    gdf = gpd.read_file(gpkg_path)["geometry"]
+    gdf = gpd.read_file(gpkg_path, bbox=bbox)["geometry"]
     gdf = gdf.geometry.tolist()
     print(len(gdf), "geometries")
 
     for g in gdf:
         v = g.is_valid
         if not v: print("Non valide geometry around: ", g.centroid)
+        # in addition, check effect of the buffer_0.
+        # Buffer_0 operation cleans geometries. It removes duplicate vertices.
         g_ = g.buffer(0)
-        nb = count_vertices(g)
-        nb_ = count_vertices(g_)
-        if nb != nb_: print("Issue for geometry around: ", g.centroid)
+        if count_vertices(g) != count_vertices(g_):
+            print("Issue for geometry around: ", g.centroid)
 
 
 
-
-def check_intersections(gpkg_path):
+# check geometries do not intersect
+def check_intersections(gpkg_path, bbox=None):
     print("load")
-    gdf = gpd.read_file(gpkg_path)
+    gdf = gpd.read_file(gpkg_path, bbox=bbox)
 
-    print("decompose to polygons")
+    print("decompose multi polygons to simple polygons")
     gdf = gdf.explode(index_parts=False)["geometry"]
     gdf = gdf.geometry.tolist()
 
-    print('build index')
+    print('make spatial index')
     items = []
     for i in range(len(gdf)):
         g = gdf[i]
@@ -38,7 +39,7 @@ def check_intersections(gpkg_path):
     idx = index.Index(((i, box, obj) for i, box, obj in items))
     del items
 
-    print("check overlaps")
+    print("check intersection")
     for i in range(len(gdf)):
         g = gdf[i]
         intersl = list(idx.intersection(g.bounds))
@@ -47,13 +48,13 @@ def check_intersections(gpkg_path):
             gj = gdf[j]
             inte = g.intersects(gj)
             if not inte: continue
-            inte = g.intersection(gj).area
-            if inte == 0: continue
-            print("intersection",inte)
+            inte = g.intersection(gj)
+            if inte.area == 0: continue
+            print("intersection around", inte.centroid, "area=", inte.area)
 
 
-
-def check_polygonise(gpkg_path, bbox=None):
+# check polygonisation do not create tiny thin polygons
+def check_polygonise(gpkg_path, epsilon=1, bbox=None):
 
     print("load and prepare geometries")
     gdf = gpd.read_file(gpkg_path, bbox=bbox)
@@ -64,16 +65,18 @@ def check_polygonise(gpkg_path, bbox=None):
     gdf = gdf.geometry.tolist()
     print(len(gdf), "lines")
 
+    # unionise lines, to remove duplicates
     gdf = unary_union(gdf)
     gdf = list(gdf.geoms)
     print(len(gdf), "lines")
 
+    # polygonise lines
     polygons = list(polygonize(gdf))
-
     print(len(polygons), "polygons")
 
+    # check polygons
     for poly in polygons:
-        poly_ = poly.buffer(-1)
+        poly_ = poly.buffer(-epsilon)
         if poly_.is_empty:
             print("Issue around:", poly.centroid)
 
@@ -136,6 +139,7 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None, detect_micr
                 issues.append(["Microscopic segment. length =" + str(seg.length), "micro_segment", seg.centroid])
 
     if detect_noding:
+
         print('build index of nodes')
         items = []
         for i in range(len(nodes)):
@@ -158,16 +162,16 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None, detect_micr
 
     print("save issues as gpkg", len(issues))
     gdf = gpd.GeoDataFrame(issues, columns=["description", "type", "geometry"], crs="EPSG:3035" )
-    #gdf = gdf.drop_duplicates()
-    #print("    without duplicates:", len(gdf))
+    gdf = gdf.drop_duplicates()
+    print("    without duplicates:", len(gdf))
     gdf.to_file(output_gpkg, layer="issues", driver="GPKG")
 
 
 
 gf = "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg"
 bbox = None #(4580000, 3900000, 4599000, 3970000)
-check_noding(gf, "/home/juju/Bureau/jorge_stuff/issues.gpkg", bbox=bbox)
+#check_noding(gf, "/home/juju/Bureau/jorge_stuff/issues.gpkg", bbox=bbox)
 #check_validity(gf)
 #check_intersections(gf)
-#check_polygonise(gf, bbox=bbox)
+check_polygonise(gf, bbox=bbox)
 
