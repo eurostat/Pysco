@@ -120,7 +120,7 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     print("small segments")
     for seg in segments:
         if seg.length < epsilon:
-            print(seg.centroid, seg.length)
+            print("Tiny segment around position", seg.centroid, "segment length is:", seg.length)
 
     print('build index of segments')
     items = []
