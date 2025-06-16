@@ -95,23 +95,20 @@ def count_vertices(geometry):
 
 
 
-def check_noding(gpkg_path, bbox=None):
+def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
 
     # get polygon contours
     gdf = gpd.read_file(gpkg_path, bbox=bbox)
     gdf = gdf.explode(index_parts=True)
-    print(len(gdf))
+    print(len(gdf), "polygons")
     gdf = gdf.geometry.boundary
     gdf = gdf.explode(index_parts=True) #TODO - strange: there is a MLS here ! check that
     gdf = gdf.geometry.tolist()
     print(len(gdf), "lines")
 
-    epsilon = 0.001
-
-    # make list of segments
+    print("Make list of segments")
     segments = []
     for line in gdf:
-        print(line.geom_type)
         cs = list(line.coords)
         c0 = cs[0]
         for i in range(1, len(cs)):
@@ -123,7 +120,7 @@ def check_noding(gpkg_path, bbox=None):
     print("small segments")
     for seg in segments:
         if seg.length < epsilon:
-            print(seg.centre, seg.length)
+            print(seg.centroid, seg.length)
 
     print('build index of segments')
     items = []
