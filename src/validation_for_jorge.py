@@ -143,9 +143,7 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     print("compute node to segment analysis")
     for n in nodes:
         seg = next(idx_seg.nearest((n[0], n[1], n[0], n[1]), 1), None)
-        #print(seg)
         seg = segments[seg]
-        #print(seg)
         pt = Point(n)
         pos = nearest_points(pt, line)[1]
         dist = pt.distance(pos)
