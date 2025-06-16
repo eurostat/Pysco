@@ -1,8 +1,7 @@
 import geopandas as gpd
 from rtree import index
-from shapely.geometry import Point, LineString, Polygon
-from shapely.ops import polygonize, unary_union
-
+from shapely.geometry import Point, LineString
+from shapely.ops import polygonize, unary_union, nearest_points
 
 def check_validity(gpkg_path):
     print("load")
@@ -103,7 +102,7 @@ def check_noding(gpkg_path, bbox=None):
     gdf = gdf.explode(index_parts=True)
     print(len(gdf))
     gdf = gdf.geometry.boundary
-    gdf = gdf.explode(index_parts=True)
+    gdf = gdf.explode(index_parts=True) #TODO - strange: there is a MLS here ! check that
     gdf = gdf.geometry.tolist()
     print(len(gdf), "lines")
 
@@ -113,16 +112,23 @@ def check_noding(gpkg_path, bbox=None):
     segments = []
     for line in gdf:
         print(line.geom_type)
-        cs = line.coords
-        cs = list(cs)
+        cs = list(line.coords)
         c0 = cs[0]
-        for i in range(1,len(cs)):
+        for i in range(1, len(cs)):
             c1 = cs[i]
-            segments.append( { "p0":c0, "p1":c1 } )
+            segments.append( LineString([c0, c1]) )
             c0 = c1
     print(len(segments), "segments")
 
     # make spatial index of segments
+
+
+
+
+    # Find the nearest point on the line to the point
+    nearest_point_on_line = nearest_points(Point(0, 0), line)[1]
+    print(nearest_point_on_line)
+
 
     # show list of small segments
 
