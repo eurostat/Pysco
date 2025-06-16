@@ -45,6 +45,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
 
 
     if check_thin_parts:
+
         print("decompose multi polygons into simple polygons")
         polys = gdf.explode(index_parts=False)["geometry"]
         polys = polys.geometry.tolist()
@@ -52,20 +53,24 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
 
         r = 1.5
         for p in polys:
+            # get eroded geometry
             p2 = p.buffer(-r*epsilon).buffer(r*epsilon)
+            # compute hdistance to original geometry
             d = p.hausdorff_distance(p2)
-            if d < epsilon * r * 2: continue
+            # if distance is small, continue
+            if d < epsilon * r * 3: continue
             # compute difference
             diff = p.difference(p2)
+
+            # convert into polygons
             if diff.geom_type == "Polygon": diff = []
             else: diff = diff.geoms
+
+            # check parts: raise issue for the large ones
             for part in diff:
                 a = part.area
-                if a < r*r*epsilon*epsilon * 2: continue
-                print(part.area)
+                if a < r*r*epsilon*epsilon * 5: continue
                 issues.append(["Thin polygon part. area="+str(a), "thin_polygon_part", part.centroid])
-
-
 
 
     if check_intersection:
