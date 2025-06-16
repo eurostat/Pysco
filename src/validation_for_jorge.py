@@ -128,7 +128,7 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     for seg in segments:
         if seg.length < epsilon:
             print()
-            issues.append(["Microscopic segment. length =" + seg.length, seg.centroid])
+            issues.append(["Microscopic segment. length =" + str(seg.length), seg.centroid])
 
     print('build index of segments')
     items = []
@@ -147,7 +147,6 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
     #print(nearest_point_on_line)
 
 
-    # show list of small segments
 
     # get list of nodes
     # for each node, get segments around
