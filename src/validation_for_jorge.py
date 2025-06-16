@@ -113,13 +113,18 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
     for line in gdf:
         cs = list(line.coords)
         c0 = cs[0]
-        nodes.append(c0)
+        nodes.append(Point(c0))
         for i in range(1, len(cs)):
             c1 = cs[i]
             nodes.append(Point(c1))
             segments.append( LineString([c0, c1]) )
             c0 = c1
     print(len(nodes), "nodes", len(segments), "segments")
+
+    #TODO remove duplicate nodes and segments ?
+    #gseries = gpd.GeoSeries(nodes)
+    #nodes = gseries.drop_duplicates().tolist()
+    #del gseries
 
     if True:
         print("detect microscopic segments")
