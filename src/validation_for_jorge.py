@@ -52,7 +52,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
 
         r = 1.5
         for p in polys:
-            p2 = polys.buffer(-r*epsilon).buffer(r*epsilon)
+            p2 = p.buffer(-r*epsilon).buffer(r*epsilon)
             d = p.hausdorff_distance(p2)
             if d>=epsilon: continue
             # compute difference
@@ -207,7 +207,7 @@ validate_polygonal_tesselation(
             "/home/juju/Bureau/jorge_stuff/issues.gpkg",
             bbox=None, #(4580000, 3900000, 4599000, 3970000),
             epsilon = 0.01,
-            check_ogc_validity=True,
+            check_ogc_validity=False,
             check_thin_parts=True,
             check_intersection=False,
             check_polygonisation=False,
