@@ -170,8 +170,8 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None, detect_micr
 
 gf = "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg"
 bbox = None #(4580000, 3900000, 4599000, 3970000)
-#check_noding(gf, "/home/juju/Bureau/jorge_stuff/issues.gpkg", bbox=bbox)
+check_noding(gf, "/home/juju/Bureau/jorge_stuff/issues.gpkg", bbox=bbox)
 #check_validity(gf)
 #check_intersections(gf)
-check_polygonise(gf, bbox=bbox)
+#check_polygonise(gf, bbox=bbox)
 
