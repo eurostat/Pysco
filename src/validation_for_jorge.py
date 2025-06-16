@@ -109,9 +109,17 @@ def check_noding(gpkg_path, bbox=None):
     epsilon = 0.001
 
     # make list of segments
+    segments = []
     for line in gdf:
-        for coord in line.coords:
-            print(coord)
+        print(line.geom_type)
+        cs = line.coords
+        cs = list(cs)
+        c0 = cs[0]
+        for i in range(1,len(cs)):
+            c1 = cs[i]
+            segments.append( { "p0":c0, "p1":c1 } )
+            c0 = c1
+    print(len(segments), "segments")
 
     # make spatial index of segments
 
