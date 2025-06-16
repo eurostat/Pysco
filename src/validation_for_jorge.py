@@ -134,14 +134,14 @@ def check_noding(gpkg_path, output_gpkg, epsilon = 0.001, bbox=None):
             if seg.length < epsilon:
                 issues.append(["Microscopic segment. length =" + str(seg.length), seg.centroid])
 
-    print('build index of segments')
-    items = []
-    for i in range(len(segments)):
-        items.append((i, segments[i].bounds, None))
-    idx_seg = index.Index(((i, box, obj) for i, box, obj in items))
-    del items
-
     if False:
+        print('build index of segments')
+        items = []
+        for i in range(len(segments)):
+            items.append((i, segments[i].bounds, None))
+        idx_seg = index.Index(((i, box, obj) for i, box, obj in items))
+        del items
+
         print("compute node to segment analysis")
         for n in nodes:
             seg = next(idx_seg.nearest((n[0], n[1], n[0], n[1]), 1), None)
