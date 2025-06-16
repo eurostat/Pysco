@@ -1,4 +1,3 @@
-from math import floor
 from multiprocessing import Pool
 import random
 import numpy as np
@@ -10,6 +9,7 @@ import graph_tool.all as gt
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.geotiff import geotiff_mask_by_countries
 from utils.utils import cartesian_product_comp
 from utils.convert import parquet_grid_to_geotiff
 from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_to_node, nodes_spatial_index_adjacendy_list
@@ -320,7 +320,7 @@ for year in ["2021"]:
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
     population_grid_loader = population_grid_loader_2021 if year == "2021" else None
 
-    if True:
+    if False:
         accessiblity_population_parallel(
                             road_network_loader,
                             bbox = bbox,
@@ -360,4 +360,18 @@ for year in ["2021"]:
         bbox = bbox,
         dtype=np.int32,
         compress='deflate'
+    )
+
+    print("apply mask to force some countries to nodata")
+    geotiff_mask_by_countries(
+        geotiff,
+        geotiff,
+        gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
+        gpkg_column = 'CNTR_ID',
+        values = [
+            "AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
+            "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
+            "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO", "CH"],
+        #exclude: ["RS", "BA", "MK", "AL", "ME", "MD"],
+        compress="deflate"
     )
