@@ -96,6 +96,7 @@ def count_vertices(geometry):
 
 
 def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
+    issues = []
 
     # get polygon contours
     gdf = gpd.read_file(gpkg_path, bbox=bbox)
@@ -105,9 +106,8 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
 
     print("Check coutour line types")
     for line in gdf:
-        print(line.geom_type)
-
-
+        if line.geom_type == "LineString": continue
+        issues.append(["Unexpected contour type " + line.geom_type, line.centroid])
 
     gdf = gdf.explode(index_parts=True)
     gdf = gdf.geometry.tolist()
@@ -124,10 +124,11 @@ def check_noding(gpkg_path, epsilon = 0.001, bbox=None):
             c0 = c1
     print(len(segments), "segments")
 
-    print("small segments")
+    print("detect microscopic segments")
     for seg in segments:
         if seg.length < epsilon:
-            print("Tiny segment around position", seg.centroid, "segment length is:", seg.length)
+            print()
+            issues.append(["Microscopic segment. length =" + seg.length, seg.centroid])
 
     print('build index of segments')
     items = []
