@@ -2,7 +2,6 @@ import geopandas as gpd
 from rtree import index
 from shapely.geometry import Point, LineString
 from shapely.ops import polygonize, unary_union, nearest_points
-#from shapely import hausdorff_distance
 
 
 
@@ -209,7 +208,6 @@ def count_vertices(geometry):
         return num_vertices
     else:
         raise ValueError(f"Unsupported geometry type: {geometry.geom_type}")
-
 
 
 
