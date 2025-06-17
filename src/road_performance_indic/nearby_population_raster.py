@@ -171,7 +171,7 @@ for resolution in [1000]: #100
         print("convolution (fast)", year)
         circular_kernel_sum(
             pop[year],
-            folder + "nearby_population_"+year+"_fast.tiff",
+            folder + "nearby_population_"+year+"_"+resolution+"m_fast.tiff",
             120000,
             rasterio.uint32,
             compress="deflate",
@@ -191,7 +191,7 @@ for resolution in [1000]: #100
         print("compute convolution")
         circular_kernel_sum_per_code(
             folder + "pop_"+year+"_lmi.tiff",
-            folder + "nearby_population_"+year+".tiff",
+            folder + "nearby_population_"+year+"_"+resolution+"m.tiff",
             radius_m=120000,
             dtype=rasterio.int64,
             compress="deflate",
