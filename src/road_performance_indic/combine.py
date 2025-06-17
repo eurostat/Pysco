@@ -13,7 +13,7 @@ year = "2021"
 grid_resolution = 1000
 
 geotiff_ap = out_folder + "accessible_population_" + year + "_" + str(grid_resolution) + "m.tif"
-geotiff_np = out_folder + "nearby_population_" + year + "_" + str(grid_resolution) + "m.tif"
+geotiff_np = out_folder + "nearby_population_" + year + "_" + str(grid_resolution) + "m.tiff"
 combined = out_folder + "combined_" + year + "_" + str(grid_resolution) + "m.tif"
 
 print("combine geotiff")
