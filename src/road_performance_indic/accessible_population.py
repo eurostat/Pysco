@@ -90,7 +90,6 @@ def accessiblity_population(xy,
     snappable_nodes = gb_['snappable_nodes']
     del gb_, roads
     if show_detailled_messages: print(datetime.now(), x_part, y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
-    #if(len(snappable_nodes)==0): return
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "build graph-tool graph")
     graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
@@ -123,22 +122,23 @@ def accessiblity_population(xy,
         if n in node_pop_dict: node_pop_dict[n] += pop
         else: node_pop_dict[n] = pop
 
-        # store populated cells within the bbox
-        #if x>=x_part and y>=y_part and x<x_part+partition_size and y<y_part+partition_size:
-        #    populated_cells.append((id,x,y))
     del cells
 
-    # destination nodes: all nodes with population - get destination indices as a numpy array - it is faster
+    # destination nodes: all nodes with population
     populated_nodes = node_pop_dict.keys()
-    #if show_detailled_messages: print(datetime.now(), x_part, y_part, "prepare populated nodes")
-    #dest_indices = np.array([node_id_to_index[dest_id] for dest_id in populated_nodes if dest_id in node_id_to_index], dtype=np.int32)
+
     # index graph vertexes by populated node codes
     graph_id_to_vertex = {}
     for nn in populated_nodes: graph_id_to_vertex[nn] = graph.vertex(node_id_to_index[nn])
+
     # create numpy arrays for lookups
     populated_vertex_indices = np.array([graph_id_to_vertex[nn] for nn in populated_nodes], dtype=np.int64)
     populated_pops = np.array([node_pop_dict[nn] for nn in populated_nodes], dtype=np.int64)
+
+    # clean
     del graph_id_to_vertex
+    del populated_nodes
+    del node_pop_dict
 
     # output data
     grd_ids = [] # the cell identifiers
@@ -320,7 +320,7 @@ for year in ["2021"]:
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
     population_grid_loader = population_grid_loader_2021 if year == "2021" else None
 
-    if False:
+    if True:
         accessiblity_population_parallel(
                             road_network_loader,
                             bbox = bbox,
