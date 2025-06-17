@@ -307,7 +307,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 file_size = 200000
 extention_buffer = 180000 # 180000
 duration_s = 60 * 90 #1h30=90min
-num_processors_to_use = 5
+num_processors_to_use = 10
 
 def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
 def population_grid_loader_2018(bbox): return iter_features("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", bbox=bbox)
