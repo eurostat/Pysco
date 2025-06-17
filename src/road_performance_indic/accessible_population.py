@@ -131,21 +131,21 @@ def accessiblity_population(xy,
         del cells
 
         # destination nodes: all nodes with population
-        populated_nodes = node_pop_dict.keys()
+        #populated_nodes = node_pop_dict.keys()
 
         # index graph vertexes by populated node codes
-        graph_id_to_vertex = {}
-        for nn in populated_nodes: graph_id_to_vertex[nn] = graph.vertex(node_id_to_index[nn])
+        #graph_id_to_vertex = {}
+        #for nn in populated_nodes: graph_id_to_vertex[nn] = graph.vertex(node_id_to_index[nn])
 
         # create numpy arrays for lookups
         # 
-        populated_graph_vertex_indices = np.array([graph_id_to_vertex[nn] for nn in populated_nodes], dtype=np.int64)
+        populated_graph_vertex_indices = np.array([graph.vertex(node_id_to_index[nn]) for nn in node_pop_dict.keys()], dtype=np.int64)
         #populated_pops = np.array([node_pop_dict[nn] for nn in populated_nodes], dtype=np.int64)
         populated_pops = np.array(node_pop_dict.values(), dtype=np.int64)
 
         # clean
-        del graph_id_to_vertex
-        del populated_nodes
+        #del graph_id_to_vertex
+        #del populated_nodes
         del node_pop_dict
 
         # a cache structure, to ensure there is no double computation for some nodes. it could happen, since some cells may snap to a same graph node
