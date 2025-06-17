@@ -3,6 +3,8 @@
 
 import sys
 import os
+
+import numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from utils.geotiff import combine_geotiffs
@@ -17,7 +19,7 @@ geotiff_np = out_folder + "nearby_population_" + year + "_" + str(grid_resolutio
 combined = out_folder + "combined_" + year + "_" + str(grid_resolution) + "m.tif"
 
 print("combine geotiff")
-combine_geotiffs([geotiff_np, geotiff_ap], combined, compress="deflate")
+combine_geotiffs([geotiff_np, geotiff_ap], combined, compress="deflate", dtype=np.int64)
 
 
 #print("rename tiff bands")
