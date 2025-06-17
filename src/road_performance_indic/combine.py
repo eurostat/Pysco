@@ -1,6 +1,9 @@
-
 # combine all tiff into a single one
 # band on nearby pop, accessible pop, ratio
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from utils.geotiff import combine_geotiffs
 
