@@ -278,7 +278,7 @@ def accessiblity_population_parallel(
 
 
 
-#TODO check bug - why discontinuities ?
+#TODO check bug - why discontinuities ? recompute ?
 #TODO test 100m ?
 #TODO compute population <1H30 AND < 120km
 
@@ -320,7 +320,7 @@ for year in ["2021"]:
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
     population_grid_loader = population_grid_loader_2021 if year == "2021" else None
 
-    if True:
+    if False:
         accessiblity_population_parallel(
                             road_network_loader,
                             bbox = bbox,
