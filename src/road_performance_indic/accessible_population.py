@@ -281,9 +281,10 @@ def accessiblity_population_parallel(
 
 
 
-#TODO check bug - why discontinuities ? recompute ?
-#TODO test 100m ?
 #TODO compute population <1H30 AND < 120km
+#TODO compute 2018
+#TODO take right tomtom versions - 2018 and 2021
+#TODO test 100m ?
 
 
 # where to store the outputs
@@ -310,26 +311,26 @@ duration_s = 60 * 90 #1h30=90min
 num_processors_to_use = 7
 
 def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
+def population_grid_loader_2018(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 
 
 
-for year in ["2021"]:
+for year in ["2021"]: #"2018"
 
     # ouput folder
     out_folder_year = out_folder + "out_" + year + "_" + str(grid_resolution) + "m/"
     if not os.path.exists(out_folder_year): os.makedirs(out_folder_year)
 
-    tomtom_year = "2023" if year == "2021" else None
+    tomtom_year = "2023" if year == "2021" else "2019"
+    #TODO take right tomtom version
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
-    population_grid_loader = population_grid_loader_2021 if year == "2021" else None
-    pop_col = 'T' if year == "2021" else None
 
     if True:
         accessiblity_population_parallel(
                             road_network_loader,
-                            population_grid_loader,
-                            pop_col,
+                            population_grid_loader_2021 if year == "2021" else population_grid_loader_2018,
+                            'T' if year == "2021" else None,
                             bbox = bbox,
                             out_folder = out_folder_year,
                             duration_s = duration_s,
