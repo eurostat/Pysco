@@ -26,5 +26,5 @@ for grid_resolution in ["1000"]:
         rename_geotiff_bands(combined, [ "np_" + year, "ap_" + year ])
 
         print("compute ratio")
-        add_ratio_band(combined, "ap_" + year, "np_" + year, ratio_band_name='indic_'+year)
+        add_ratio_band(combined, 2, 1, ratio_band_name='indic_'+year)
 
