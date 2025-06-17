@@ -13,7 +13,7 @@ from utils.geotiff import add_ratio_band, combine_geotiffs, rename_geotiff_bands
 out_folder = '/home/juju/gisco/road_transport_performance/'
 
 for grid_resolution in ["1000"]:
-    for year in ["2021"]:
+    for year in ["2018"]:
 
         geotiff_ap = out_folder + "accessible_population_" + year + "_" + grid_resolution + "m.tif"
         geotiff_np = out_folder + "nearby_population_" + year + "_" + grid_resolution + "m.tiff"
