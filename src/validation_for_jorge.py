@@ -63,7 +63,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
             diff = p.difference(p2)
 
             # convert into polygons
-            if diff.geom_type == "Polygon": diff = []
+            if diff.geom_type == "Polygon": diff = [diff]
             else: diff = diff.geoms
 
             # check parts: raise issue for the large ones
