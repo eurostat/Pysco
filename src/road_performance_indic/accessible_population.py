@@ -50,6 +50,8 @@ def accessiblity_population(xy,
             extention_buffer,
             file_size,
             road_network_loader,
+            population_grid_loader,
+            pop_col,
             weight_function,
             direction_fun,
             is_not_snappable_fun,
@@ -111,7 +113,7 @@ def accessiblity_population(xy,
         r2 = grid_resolution/2
         for c in cells:
             c = c['properties']
-            pop = c['T']
+            pop = c[pop_col]
             if pop is None or pop == 0: continue
 
             id = c['GRD_ID']
@@ -222,6 +224,8 @@ def accessiblity_population(xy,
 
 def accessiblity_population_parallel(
                        road_network_loader,
+                       population_grid_loader,
+                       pop_col,
                        bbox,
                        out_folder,
                        duration_s,
@@ -254,6 +258,8 @@ def accessiblity_population_parallel(
             extention_buffer,
             file_size,
             road_network_loader,
+            population_grid_loader,
+            pop_col,
             weight_function,
             direction_fun,
             is_not_snappable_fun,
@@ -307,6 +313,7 @@ def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 
 
+
 for year in ["2021"]:
 
     # ouput folder
@@ -316,10 +323,13 @@ for year in ["2021"]:
     tomtom_year = "2023" if year == "2021" else None
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
     population_grid_loader = population_grid_loader_2021 if year == "2021" else None
+    pop_col = 'T' if year == "2021" else None
 
     if True:
         accessiblity_population_parallel(
                             road_network_loader,
+                            population_grid_loader,
+                            pop_col,
                             bbox = bbox,
                             out_folder = out_folder_year,
                             duration_s = duration_s,
