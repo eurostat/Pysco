@@ -91,63 +91,63 @@ def accessiblity_population(xy,
     del gb_, roads
     if show_detailled_messages: print(datetime.now(), x_part, y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
 
-    if show_detailled_messages: print(datetime.now(), x_part, y_part, "build graph-tool graph")
-    graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
+    if len(snappable_nodes) > 0:
 
-    if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
-    idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
+        if show_detailled_messages: print(datetime.now(), x_part, y_part, "build graph-tool graph")
+        graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
 
-    # dictionnary that assign population to graph node
-    node_pop_dict = {}
+        if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
+        idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
-    if show_detailled_messages: print(datetime.now(), x_part, y_part, "Project population grid on graph nodes")
-    cells = population_grid_loader(extended_bbox)
-    r2 = grid_resolution/2
-    for c in cells:
-        c = c['properties']
-        pop = c['T']
-        if pop is None or pop == 0: continue
+        # dictionnary that assign population to graph node
+        node_pop_dict = {}
 
-        id = c['GRD_ID']
-        x,y = get_cell_xy_from_id(id)
-        x+=r2
-        y+=r2
+        if show_detailled_messages: print(datetime.now(), x_part, y_part, "Project population grid on graph nodes")
+        cells = population_grid_loader(extended_bbox)
+        r2 = grid_resolution/2
+        for c in cells:
+            c = c['properties']
+            pop = c['T']
+            if pop is None or pop == 0: continue
 
-        # get closest graph snappable node
-        ni = next(idx.nearest((x, y, x, y), 1), None)
-        if ni == None:
-            print("Could not find network node for grid cell", id)
-            continue
-        n = snappable_nodes[ni]
-        if n in node_pop_dict: node_pop_dict[n] += pop
-        else: node_pop_dict[n] = pop
+            id = c['GRD_ID']
+            x,y = get_cell_xy_from_id(id)
+            x+=r2
+            y+=r2
 
-    del cells
+            # get closest graph snappable node
+            ni = next(idx.nearest((x, y, x, y), 1), None)
+            if ni == None:
+                print("Could not find network node for grid cell", id)
+                continue
+            n = snappable_nodes[ni]
+            if n in node_pop_dict: node_pop_dict[n] += pop
+            else: node_pop_dict[n] = pop
 
-    # destination nodes: all nodes with population
-    populated_nodes = node_pop_dict.keys()
+        del cells
 
-    # index graph vertexes by populated node codes
-    graph_id_to_vertex = {}
-    for nn in populated_nodes: graph_id_to_vertex[nn] = graph.vertex(node_id_to_index[nn])
+        # destination nodes: all nodes with population
+        populated_nodes = node_pop_dict.keys()
 
-    # create numpy arrays for lookups
-    populated_vertex_indices = np.array([graph_id_to_vertex[nn] for nn in populated_nodes], dtype=np.int64)
-    populated_pops = np.array([node_pop_dict[nn] for nn in populated_nodes], dtype=np.int64)
+        # index graph vertexes by populated node codes
+        graph_id_to_vertex = {}
+        for nn in populated_nodes: graph_id_to_vertex[nn] = graph.vertex(node_id_to_index[nn])
 
-    # clean
-    del graph_id_to_vertex
-    del populated_nodes
-    del node_pop_dict
+        # create numpy arrays for lookups
+        populated_vertex_indices = np.array([graph_id_to_vertex[nn] for nn in populated_nodes], dtype=np.int64)
+        populated_pops = np.array([node_pop_dict[nn] for nn in populated_nodes], dtype=np.int64)
 
-    # output data
-    grd_ids = [] # the cell identifiers
-    accessible_populations = [] # the values corresponding to the cell identifiers
+        # clean
+        del graph_id_to_vertex
+        del populated_nodes
+        del node_pop_dict
 
-    # a cache structure, to ensure there is no double computation for some nodes. it could happen, since some cells may snap to a same graph node
-    cache = {}
+        # output data
+        grd_ids = [] # the cell identifiers
+        accessible_populations = [] # the values corresponding to the cell identifiers
 
-    if len(snappable_nodes)>0:
+        # a cache structure, to ensure there is no double computation for some nodes. it could happen, since some cells may snap to a same graph node
+        cache = {}
 
         # go through cells
         if show_detailled_messages: print(datetime.now(), x_part, y_part, "compute routing")
