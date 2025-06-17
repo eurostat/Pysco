@@ -280,7 +280,6 @@ def accessiblity_population_parallel(
 
 
 
-
 #TODO compute population <1H30 AND < 120km
 #TODO compute 2018
 #TODO take right tomtom versions - 2018 and 2021
