@@ -150,20 +150,15 @@ def accessiblity_population(xy,
         cache = {}
 
         # go through cells
-        if show_detailled_messages: print(datetime.now(), x_part, y_part, "compute routing")
+        if show_detailled_messages: print(datetime.now(), x_part, y_part, "compute accessible population by cell")
         r2 = grid_resolution / 2
-        for x in range(x_part, x_part+file_size, grid_resolution):
-            #print(datetime.now(), x)
-            for y in range(y_part, y_part+file_size, grid_resolution):
-            #for pc in populated_cells:
-                #id, x, y = pc
-                #print(datetime.now(),"start")
 
-                # snap cell centre to the snappable nodes, using the spatial index
+        for x in range(x_part, x_part+file_size, grid_resolution):
+            for y in range(y_part, y_part+file_size, grid_resolution):
+
+                # snap cell centre to the graph snappable nodes, using the spatial index
                 ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
-                if ni_ == None:
-                    print(datetime.now(), x_part, y_part, "graph node not found for cell", x,y)
-                    continue
+                if ni_ == None: raise(datetime.now(), x_part, y_part, "graph node not found for cell", x,y)
                 n = snappable_nodes[ni_]
 
                 # compute distance from cell centre to node, and skip if too far
