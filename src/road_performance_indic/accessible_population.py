@@ -304,7 +304,7 @@ bbox = [ 900000, 900000, 6600000, 5400000 ]
 file_size = 200000
 extention_buffer = 180000 # 180000
 duration_s = 60 * 90 #1h30=90min
-num_processors_to_use = 5
+num_processors_to_use = 7
 
 def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
@@ -320,7 +320,7 @@ for year in ["2021"]:
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
     population_grid_loader = population_grid_loader_2021 if year == "2021" else None
 
-    if True:
+    if False:
         accessiblity_population_parallel(
                             road_network_loader,
                             bbox = bbox,
