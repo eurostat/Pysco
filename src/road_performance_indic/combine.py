@@ -7,7 +7,7 @@ import os
 import numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from utils.geotiff import combine_geotiffs
+from utils.geotiff import add_ratio_band, combine_geotiffs, rename_geotiff_bands
 
 
 out_folder = '/home/juju/gisco/road_transport_performance/'
@@ -21,7 +21,8 @@ combined = out_folder + "combined_" + year + "_" + str(grid_resolution) + "m.tif
 print("combine geotiff")
 combine_geotiffs([geotiff_np, geotiff_ap], combined, compress="deflate", dtype=np.int64)
 
+print("rename bands")
+rename_geotiff_bands(combined, [ "np_" + year, "ap_" + year ])
 
-#print("rename tiff bands")
-#rename_geotiff_bands(geotiff, [service + "_" + year + "_1", service + "_" + year + "_a3"])
-
+print("compute ratio")
+add_ratio_band(combined, "ap_" + year, "np_" + year, ratio_band_name='indic_'+year)

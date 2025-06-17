@@ -277,3 +277,45 @@ def geotiff_mask_by_countries(
     with rasterio.open(out_tiff_path, 'w', **profile) as dst:
         dst.write(data)
 
+
+
+def add_ratio_band(input_path, numerator_band, denominator_band, ratio_band_name='ratio_band', output_path=None):
+    """
+    Adds a new band to a GeoTIFF file, containing the ratio of two existing bands multiplied by 100.
+    The result is nodata where either input band has nodata or where denominator is 0.
+
+    Parameters:
+        input_path (str): Path to input GeoTIFF.
+        numerator_band (int): 1-based index of the numerator band.
+        denominator_band (int): 1-based index of the denominator band.
+        ratio_band_name (str): Description for the new band (optional).
+        output_path (str): Path to output GeoTIFF with added ratio band.
+    """
+    with rasterio.open(input_path) as src:
+        meta = src.meta.copy()
+        nodata_value = src.nodata
+
+        # Read bands
+        num = src.read(numerator_band)
+        den = src.read(denominator_band)
+
+        # Compute ratio × 100 with masking
+        ratio = np.full_like(num, nodata_value, dtype=src.dtypes[0])
+
+        mask_valid = (num != nodata_value) & (den != nodata_value) & (den != 0)
+        ratio[mask_valid] = (num[mask_valid] / den[mask_valid]) * 100
+
+        # Update metadata: increase band count
+        meta.update(count=src.count + 1)
+
+        # Write to a new file with all original bands and the new ratio band
+        if output_path is None: output_path = input_path
+        with rasterio.open(output_path, 'w', **meta) as dst:
+            # Copy existing bands
+            for i in range(1, src.count + 1):
+                data = src.read(i)
+                dst.write(data, i)
+
+            # Write ratio band
+            dst.write(ratio, src.count + 1)
+            dst.update_tags(src.count + 1, BAND_NAME=ratio_band_name)
