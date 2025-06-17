@@ -12,19 +12,19 @@ from utils.geotiff import add_ratio_band, combine_geotiffs, rename_geotiff_bands
 
 out_folder = '/home/juju/gisco/road_transport_performance/'
 
-for year in ["2021"]:
-    grid_resolution = 1000
+for grid_resolution in ["1000"]:
+    for year in ["2021"]:
 
-    geotiff_ap = out_folder + "accessible_population_" + year + "_" + str(grid_resolution) + "m.tif"
-    geotiff_np = out_folder + "nearby_population_" + year + "_" + str(grid_resolution) + "m.tiff"
-    combined = out_folder + "combined_" + year + "_" + str(grid_resolution) + "m.tif"
+        geotiff_ap = out_folder + "accessible_population_" + year + "_" + grid_resolution + "m.tif"
+        geotiff_np = out_folder + "nearby_population_" + year + "_" + grid_resolution + "m.tiff"
+        combined = out_folder + "combined_" + year + "_" + grid_resolution + "m.tif"
 
-    print("combine geotiff")
-    combine_geotiffs([geotiff_np, geotiff_ap], combined, compress="deflate", dtype=np.int64)
+        print("combine geotiff")
+        combine_geotiffs([geotiff_np, geotiff_ap], combined, compress="deflate", dtype=np.int64)
 
-    print("rename bands")
-    rename_geotiff_bands(combined, [ "np_" + year, "ap_" + year ])
+        print("rename bands")
+        rename_geotiff_bands(combined, [ "np_" + year, "ap_" + year ])
 
-    print("compute ratio")
-    add_ratio_band(combined, "ap_" + year, "np_" + year, ratio_band_name='indic_'+year)
+        print("compute ratio")
+        add_ratio_band(combined, "ap_" + year, "np_" + year, ratio_band_name='indic_'+year)
 
