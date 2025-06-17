@@ -91,6 +91,10 @@ def accessiblity_population(xy,
     del gb_, roads
     if show_detailled_messages: print(datetime.now(), x_part, y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
 
+    # output data
+    grd_ids = [] # the cell identifiers
+    accessible_populations = [] # the values corresponding to the cell identifiers
+
     if len(snappable_nodes) > 0:
 
         if show_detailled_messages: print(datetime.now(), x_part, y_part, "build graph-tool graph")
@@ -141,10 +145,6 @@ def accessiblity_population(xy,
         del graph_id_to_vertex
         del populated_nodes
         del node_pop_dict
-
-        # output data
-        grd_ids = [] # the cell identifiers
-        accessible_populations = [] # the values corresponding to the cell identifiers
 
         # a cache structure, to ensure there is no double computation for some nodes. it could happen, since some cells may snap to a same graph node
         cache = {}
