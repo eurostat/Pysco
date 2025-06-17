@@ -138,8 +138,10 @@ def accessiblity_population(xy,
         for nn in populated_nodes: graph_id_to_vertex[nn] = graph.vertex(node_id_to_index[nn])
 
         # create numpy arrays for lookups
-        populated_vertex_indices = np.array([graph_id_to_vertex[nn] for nn in populated_nodes], dtype=np.int64)
-        populated_pops = np.array([node_pop_dict[nn] for nn in populated_nodes], dtype=np.int64)
+        # 
+        populated_graph_vertex_indices = np.array([graph_id_to_vertex[nn] for nn in populated_nodes], dtype=np.int64)
+        #populated_pops = np.array([node_pop_dict[nn] for nn in populated_nodes], dtype=np.int64)
+        populated_pops = np.array(node_pop_dict.values(), dtype=np.int64)
 
         # clean
         del graph_id_to_vertex
@@ -167,7 +169,7 @@ def accessiblity_population(xy,
 
                 # check if value was not already computed - try to find it in the cache
                 if n in cache:
-                    #print("Node found in cache", n, cache[n])
+                    # no need to compute another time: take cached value
                     accessible_populations.append(cache[n])
                     grd_ids.append(cell_id_fun(x,y))
                     continue
@@ -175,12 +177,12 @@ def accessiblity_population(xy,
                 # get origin node index
                 origin_idx = node_id_to_index[n]
 
-                # compute dijkstra
+                # compute dijkstra from origin, with cutoff
                 #print(datetime.now())
                 dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
                 #print(datetime.now())
 
-                #check node n is reached
+                #check node n is reached. value should be 0. OK
                 #print("origin node:", dist_map[graph.vertex(origin_idx)])
 
                 '''
@@ -198,7 +200,7 @@ def accessiblity_population(xy,
 
                 # compute population sum for reached nodes
                 dist_arr = dist_map.get_array()
-                reachable_mask = dist_arr[populated_vertex_indices] < np.inf
+                reachable_mask = dist_arr[populated_graph_vertex_indices] < np.inf
                 sum_pop = np.sum(populated_pops[reachable_mask])
 
                 # store cell value
