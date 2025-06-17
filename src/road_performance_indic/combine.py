@@ -28,3 +28,5 @@ for grid_resolution in ["1000"]:
         print("compute ratio", year, grid_resolution)
         add_ratio_band(combined, 2, 1, ratio_band_name='indic_'+year)
 
+#TODO difference 2021-2018. directly from qgis ?
+
