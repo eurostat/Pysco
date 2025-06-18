@@ -19,7 +19,10 @@ for service in ["education"]:
 
         file = "/home/juju/gisco/accessibility/euro_access_"+service+"_"+year+"_"+resolution+"m.tif"
         gridtiler_raster.tiling_raster(
-            { "height": {"file":file, "band":service+"_"+year+"_1"} },
+            {
+                service+"_"+year+"_1": {"file":file, "band":1},
+                service+"_"+year+"_a3": {"file":file, "band":2},
+             },
             folder_,
             crs="EPSG:3035",
             tile_size_cell=256,
