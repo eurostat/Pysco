@@ -65,17 +65,15 @@ def tiling():
                     code = service+"_"+year+"_"+indic
                     dict[code] = {"file":folder+service+"_"+str(resolution)+".tif", "band":band}
                     band +=1
-            print(dict)
 
             # launch tiling
-            print("tiling for resolution", resolution)
             gridtiler_raster.tiling_raster(
                 dict,
                 folder_,
                 crs="EPSG:3035",
                 tile_size_cell = 256,
                 format="parquet",
-                num_processors_to_use = 10,
+                num_processors_to_use = 8,
                 )
 
 
