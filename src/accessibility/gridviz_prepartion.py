@@ -49,7 +49,7 @@ def tiling():
 
     for service in ["education", "healthcare"]:
 
-        for f in [1,2,5, 10,20,50, 100,200,500, 1000]:
+        for f in [ 1000, 500, 200, 50, 20, 10, 5, 2, 1 ]:
             resolution = 100 * f
             print("Tiling", service, resolution)
 
