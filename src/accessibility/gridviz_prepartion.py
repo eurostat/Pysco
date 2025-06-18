@@ -72,8 +72,8 @@ def tiling():
 
 
 #print("combine geotiffs")
-#combine("1000")
-#combine("100")
+combine("1000")
+combine("100")
 
 print("aggregate")
 aggregate()
