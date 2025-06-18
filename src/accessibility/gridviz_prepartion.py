@@ -30,6 +30,11 @@ def aggregate():
         print(resolution, f)
         resample_geotiff_aligned(folder+str(resolution)+".tif", folder+str(f*resolution)+".tif", f*resolution, Resampling.med)
 
+    resolution = 100
+    for f in [2, 5]:
+        print(resolution, f)
+        resample_geotiff_aligned(folder+str(resolution)+".tif", folder+str(f*resolution)+".tif", f*resolution, Resampling.med)
+
 
 
 
