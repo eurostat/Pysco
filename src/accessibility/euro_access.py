@@ -116,16 +116,17 @@ for service in ["education", "healthcare"]:
         )
 
         print("apply mask to force some countries to nodata")
+        cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
+                "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
+                "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO"]
+        #exclude: ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
+        if service == "healthcare": cnts.append("CH")
         geotiff_mask_by_countries(
             geotiff,
             geotiff,
             gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
             gpkg_column = 'CNTR_ID',
-            values = [
-                "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
-                "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
-                "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO"],
-            #exclude: ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
+            values = cnts,
             compress="deflate"
         )
 
