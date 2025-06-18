@@ -15,7 +15,7 @@ for service in ["education"]:
     for year in ["2023"]:
 
         folder_ = folder+"tiles/"+service+"_"+year+"_"+resolution+"/"
-        os.makedirs(folder_)
+        if not os.path.exists(folder_): os.makedirs(folder_)
 
         file = "/home/juju/gisco/accessibility/euro_access_"+service+"_"+year+"_"+resolution+"m.tif"
         gridtiler_raster.tiling_raster(
