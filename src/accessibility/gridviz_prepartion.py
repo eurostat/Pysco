@@ -33,8 +33,6 @@ def aggregate():
 
 def tiling():
 
-
-
     resolution = "1000"
     for service in ["education"]:
         for year in ["2023"]:
@@ -54,4 +52,7 @@ def tiling():
                 format="parquet",
                 num_processors_to_use = 10,
                 )
+
+
+combine("1000")
 
