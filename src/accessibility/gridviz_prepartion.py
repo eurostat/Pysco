@@ -1,3 +1,6 @@
+# prepare accessibility grid for gridviz mapping
+
+
 from pygridmap import gridtiler_raster
 import sys
 import os
@@ -7,12 +10,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.geotiff import combine_geotiffs, resample_geotiff_aligned
 
 
+
 f0 = "/home/juju/gisco/accessibility/"
 folder = f0 + "gridviz/"
 if not os.path.exists(folder): os.makedirs(folder)
 
 
-# combine all necessary data into a single geotiff
+# combine all necessary data into a single geotiffs
 def combine(resolution):
     for service in ["education", "healthcare"]:
         # make list of files to combine
@@ -23,30 +27,31 @@ def combine(resolution):
         combine_geotiffs(tiffs, folder+service+"_"+resolution+".tif", compress="deflate")
 
 
-
+# aggregate at various resolutions - average
 def aggregate():
     for service in ["education", "healthcare"]:
 
         resolution = 1000
         for f in [2, 5, 10, 20, 50, 100]:
-            print(resolution, f)
+            print(service, resolution, f)
             resample_geotiff_aligned(folder+service+"_"+str(resolution)+".tif", folder+service+"_"+str(f*resolution)+".tif", f*resolution, Resampling.average)
 
         resolution = 100
         for f in [2, 5]:
-            print(resolution, f)
+            print(service, resolution, f)
             resample_geotiff_aligned(folder+service+"_"+str(resolution)+".tif", folder+service+"_"+str(f*resolution)+".tif", f*resolution, Resampling.average)
 
 
 
 
-
+#TODO: add also population figures !
 def tiling():
 
     for service in ["education", "healthcare"]:
 
         for f in [1,2,5, 10,20,50, 100,200,500, 1000]:
             resolution = 100 * f
+            print("Tiling", service, resolution)
 
             # make folder for resolution
             folder_ = folder+"tiles/"+service+"_"+str(resolution)+"/"
@@ -55,12 +60,11 @@ def tiling():
             # prepare dict for geotiff bands
             dict = {}
             band = 0
-            for service in ["education", "healthcare"]:
-                for year in ["2020", "2023"]:
-                    for indic in ["1", "a3"]:
-                        code = service+"_"+year+"_"+indic
-                        dict[code] = {"file":folder+service+"_"+str(resolution)+".tif", "band":band}
-                        band +=1
+            for year in ["2020", "2023"]:
+                for indic in ["1", "a3"]:
+                    code = service+"_"+year+"_"+indic
+                    dict[code] = {"file":folder+service+"_"+str(resolution)+".tif", "band":band}
+                    band +=1
             print(dict)
 
             # launch tiling
@@ -79,8 +83,9 @@ def tiling():
 #combine("1000")
 #combine("100")
 
-print("aggregate")
-aggregate()
-#TODO fails for 200m aggregation
+#print("aggregate")
+#aggregate()
 
+print("tiling")
+tiling()
 
