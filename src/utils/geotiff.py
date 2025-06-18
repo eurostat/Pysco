@@ -327,7 +327,7 @@ def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling
     """
     Resamples a GeoTIFF to a new resolution (must be a multiple of the original),
     and aligns the origin point to a multiple of the new resolution.
-    
+
     Parameters:
         input_path (str): Path to the input GeoTIFF file.
         output_path (str): Path to save the resampled GeoTIFF.
@@ -337,7 +337,7 @@ def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling
     with rasterio.open(input_path) as src:
         # Original resolution
         original_res_x = src.transform.a
-        original_res_y = -src.transform.e  # negative because Y axis
+        original_res_y = -src.transform.e
 
         # Check that new resolution is a multiple of original
         if new_resolution % original_res_x != 0 or new_resolution % original_res_y != 0:
@@ -379,5 +379,6 @@ def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling
                     src_crs=src.crs,
                     dst_transform=new_transform,
                     dst_crs=src.crs,
-                    resampling=resampling  # or Resampling.nearest
+                    resampling=resampling
                 )
+
