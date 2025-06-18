@@ -6,7 +6,7 @@ def cartesian_product(nb1, nb2):
     return pairs
 
 
-def cartesian_product_comp(minx, miny, maxx, maxy, step):
+def cartesian_product_comp(minx, miny, maxx, maxy, step=1):
     pairs = []
     for x in range(minx, maxx, step):
         for y in range(miny, maxy, step): pairs.append([x, y])

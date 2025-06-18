@@ -73,7 +73,7 @@ def tiling():
                 crs="EPSG:3035",
                 tile_size_cell = 256,
                 format="parquet",
-                num_processors_to_use = 10,
+                num_processors_to_use = 5,
                 )
 
 
