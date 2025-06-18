@@ -41,29 +41,42 @@ def aggregate():
 
 def tiling():
 
-    resolution = "1000"
-    for service in ["education"]:
-        for year in ["2023"]:
+    for f in [1,2,5, 10,20,50, 100,200,500, 1000]:
+        resolution = 100 * f
 
-            folder_ = folder+"tiles/"+service+"_"+year+"_"+resolution+"/"
-            if not os.path.exists(folder_): os.makedirs(folder_)
+        # make folder for resolution
+        folder_ = folder+"tiles/"+str(resolution)+"/"
+        if not os.path.exists(folder_): os.makedirs(folder_)
 
-            file = "/home/juju/gisco/accessibility/euro_access_"+service+"_"+year+"_"+resolution+"m.tif"
-            gridtiler_raster.tiling_raster(
-                {
-                    service+"_"+year+"_1": {"file":file, "band":1},
-                    service+"_"+year+"_a3": {"file":file, "band":2},
-                },
-                folder_,
-                crs="EPSG:3035",
-                tile_size_cell=256,
-                format="parquet",
-                num_processors_to_use = 10,
-                )
+        # prepare dict for geotiff bands
+        dict = {}
+        band = 0
+        for service in ["education", "healthcare"]:
+            for year in ["2020", "2023"]:
+                for indic in ["1", "a3"]:
+                    code = service+"_"+year+"_"+indic
+                    dict[code] = {"file":folder+str(resolution)+".tif", "band":band}
+                    band +=1
+        print(dict)
+
+        # launch tiling
+        print("tiling for resolution", resolution)
+        gridtiler_raster.tiling_raster(
+            dict,
+            folder_,
+            crs="EPSG:3035",
+            tile_size_cell = 256,
+            format="parquet",
+            num_processors_to_use = 10,
+            )
 
 
-# combine geotiff files
+#print("combine geotiffs")
 #combine("1000")
 #combine("100")
 
+print("aggregate")
 aggregate()
+#TODO fails for 200m aggregation
+
+
