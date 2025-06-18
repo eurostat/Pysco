@@ -16,7 +16,7 @@ for grid_resolution in ["1000"]:
     for year in ["2018"]:
 
         geotiff_ap = out_folder + "accessible_population_" + year + "_" + grid_resolution + "m.tif"
-        geotiff_np = out_folder + "nearby_population_" + year + "_" + grid_resolution + "m.tiff"
+        geotiff_np = out_folder + "nearby_population_" + year + "_" + grid_resolution + "m.tif"
         combined = out_folder + "combined_" + year + "_" + grid_resolution + "m.tif"
 
         print("combine geotiff", year, grid_resolution)

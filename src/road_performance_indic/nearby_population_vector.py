@@ -219,7 +219,7 @@ for year in ["2021", "2018"]:
     if len(files)==0: continue
     parquet_grid_to_geotiff(
         files,
-        "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tiff",
+        "/home/juju/gisco/road_transport_performance/nearby_population_"+year+".tif",
         dtype=np.int32,
         compress='deflate',
     )

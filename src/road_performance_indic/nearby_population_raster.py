@@ -155,7 +155,7 @@ for resolution in [1000]: #100
     print("rasterise land mass index")
     rasterise_tesselation_gpkg(
         folder + "land_mass_gridded.gpkg",
-        folder + "land_mass_gridded.tiff",
+        folder + "land_mass_gridded.tif",
         fieldname='code',
         resolution=resolution,
         compression='deflate',
@@ -171,7 +171,7 @@ for resolution in [1000]: #100
         print("convolution (fast)", year)
         circular_kernel_sum(
             pop[year],
-            folder + "nearby_population_"+year+"_"+resolution+"m_fast.tiff",
+            folder + "nearby_population_"+year+"_"+resolution+"m_fast.tif",
             120000,
             rasterio.uint32,
             compress="deflate",
@@ -180,9 +180,9 @@ for resolution in [1000]: #100
         combine_geotiffs(
             [
                 pop[year],
-                folder + "land_mass_gridded.tiff",
+                folder + "land_mass_gridded.tif",
             ],
-            folder + "pop_"+year+"_lmi.tiff",
+            folder + "pop_"+year+"_lmi.tif",
             compress="deflate",
             nodata_value=-9999,
             dtype=np.int64,
@@ -190,8 +190,8 @@ for resolution in [1000]: #100
         
         print("compute convolution")
         circular_kernel_sum_per_code(
-            folder + "pop_"+year+"_lmi.tiff",
-            folder + "nearby_population_"+year+"_"+resolution+"m.tiff",
+            folder + "pop_"+year+"_lmi.tif",
+            folder + "nearby_population_"+year+"_"+resolution+"m.tif",
             radius_m=120000,
             dtype=rasterio.int64,
             compress="deflate",

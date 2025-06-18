@@ -14,13 +14,13 @@ if not os.path.exists(folder): os.makedirs(folder)
 
 # combine all necessary data into a single geotiff
 def combine(resolution):
-    # make list of files to combine
-    tiffs = []
     for service in ["education", "healthcare"]:
+        # make list of files to combine
+        tiffs = []
         for year in ["2020", "2023"]:
             tiffs.append( f0 + "euro_access_"+service+"_"+year+"_"+resolution+"m.tif" )
-    # combine files
-    combine_geotiffs(tiffs, folder+resolution+".tif", compress="deflate")
+        # combine files
+        combine_geotiffs(tiffs, folder+service+"_"+resolution+".tif", compress="deflate")
 
 
 
@@ -71,8 +71,8 @@ def tiling():
             )
 
 
-#print("combine geotiffs")
-combine("1000")
+print("combine geotiffs")
+#combine("1000")
 combine("100")
 
 print("aggregate")
