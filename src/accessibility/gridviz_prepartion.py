@@ -49,7 +49,7 @@ def tiling():
 
     for service in ["education", "healthcare"]:
 
-        for f in [1,2,5, 10,20,50, 100,200,500, 1000]:
+        for f in [1000]: #[1,2,5, 10,20,50, 100,200,500, 1000]:
             resolution = 100 * f
             print("Tiling", service, resolution)
 
@@ -59,7 +59,7 @@ def tiling():
 
             # prepare dict for geotiff bands
             dict = {}
-            band = 0
+            band = 1
             for year in ["2020", "2023"]:
                 for indic in ["1", "a3"]:
                     code = service+"_"+year+"_"+indic
