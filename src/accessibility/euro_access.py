@@ -24,7 +24,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
 # fixed parameters
-grid_resolution = 1000
+grid_resolution = 100
 detailled_network_decomposition = grid_resolution == 100
 densification_distance = grid_resolution
 cell_network_max_distance = grid_resolution * 2
