@@ -62,8 +62,7 @@ def tiling():
             band = 1
             for year in ["2020", "2023"]:
                 for indic in ["1", "a3"]:
-                    code = service+"_"+year+"_"+indic
-                    dict[code] = {"file":folder+service+"_"+str(resolution)+".tif", "band":band}
+                    dict[indic + "_" + year] = {"file":folder+service+"_"+str(resolution)+".tif", "band":band}
                     band +=1
 
             # launch tiling
