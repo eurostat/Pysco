@@ -1,9 +1,10 @@
 from pygridmap import gridtiler_raster
 import sys
 import os
+from rasterio.enums import Resampling
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.geotiff import combine_geotiffs
+from utils.geotiff import combine_geotiffs, resample_geotiff_aligned
 
 
 f0 = "/home/juju/gisco/accessibility/"
@@ -24,9 +25,10 @@ def combine(resolution):
 
 
 def aggregate():
-    resample_geotiff_aligned()
+    resolution = 1000
+    for f in [2, 5, 10, 20, 50, 100]:
+        resample_geotiff_aligned(folder+str(resolution)+".tif", folder+str(f*resolution)+".tif", f*resolution, Resampling.mode)
 
-    #file = "/home/juju/gisco/accessibility/euro_access_"+service+"_"+year+"_"+resolution+"m.tif"
 
 
 
