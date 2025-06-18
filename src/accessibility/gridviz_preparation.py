@@ -49,7 +49,7 @@ def tiling():
 
     for service in ["education", "healthcare"]:
 
-        for f in [2,1]: #[ 1000, 500, 200, 50, 20, 10, 5, 2, 1 ]:
+        for f in [ 1000, 500, 200, 50, 20, 10, 5, 2, 1 ]:
             resolution = 100 * f
             print("Tiling", service, resolution)
 
@@ -73,7 +73,7 @@ def tiling():
                 crs="EPSG:3035",
                 tile_size_cell = 256,
                 format="parquet",
-                num_processors_to_use = 5,
+                num_processors_to_use = 10,
                 )
 
 
