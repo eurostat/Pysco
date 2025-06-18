@@ -314,7 +314,7 @@ def population_grid_loader_2018(bbox): return iter_features("/home/juju/geodata/
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 
 
-for year in ["2021", "2018"]:
+for year in ["2018"]:
 
     # ouput folder
     out_folder_year = out_folder + "out_" + year + "_" + str(grid_resolution) + "m/"
@@ -353,7 +353,7 @@ for year in ["2021", "2018"]:
     geotiff = out_folder + "accessible_population_" + year + "_" + str(grid_resolution) + "m.tif"
 
     # check if tiff file was already produced
-    if os.path.isfile(geotiff): continue
+    #if os.path.isfile(geotiff): continue
 
     # get all parquet files in the output folder
     files = [os.path.join(out_folder_year, f) for f in os.listdir(out_folder_year) if f.endswith('.parquet')]
