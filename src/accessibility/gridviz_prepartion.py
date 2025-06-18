@@ -25,15 +25,17 @@ def combine(resolution):
 
 
 def aggregate():
-    resolution = 1000
-    for f in [2, 5, 10, 20, 50, 100]:
-        print(resolution, f)
-        resample_geotiff_aligned(folder+str(resolution)+".tif", folder+str(f*resolution)+".tif", f*resolution, Resampling.average)
+    for service in ["education", "healthcare"]:
 
-    resolution = 100
-    for f in [2, 5]:
-        print(resolution, f)
-        resample_geotiff_aligned(folder+str(resolution)+".tif", folder+str(f*resolution)+".tif", f*resolution, Resampling.average)
+        resolution = 1000
+        for f in [2, 5, 10, 20, 50, 100]:
+            print(resolution, f)
+            resample_geotiff_aligned(folder+service+"_"+str(resolution)+".tif", folder+service+"_"+str(f*resolution)+".tif", f*resolution, Resampling.average)
+
+        resolution = 100
+        for f in [2, 5]:
+            print(resolution, f)
+            resample_geotiff_aligned(folder+service+"_"+str(resolution)+".tif", folder+service+"_"+str(f*resolution)+".tif", f*resolution, Resampling.average)
 
 
 
@@ -41,39 +43,41 @@ def aggregate():
 
 def tiling():
 
-    for f in [1,2,5, 10,20,50, 100,200,500, 1000]:
-        resolution = 100 * f
+    for service in ["education", "healthcare"]:
 
-        # make folder for resolution
-        folder_ = folder+"tiles/"+str(resolution)+"/"
-        if not os.path.exists(folder_): os.makedirs(folder_)
+        for f in [1,2,5, 10,20,50, 100,200,500, 1000]:
+            resolution = 100 * f
 
-        # prepare dict for geotiff bands
-        dict = {}
-        band = 0
-        for service in ["education", "healthcare"]:
-            for year in ["2020", "2023"]:
-                for indic in ["1", "a3"]:
-                    code = service+"_"+year+"_"+indic
-                    dict[code] = {"file":folder+str(resolution)+".tif", "band":band}
-                    band +=1
-        print(dict)
+            # make folder for resolution
+            folder_ = folder+"tiles/"+service+"_"+str(resolution)+"/"
+            if not os.path.exists(folder_): os.makedirs(folder_)
 
-        # launch tiling
-        print("tiling for resolution", resolution)
-        gridtiler_raster.tiling_raster(
-            dict,
-            folder_,
-            crs="EPSG:3035",
-            tile_size_cell = 256,
-            format="parquet",
-            num_processors_to_use = 10,
-            )
+            # prepare dict for geotiff bands
+            dict = {}
+            band = 0
+            for service in ["education", "healthcare"]:
+                for year in ["2020", "2023"]:
+                    for indic in ["1", "a3"]:
+                        code = service+"_"+year+"_"+indic
+                        dict[code] = {"file":folder+service+"_"+str(resolution)+".tif", "band":band}
+                        band +=1
+            print(dict)
+
+            # launch tiling
+            print("tiling for resolution", resolution)
+            gridtiler_raster.tiling_raster(
+                dict,
+                folder_,
+                crs="EPSG:3035",
+                tile_size_cell = 256,
+                format="parquet",
+                num_processors_to_use = 10,
+                )
 
 
-print("combine geotiffs")
+#print("combine geotiffs")
 #combine("1000")
-combine("100")
+#combine("100")
 
 print("aggregate")
 aggregate()
