@@ -47,10 +47,11 @@ def aggregate():
 #TODO: add also population figures !
 def tiling():
 
-    for service in ["education", "healthcare"]:
+    for f in [ 1000, 500, 200, 50, 20, 10, 5, 2, 1 ]:
+        resolution = 100 * f
 
-        for f in [ 1000, 500, 200, 50, 20, 10, 5, 2, 1 ]:
-            resolution = 100 * f
+        for service in ["education", "healthcare"]:
+
             print("Tiling", service, resolution)
 
             # make folder for resolution
