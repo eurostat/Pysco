@@ -27,6 +27,7 @@ def combine(resolution):
 def aggregate():
     resolution = 1000
     for f in [2, 5, 10, 20, 50, 100]:
+        print(resolution, f)
         resample_geotiff_aligned(folder+str(resolution)+".tif", folder+str(f*resolution)+".tif", f*resolution, Resampling.mode)
 
 
@@ -57,6 +58,7 @@ def tiling():
 
 
 # combine geotiff files
-combine("1000")
-combine("100")
+#combine("1000")
+#combine("100")
 
+aggregate()
