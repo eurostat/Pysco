@@ -19,7 +19,7 @@ def combine(resolution):
         for year in ["2020", "2023"]:
             tiffs.append( f0 + "euro_access_"+service+"_"+year+"_"+resolution+"m.tif" )
     # combine files
-    combine_geotiffs(tiffs, folder+resolution+"tiff", compress="deflate")
+    combine_geotiffs(tiffs, folder+resolution+".tif", compress="deflate")
 
 
 
@@ -54,5 +54,7 @@ def tiling():
                 )
 
 
+# combine geotiff files
 combine("1000")
+combine("100")
 

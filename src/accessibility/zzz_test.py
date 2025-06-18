@@ -9,6 +9,9 @@ from utils.geotiff import rename_geotiff_bands
 from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
 
+#TODO add missing countries (DE) from internal data
+#TODO check discontinuities ! SE, etc.
+#TODO simplify - one file per parall process
 #check: FEATTYP=4110 FRC 0 to 6
 #TODO healthcare: new 2023 with new EL
 
