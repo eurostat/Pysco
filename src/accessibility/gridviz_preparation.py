@@ -48,7 +48,7 @@ def aggregate_population():
     for f in [2, 5, 10]:
         resolution = 100 * f
         print("aggregate population", resolution)
-        resample_geotiff_aligned(folder+"pop_2021_100.tif", folder+"pop_2021_"+str(resolution)+".tif", resolution, Resampling.sum, dtype=np.int64)
+        resample_geotiff_aligned("/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox_c.tif", folder+"pop_2021_"+str(resolution)+".tif", resolution, Resampling.sum, dtype=np.int64)
     for f in [2, 5, 10]:
         resolution = 1000 * f
         print("aggregate population", resolution)
@@ -102,10 +102,9 @@ def tiling():
 #aggregate()
 
 print("aggregate population")
-#extend_crop_bounding_box("/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m.tif", ( 900000, 900000, 6600000, 5500000 ), folder+"pop_2021_100.tif")
 aggregate_population()
 
 
-#print("tiling")
-#tiling()
+print("tiling")
+tiling()
 
