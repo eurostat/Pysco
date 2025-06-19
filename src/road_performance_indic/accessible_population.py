@@ -324,7 +324,7 @@ for year in ["2018"]:
     #TODO take right tomtom version
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
 
-    if True:
+    if False:
         accessiblity_population_parallel(
                             road_network_loader,
                             population_grid_loader_2021 if year == "2021" else population_grid_loader_2018,
