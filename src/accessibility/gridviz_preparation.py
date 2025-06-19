@@ -81,7 +81,7 @@ def tiling():
                 for indic in ["1", "a3"]:
                     dict["dt_" + indic + "_" + year] = {"file":folder+service+"_"+str(resolution)+".tif", "band":band}
                     band +=1
-                dict.POP_2021 = { "file":folder+"pop_2021_"+str(resolution)+".tif", "band":0 }
+                dict["POP_2021"] = { "file":folder+"pop_2021_"+str(resolution)+".tif", "band":0 }
 
             # launch tiling
             gridtiler_raster.tiling_raster(
@@ -100,10 +100,10 @@ def tiling():
 
 #print("aggregate")
 #aggregate()
-aggregate_population()
+#aggregate_population()
 
 
 
 print("tiling")
-#tiling()
+tiling()
 
