@@ -2,7 +2,8 @@ from math import ceil, floor
 import rasterio
 from rasterio.transform import from_bounds, Affine, from_origin
 from rasterio.windows import from_bounds as window_from_bounds
-from rasterio.enums import Resampling, reproject
+from rasterio.enums import Resampling
+from rasterio.warp import reproject
 from rasterio.features import rasterize
 import numpy as np
 import os
@@ -386,46 +387,4 @@ def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling
                     dtype=dtype
                 )
 
-
-
-
-def extend_crop_bounding_box(input_file_path, output_file_path, new_bbox):
-    # Open the input file
-    with rasterio.open(input_file_path) as src:
-        # Read the metadata and data from the input file
-        meta = src.meta.copy()
-        data = src.read()
-
-        # Determine the nodata value
-        nodata = src.nodata
-        if nodata is None:
-            nodata = 0  # Default nodata value if not specified
-
-        # Calculate the transform for the new bounding box
-        transform = from_bounds(*new_bbox, meta['width'], meta['height'])
-
-        # Update the metadata for the output file
-        meta.update({
-            'height': meta['height'],
-            'width': meta['width'],
-            'transform': transform,
-            'nodata': nodata
-        })
-
-        # Create an empty array for the output data with nodata values
-        output_data = src.read(1) * 0 + nodata
-
-        # Reproject the data to the new bounding box
-        reproject(
-            source=data,
-            destination=output_data,
-            src_transform=src.transform,
-            src_crs=src.crs,
-            dst_transform=transform,
-            dst_crs=src.crs,
-            resampling=Resampling.nearest)
-
-    # Write the output file
-    with rasterio.open(output_file_path, 'w', **meta) as dst:
-        dst.write(output_data, 1)
 

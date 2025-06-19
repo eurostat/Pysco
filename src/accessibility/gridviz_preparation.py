@@ -8,7 +8,7 @@ import os
 from rasterio.enums import Resampling
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.geotiff import combine_geotiffs, resample_geotiff_aligned, extend_crop_bounding_box
+from utils.geotiff import combine_geotiffs, resample_geotiff_aligned #extend_crop_bounding_box
 
 
 
@@ -102,7 +102,7 @@ def tiling():
 #aggregate()
 
 print("aggregate population")
-extend_crop_bounding_box("/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m.tif", ( 900000, 900000, 6600000, 5500000 ), folder+"pop_2021_100.tif")
+#extend_crop_bounding_box("/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m.tif", ( 900000, 900000, 6600000, 5500000 ), folder+"pop_2021_100.tif")
 aggregate_population()
 
 
