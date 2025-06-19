@@ -47,7 +47,7 @@ def aggregate():
 #TODO: add also population figures !
 def tiling():
 
-    for f in [ 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1 ]:
+    for f in [ 1000, 500, 200, 100, 50, 20, 10, 5, 2 ]: #, 1
         resolution = 100 * f
 
         for service in ["education", "healthcare"]:
@@ -63,7 +63,7 @@ def tiling():
             band = 1
             for year in ["2020", "2023"]:
                 for indic in ["1", "a3"]:
-                    dict[indic + "_" + year] = {"file":folder+service+"_"+str(resolution)+".tif", "band":band}
+                    dict["dt_" + indic + "_" + year] = {"file":folder+service+"_"+str(resolution)+".tif", "band":band}
                     band +=1
 
             # launch tiling
