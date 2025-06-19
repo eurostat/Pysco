@@ -390,7 +390,7 @@ def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling
 
 
 
-def reproject_geotiff_to_new_bbox(input_path, new_bbox, output_path):
+def extend_crop_bounding_box(input_path, new_bbox, output_path):
     """
     Create a new GeoTIFF with a new bounding box, filling extra areas with nodata.
 
