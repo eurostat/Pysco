@@ -63,7 +63,7 @@ def aggregate_population():
 
 def tiling():
 
-    for f in [ 1000 ]: #, 500, 200, 100, 50, 20, 10, 5, 2, 1 ]: #, 1
+    for f in [ 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1 ]: #, 1
         resolution = 100 * f
 
         for service in ["education", "healthcare"]:
@@ -101,8 +101,8 @@ def tiling():
 #print("aggregate")
 #aggregate()
 
-print("aggregate population")
-aggregate_population()
+#print("aggregate population")
+#aggregate_population()
 
 
 print("tiling")
