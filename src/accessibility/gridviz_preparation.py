@@ -63,7 +63,7 @@ def aggregate_population():
 
 def tiling():
 
-    for f in [ 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1 ]: #, 1
+    for f in [ 1000 ]: #, 500, 200, 100, 50, 20, 10, 5, 2, 1 ]: #, 1
         resolution = 100 * f
 
         for service in ["education", "healthcare"]:
@@ -81,7 +81,7 @@ def tiling():
                 for indic in ["1", "a3"]:
                     dict["dt_" + indic + "_" + year] = {"file":folder+service+"_"+str(resolution)+".tif", "band":band}
                     band +=1
-                dict["POP_2021"] = { "file":folder+"pop_2021_"+str(resolution)+".tif", "band":0 }
+                dict["POP_2021"] = { "file":folder+"pop_2021_"+str(resolution)+".tif", "band":1 }
 
             # launch tiling
             gridtiler_raster.tiling_raster(

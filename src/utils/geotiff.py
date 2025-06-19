@@ -1,6 +1,6 @@
 from math import ceil, floor
 import rasterio
-from rasterio.transform import from_bounds, Affine
+from rasterio.transform import from_bounds, Affine, from_origin
 from rasterio.windows import from_bounds as window_from_bounds
 from rasterio.enums import Resampling
 from rasterio.features import rasterize
@@ -387,3 +387,72 @@ def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling
                     dtype=dtype
                 )
 
+
+
+
+def reproject_geotiff_to_new_bbox(input_path, new_bbox, output_path):
+    """
+    Create a new GeoTIFF with a new bounding box, filling extra areas with nodata.
+
+    Parameters:
+        input_path (str): Path to the input GeoTIFF.
+        new_bbox (tuple): New bounding box as (minx, miny, maxx, maxy).
+        output_path (str): Path to save the output GeoTIFF.
+    """
+    with rasterio.open(input_path) as src:
+        old_transform = src.transform
+        pixel_width, pixel_height = old_transform.a, -old_transform.e
+        nodata = src.nodata if src.nodata is not None else np.nan
+
+        # Compute new raster dimensions
+        new_minx, new_miny, new_maxx, new_maxy = new_bbox
+        new_width = int(np.ceil((new_maxx - new_minx) / pixel_width))
+        new_height = int(np.ceil((new_maxy - new_miny) / pixel_height))
+
+        new_transform = from_origin(new_minx, new_maxy, pixel_width, pixel_height)
+
+        # Prepare output metadata
+        out_meta = src.meta.copy()
+        out_meta.update({
+            "height": new_height,
+            "width": new_width,
+            "transform": new_transform,
+            "nodata": nodata
+        })
+
+        # Create empty output raster
+        with rasterio.open(output_path, "w", **out_meta) as dst:
+            for i in range(1, src.count + 1):
+                # Initialize with nodata
+                data = np.full((new_height, new_width), nodata, dtype=src.dtypes[i-1])
+
+                # Compute window intersection between old and new bbox
+                window = from_bounds(
+                    max(new_minx, src.bounds.left),
+                    max(new_miny, src.bounds.bottom),
+                    min(new_maxx, src.bounds.right),
+                    min(new_maxy, src.bounds.top),
+                    transform=src.transform
+                ).round_offsets().round_lengths()
+
+                if window.width > 0 and window.height > 0:
+                    # Read data from source
+                    src_data = src.read(i, window=window)
+
+                    # Compute destination window
+                    dest_window = from_bounds(
+                        src.xy(window.row_off, window.col_off)[0],
+                        src.xy(window.row_off + window.height, window.col_off + window.width)[1],
+                        src.xy(window.row_off + window.height, window.col_off + window.width)[0],
+                        src.xy(window.row_off, window.col_off + window.width)[1],
+                        transform=new_transform
+                    ).round_offsets().round_lengths()
+
+                    # Write to appropriate position in destination array
+                    data[
+                        int(dest_window.row_off):int(dest_window.row_off + dest_window.height),
+                        int(dest_window.col_off):int(dest_window.col_off + dest_window.width)
+                    ] = src_data
+
+                # Write band to output
+                dst.write(data, i)
