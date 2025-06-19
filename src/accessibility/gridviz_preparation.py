@@ -42,6 +42,14 @@ def aggregate():
             resample_geotiff_aligned(folder+service+"_"+str(resolution)+".tif", folder+service+"_"+str(f*resolution)+".tif", f*resolution, Resampling.average)
 
 
+# aggregate 
+def aggregate_population():
+    for f in [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]:
+        resolution = 100 * f
+        print("aggregate population", resolution)
+        resample_geotiff_aligned("/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m.tif", folder+"pop_2021_"+str(resolution)+".tif", resolution, Resampling.sum)
+
+
 
 
 #TODO: add also population figures !
@@ -65,6 +73,8 @@ def tiling():
                 for indic in ["1", "a3"]:
                     dict["dt_" + indic + "_" + year] = {"file":folder+service+"_"+str(resolution)+".tif", "band":band}
                     band +=1
+                if resolution == 1000:
+                    dict.POP_2021 = { "file":folder+"pop_2021_"+str(resolution)+".tif", "band":0 }
 
             # launch tiling
             gridtiler_raster.tiling_raster(
@@ -83,6 +93,9 @@ def tiling():
 
 #print("aggregate")
 #aggregate()
+aggregate_population()
+
+
 
 print("tiling")
 tiling()
