@@ -1,6 +1,7 @@
 # prepare accessibility grid for gridviz mapping
 
 
+import numpy as np
 from pygridmap import gridtiler_raster
 import sys
 import os
@@ -44,10 +45,18 @@ def aggregate():
 
 # aggregate 
 def aggregate_population():
-    for f in [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]:
+    for f in [1, 2, 5, 10]:
         resolution = 100 * f
         print("aggregate population", resolution)
-        resample_geotiff_aligned("/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m.tif", folder+"pop_2021_"+str(resolution)+".tif", resolution, Resampling.sum)
+        resample_geotiff_aligned("/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m.tif", folder+"pop_2021_"+str(resolution)+".tif", resolution, Resampling.sum, dtype=np.int64)
+    for f in [2, 5, 10]:
+        resolution = 1000 * f
+        print("aggregate population", resolution)
+        resample_geotiff_aligned(folder+"pop_2021_1000.tif", folder+"pop_2021_"+str(resolution)+".tif", resolution, Resampling.sum, dtype=np.int64)
+    for f in [2, 5, 10]:
+        resolution = 10000 * f
+        print("aggregate population", resolution)
+        resample_geotiff_aligned(folder+"pop_2021_10000.tif", folder+"pop_2021_"+str(resolution)+".tif", resolution, Resampling.sum, dtype=np.int64)
 
 
 
@@ -72,8 +81,7 @@ def tiling():
                 for indic in ["1", "a3"]:
                     dict["dt_" + indic + "_" + year] = {"file":folder+service+"_"+str(resolution)+".tif", "band":band}
                     band +=1
-                if resolution == 1000:
-                    dict.POP_2021 = { "file":folder+"pop_2021_"+str(resolution)+".tif", "band":0 }
+                dict.POP_2021 = { "file":folder+"pop_2021_"+str(resolution)+".tif", "band":0 }
 
             # launch tiling
             gridtiler_raster.tiling_raster(
@@ -97,5 +105,5 @@ aggregate_population()
 
 
 print("tiling")
-tiling()
+#tiling()
 

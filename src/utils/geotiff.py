@@ -323,7 +323,7 @@ def add_ratio_band(input_path, numerator_band, denominator_band, ratio_band_name
 
 
 
-def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling=Resampling.average):
+def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling=Resampling.average, dtype=np.float64):
     """
     Resamples a GeoTIFF to a new resolution (must be a multiple of the original),
     and aligns the origin point to a multiple of the new resolution.
@@ -370,6 +370,10 @@ def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling
             'transform': new_transform
         })
 
+        if dtype is not None:
+            profile.update({ 'dtype': dtype })
+
+
         with rasterio.open(output_path, 'w', **profile) as dst:
             for i in range(1, src.count + 1):
                 rasterio.warp.reproject(
@@ -379,6 +383,7 @@ def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling
                     src_crs=src.crs,
                     dst_transform=new_transform,
                     dst_crs=src.crs,
-                    resampling=resampling
+                    resampling=resampling,
+                    dtype=dtype
                 )
 
