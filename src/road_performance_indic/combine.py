@@ -17,7 +17,7 @@ for grid_resolution in ["1000"]:
 
         geotiff_ap = out_folder + "accessible_population_" + year + "_" + grid_resolution + "m.tif"
         geotiff_np = out_folder + "nearby_population_" + year + "_" + grid_resolution + "m.tif"
-        combined = out_folder + "combined_" + year + "_" + grid_resolution + "m.tif"
+        combined = out_folder + "road_performance_" + year + "_" + grid_resolution + "m.tif"
 
         print("combine geotiff", year, grid_resolution)
         combine_geotiffs([geotiff_np, geotiff_ap], combined, compress="deflate", dtype=np.int64)
