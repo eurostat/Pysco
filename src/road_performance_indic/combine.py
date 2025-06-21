@@ -26,7 +26,7 @@ for grid_resolution in ["1000"]:
 
         # check if tiff file was already produced
         # combine parquet files to a single tiff file
-        if not os.path.isfile(geotiff_ap):
+        if True: #not os.path.isfile(geotiff_ap):
 
             # get all parquet files in the output folder
             files = [os.path.join(out_folder_year, f) for f in os.listdir(out_folder_year) if f.endswith('.parquet')]

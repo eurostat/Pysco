@@ -8,7 +8,7 @@ import os
 from rasterio.enums import Resampling
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.geotiff import combine_geotiffs, resample_geotiff_aligned #extend_crop_bounding_box
+from utils.geotiff import combine_geotiffs, resample_geotiff_aligned
 
 
 
