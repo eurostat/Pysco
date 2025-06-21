@@ -9,9 +9,7 @@ import graph_tool.all as gt
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.geotiff import geotiff_mask_by_countries
 from utils.utils import cartesian_product_comp
-from utils.convert import parquet_grid_to_geotiff
 from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_to_node, nodes_spatial_index_adjacendy_list
 from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function
 from utils.featureutils import iter_features
@@ -324,61 +322,26 @@ for year in ["2018"]:
     #TODO take right tomtom version
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
 
-    if True:
-        accessiblity_population_parallel(
-                            road_network_loader,
-                            population_grid_loader_2021 if year == "2021" else population_grid_loader_2018,
-                            'T' if year == "2021" else "TOT_P_2018",
-                            bbox = bbox,
-                            out_folder = out_folder_year,
-                            duration_s = duration_s,
-                            weight_function = weight_function,
-                            direction_fun = direction_fun,
-                            is_not_snappable_fun = is_not_snappable_fun,
-                            initial_node_level_fun = initial_node_level_fun,
-                            final_node_level_fun = final_node_level_fun,
-                            cell_id_fun = cell_id_fun,
-                            grid_resolution = grid_resolution,
-                            cell_network_max_distance = grid_resolution * 2,
-                            file_size = file_size,
-                            extention_buffer = extention_buffer,
-                            detailled = detailled,
-                            densification_distance = densification_distance,
-                            num_processors_to_use = num_processors_to_use,
-                            shuffle = shuffle,
-                            show_detailled_messages = show_detailled_messages,
-                            )
-
-    # combine parquet files to a single tiff file
-    geotiff = out_folder + "accessible_population_" + year + "_" + str(grid_resolution) + "m.tif"
-
-    # check if tiff file was already produced
-    #if os.path.isfile(geotiff): continue
-
-    # get all parquet files in the output folder
-    files = [os.path.join(out_folder_year, f) for f in os.listdir(out_folder_year) if f.endswith('.parquet')]
-    if len(files)==0: continue
-
-    print("transforming", len(files), "parquet files into tif for", year)
-    parquet_grid_to_geotiff(
-        files,
-        geotiff,
-        bbox = bbox,
-        dtype=np.int32,
-        compress='deflate'
-    )
-
-    print("apply mask to force some countries to nodata")
-    geotiff_mask_by_countries(
-        geotiff,
-        geotiff,
-        gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
-        gpkg_column = 'CNTR_ID',
-        values = [
-            "AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
-            "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
-            "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO", "CH"],
-        #exclude: ["RS", "BA", "MK", "AL", "ME", "MD"],
-        compress="deflate"
-    )
-
+    accessiblity_population_parallel(
+                        road_network_loader,
+                        population_grid_loader_2021 if year == "2021" else population_grid_loader_2018,
+                        'T' if year == "2021" else "TOT_P_2018",
+                        bbox = bbox,
+                        out_folder = out_folder_year,
+                        duration_s = duration_s,
+                        weight_function = weight_function,
+                        direction_fun = direction_fun,
+                        is_not_snappable_fun = is_not_snappable_fun,
+                        initial_node_level_fun = initial_node_level_fun,
+                        final_node_level_fun = final_node_level_fun,
+                        cell_id_fun = cell_id_fun,
+                        grid_resolution = grid_resolution,
+                        cell_network_max_distance = grid_resolution * 2,
+                        file_size = file_size,
+                        extention_buffer = extention_buffer,
+                        detailled = detailled,
+                        densification_distance = densification_distance,
+                        num_processors_to_use = num_processors_to_use,
+                        shuffle = shuffle,
+                        show_detailled_messages = show_detailled_messages,
+                        )
