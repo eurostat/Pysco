@@ -9,10 +9,10 @@ from utils.geotiff import resample_geotiff_aligned
 
 input_tiff_2018 = "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean_new_bbox.tif"
 input_tiff_2021 = "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox.tif"
-folder = "/home/juju/geodata/census/2021/aggregated_tiff/"
 
 def aggregate_population_2021():
     year = "2021"
+    folder = "/home/juju/geodata/census/"+year+"/aggregated_tiff/"
     for f in [1, 2, 5, 10]:
         resolution = 100 * f
         print("aggregate population", resolution)
@@ -29,6 +29,7 @@ def aggregate_population_2021():
 
 def aggregate_population_2018():
     year = "2018"
+    folder = "/home/juju/geodata/census/"+year+"/aggregated_tiff/"
     for f in [1, 2, 5, 10]:
         resolution = 1000 * f
         print("aggregate population", resolution)

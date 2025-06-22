@@ -20,6 +20,6 @@ tiff = folder + "road_performance_"+year+"_1000m.tif"
 
 
 # population
-folder_pop = "/home/juju/geodata/census/"+year+"/aggregated_tiff"
-# TODO produce for 2018
+resolution = 1000
+pop_file = "/home/juju/geodata/census/"+year+"/aggregated_tiff/pop_"+year+"_"+resolution+".tif"
 
