@@ -26,3 +26,6 @@ def aggregate_population():
         print("aggregate population", resolution)
         resample_geotiff_aligned(folder+"pop_2021_10000.tif", folder+"pop_2021_"+str(resolution)+".tif", resolution, Resampling.sum, dtype=np.int64)
 
+print("aggregate population")
+aggregate_population()
+

@@ -83,10 +83,6 @@ def tiling():
 #print("aggregate")
 #aggregate()
 
-#print("aggregate population")
-#aggregate_population()
-
-
 print("tiling")
 tiling()
 
