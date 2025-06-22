@@ -23,12 +23,12 @@ def aggregate():
                     f0 + "nearby_population_" + year + "_1000m.tif",
                     folder+indicator+"_" +year+"_"+str(resolution)+".tif",
                     resolution, Resampling.average)
-            np = folder+"nearby_population"+"_" +year+"_"+str(resolution)+".tif"
+            np_ = folder+"nearby_population"+"_" +year+"_"+str(resolution)+".tif"
             ap = folder+"accessible_population"+"_" +year+"_"+str(resolution)+".tif"
             rp = folder+"road_performance"+"_" +year+"_"+str(resolution)+".tif"
-            combine_geotiffs([np, ap], rp, compress="deflate", dtype=np.int64)
+            combine_geotiffs([np_, ap], rp, compress="deflate", dtype=np.int64)
             add_ratio_band(rp, 2, 1)
-            os.remove(np)
+            os.remove(np_)
             os.remove(ap)
 
 
