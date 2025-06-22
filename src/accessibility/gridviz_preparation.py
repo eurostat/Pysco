@@ -43,24 +43,6 @@ def aggregate():
             resample_geotiff_aligned(folder+service+"_"+str(resolution)+".tif", folder+service+"_"+str(f*resolution)+".tif", f*resolution, Resampling.average)
 
 
-# aggregate 
-def aggregate_population():
-    for f in [2, 5, 10]:
-        resolution = 100 * f
-        print("aggregate population", resolution)
-        resample_geotiff_aligned("/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox.tif", folder+"pop_2021_"+str(resolution)+".tif", resolution, Resampling.sum, dtype=np.int64)
-    for f in [2, 5, 10]:
-        resolution = 1000 * f
-        print("aggregate population", resolution)
-        resample_geotiff_aligned(folder+"pop_2021_1000.tif", folder+"pop_2021_"+str(resolution)+".tif", resolution, Resampling.sum, dtype=np.int64)
-    for f in [2, 5, 10]:
-        resolution = 10000 * f
-        print("aggregate population", resolution)
-        resample_geotiff_aligned(folder+"pop_2021_10000.tif", folder+"pop_2021_"+str(resolution)+".tif", resolution, Resampling.sum, dtype=np.int64)
-
-
-
-
 def tiling():
 
     for f in [ 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1 ]: #, 1
