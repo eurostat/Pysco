@@ -7,11 +7,12 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.geotiff import resample_geotiff_aligned
 
+# for 2021
 input_tiff = "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox.tif"
 folder = "/home/juju/geodata/census/2021/aggregated_tiff"
 
 
-# aggregate 
+# aggregate pop geotiff
 def aggregate_population():
     for f in [2, 5, 10]:
         resolution = 100 * f
