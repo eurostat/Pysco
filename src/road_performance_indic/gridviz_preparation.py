@@ -14,3 +14,12 @@ folder = f0 + "gridviz/"
 if not os.path.exists(folder): os.makedirs(folder)
 
 
+folder = "/home/juju/gisco/road_transport_performance/"
+year = "2021"
+tiff = folder + "road_performance_"+year+"_1000m.tif"
+
+
+# population
+folder_pop = "/home/juju/geodata/census/"+year+"/aggregated_tiff"
+# TODO produce for 2018
+
