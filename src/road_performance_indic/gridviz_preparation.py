@@ -44,6 +44,6 @@ def tiling():
             pop_file = "/home/juju/geodata/census/"+year+"/aggregated_tiff/pop_"+year+"_"+resolution+".tif"
 
 
-#aggregate()
-tiling()
+aggregate()
+#tiling()
 
