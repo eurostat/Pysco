@@ -1,7 +1,6 @@
 # prepare accessibility grid for gridviz mapping
 
 
-import numpy as np
 from pygridmap import gridtiler_raster
 import sys
 import os
@@ -16,6 +15,7 @@ f0 = "/home/juju/gisco/accessibility/"
 folder = f0 + "gridviz/"
 if not os.path.exists(folder): os.makedirs(folder)
 
+folder_pop_tiff = "/home/juju/geodata/census/2021/aggregated_tiff/"
 
 # combine all necessary data into a single geotiffs
 def combine(resolution):
@@ -63,7 +63,7 @@ def tiling():
                 for indic in ["1", "a3"]:
                     dict["dt_" + indic + "_" + year] = {"file":folder+service+"_"+str(resolution)+".tif", "band":band}
                     band +=1
-                dict["POP_2021"] = { "file":folder+"pop_2021_"+str(resolution)+".tif", "band":1 }
+                dict["POP_2021"] = { "file":folder_pop_tiff+"pop_2021_"+str(resolution)+".tif", "band":1 }
 
             # launch tiling
             gridtiler_raster.tiling_raster(
