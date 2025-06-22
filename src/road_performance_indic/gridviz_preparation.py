@@ -58,6 +58,6 @@ def tiling():
                 )
 
 
-aggregate()
-#tiling()
+#aggregate()
+tiling()
 
