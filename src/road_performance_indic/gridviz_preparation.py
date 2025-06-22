@@ -28,7 +28,8 @@ def aggregate():
             rp = folder+"road_performance"+"_" +year+"_"+str(resolution)+".tif"
             combine_geotiffs([np, ap], rp, compress="deflate", dtype=np.int64)
             add_ratio_band(rp, 2, 1)
-            #TODO delete np and ap?
+            os.remove(np)
+            os.remove(ap)
 
 
 def tiling():
