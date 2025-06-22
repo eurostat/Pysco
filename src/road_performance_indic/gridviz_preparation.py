@@ -12,7 +12,7 @@ from utils.geotiff import combine_geotiffs, resample_geotiff_aligned, add_ratio_
 f0 = "/home/juju/gisco/road_transport_performance/"
 folder = f0 + "gridviz/"
 if not os.path.exists(folder): os.makedirs(folder)
-
+pop_folder = "/home/juju/geodata/census/2018/aggregated_tiff/"
 
 def aggregate():
     for year in ["2018","2021"]:
@@ -32,16 +32,30 @@ def aggregate():
             os.remove(ap)
 
 
+
 def tiling():
-    for indicator in ["nearby_population", "accessible_population"]:
-        for resolution in [1000, 2000, 5000, 10000, 20000, 50000, 100000]:
+    for resolution in [1000, 2000, 5000, 10000, 20000, 50000, 100000]:
+        for indicator in ["np", "ap", "rp"]:
             folder_ = folder + indicator + "_" + resolution + "/"
             if not os.path.exists(folder_): os.makedirs(folder_)
 
-            year = "2021"
-            tiff = folder + "road_performance_"+year+"_1000m.tif"
+            # prepare dict for geotiff bands
+            dict = {
+                indicator + "_2018" : { "file":folder+"road_performance"+"_2018_"+str(resolution)+".tif", "band":1 },
+                indicator + "_2021" : { "file":folder+"road_performance"+"_2021_"+str(resolution)+".tif", "band":1 },
+                "pop_2018" : { "file":pop_folder+"pop_2018_"+resolution+".tif", "band":1 },
+                "pop_2021" : { "file":pop_folder+"pop_2021_"+resolution+".tif", "band":1 },
+            }
 
-            pop_file = "/home/juju/geodata/census/"+year+"/aggregated_tiff/pop_"+year+"_"+resolution+".tif"
+            # launch tiling
+            gridtiler_raster.tiling_raster(
+                dict,
+                folder_,
+                crs="EPSG:3035",
+                tile_size_cell = 256,
+                format="parquet",
+                num_processors_to_use = 10,
+                )
 
 
 aggregate()
