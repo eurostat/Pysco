@@ -155,7 +155,7 @@ pop = {
 bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 
-for resolution in [1000]: #100
+for resolution in ["1000"]:
 
     '''
     print("rasterise land mass index")
