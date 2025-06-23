@@ -83,7 +83,7 @@
     //make labels layer
     const labelLayer = new gridviz.LabelLayer(gridviz_eurostat.getEuronymeLabelLayer('EUR', '20'))
 
-    const strokeStyle = new gridviz.StrokeStyle({ visible: (z) => z < 3 })
+    const strokeStyle = new gridviz.StrokeStyle({ visible: (z) => z < 30 })
 
     function update() {
         const year = document.querySelector('input[name="year"]:checked').value;
@@ -99,9 +99,9 @@
         let style = undefined
         if (year == "change") {
             const max = indic == "rp" ? 15 : 1000000
-            const thr = indic == "rp" ? 1 : 30000
             colorRamp = t => d3.interpolateSpectral(1 - t)
-            if (!sbp)
+            if (!sbp) {
+                const thr = indic == "rp" ? 2 : 30000
                 style = new gridviz.SquareColorWebGLStyle({
                     tFun: (c, r, z) => {
                         v = c.change
@@ -113,13 +113,14 @@
                     color: colorRamp,
                     blendOperation: blendOperation,
                 })
+            }
             else
                 style = new gridviz.ShapeColorSizeStyle({
                     color: (c) => {
                         v = c.change
                         if (v == undefined || isNaN(v)) return "grey"
                         if (!c.pop_2021) return
-                        if (Math.abs(v) < thr) return
+                        //if (Math.abs(v) < thr) return
                         return colorRamp(v / max * 1 + 0.5)
                     },
                     size: (c, r, z, vs) => 1.41 * vs(c.pop_2021),
