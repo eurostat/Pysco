@@ -12,7 +12,7 @@ from utils.geotiff import combine_geotiffs, resample_geotiff_aligned, add_ratio_
 f0 = "/home/juju/gisco/road_transport_performance/"
 folder = f0 + "gridviz/"
 if not os.path.exists(folder): os.makedirs(folder)
-pop_folder = "/home/juju/geodata/census/2018/aggregated_tiff/"
+pop_folder = "/home/juju/geodata/census/"
 
 def aggregate():
     for year in ["2018","2021"]:
@@ -45,8 +45,8 @@ def tiling():
             dict = {
                 "v_2018" : { "file":folder+"road_performance"+"_2018_"+str(resolution)+".tif", "band":band },
                 "v_2021" : { "file":folder+"road_performance"+"_2021_"+str(resolution)+".tif", "band":band },
-                "pop_2018" : { "file":pop_folder+"pop_2018_"+str(resolution)+".tif", "band":1 },
-                "pop_2021" : { "file":pop_folder+"pop_2021_"+str(resolution)+".tif", "band":1 },
+                "pop_2018" : { "file":pop_folder+"2018/aggregated_tiff/pop_2018_"+str(resolution)+".tif", "band":1 },
+                "pop_2021" : { "file":pop_folder+"2021/aggregated_tiff/pop_2021_"+str(resolution)+".tif", "band":1 },
             }
 
             # launch tiling
