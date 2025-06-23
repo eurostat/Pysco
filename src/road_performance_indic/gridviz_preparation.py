@@ -34,8 +34,8 @@ def aggregate():
 
 
 def tiling():
-    for resolution in [1000, 2000, 5000, 10000, 20000, 50000, 100000]:
-        for indicator in ["np", "ap", "rp"]:
+    for indicator in ["np", "ap", "rp"]:
+       for resolution in [1000, 2000, 5000, 10000, 20000, 50000, 100000]:
             folder_ = folder + "tiles/" + indicator + "_" + str(resolution) + "/"
             if not os.path.exists(folder_): os.makedirs(folder_)
 
