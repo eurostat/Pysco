@@ -14,14 +14,12 @@
         box-shadow: 5px 5px 5px grey;
         font-family: Arial, Helvetica, sans-serif;
     ">
-    <label><input type="radio" name="service" value="healthcare" onchange="update()" checked> Healthcare</label>
-    <label><input type="radio" name="service" value="education" onchange="update()"> Education</label>
+    <label><input type="radio" name="indic" value="rp" onchange="update()" checked> Road performance</label>
+    <label><input type="radio" name="indic" value="ap" onchange="update()" checked> Accessible population</label>
+    <label><input type="radio" name="indic" value="np" onchange="update()" checked> Nearby population</label>
     <br>
-    <label><input type="radio" name="indic" value="1" onchange="update()" checked> Nearest</label>
-    <label><input type="radio" name="indic" value="a3" onchange="update()"> 3 nearest</label>
-    <br>
-    <label><input type="radio" name="year" value="2023" onchange="update()" checked> 2023</label>
-    <label><input type="radio" name="year" value="2020" onchange="update()"> 2020</label>
+    <label><input type="radio" name="year" value="2021" onchange="update()" checked> 2021</label>
+    <label><input type="radio" name="year" value="2018" onchange="update()"> 2018</label>
     <label><input type="radio" name="year" value="change" onchange="update()"> Change</label>
     <hr>
     <label><input type="checkbox" id="sop" onchange="update()">Show only populated cells</label>
@@ -51,24 +49,19 @@
     const map = new gridviz.Map(document.getElementById('map'), { x: 4500000, y: 2900000, z: 3000 })
         .addZoomButtons()
 
-    // compute changes
+    // compute change
     const preprocess = (c) => {
-        c.dt_1_change = c.dt_1_2023 - c.dt_1_2020
-        c.dt_a3_change = c.dt_a3_2023 - c.dt_a3_2020
+        c.change = c.v_2021 == undefined || c.v_2018 == undefined ? undefined : c.v_2021 - c.v_2018
     }
 
     const dataset = {}
-    dataset.education = new gridviz.MultiResolutionDataset(
-        [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000],
-        r => new gviz_par.TiledParquetGrid(map, urlTiles + "education_" + r + "/"),
-        { preprocess: preprocess }
-    )
-    dataset.healthcare = new gridviz.MultiResolutionDataset(
-        [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000],
-        r => new gviz_par.TiledParquetGrid(map, urlTiles + "healthcare_" + r + "/"),
-        { preprocess: preprocess }
-    )
-
+    for (indic in ["rp", "ap", "np"]) {
+        dataset[indic] = new gridviz.MultiResolutionDataset(
+            [1000, 2000, 5000, 10000, 20000, 50000, 100000],
+            r => new gviz_par.TiledParquetGrid(map, urlTiles + indic + "_" + r + "/"),
+            { preprocess: preprocess }
+        )
+    }
 
     //define background layers
     const backgroundLayer1 = new gridviz.BackgroundLayer({
