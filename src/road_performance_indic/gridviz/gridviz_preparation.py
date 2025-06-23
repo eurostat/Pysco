@@ -42,7 +42,6 @@ def tiling():
             band = 1 if indicator=="np" else 2 if indicator=="ap" else 3
 
             # prepare dict for geotiff bands
-            #TODO population not correct ?! check bbox ?
             dict = {
                 "v_2018" : { "file":folder+"road_performance"+"_2018_"+str(resolution)+".tif", "band":band },
                 "v_2021" : { "file":folder+"road_performance"+"_2021_"+str(resolution)+".tif", "band":band },
