@@ -85,7 +85,6 @@
 
     function update() {
         const year = document.querySelector('input[name="year"]:checked').value;
-        const service = document.querySelector('input[name="service"]:checked').value;
         const indic = document.querySelector('input[name="indic"]:checked').value;
         const sop = document.getElementById('sop').checked;
         const sbp = document.getElementById('sbp').checked;
@@ -93,9 +92,9 @@
         const bn = document.getElementById('bn').checked;
         const bk = document.getElementById('bk').checked;
 
-        const field = "dt_" + indic + "_" + year
-        const max = service == "education" ? 30 * 60 : 60 * 60
-        const thr = service == "education" ? 1 * 60 : 2 * 60
+        const field = "v_" + year
+        const max = indic == "rp" ? 100 : 12000000
+        const thr = 0 //TODO use that ?
 
         const blendOperation = (z) => (z < 100 ? 'multiply' : 'source-over')
 
@@ -161,7 +160,7 @@
 
         minPixelsPerCell = sbp ? 5 : 1.6
         styles = sbp ? [style] : [style, strokeStyle]
-        const glayer = new gridviz.GridLayer(dataset[service], styles, { minPixelsPerCell: minPixelsPerCell })
+        const glayer = new gridviz.GridLayer(dataset[indic], styles, { minPixelsPerCell: minPixelsPerCell })
 
         //make layer stack
         layers = []
