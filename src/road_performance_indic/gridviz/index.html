@@ -15,8 +15,8 @@
         font-family: Arial, Helvetica, sans-serif;
     ">
     <label><input type="radio" name="indic" value="rp" onchange="update()" checked> Road performance</label>
-    <label><input type="radio" name="indic" value="ap" onchange="update()" checked> Accessible population</label>
-    <label><input type="radio" name="indic" value="np" onchange="update()" checked> Nearby population</label>
+    <label><input type="radio" name="indic" value="ap" onchange="update()"> Accessible population</label>
+    <label><input type="radio" name="indic" value="np" onchange="update()"> Nearby population</label>
     <br>
     <label><input type="radio" name="year" value="2021" onchange="update()" checked> 2021</label>
     <label><input type="radio" name="year" value="2018" onchange="update()"> 2018</label>
@@ -55,7 +55,7 @@
     }
 
     const dataset = {}
-    for (indic in ["rp", "ap", "np"]) {
+    for (indic of ["rp", "ap", "np"]) {
         dataset[indic] = new gridviz.MultiResolutionDataset(
             [1000, 2000, 5000, 10000, 20000, 50000, 100000],
             r => new gviz_par.TiledParquetGrid(map, urlTiles + indic + "_" + r + "/"),
