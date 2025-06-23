@@ -20,7 +20,7 @@ def aggregate():
             for indicator in ["nearby_population", "accessible_population"]:
                 print("aggregate", year, indicator, resolution)
                 resample_geotiff_aligned(
-                    f0 + "nearby_population_" + year + "_1000m.tif",
+                    f0 + indicator + "_" + year + "_1000m.tif",
                     folder+indicator+"_" +year+"_"+str(resolution)+".tif",
                     resolution, Resampling.average)
             np_ = folder+"nearby_population"+"_" +year+"_"+str(resolution)+".tif"
@@ -39,10 +39,12 @@ def tiling():
             folder_ = folder + indicator + "_" + resolution + "/"
             if not os.path.exists(folder_): os.makedirs(folder_)
 
+            band = 1 if indicator=="np" else 2 if indicator=="ap" else 3
+
             # prepare dict for geotiff bands
             dict = {
-                indicator + "_2018" : { "file":folder+"road_performance"+"_2018_"+str(resolution)+".tif", "band":1 },
-                indicator + "_2021" : { "file":folder+"road_performance"+"_2021_"+str(resolution)+".tif", "band":1 },
+                "v_2018" : { "file":folder+"road_performance"+"_2018_"+str(resolution)+".tif", "band":band },
+                "v_2021" : { "file":folder+"road_performance"+"_2021_"+str(resolution)+".tif", "band":band },
                 "pop_2018" : { "file":pop_folder+"pop_2018_"+resolution+".tif", "band":1 },
                 "pop_2021" : { "file":pop_folder+"pop_2021_"+resolution+".tif", "band":1 },
             }
@@ -58,6 +60,6 @@ def tiling():
                 )
 
 
-#aggregate()
-tiling()
+aggregate()
+#tiling()
 
