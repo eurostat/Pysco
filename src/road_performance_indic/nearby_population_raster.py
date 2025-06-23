@@ -8,9 +8,10 @@ from scipy import ndimage
 from skimage.morphology import disk
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.geotiff import geotiff_mask_by_countries, rasterise_tesselation_gpkg, combine_geotiffs
+from utils.geotiff import crop_extend_bbox, geotiff_mask_by_countries, rasterise_tesselation_gpkg, combine_geotiffs
 
 
+#TODO crop
 #TODO correct 2018
 #TODO: try 100m resolution ? disaggregate 2018
 #TODO handle peloponese ? connect it ?
@@ -150,8 +151,13 @@ pop = {
     "2021" : "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2_clean.tiff",
 }
 
+# whole europe
+bbox = [ 900000, 900000, 6600000, 5500000 ]
+
+
 for resolution in [1000]: #100
 
+    '''
     print("rasterise land mass index")
     rasterise_tesselation_gpkg(
         folder + "land_mass_gridded.gpkg",
@@ -163,10 +169,12 @@ for resolution in [1000]: #100
         dtype=np.int32,
         all_touched = True
     )
+    '''
 
     for year in ["2018"]: #"2021", 
         print(year)
 
+        '''
         # apply fast convolution - without taking into account land mass index
         print("convolution (fast)", year)
         circular_kernel_sum(
@@ -196,4 +204,8 @@ for resolution in [1000]: #100
             dtype=rasterio.int64,
             compress="deflate",
         )
+        '''
+
+        print("crop to EU extend")
+        crop_extend_bbox(folder + "nearby_population_"+year+"_"+resolution+"m.tif", bbox, folder + "nearby_population_"+year+"_"+resolution+"m___.tif")
 
