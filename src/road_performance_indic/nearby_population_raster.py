@@ -157,7 +157,6 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for resolution in ["1000"]:
 
-    '''
     print("rasterise land mass index")
     rasterise_tesselation_gpkg(
         folder + "land_mass_gridded.gpkg",
@@ -169,12 +168,10 @@ for resolution in ["1000"]:
         dtype=np.int32,
         all_touched = True
     )
-    '''
 
-    for year in ["2018"]: #"2021", 
+    for year in ["2018", "2021"]: #, 
         print(year)
 
-        '''
         # apply fast convolution - without taking into account land mass index
         print("convolution (fast)", year)
         circular_kernel_sum(
@@ -204,8 +201,7 @@ for resolution in ["1000"]:
             dtype=rasterio.int64,
             compress="deflate",
         )
-        '''
 
         print("crop to EU extend")
-        crop_extend_bbox(folder + "nearby_population_"+year+"_"+resolution+"m.tif", bbox, folder + "nearby_population_"+year+"_"+resolution+"m___.tif")
+        crop_extend_bbox(folder + "nearby_population_"+year+"_"+resolution+"m.tif", bbox, folder + "nearby_population_"+year+"_"+resolution+"m.tif")
 
