@@ -45,8 +45,8 @@ def tiling():
             dict = {
                 "v_2018" : { "file":folder+"road_performance"+"_2018_"+str(resolution)+".tif", "band":band },
                 "v_2021" : { "file":folder+"road_performance"+"_2021_"+str(resolution)+".tif", "band":band },
-                "pop_2018" : { "file":pop_folder+"pop_2018_"+resolution+".tif", "band":1 },
-                "pop_2021" : { "file":pop_folder+"pop_2021_"+resolution+".tif", "band":1 },
+                "pop_2018" : { "file":pop_folder+"pop_2018_"+str(resolution)+".tif", "band":1 },
+                "pop_2021" : { "file":pop_folder+"pop_2021_"+str(resolution)+".tif", "band":1 },
             }
 
             # launch tiling
@@ -61,5 +61,5 @@ def tiling():
 
 
 aggregate()
-#tiling()
+tiling()
 
