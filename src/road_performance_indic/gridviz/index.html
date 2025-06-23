@@ -106,7 +106,7 @@
                     tFun: (c, r, z) => {
                         v = c.change
                         if (v == undefined || isNaN(v)) return
-                        if (sop && c.pop_2021 == 0) return
+                        if (sop && !c.pop_2021) return
                         if (Math.abs(v) < thr) return
                         return v / max * 1 + 0.5
                     },
@@ -137,7 +137,7 @@
                     tFun: (c, r, z) => {
                         v = c[field]
                         if (v == undefined) return
-                        if (sop && c["pop_"+year] == 0) return
+                        if (sop && !c["pop_"+year]) return
                         return v / max
                         //return Math.ceil(12 * v / max) / 12
                     },
