@@ -106,7 +106,7 @@
                     tFun: (c, r, z) => {
                         v = c.change
                         if (v == undefined || isNaN(v)) return
-                        if (sop && c.POP_2021 == 0) return
+                        if (sop && c.pop_2021 == 0) return
                         if (Math.abs(v) < thr) return
                         return v / max * 1 + 0.5
                     },
@@ -118,12 +118,12 @@
                     color: (c) => {
                         v = c.change
                         if (v == undefined || isNaN(v)) return "grey"
-                        if (!c.POP_2021) return
+                        if (!c.pop_2021) return
                         if (Math.abs(v) < thr) return
                         return colorRamp(v / max * 1 + 0.5)
                     },
-                    size: (c, r, z, vs) => 1.41 * vs(c.POP_2021),
-                    viewScale: gridviz.viewScale({ valueFunction: (c) => +c.POP_2021, stretching: gridviz.logarithmicScale(-7) }),
+                    size: (c, r, z, vs) => 1.41 * vs(c.pop_2021),
+                    viewScale: gridviz.viewScale({ valueFunction: (c) => +c.pop_2021, stretching: gridviz.logarithmicScale(-7) }),
                     shape: () => "circle",
                     blendOperation: blendOperation,
                 });
@@ -137,7 +137,7 @@
                     tFun: (c, r, z) => {
                         v = c[field]
                         if (v == undefined) return
-                        if (sop && c.POP_2021 == 0) return
+                        if (sop && c["pop_"+year] == 0) return
                         return v / max
                         //return Math.ceil(12 * v / max) / 12
                     },
@@ -150,11 +150,11 @@
                     color: (c) => {
                         v = c[field]
                         if (v == undefined) return "grey"
-                        if (!c.POP_2021) return
+                        if (!c["pop_"+year]) return
                         return colorRamp(v / max)
                     },
-                    size: (c, r, z, vs) => 1.41 * vs(c.POP_2021),
-                    viewScale: gridviz.viewScale({ valueFunction: (c) => +c.POP_2021, stretching: gridviz.logarithmicScale(-7) }),
+                    size: (c, r, z, vs) => 1.41 * vs(c["pop_"+year]),
+                    viewScale: gridviz.viewScale({ valueFunction: (c) => +c["pop_"+year], stretching: gridviz.logarithmicScale(-7) }),
                     shape: () => "circle",
                     blendOperation: blendOperation,
                 });
