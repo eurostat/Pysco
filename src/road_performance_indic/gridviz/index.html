@@ -15,7 +15,9 @@
         font-family: Arial, Helvetica, sans-serif;
     ">
     <label><input type="radio" name="indic" value="rp" onchange="update()" checked> Road performance</label>
+    <br>
     <label><input type="radio" name="indic" value="ap" onchange="update()"> Accessible population</label>
+    <br>
     <label><input type="radio" name="indic" value="np" onchange="update()"> Nearby population</label>
     <br>
     <label><input type="radio" name="year" value="2021" onchange="update()" checked> 2021</label>
@@ -92,19 +94,17 @@
         const bn = document.getElementById('bn').checked;
         const bk = document.getElementById('bk').checked;
 
-        const field = "v_" + year
-        const max = indic == "rp" ? 100 : 12000000
-        const thr = 0 //TODO use that ?
-
         const blendOperation = (z) => (z < 100 ? 'multiply' : 'source-over')
 
         let style = undefined
         if (year == "change") {
+            const thr = 0 //TODO use that ?
+            const max = indic == "rp" ? 10 : 1000000
             colorRamp = t => d3.interpolateSpectral(1 - t)
             if (!sbp)
                 style = new gridviz.SquareColorWebGLStyle({
                     tFun: (c, r, z) => {
-                        v = c[field]
+                        v = c.change
                         if (v == undefined || isNaN(v)) return
                         if (sop && c.POP_2021 == 0) return
                         if (Math.abs(v) < thr) return
@@ -116,7 +116,7 @@
             else
                 style = new gridviz.ShapeColorSizeStyle({
                     color: (c) => {
-                        v = c[field]
+                        v = c.change
                         if (v == undefined || isNaN(v)) return "grey"
                         if (!c.POP_2021) return
                         if (Math.abs(v) < thr) return
@@ -129,6 +129,8 @@
                 });
         }
         else {
+            const field = "v_" + year
+            const max = indic == "rp" ? 100 : 12000000
             colorRamp = t => d3.interpolateMagma(1 - t) //t=> d3.interpolateCubehelixDefault(1-t) //d3.interpolateYlOrRd
             if (!sbp)
                 style = new gridviz.SquareColorWebGLStyle({
