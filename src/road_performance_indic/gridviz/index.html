@@ -99,7 +99,7 @@
         let style = undefined
         if (year == "change") {
             const thr = 0 //TODO use that ?
-            const max = indic == "rp" ? 10 : 1000000
+            const max = indic == "rp" ? 15 : 1000000
             colorRamp = t => d3.interpolateSpectral(1 - t)
             if (!sbp)
                 style = new gridviz.SquareColorWebGLStyle({
