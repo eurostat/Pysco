@@ -35,25 +35,27 @@ for grid_resolution in [1000, 100]:
 
     for service in ["education", "healthcare"]:
 
-        detailled_network_decomposition = grid_resolution == 100
-        densification_distance = grid_resolution
-        cell_network_max_distance = grid_resolution * 2
-        file_size = 100000 if grid_resolution == 100 else 500000
-
-        def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
-        def duration_simplification_fun(x): return int(round(x))
-
-        # clamp bbox to fit with file_size
-        clamp = lambda v : floor(v/file_size)*file_size
-        [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
-        bbox = [xmin,ymin,xmax,ymax]
-
-        if grid_resolution == 100:
-            num_processors_to_use = 7 if service == "education" else 4 #3
-        else: num_processors_to_use = 10
-        extention_buffer = 20000 if service=="education" else 60000
-
         for year in ["2023","2020"]:
+
+            # detailled network decomposition only when resolution to 100m
+            detailled_network_decomposition = grid_resolution == 100
+            # densification
+            densification_distance = grid_resolution
+            cell_network_max_distance = grid_resolution * 3
+            file_size = 100000 if grid_resolution == 100 else 500000
+
+            def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
+            def duration_simplification_fun(x): return int(round(x))
+
+            # clamp bbox to fit with file_size
+            clamp = lambda v : floor(v/file_size)*file_size
+            [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
+            bbox = [xmin,ymin,xmax,ymax]
+
+            if grid_resolution == 100:
+                num_processors_to_use = 7 if service == "education" else 4 #3
+            else: num_processors_to_use = 10
+            extention_buffer = 20000 if service=="education" else 60000
 
             # ouput folder
             out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(grid_resolution) + "m/"
