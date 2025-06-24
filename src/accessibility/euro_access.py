@@ -1,13 +1,10 @@
 from math import floor
 from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra_parallel
-import numpy as np
 
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
-from utils.convert import parquet_grid_to_geotiff
-from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
 from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
 # where to store the outputs
