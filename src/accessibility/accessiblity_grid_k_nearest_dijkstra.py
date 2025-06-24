@@ -180,18 +180,11 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
             # store cell id
             grd_ids.append(cell_id_fun(x,y))
 
-    print(datetime.now(), x_part, y_part, len(grd_ids), "cells created")
-
     del result, idx, snappable_nodes
 
-    '''
-    if keep_distance_to_node:
-        return [grd_ids, costs, distances_to_node]
-    else:
-        return [grd_ids, costs]
-    '''
-
-    #if len(cell_geometries) == 0: return
+    if len(grd_ids) == 0:
+        print(datetime.now(), x_part, y_part, len(grd_ids), "cells saved")
+        return
 
     # make output dataframe
     data = { 'GRD_ID':grd_ids }
