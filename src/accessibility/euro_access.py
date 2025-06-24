@@ -33,20 +33,20 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for grid_resolution in [1000, 100]:
 
-    detailled_network_decomposition = grid_resolution == 100
-    densification_distance = grid_resolution
-    cell_network_max_distance = grid_resolution * 2
-    file_size = 100000 if grid_resolution == 100 else 500000
-
-    def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
-    def duration_simplification_fun(x): return int(round(x))
-
-    # clamp bbox to fit with file_size
-    clamp = lambda v : floor(v/file_size)*file_size
-    [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
-    bbox = [xmin,ymin,xmax,ymax]
-
     for service in ["education", "healthcare"]:
+
+        detailled_network_decomposition = grid_resolution == 100
+        densification_distance = grid_resolution
+        cell_network_max_distance = grid_resolution * 2
+        file_size = 100000 if grid_resolution == 100 else 500000
+
+        def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
+        def duration_simplification_fun(x): return int(round(x))
+
+        # clamp bbox to fit with file_size
+        clamp = lambda v : floor(v/file_size)*file_size
+        [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
+        bbox = [xmin,ymin,xmax,ymax]
 
         if grid_resolution == 100:
             num_processors_to_use = 7 if service == "education" else 4 #3
