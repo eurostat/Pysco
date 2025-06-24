@@ -28,14 +28,14 @@ grid_resolution = 1000
 detailled_network_decomposition = grid_resolution == 100
 densification_distance = grid_resolution
 cell_network_max_distance = grid_resolution * 2
-partition_size = 100000 if grid_resolution == 100 else 200000
+file_size = 100000 if grid_resolution == 100 else 200000
 
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 def duration_simplification_fun(x): return int(round(x))
 
 
-# clamp bbox to fit with partition_size
-clamp = lambda v : floor(v/partition_size)*partition_size
+# clamp bbox to fit with file_size
+clamp = lambda v : floor(v/file_size)*file_size
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
 
@@ -55,9 +55,6 @@ for service in ["education", "healthcare"]:
         else: num_processors_to_use = 10
         extention_buffer = 20000 if service=="education" else 60000
 
-        # output file
-        #out_file = out_folder_service + "euro_access_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
-
         # build accessibility grid
         accessiblity_grid_k_nearest_dijkstra_parallel(
             pois_loader = pois_loader,
@@ -73,7 +70,7 @@ for service in ["education", "healthcare"]:
             cell_id_fun = cell_id_fun,
             grid_resolution= grid_resolution,
             cell_network_max_distance= grid_resolution * 2,
-            partition_size = 125000,
+            file_size = 125000,
             extention_buffer = 20000 if service=="education" else 60000,
             detailled = detailled_network_decomposition,
             densification_distance=densification_distance,

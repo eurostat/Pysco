@@ -235,7 +235,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(pois_loader,
                        cell_id_fun=lambda x,y:str(x)+"_"+str(y),
                        grid_resolution=1000,
                        cell_network_max_distance=-1,
-                       partition_size = 100000,
+                       file_size = 100000,
                        extention_buffer = 30000,
                        detailled = False,
                        densification_distance = None,
@@ -243,10 +243,12 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(pois_loader,
                        keep_distance_to_node = False,
                        num_processors_to_use = 1,
                        show_detailled_messages = False,
+                       shuffle = False,
                        ):
 
     # launch parallel computation   
-    processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], partition_size)
+    processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], file_size)
+    if shuffle: random.shuffle(processes_params)
     processes_params = [
         (
             xy,
