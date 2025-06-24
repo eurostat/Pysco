@@ -1,3 +1,4 @@
+import random
 import pandas as pd
 from datetime import datetime
 import heapq
@@ -71,7 +72,8 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=False):
 # function to launch in parallel for each partition
 def accessiblity_grid_k_nearest_dijkstra(xy,
             extention_buffer,
-            partition_size,
+            file_size,
+            out_folder,
             pois_loader,
             road_network_loader,
             k,
@@ -90,13 +92,18 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
             show_detailled_messages = False,
             ):
 
-    # get partition position
+    # get position
     [ x_part, y_part ] = xy
 
-    if not show_detailled_messages: print(datetime.now(),x_part,y_part)
+    # output file
+    out_file = out_folder + str(grid_resolution) + "m_" + str(x_part) + "_" + str(y_part) + ".parquet"
+    # skip if output file was already produced
+    if os.path.isfile(out_file): return
 
-    # build partition extended bbox
-    extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+partition_size+extention_buffer, y_part+partition_size+extention_buffer)
+    if not show_detailled_messages: print(datetime.now(), x_part, y_part)
+
+    # build extended bbox
+    extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+file_size+extention_buffer, y_part+file_size+extention_buffer)
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "get source POIs")
     pois = pois_loader(extended_bbox)
@@ -146,8 +153,8 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
 
     # go through cells
     r2 = grid_resolution / 2
-    for x in range(x_part, x_part+partition_size, grid_resolution):
-        for y in range(y_part, y_part+partition_size, grid_resolution):
+    for x in range(x_part, x_part+file_size, grid_resolution):
+        for y in range(y_part, y_part+file_size, grid_resolution):
 
             # snap cell centre to the snappable nodes, using the spatial index
             ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
@@ -212,9 +219,7 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     data['duration_average_s_'+str(k)] = averages
 
     # save output
-    print(datetime.now(), "save as parquet")
-    out = pd.DataFrame(data)
-    out.to_parquet(out_parquet_file)
+    pd.DataFrame(data).to_parquet(out_file)
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells saved")
 
@@ -225,7 +230,7 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
 def accessiblity_grid_k_nearest_dijkstra_parallel(pois_loader,
                        road_network_loader,
                        bbox,
-                       out_parquet_file,
+                       out_folder,
                        k = 3,
                        weight_function = lambda feature,sl:sl,
                        direction_fun=lambda feature:"both", #('both', 'oneway', 'forward', 'backward')
@@ -249,11 +254,13 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(pois_loader,
     # launch parallel computation   
     processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], file_size)
     if shuffle: random.shuffle(processes_params)
+
     processes_params = [
         (
             xy,
             extention_buffer,
-            partition_size,
+            file_size,
+            out_folder,
             pois_loader,
             road_network_loader,
             k,

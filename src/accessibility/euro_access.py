@@ -76,6 +76,7 @@ for service in ["education", "healthcare"]:
             densification_distance=densification_distance,
             duration_simplification_fun = duration_simplification_fun,
             num_processors_to_use = num_processors_to_use,
+            shuffle=True
         )
 
         # combine parquet files to a single tiff file
