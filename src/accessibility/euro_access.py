@@ -48,6 +48,11 @@ for grid_resolution in [1000, 100]:
 
     for service in ["education", "healthcare"]:
 
+        if grid_resolution == 100:
+            num_processors_to_use = 7 if service == "education" else 4 #3
+        else: num_processors_to_use = 10
+        extention_buffer = 20000 if service=="education" else 60000
+
         for year in ["2023","2020"]:
 
             # ouput folder
@@ -57,10 +62,6 @@ for grid_resolution in [1000, 100]:
             tomtom_year = "2019" if year == "2020" else year
             def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
             def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels IS NULL or levels!='0'" if service=="education" else "")
-            if grid_resolution == 100:
-                num_processors_to_use = 7 if service == "education" else 4 #3
-            else: num_processors_to_use = 10
-            extention_buffer = 20000 if service=="education" else 60000
 
             # build accessibility grid
             if True:
