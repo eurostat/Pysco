@@ -136,7 +136,6 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "get source nodes")
     sources = []
     for poi in pois:
-        print(poi)
         x, y = poi['geometry']['coordinates']
         n = snappable_nodes[next(idx.nearest((x, y, x, y), 1))]
         sources.append(n)
@@ -217,9 +216,6 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
 
     # save output
     pd.DataFrame(data).to_parquet(out_file)
-
-
-    print("aaaa")
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells saved")
 
