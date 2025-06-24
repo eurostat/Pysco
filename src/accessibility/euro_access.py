@@ -42,7 +42,7 @@ for year in ["2023","2020"]:
             # densification
             densification_distance = grid_resolution
             cell_network_max_distance = grid_resolution * 3
-            file_size = 100000 if grid_resolution == 100 else 500000
+            file_size = 200000 if grid_resolution == 100 else 500000
 
             def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
             def duration_simplification_fun(x): return int(round(x))
