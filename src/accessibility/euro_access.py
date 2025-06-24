@@ -53,7 +53,7 @@ for year in ["2023","2020"]:
             bbox = [xmin,ymin,xmax,ymax]
 
             if grid_resolution == 100:
-                num_processors_to_use = 7 if service == "education" else 4 #3
+                num_processors_to_use = 6 if service == "education" else 4 #3
             else: num_processors_to_use = 10
             extention_buffer = 20000 if service=="education" else 60000
 
@@ -66,27 +66,26 @@ for year in ["2023","2020"]:
             def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
             # build accessibility grid
-            if True:
-                accessiblity_grid_k_nearest_dijkstra_parallel(
-                    pois_loader = pois_loader,
-                    road_network_loader = road_network_loader,
-                    bbox = bbox,
-                    out_folder = out_folder_service_year,
-                    k = 3,
-                    weight_function = weight_function,
-                    direction_fun = direction_fun,
-                    is_not_snappable_fun = is_not_snappable_fun,
-                    initial_node_level_fun = initial_node_level_fun,
-                    final_node_level_fun = final_node_level_fun,
-                    cell_id_fun = cell_id_fun,
-                    grid_resolution= grid_resolution,
-                    cell_network_max_distance= grid_resolution * 2,
-                    file_size = file_size,
-                    extention_buffer = 20000 if service=="education" else 60000,
-                    detailled = detailled_network_decomposition,
-                    densification_distance=densification_distance,
-                    duration_simplification_fun = duration_simplification_fun,
-                    num_processors_to_use = num_processors_to_use,
-                    shuffle=True
-                )
+            accessiblity_grid_k_nearest_dijkstra_parallel(
+                pois_loader = pois_loader,
+                road_network_loader = road_network_loader,
+                bbox = bbox,
+                out_folder = out_folder_service_year,
+                k = 3,
+                weight_function = weight_function,
+                direction_fun = direction_fun,
+                is_not_snappable_fun = is_not_snappable_fun,
+                initial_node_level_fun = initial_node_level_fun,
+                final_node_level_fun = final_node_level_fun,
+                cell_id_fun = cell_id_fun,
+                grid_resolution= grid_resolution,
+                cell_network_max_distance= grid_resolution * 2,
+                file_size = file_size,
+                extention_buffer = 20000 if service=="education" else 60000,
+                detailled = detailled_network_decomposition,
+                densification_distance=densification_distance,
+                duration_simplification_fun = duration_simplification_fun,
+                num_processors_to_use = num_processors_to_use,
+                shuffle=True
+            )
 

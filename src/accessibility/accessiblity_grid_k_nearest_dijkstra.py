@@ -107,8 +107,9 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "get source POIs")
     pois = pois_loader(extended_bbox)
-    #TODO stop there or fill with 'no_data' ?
-    #if(not pois): return
+    if(not pois):
+        pd.DataFrame({}).to_parquet(out_file)
+        return
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "make graph")
     roads = road_network_loader(extended_bbox)
@@ -124,8 +125,10 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     snappable_nodes = gb_['snappable_nodes']
     del gb_, roads
     if show_detailled_messages: print(datetime.now(), x_part, y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
-    #if(len(snappable_nodes)==0): return
-    #if(len(graph.keys())==0): return
+
+    if(len(snappable_nodes)==0):
+        pd.DataFrame({}).to_parquet(out_file)
+        return
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
@@ -133,13 +136,13 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "get source nodes")
     sources = []
     for poi in pois:
+        print(poi)
         x, y = poi['geometry']['coordinates']
         n = snappable_nodes[next(idx.nearest((x, y, x, y), 1))]
         sources.append(n)
     del pois
     if show_detailled_messages: print(datetime.now(), x_part, y_part, len(sources), "source nodes found")
-    #TODO stop there or fill with 'no_data' ?
-    #if(len(sources)==0): return
+
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "compute accessiblity")
     result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
@@ -150,6 +153,7 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     costs = [] #the costs - an array of arrays
     for _ in range(k): costs.append([])
     distances_to_node = [] #the cell center distance to its graph node
+
 
     # go through cells
     r2 = grid_resolution / 2
@@ -214,7 +218,11 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     # save output
     pd.DataFrame(data).to_parquet(out_file)
 
+
+    print("aaaa")
+
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells saved")
+
 
 
 
@@ -248,8 +256,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(pois_loader,
     processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], file_size)
     if shuffle: random.shuffle(processes_params)
 
-    processes_params = [
-        (
+    processes_params = [ (
             xy,
             extention_buffer,
             file_size,
@@ -270,9 +277,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(pois_loader,
             duration_simplification_fun,
             keep_distance_to_node,
             show_detailled_messages,
-        )
-        for xy in processes_params
-        ]
+        ) for xy in processes_params ]
 
     print(datetime.now(), "launch", len(processes_params), "processes on", num_processors_to_use, "processor(s)")
     Pool(num_processors_to_use).starmap(accessiblity_grid_k_nearest_dijkstra, processes_params)
