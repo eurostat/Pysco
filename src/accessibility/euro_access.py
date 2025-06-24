@@ -38,7 +38,7 @@ grid_resolution = 1000
 detailled_network_decomposition = grid_resolution == 100
 densification_distance = grid_resolution
 cell_network_max_distance = grid_resolution * 2
-file_size = 100000 if grid_resolution == 100 else 200000
+file_size = 100000 if grid_resolution == 100 else 500000
 
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 def duration_simplification_fun(x): return int(round(x))
@@ -66,28 +66,29 @@ for service in ["education", "healthcare"]:
         extention_buffer = 20000 if service=="education" else 60000
 
         # build accessibility grid
-        accessiblity_grid_k_nearest_dijkstra_parallel(
-            pois_loader = pois_loader,
-            road_network_loader = road_network_loader,
-            bbox = bbox,
-            out_folder = out_folder_service_year,
-            k = 3,
-            weight_function = weight_function,
-            direction_fun = direction_fun,
-            is_not_snappable_fun = is_not_snappable_fun,
-            initial_node_level_fun = initial_node_level_fun,
-            final_node_level_fun = final_node_level_fun,
-            cell_id_fun = cell_id_fun,
-            grid_resolution= grid_resolution,
-            cell_network_max_distance= grid_resolution * 2,
-            file_size = 125000,
-            extention_buffer = 20000 if service=="education" else 60000,
-            detailled = detailled_network_decomposition,
-            densification_distance=densification_distance,
-            duration_simplification_fun = duration_simplification_fun,
-            num_processors_to_use = num_processors_to_use,
-            shuffle=True
-        )
+        if True:
+            accessiblity_grid_k_nearest_dijkstra_parallel(
+                pois_loader = pois_loader,
+                road_network_loader = road_network_loader,
+                bbox = bbox,
+                out_folder = out_folder_service_year,
+                k = 3,
+                weight_function = weight_function,
+                direction_fun = direction_fun,
+                is_not_snappable_fun = is_not_snappable_fun,
+                initial_node_level_fun = initial_node_level_fun,
+                final_node_level_fun = final_node_level_fun,
+                cell_id_fun = cell_id_fun,
+                grid_resolution= grid_resolution,
+                cell_network_max_distance= grid_resolution * 2,
+                file_size = file_size,
+                extention_buffer = 20000 if service=="education" else 60000,
+                detailled = detailled_network_decomposition,
+                densification_distance=densification_distance,
+                duration_simplification_fun = duration_simplification_fun,
+                num_processors_to_use = num_processors_to_use,
+                shuffle=True
+            )
 
         # combine parquet files to a single tiff file
         geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif"
