@@ -27,7 +27,7 @@ for grid_resolution in [1000, 100]:
             geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif"
 
             # check if tiff file was already produced
-            #if os.path.isfile(geotiff): continue
+            if os.path.isfile(geotiff): continue
 
             # get all parquet files in the output folder
             files = [os.path.join(out_folder_service_year, f) for f in os.listdir(out_folder_service_year) if f.endswith('.parquet')]
