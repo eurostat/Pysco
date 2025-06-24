@@ -277,11 +277,15 @@ def accessiblity_population_parallel(
     Pool(num_processors_to_use).starmap(accessiblity_population, processes_params)
 
 
-
 #TODO compute population <1H30 AND < 120km
-#TODO compute 2018
+#TODO fix issue normandy, opale coast
+#TODO check and fix 2018-2021 inconstiscencies
+#TODO check islands - better handle those with bridges ?
 #TODO take right tomtom versions - 2018 and 2021
+
+#TODO 2011 version ?
 #TODO test 100m ?
+
 
 
 # where to store the outputs

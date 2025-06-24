@@ -11,7 +11,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.geotiff import crop_extend_bbox, geotiff_mask_by_countries, rasterise_tesselation_gpkg, combine_geotiffs
 
 
-#TODO crop
 #TODO correct 2018
 #TODO: try 100m resolution ? disaggregate 2018
 #TODO handle peloponese ? connect it ?

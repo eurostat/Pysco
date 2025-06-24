@@ -172,9 +172,6 @@ num_processors_to_use = 7
 # whole europe
 bbox = [ 900000, 900000, 6600000, 5500000 ]
 
-# dijon
-#bbox = [3900000, 2600000, 4000000, 2700000]
-
 clamp = lambda v : floor(v/tile_file_size_m)*tile_file_size_m
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
