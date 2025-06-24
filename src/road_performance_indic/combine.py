@@ -62,9 +62,8 @@ for grid_resolution in ["1000"]:
         print("combine geotiff", year, grid_resolution)
         combine_geotiffs([geotiff_np, geotiff_ap], combined, compress="deflate", dtype=np.int64)
 
-        print("rename bands", year, grid_resolution)
-        rename_geotiff_bands(combined, [ "np_" + year, "ap_" + year ])
-
         print("compute ratio", year, grid_resolution)
         add_ratio_band(combined, 2, 1, ratio_band_name='indic_'+year)
 
+        print("rename bands", year, grid_resolution)
+        rename_geotiff_bands(combined, [ "np_" + year, "ap_" + year , "rp_" + year ])
