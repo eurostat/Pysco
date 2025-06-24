@@ -69,7 +69,7 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=False):
 
 
 # function to launch in parallel for each partition
-def __parallel_process(xy,
+def accessiblity_grid_k_nearest_dijkstra(xy,
             extention_buffer,
             partition_size,
             pois_loader,
@@ -85,6 +85,7 @@ def __parallel_process(xy,
             cell_network_max_distance,
             detailled,
             densification_distance,
+            duration_simplification_fun,
             keep_distance_to_node,
             show_detailled_messages = False,
             ):
@@ -176,17 +177,52 @@ def __parallel_process(xy,
 
     del result, idx, snappable_nodes
 
+    '''
     if keep_distance_to_node:
         return [grd_ids, costs, distances_to_node]
     else:
         return [grd_ids, costs]
+    '''
+
+    #if len(cell_geometries) == 0: return
+
+    # make output dataframe
+    data = { 'GRD_ID':grd_ids }
+    if keep_distance_to_node: data['distance_to_node'] = distances_to_node
+    for kk in range(k): data['duration_s_'+str(kk+1)] = costs[kk]
+
+    # compute average duration and simplify duration values
+    averages = []
+    for i in range(len(data['GRD_ID'])):
+        # compute average
+        sum = 0
+        for kk in range(k):
+            dur = data['duration_s_'+str(kk+1)][i]
+            if dur<0: sum = -1; break
+            sum += dur
+            # simplify duration values
+            if duration_simplification_fun != None: data['duration_s_'+str(kk+1)][i] = duration_simplification_fun(dur)
+        # store average value, simplified if necessary
+        if sum <0:
+            sum = -1
+        else:
+            sum = sum/k
+            if duration_simplification_fun != None: sum = duration_simplification_fun(sum)
+        averages.append(sum)
+    data['duration_average_s_'+str(k)] = averages
+
+    # save output
+    print(datetime.now(), "save as parquet")
+    out = pd.DataFrame(data)
+    out.to_parquet(out_parquet_file)
+
+    print(datetime.now(), x_part, y_part, len(grd_ids), "cells saved")
 
 
 
 
 
-
-def accessiblity_grid_k_nearest_dijkstra(pois_loader,
+def accessiblity_grid_k_nearest_dijkstra_parallel(pois_loader,
                        road_network_loader,
                        bbox,
                        out_parquet_file,
@@ -229,6 +265,7 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
             cell_network_max_distance,
             detailled,
             densification_distance,
+            duration_simplification_fun,
             keep_distance_to_node,
             show_detailled_messages,
         )
@@ -236,8 +273,9 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
         ]
 
     print(datetime.now(), "launch", len(processes_params), "processes on", num_processors_to_use, "processor(s)")
-    outputs = Pool(num_processors_to_use).starmap(__parallel_process, processes_params)
+    Pool(num_processors_to_use).starmap(accessiblity_grid_k_nearest_dijkstra, processes_params)
 
+    '''
     print(datetime.now(), "combine", len(outputs), "outputs")
     grd_ids = []
     costs = []
@@ -288,4 +326,5 @@ def accessiblity_grid_k_nearest_dijkstra(pois_loader,
     print(datetime.now(), "save as parquet")
     out = pd.DataFrame(data)
     out.to_parquet(out_parquet_file)
+    '''
 

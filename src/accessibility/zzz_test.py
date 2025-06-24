@@ -1,4 +1,4 @@
-from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra
+from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra_parallel
 
 import sys
 import os
@@ -47,7 +47,7 @@ for year in ["2020"]: #"2023",
     def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels!='0'" if service=="education" else "")
 
     # build accessibility grid
-    accessiblity_grid_k_nearest_dijkstra(
+    accessiblity_grid_k_nearest_dijkstra_parallel(
         pois_loader = pois_loader,
         road_network_loader = road_network_loader,
         bbox = bbox,

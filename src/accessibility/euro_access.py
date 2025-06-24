@@ -1,5 +1,5 @@
 from math import floor
-from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra
+from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra_parallel
 import numpy as np
 
 import sys
@@ -55,40 +55,37 @@ for service in ["education", "healthcare"]:
         else: num_processors_to_use = 10
         extention_buffer = 20000 if service=="education" else 60000
 
-        # launch process for each tile file
-        for x in range(xmin, xmax+1, partition_size):
-            for y in range(ymin, ymax+1, partition_size):
 
-                # output file
-                out_file = out_folder_service + "euro_access_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
+        # output file
+        out_file = out_folder_service + "euro_access_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
 
-                # skip if output file was already produced
-                if os.path.isfile(out_file): continue
+        # skip if output file was already produced
+        if os.path.isfile(out_file): continue
 
-                print(service, year, " - Tile file", x, y)
+        print(service, year, " - Tile file", x, y)
 
-                # build accessibility grid
-                accessiblity_grid_k_nearest_dijkstra(
-                    pois_loader = pois_loader,
-                    road_network_loader = road_network_loader,
-                    bbox = [x, y, x+partition_size, y+partition_size],
-                    out_parquet_file= out_file,
-                    k = 3,
-                    weight_function = weight_function,
-                    direction_fun = direction_fun,
-                    is_not_snappable_fun = is_not_snappable_fun,
-                    initial_node_level_fun = initial_node_level_fun,
-                    final_node_level_fun = final_node_level_fun,
-                    cell_id_fun = cell_id_fun,
-                    grid_resolution= grid_resolution,
-                    cell_network_max_distance= grid_resolution * 2,
-                    partition_size = 125000,
-                    extention_buffer = 20000 if service=="education" else 60000,
-                    detailled = detailled_network_decomposition,
-                    densification_distance=densification_distance,
-                    duration_simplification_fun = duration_simplification_fun,
-                    num_processors_to_use = num_processors_to_use,
-                )
+        # build accessibility grid
+        accessiblity_grid_k_nearest_dijkstra_parallel(
+            pois_loader = pois_loader,
+            road_network_loader = road_network_loader,
+            bbox = bbox,
+            out_folder = out_folder_service,
+            k = 3,
+            weight_function = weight_function,
+            direction_fun = direction_fun,
+            is_not_snappable_fun = is_not_snappable_fun,
+            initial_node_level_fun = initial_node_level_fun,
+            final_node_level_fun = final_node_level_fun,
+            cell_id_fun = cell_id_fun,
+            grid_resolution= grid_resolution,
+            cell_network_max_distance= grid_resolution * 2,
+            partition_size = 125000,
+            extention_buffer = 20000 if service=="education" else 60000,
+            detailled = detailled_network_decomposition,
+            densification_distance=densification_distance,
+            duration_simplification_fun = duration_simplification_fun,
+            num_processors_to_use = num_processors_to_use,
+        )
 
         # combine parquet files to a single tiff file
         geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif"
