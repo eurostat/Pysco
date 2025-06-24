@@ -108,7 +108,7 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "get source POIs")
     pois = pois_loader(extended_bbox)
     #TODO stop there or fill with 'no_data' ?
-    if(not pois): return
+    #if(not pois): return
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "make graph")
     roads = road_network_loader(extended_bbox)
@@ -124,7 +124,7 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     snappable_nodes = gb_['snappable_nodes']
     del gb_, roads
     if show_detailled_messages: print(datetime.now(), x_part, y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
-    if(len(snappable_nodes)==0): return
+    #if(len(snappable_nodes)==0): return
     #if(len(graph.keys())==0): return
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
@@ -139,7 +139,7 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     del pois
     if show_detailled_messages: print(datetime.now(), x_part, y_part, len(sources), "source nodes found")
     #TODO stop there or fill with 'no_data' ?
-    if(len(sources)==0): return
+    #if(len(sources)==0): return
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "compute accessiblity")
     result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
@@ -182,9 +182,9 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
 
     del result, idx, snappable_nodes
 
-    if len(grd_ids) == 0:
-        print(datetime.now(), x_part, y_part, len(grd_ids), "cells saved")
-        return
+    #if len(grd_ids) == 0:
+    #    print(datetime.now(), x_part, y_part, len(grd_ids), "cells saved")
+    #    return
 
     # make output dataframe
     data = { 'GRD_ID':grd_ids }
