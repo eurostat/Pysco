@@ -44,8 +44,8 @@ for service in ["education", "healthcare"]:
     for year in ["2023","2020"]:
 
         # ouput folder
-        out_folder_service = out_folder + "out_" + service + "_" + year + "_" + str(grid_resolution) + "m/"
-        if not os.path.exists(out_folder_service): os.makedirs(out_folder_service)
+        out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(grid_resolution) + "m/"
+        if not os.path.exists(out_folder_service_year): os.makedirs(out_folder_service_year)
 
         tomtom_year = "2019" if year == "2020" else year
         def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
@@ -55,21 +55,15 @@ for service in ["education", "healthcare"]:
         else: num_processors_to_use = 10
         extention_buffer = 20000 if service=="education" else 60000
 
-
         # output file
-        out_file = out_folder_service + "euro_access_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
-
-        # skip if output file was already produced
-        if os.path.isfile(out_file): continue
-
-        print(service, year, " - Tile file", x, y)
+        #out_file = out_folder_service + "euro_access_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
 
         # build accessibility grid
         accessiblity_grid_k_nearest_dijkstra_parallel(
             pois_loader = pois_loader,
             road_network_loader = road_network_loader,
             bbox = bbox,
-            out_folder = out_folder_service,
+            out_folder = out_folder_service_year,
             k = 3,
             weight_function = weight_function,
             direction_fun = direction_fun,
@@ -94,7 +88,7 @@ for service in ["education", "healthcare"]:
         if os.path.isfile(geotiff): continue
 
         # get all parquet files in the output folder
-        files = [os.path.join(out_folder_service, f) for f in os.listdir(out_folder_service) if f.endswith('.parquet')]
+        files = [os.path.join(out_folder_service_year, f) for f in os.listdir(out_folder_service_year) if f.endswith('.parquet')]
         if len(files)==0: continue
 
         print("transforming", len(files), "parquet files into tif for", service, year)
