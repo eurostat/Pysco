@@ -28,17 +28,14 @@ grid_resolution = 1000
 detailled_network_decomposition = grid_resolution == 100
 densification_distance = grid_resolution
 cell_network_max_distance = grid_resolution * 2
-
-tile_file_size_m = 500000 if grid_resolution == 100 else 1000000
-# should be a divisor of tile_file_size_m
-partition_size = 125000 if grid_resolution == 100 else 200000
+partition_size = 100000 if grid_resolution == 100 else 200000
 
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 def duration_simplification_fun(x): return int(round(x))
 
 
-# clamp bbox to fit with tile_file_size_m
-clamp = lambda v : floor(v/tile_file_size_m)*tile_file_size_m
+# clamp bbox to fit with partition_size
+clamp = lambda v : floor(v/partition_size)*partition_size
 [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
 
 
@@ -59,8 +56,8 @@ for service in ["education", "healthcare"]:
         extention_buffer = 20000 if service=="education" else 60000
 
         # launch process for each tile file
-        for x in range(xmin, xmax+1, tile_file_size_m):
-            for y in range(ymin, ymax+1, tile_file_size_m):
+        for x in range(xmin, xmax+1, partition_size):
+            for y in range(ymin, ymax+1, partition_size):
 
                 # output file
                 out_file = out_folder_service + "euro_access_" + service + "_" + str(grid_resolution) + "m_" + str(x) + "_" + str(y) + ".parquet"
@@ -74,7 +71,7 @@ for service in ["education", "healthcare"]:
                 accessiblity_grid_k_nearest_dijkstra(
                     pois_loader = pois_loader,
                     road_network_loader = road_network_loader,
-                    bbox = [x, y, x+tile_file_size_m, y+tile_file_size_m],
+                    bbox = [x, y, x+partition_size, y+partition_size],
                     out_parquet_file= out_file,
                     k = 3,
                     weight_function = weight_function,
