@@ -35,7 +35,7 @@ for year in ["2023","2020"]:
 
     for service in ["education", "healthcare"]:
 
-        for grid_resolution in [1000, 100]:
+        for grid_resolution in [100]:
 
             # detailled network decomposition only when resolution to 100m
             detailled_network_decomposition = grid_resolution == 100
