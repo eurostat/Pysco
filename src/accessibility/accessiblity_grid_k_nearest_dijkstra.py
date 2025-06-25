@@ -99,7 +99,7 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     # skip if output file was already produced
     if os.path.isfile(out_file): return
 
-    if not show_detailled_messages: print(datetime.now(), x_part, y_part)
+    print(datetime.now(), x_part, y_part)
 
     # build extended bbox
     extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+file_size+extention_buffer, y_part+file_size+extention_buffer)
