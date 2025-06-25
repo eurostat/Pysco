@@ -46,10 +46,10 @@ for grid_resolution in [1000, 100]:
             )
 
             print(grid_resolution, service, year, "apply mask to force some countries to nodata")
-            cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
+            cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
                     "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
                     "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO"]
-            #exclude: ["DE", "CH", "RS", "BA", "MK", "AL", "ME", "MD"],
+            #exclude: ["CH", "RS", "BA", "MK", "AL", "ME", "MD"],
             if service == "healthcare": cnts.append("CH")
             geotiff_mask_by_countries(
                 geotiff,

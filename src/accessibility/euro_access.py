@@ -8,12 +8,11 @@ from utils.featureutils import iter_features
 from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
 
-
+#TODO include DE
 #TODO add missing countries (DE) from internal data
 #check: FEATTYP=4110 FRC 0 to 6
 
 #TODO
-# both: DE missing. and other countries?
 # healthcare EL 2023: add new data.
 # healthcare EL 2020: missing services in centre.
 # healthcare Estonia: see the two islands
