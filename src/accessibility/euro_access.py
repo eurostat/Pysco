@@ -7,10 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
 from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
-
-#TODO include DE
-#TODO add missing countries (DE) from internal data
-#check: FEATTYP=4110 FRC 0 to 6
+# check DE inclusion
 
 #TODO
 # healthcare EL 2023: add new data.
