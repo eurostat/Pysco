@@ -186,6 +186,11 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
 
     del result, idx, snappable_nodes
 
+    if len(grd_ids) == 0:
+        pd.DataFrame({}).to_parquet(out_file)
+        print(datetime.now(), x_part, y_part, "0 cells saved")
+        return
+
     # make output dataframe
     data = { 'GRD_ID':grd_ids }
     if keep_distance_to_node: data['distance_to_node'] = distances_to_node

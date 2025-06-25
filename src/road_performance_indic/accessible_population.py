@@ -278,7 +278,7 @@ def accessiblity_population_parallel(
 
 
 #TODO compute population <1H30 AND < 120km
-#TODO fix issue normandy, opale coast
+#TODO accessible population issues: IE east coast, manche coast, croatia border
 #TODO check and fix 2018-2021 inconstiscencies
 #TODO check islands - better handle those with bridges ?
 #TODO take right tomtom versions - 2018 and 2021
