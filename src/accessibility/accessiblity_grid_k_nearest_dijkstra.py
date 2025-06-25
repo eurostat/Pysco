@@ -69,7 +69,6 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=False):
 
 
 
-# function to launch in parallel for each partition
 def accessiblity_grid_k_nearest_dijkstra(xy,
             extention_buffer,
             file_size,
@@ -109,6 +108,7 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     pois = pois_loader(extended_bbox)
     if(not pois):
         pd.DataFrame({}).to_parquet(out_file)
+        print(datetime.now(), x_part, y_part, "0 cells saved")
         return
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "make graph")
@@ -128,6 +128,7 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
 
     if(len(snappable_nodes)==0):
         pd.DataFrame({}).to_parquet(out_file)
+        print(datetime.now(), x_part, y_part, "0 cells saved")
         return
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
@@ -184,10 +185,6 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
             grd_ids.append(cell_id_fun(x,y))
 
     del result, idx, snappable_nodes
-
-    #if len(grd_ids) == 0:
-    #    print(datetime.now(), x_part, y_part, len(grd_ids), "cells saved")
-    #    return
 
     # make output dataframe
     data = { 'GRD_ID':grd_ids }
