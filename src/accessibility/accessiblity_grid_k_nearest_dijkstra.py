@@ -143,7 +143,6 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     del pois
     if show_detailled_messages: print(datetime.now(), x_part, y_part, len(sources), "source nodes found")
 
-
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "compute accessiblity")
     result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
     del graph, sources
