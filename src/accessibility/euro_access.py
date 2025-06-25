@@ -85,7 +85,7 @@ for year in ["2023","2020"]:
                 detailled = detailled_network_decomposition,
                 densification_distance=densification_distance,
                 duration_simplification_fun = duration_simplification_fun,
-                num_processors_to_use = num_processors_to_use,
+                num_processors = num_processors_to_use,
                 shuffle=True
             )
 
