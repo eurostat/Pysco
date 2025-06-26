@@ -74,5 +74,5 @@ print("aggregate")
 aggregate()
 
 #print("tiling")
-#tiling()
+tiling()
 
