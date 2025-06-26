@@ -23,18 +23,18 @@ def aggregate():
             for resolution in [200, 500]:
                 print(service, year, resolution)
                 inp = f0 + "euro_access_"+service+"_"+year+"_100m.tif"
-                resample_geotiff_aligned(inp, folder+service+"_" + year+"_"+str(resolution) + "m.tif", resolution, Resampling.average)
+                resample_geotiff_aligned(inp, folder+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m.tif", resolution, Resampling.average)
 
             print(service, year, 1000)
-            resample_geotiff_aligned(folder+service+"_"+year+"_500m.tif", folder+service+"_" + year+"_1000m.tif", 1000, Resampling.average)
+            resample_geotiff_aligned(folder+"euro_access_"+service+"_"+year+"_500m.tif", folder+"euro_access_"+service+"_" + year+"_1000m.tif", 1000, Resampling.average)
 
             for resolution in [2000, 5000, 10000]:
                 print(service, year, resolution)
-                resample_geotiff_aligned(folder+service+"_" + year+"_1000m.tif", folder+service+"_" + year+"_"+str(resolution)+"m.tif", resolution, Resampling.average)
+                resample_geotiff_aligned(folder+"euro_access_"+service+"_" + year+"_1000m.tif", folder+"euro_access_"+service+"_" + year+"_"+str(resolution)+"m.tif", resolution, Resampling.average)
 
             for resolution in [20000, 50000, 100000]:
                 print(service, year, resolution)
-                resample_geotiff_aligned(folder+service+"_" + year+"_10000m.tif", folder+service+"_" + year+"_"+str(resolution)+"m.tif", resolution, Resampling.average)
+                resample_geotiff_aligned(folder+"euro_access_"+service+"_" + year+"_10000m.tif", folder+"euro_access_"+service+"_" + year+"_"+str(resolution)+"m.tif", resolution, Resampling.average)
 
 
 def tiling():
@@ -53,10 +53,8 @@ def tiling():
             # prepare dict for geotiff bands
             dict = {}
             for year in ["2020", "2023"]:
-                band = 1
-                for indic in ["1", "a3"]:
-                    dict["dt_" + indic + "_" + year] = {"file":folder+service+"_"+str(resolution)+"_" + year + ".tif", "band":band}
-                    band +=1
+                dict["dt_1_" + year] = {"file":folder+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m.tif", "band":1}
+                dict["dt_a3_" + year] = {"file":folder+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m.tif", "band":2}
                 dict["POP_2021"] = { "file":folder_pop_tiff+"pop_2021_"+str(resolution)+".tif", "band":1 }
 
             # launch tiling
