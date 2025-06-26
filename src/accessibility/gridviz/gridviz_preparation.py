@@ -18,7 +18,7 @@ if not os.path.exists(folder): os.makedirs(folder)
 folder_pop_tiff = "/home/juju/geodata/census/2021/aggregated_tiff/"
 
 # combine all necessary data into a single geotiffs
-def combine(resolution):
+def combine(resolution=100):
     for service in ["education", "healthcare"]:
         # make list of files to combine
         tiffs = []
@@ -77,8 +77,7 @@ def tiling():
 
 
 #print("combine geotiffs")
-#combine("1000")
-#combine("100")
+#combine()
 
 #print("aggregate")
 #aggregate()
