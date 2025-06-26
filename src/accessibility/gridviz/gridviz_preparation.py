@@ -23,18 +23,18 @@ def aggregate():
             for resolution in [200, 500]:
                 print(service, year, resolution)
                 inp = "euro_access_"+service+"_"+year+"_100m.tif"
-                resample_geotiff_aligned(inp, folder+service+"_"+str(resolution)+".tif", resolution, Resampling.average)
+                resample_geotiff_aligned(inp, folder+service+"_"+str(resolution)+"_" + year + ".tif", resolution, Resampling.average)
 
             print(service, year, 1000)
-            resample_geotiff_aligned(folder+service+"_500.tif", folder+service+"_1000.tif", 1000, Resampling.average)
+            resample_geotiff_aligned(folder+service+"_500_"+year+".tif", folder+service+"_1000_"+year+".tif", 1000, Resampling.average)
 
             for resolution in [2000, 5000, 10000]:
                 print(service, year, resolution)
-                resample_geotiff_aligned(folder+service+"_1000.tif", folder+service+"_"+str(resolution)+".tif", resolution, Resampling.average)
+                resample_geotiff_aligned(folder+service+"_1000_"+year+".tif", folder+service+"_"+str(resolution)+"_" + year + ".tif", resolution, Resampling.average)
 
             for resolution in [20000, 50000, 100000]:
                 print(service, year, resolution)
-                resample_geotiff_aligned(folder+service+"_10000.tif", folder+service+"_"+str(resolution)+".tif", resolution, Resampling.average)
+                resample_geotiff_aligned(folder+service+"_10000_"+year+".tif", folder+service+"_"+str(resolution)+"_" + year + ".tif", resolution, Resampling.average)
 
 
 def tiling():
@@ -52,10 +52,10 @@ def tiling():
 
             # prepare dict for geotiff bands
             dict = {}
-            band = 1
             for year in ["2020", "2023"]:
+                band = 1
                 for indic in ["1", "a3"]:
-                    dict["dt_" + indic + "_" + year] = {"file":folder+service+"_"+str(resolution)+".tif", "band":band}
+                    dict["dt_" + indic + "_" + year] = {"file":folder+service+"_"+str(resolution)+"_" + year + ".tif", "band":band}
                     band +=1
                 dict["POP_2021"] = { "file":folder_pop_tiff+"pop_2021_"+str(resolution)+".tif", "band":1 }
 
