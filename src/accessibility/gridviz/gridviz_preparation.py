@@ -23,18 +23,18 @@ def aggregate():
             for resolution in [200, 500]:
                 print(service, year, resolution)
                 inp = f0 + "euro_access_"+service+"_"+year+"_100m.tif"
-                resample_geotiff_aligned(inp, folder+service+"_"+str(resolution)+"_" + year + ".tif", resolution, Resampling.average)
+                resample_geotiff_aligned(inp, folder+service+"_" + year+"_"+str(resolution) + "m.tif", resolution, Resampling.average)
 
             print(service, year, 1000)
-            resample_geotiff_aligned(folder+service+"_500_"+year+".tif", folder+service+"_1000_"+year+".tif", 1000, Resampling.average)
+            resample_geotiff_aligned(folder+service+"_"+year+"_500m.tif", folder+service+"_" + year+"_1000m.tif", 1000, Resampling.average)
 
             for resolution in [2000, 5000, 10000]:
                 print(service, year, resolution)
-                resample_geotiff_aligned(folder+service+"_1000_"+year+".tif", folder+service+"_"+str(resolution)+"_" + year + ".tif", resolution, Resampling.average)
+                resample_geotiff_aligned(folder+service+"_" + year+"_1000m.tif", folder+service+"_" + year+"_"+str(resolution)+"m.tif", resolution, Resampling.average)
 
             for resolution in [20000, 50000, 100000]:
                 print(service, year, resolution)
-                resample_geotiff_aligned(folder+service+"_10000_"+year+".tif", folder+service+"_"+str(resolution)+"_" + year + ".tif", resolution, Resampling.average)
+                resample_geotiff_aligned(folder+service+"_" + year+"_10000m.tif", folder+service+"_" + year+"_"+str(resolution)+"m.tif", resolution, Resampling.average)
 
 
 def tiling():
