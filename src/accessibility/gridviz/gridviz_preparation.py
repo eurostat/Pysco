@@ -5,7 +5,7 @@ import sys
 import os
 from rasterio.enums import Resampling
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.geotiff import resample_geotiff_aligned
 
 f0 = "/home/juju/gisco/accessibility/"
