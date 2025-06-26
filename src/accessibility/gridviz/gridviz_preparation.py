@@ -7,7 +7,7 @@ import os
 from rasterio.enums import Resampling
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.geotiff import combine_geotiffs, resample_geotiff_aligned
+from utils.geotiff import resample_geotiff_aligned
 
 
 
