@@ -45,6 +45,7 @@ def build_graph_tool_graph(graph):
 def accessiblity_population(xy,
             out_folder,
             duration_max_s,
+            distance_max_m,
             extention_buffer,
             file_size,
             road_network_loader,
@@ -239,6 +240,7 @@ def accessiblity_population_parallel(
                        bbox,
                        out_folder,
                        duration_max_s,
+                       distance_max_m,
                        weight_function = lambda feature,sl:sl,
                        direction_fun=lambda feature:"both", #('both', 'oneway', 'forward', 'backward')
                        is_not_snappable_fun = None,
@@ -265,6 +267,7 @@ def accessiblity_population_parallel(
             xy,
             out_folder,
             duration_max_s,
+            distance_max_m,
             extention_buffer,
             file_size,
             road_network_loader,
@@ -321,6 +324,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 file_size = 200000
 extention_buffer = 180000 # 180000
 duration_max_s = 60 * 90 #1h30=90min
+distance_max_m = 120 * 1000 #120km
 num_processors_to_use = 9
 
 def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
@@ -345,6 +349,7 @@ for year in ["2018"]:
                         bbox = bbox,
                         out_folder = out_folder_year,
                         duration_max_s = duration_max_s,
+                        distance_max_m = distance_max_m,
                         weight_function = weight_function,
                         direction_fun = direction_fun,
                         is_not_snappable_fun = is_not_snappable_fun,
