@@ -95,7 +95,7 @@ def accessiblity_population(xy,
     # output data
     grd_ids = [] # the cell identifiers
     accessible_populations = [] # the values corresponding to the cell identifiers
-    accessible_populations2 = [] # the values corresponding to the cell identifiers
+    near_accessible_populations = [] # the values corresponding to the cell identifiers
 
     if len(snappable_nodes) > 0:
 
@@ -174,7 +174,7 @@ def accessiblity_population(xy,
                     # no need to compute another time: take cached value
                     sum_pop, sum_pop2 = cache[n]
                     accessible_populations.append(sum_pop)
-                    accessible_populations2.append(sum_pop2)
+                    near_accessible_populations.append(sum_pop2)
                     grd_ids.append(cell_id_fun(x,y))
                     continue
 
@@ -212,12 +212,11 @@ def accessiblity_population(xy,
                 # compute population within duration_max_s and distance_max_m
                 #TODO
                 #reachable_mask = dist_arr[populated_graph_vertex_indices] < np.inf and True
-                #sum_pop_ = np.sum(populated_pops[reachable_mask])
-                sum_pop2 = 0
+                #sum_pop2 = np.sum(populated_pops[reachable_mask])
 
                 # store cell value
                 accessible_populations.append(sum_pop)
-                accessible_populations2.append(sum_pop2)
+                near_accessible_populations.append(sum_pop2)
                 grd_ids.append(cell_id_fun(x,y))
 
                 # cache value, to be sure is is not computed another time
@@ -225,7 +224,7 @@ def accessiblity_population(xy,
                 #print(datetime.now(),"end")
 
     # save output as parquet
-    data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations }
+    data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations, 'ACC_POP_1H30_120KM':near_accessible_populations }
     pd.DataFrame(data).to_parquet(out_file)
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells saved")

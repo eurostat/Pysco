@@ -54,7 +54,7 @@ for grid_resolution in [100, 1000]:
             bbox = [xmin,ymin,xmax,ymax]
 
             if grid_resolution == 100:
-                num_processors_to_use = 6 if service == "education" else 3 #3
+                num_processors_to_use = 6 if service == "education" else 4 #3
             else: num_processors_to_use = 10
             extention_buffer = 20000 if service=="education" else 60000
 
