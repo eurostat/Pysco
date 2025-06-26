@@ -17,30 +17,28 @@ if not os.path.exists(folder): os.makedirs(folder)
 
 folder_pop_tiff = "/home/juju/geodata/census/2021/aggregated_tiff/"
 
-# combine all necessary data into a single geotiffs
-def combine(resolution=100):
-    for service in ["education", "healthcare"]:
-        # make list of files to combine
-        tiffs = []
-        for year in ["2020", "2023"]:
-            tiffs.append( f0 + "euro_access_"+service+"_"+year+"_"+resolution+"m.tif" )
-        # combine files
-        combine_geotiffs(tiffs, folder+service+"_"+resolution+".tif", compress="deflate")
-
 
 # aggregate at various resolutions - average
 def aggregate():
-    for service in ["education", "healthcare"]:
 
-        resolution = 1000
-        for f in [2, 5, 10, 20, 50, 100]:
-            print(service, resolution, f)
-            resample_geotiff_aligned(folder+service+"_"+str(resolution)+".tif", folder+service+"_"+str(f*resolution)+".tif", f*resolution, Resampling.average)
+    for year in ["2023", "2020"]:
+        for service in ["education", "healthcare"]:
 
-        resolution = 100
-        for f in [2, 5]:
-            print(service, resolution, f)
-            resample_geotiff_aligned(folder+service+"_"+str(resolution)+".tif", folder+service+"_"+str(f*resolution)+".tif", f*resolution, Resampling.average)
+            for resolution in [200, 500]:
+                print(service, year, resolution)
+                inp = "euro_access_"+service+"_"+year+"_100m.tif"
+                resample_geotiff_aligned(inp, folder+service+"_"+str(resolution)+".tif", resolution, Resampling.average)
+
+            print(service, year, 1000)
+            resample_geotiff_aligned(folder+service+"_500.tif", folder+service+"_1000.tif", 1000, Resampling.average)
+
+            for resolution in [2000, 5000, 10000]:
+                print(service, year, resolution)
+                resample_geotiff_aligned(folder+service+"_1000.tif", folder+service+"_"+str(resolution)+".tif", resolution, Resampling.average)
+
+            for resolution in [20000, 50000, 100000]:
+                print(service, year, resolution)
+                resample_geotiff_aligned(folder+service+"_10000.tif", folder+service+"_"+str(resolution)+".tif", resolution, Resampling.average)
 
 
 def tiling():
@@ -76,12 +74,9 @@ def tiling():
                 )
 
 
-#print("combine geotiffs")
-#combine()
+print("aggregate")
+aggregate()
 
-#print("aggregate")
-#aggregate()
-
-print("tiling")
-tiling()
+#print("tiling")
+#tiling()
 
