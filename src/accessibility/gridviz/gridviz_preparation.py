@@ -1,6 +1,5 @@
 # prepare accessibility grid for gridviz mapping
 
-
 from pygridmap import gridtiler_raster
 import sys
 import os
@@ -9,14 +8,11 @@ from rasterio.enums import Resampling
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.geotiff import resample_geotiff_aligned
 
-
-
 f0 = "/home/juju/gisco/accessibility/"
 folder = f0 + "gridviz/"
 if not os.path.exists(folder): os.makedirs(folder)
 
 folder_pop_tiff = "/home/juju/geodata/census/2021/aggregated_tiff/"
-
 
 # aggregate at various resolutions - average
 def aggregate():
