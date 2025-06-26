@@ -20,7 +20,7 @@ def aggregate():
     for year in ["2023", "2020"]:
         for service in ["education", "healthcare"]:
 
-            for resolution in [200, 500, 1000]:
+            for resolution in [100, 200, 500, 1000]:
                 print(service, year, resolution)
                 resample_geotiff_aligned(f0 + "euro_access_"+service+"_"+year+"_100m.tif", folder+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m.tif", resolution, Resampling.average)
 
@@ -70,6 +70,6 @@ def tiling():
 print("aggregate")
 aggregate()
 
-#print("tiling")
+print("tiling")
 tiling()
 

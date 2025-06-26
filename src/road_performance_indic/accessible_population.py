@@ -44,7 +44,7 @@ def build_graph_tool_graph(graph):
 
 def accessiblity_population(xy,
             out_folder,
-            duration_s,
+            duration_max_s,
             extention_buffer,
             file_size,
             road_network_loader,
@@ -94,6 +94,7 @@ def accessiblity_population(xy,
     # output data
     grd_ids = [] # the cell identifiers
     accessible_populations = [] # the values corresponding to the cell identifiers
+    accessible_populations2 = [] # the values corresponding to the cell identifiers
 
     if len(snappable_nodes) > 0:
 
@@ -170,7 +171,9 @@ def accessiblity_population(xy,
                 # check if value was not already computed - try to find it in the cache
                 if n in cache:
                     # no need to compute another time: take cached value
-                    accessible_populations.append(cache[n])
+                    sum_pop, sum_pop2 = cache[n]
+                    accessible_populations.append(sum_pop)
+                    accessible_populations2.append(sum_pop2)
                     grd_ids.append(cell_id_fun(x,y))
                     continue
 
@@ -179,7 +182,7 @@ def accessiblity_population(xy,
 
                 # compute dijkstra from origin, with cutoff
                 #print(datetime.now())
-                dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_s)
+                dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_max_s)
                 #print(datetime.now())
 
                 #check node n is reached. value should be 0. OK
@@ -200,15 +203,24 @@ def accessiblity_population(xy,
 
                 # compute population sum for reached nodes
                 dist_arr = dist_map.get_array()
+
+                # compute population within duration_max_s
                 reachable_mask = dist_arr[populated_graph_vertex_indices] < np.inf
                 sum_pop = np.sum(populated_pops[reachable_mask])
 
+                # compute population within duration_max_s and distance_max_m
+                #TODO
+                #reachable_mask = dist_arr[populated_graph_vertex_indices] < np.inf and True
+                #sum_pop_ = np.sum(populated_pops[reachable_mask])
+                sum_pop2 = 0
+
                 # store cell value
                 accessible_populations.append(sum_pop)
+                accessible_populations2.append(sum_pop2)
                 grd_ids.append(cell_id_fun(x,y))
 
                 # cache value, to be sure is is not computed another time
-                cache[n] = sum_pop
+                cache[n] = [ sum_pop, sum_pop2 ]
                 #print(datetime.now(),"end")
 
     # save output as parquet
@@ -226,7 +238,7 @@ def accessiblity_population_parallel(
                        pop_col,
                        bbox,
                        out_folder,
-                       duration_s,
+                       duration_max_s,
                        weight_function = lambda feature,sl:sl,
                        direction_fun=lambda feature:"both", #('both', 'oneway', 'forward', 'backward')
                        is_not_snappable_fun = None,
@@ -252,7 +264,7 @@ def accessiblity_population_parallel(
         (
             xy,
             out_folder,
-            duration_s,
+            duration_max_s,
             extention_buffer,
             file_size,
             road_network_loader,
@@ -308,7 +320,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 file_size = 200000
 extention_buffer = 180000 # 180000
-duration_s = 60 * 90 #1h30=90min
+duration_max_s = 60 * 90 #1h30=90min
 num_processors_to_use = 9
 
 def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
@@ -332,7 +344,7 @@ for year in ["2018"]:
                         'T' if year == "2021" else "TOT_P_2018",
                         bbox = bbox,
                         out_folder = out_folder_year,
-                        duration_s = duration_s,
+                        duration_max_s = duration_max_s,
                         weight_function = weight_function,
                         direction_fun = direction_fun,
                         is_not_snappable_fun = is_not_snappable_fun,
