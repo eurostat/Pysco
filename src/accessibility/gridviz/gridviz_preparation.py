@@ -22,7 +22,7 @@ def aggregate():
 
             for resolution in [200, 500]:
                 print(service, year, resolution)
-                inp = "euro_access_"+service+"_"+year+"_100m.tif"
+                inp = f0 + "euro_access_"+service+"_"+year+"_100m.tif"
                 resample_geotiff_aligned(inp, folder+service+"_"+str(resolution)+"_" + year + ".tif", resolution, Resampling.average)
 
             print(service, year, 1000)
