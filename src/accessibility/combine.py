@@ -12,18 +12,18 @@ out_folder = '/home/juju/gisco/accessibility/'
 # whole europe
 bbox = [ 900000, 900000, 6600000, 5500000 ]
 
-for grid_resolution in [100]:
+for resolution in [100]:
 
     for service in ["education", "healthcare"]:
 
         for year in ["2023","2020"]:
 
             # ouput folder
-            out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(grid_resolution) + "m/"
+            out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(resolution) + "m/"
             if not os.path.exists(out_folder_service_year): continue
 
             # combine parquet files to a single tiff file
-            geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(grid_resolution) + "m.tif"
+            geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(resolution) + "m.tif"
 
             # check if tiff file was already produced
             if os.path.isfile(geotiff): continue
@@ -32,7 +32,7 @@ for grid_resolution in [100]:
             files = [os.path.join(out_folder_service_year, f) for f in os.listdir(out_folder_service_year) if f.endswith('.parquet')]
             if len(files)==0: continue
 
-            print(grid_resolution, service, year, "transforming", len(files), "parquet files into tif for", service, year)
+            print(resolution, service, year, "transforming", len(files), "parquet files into tif for", service, year)
             parquet_grid_to_geotiff(
                 files,
                 geotiff,
@@ -44,7 +44,7 @@ for grid_resolution in [100]:
                 compress='deflate'
             )
 
-            print(grid_resolution, service, year, "apply mask to force some countries to nodata")
+            print(resolution, service, year, "apply mask to force some countries to nodata")
             cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
                     "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
                     "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO"]
@@ -59,6 +59,6 @@ for grid_resolution in [100]:
                 compress="deflate"
             )
 
-            print(grid_resolution, service, year, "rename tiff bands")
+            print(resolution, service, year, "rename tiff bands")
             rename_geotiff_bands(geotiff, [service + "_" + year + "_1", service + "_" + year + "_a3"])
 
