@@ -20,12 +20,14 @@ def aggregate():
     for year in ["2023", "2020"]:
         for service in ["education", "healthcare"]:
 
-            for resolution in [100, 200, 500, 1000]:
+            # it is better to resample all resolution from 100m one. Otherwise, we do averages of averages which may create some biais around places with many nodata pixels
+            for resolution in [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000]:
                 print(service, year, resolution)
                 resample_geotiff_aligned(f0 + "euro_access_"+service+"_"+year+"_100m.tif", folder+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m.tif", resolution, Resampling.average)
 
-            #print(service, year, 1000)
-            #resample_geotiff_aligned(folder+"euro_access_"+service+"_"+year+"_500m.tif", folder+"euro_access_"+service+"_" + year+"_1000m.tif", 1000, Resampling.average)
+            '''
+            print(service, year, 1000)
+            resample_geotiff_aligned(folder+"euro_access_"+service+"_"+year+"_500m.tif", folder+"euro_access_"+service+"_" + year+"_1000m.tif", 1000, Resampling.average)
 
             for resolution in [2000, 5000, 10000]:
                 print(service, year, resolution)
@@ -34,7 +36,7 @@ def aggregate():
             for resolution in [20000, 50000, 100000]:
                 print(service, year, resolution)
                 resample_geotiff_aligned(folder+"euro_access_"+service+"_" + year+"_10000m.tif", folder+"euro_access_"+service+"_" + year+"_"+str(resolution)+"m.tif", resolution, Resampling.average)
-
+            '''
 
 def tiling():
 
