@@ -211,20 +211,17 @@ def accessiblity_population(xy,
                 # Values are inf for vertices unreachable within max_dist
                 dist_arr = dist_map.get_array()
 
-
-
                 # compute population within duration_max_s
                 # dist_arr[populated_graph_vertex_indices] selects the distances to populated vertices.
                 # < np.inf returns a boolean array: True for each vertex in the selection if its distance is finite.
                 reachable_mask = dist_arr[populated_graph_vertex_indices] < np.inf
-                print(reachable_mask)
                 sum_pop = np.sum(populated_pops[reachable_mask])
 
                 # compute population within duration_max_s and distance_max_m
-                #TODO
-                #reachable_mask = dist_arr[populated_graph_vertex_indices] < np.inf and True
-                #sum_pop2 = np.sum(populated_pops[reachable_mask])
-                sum_pop2 = 25
+                def my_condition(id): return True #TODO
+                condition_mask = np.array([my_condition(idx) for idx in populated_graph_vertex_indices])
+                combined_mask = reachable_mask & condition_mask
+                sum_pop2 = np.sum(populated_pops[combined_mask])
 
                 # store cell value
                 accessible_populations.append(sum_pop)
