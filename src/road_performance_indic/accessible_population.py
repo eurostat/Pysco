@@ -140,7 +140,10 @@ def accessiblity_population(xy,
         #for nn in populated_nodes: graph_id_to_vertex[nn] = graph.vertex(node_id_to_index[nn])
 
         # create numpy arrays for lookups
+        # list of graph vertex indices with some population
         populated_graph_vertex_indices = np.array([graph.vertex(node_id_to_index[nn]) for nn in node_pop_dict.keys()], dtype=np.int64)
+
+        # population of these nodes, same order
         #populated_pops = np.array([node_pop_dict[nn] for nn in populated_nodes], dtype=np.int64)
         populated_pops = np.array(list(node_pop_dict.values()), dtype=np.int64)
 
