@@ -12,7 +12,6 @@ out_folder = '/home/juju/gisco/accessibility/'
 # whole europe
 bbox = [ 900000, 900000, 6600000, 5500000 ]
 
-
 for grid_resolution in [1000, 100]:
 
     for service in ["education", "healthcare"]:
