@@ -16,7 +16,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 
 for grid_resolution in ["1000"]:
-    for year in ["2018", "2021"]:
+    for year in ["2021"]:
 
         # ouput folder
         out_folder_year = out_folder + "out_" + year + "_" + str(grid_resolution) + "m/"
@@ -26,7 +26,7 @@ for grid_resolution in ["1000"]:
 
         # check if tiff file was already produced
         # combine parquet files to a single tiff file
-        if True: #not os.path.isfile(geotiff_ap):
+        if not os.path.isfile(geotiff_ap):
 
             # get all parquet files in the output folder
             files = [os.path.join(out_folder_year, f) for f in os.listdir(out_folder_year) if f.endswith('.parquet')]
@@ -68,3 +68,4 @@ for grid_resolution in ["1000"]:
 
         print("rename bands", year, grid_resolution)
         rename_geotiff_bands(combined, [ "np_" + year, "ap_" + year, "nap_" + year , "rp_" + year , "rp2_" + year ])
+
