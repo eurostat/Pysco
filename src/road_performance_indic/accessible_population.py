@@ -185,6 +185,7 @@ def accessiblity_population(xy,
 
                 # compute dijkstra from origin, with cutoff
                 #print(datetime.now())
+                # VertexPropertyMap of type double, where dist_map[v] gives the shortest distance from the source vertex origin_idx to vertex v
                 dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_max_s)
                 #print(datetime.now())
 
@@ -204,11 +205,19 @@ def accessiblity_population(xy,
                 print(sum_pop)
                 '''
 
-                # compute population sum for reached nodes
+                # NumPy array view of the values stored in dist_map.
+                # where each position i contains the distance from source vertex to vertex i.
+                # The array follows the order of internal vertex indices (v such that int(v) == i).
+                # Values are inf for vertices unreachable within max_dist
                 dist_arr = dist_map.get_array()
 
+
+
                 # compute population within duration_max_s
+                # dist_arr[populated_graph_vertex_indices] selects the distances to populated vertices.
+                # < np.inf returns a boolean array: True for each vertex in the selection if its distance is finite.
                 reachable_mask = dist_arr[populated_graph_vertex_indices] < np.inf
+                print(reachable_mask)
                 sum_pop = np.sum(populated_pops[reachable_mask])
 
                 # compute population within duration_max_s and distance_max_m
