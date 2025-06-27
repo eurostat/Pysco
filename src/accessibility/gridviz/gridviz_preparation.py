@@ -5,6 +5,7 @@ import sys
 import os
 from rasterio.enums import Resampling
 from datetime import datetime
+from math import round
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.geotiff import resample_geotiff_aligned
 
@@ -67,6 +68,7 @@ def tiling():
                 tile_size_cell = 256,
                 format="parquet",
                 num_processors_to_use = 10,
+                modif_fun = round
                 )
 
 
