@@ -72,8 +72,8 @@ def tiling():
                 )
 
 
-print(datetime.now(), "aggregate")
-aggregate()
+#print(datetime.now(), "aggregate")
+#aggregate()
 
 print(datetime.now(), "tiling")
 tiling()
