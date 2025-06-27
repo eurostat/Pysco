@@ -212,7 +212,7 @@ def accessiblity_population(xy,
                 #TODO
                 #reachable_mask = dist_arr[populated_graph_vertex_indices] < np.inf and True
                 #sum_pop2 = np.sum(populated_pops[reachable_mask])
-                sum_pop2 = 0
+                sum_pop2 = 25
 
                 # store cell value
                 accessible_populations.append(sum_pop)
