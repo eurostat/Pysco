@@ -4,9 +4,10 @@ from pygridmap import gridtiler_raster
 import sys
 import os
 from rasterio.enums import Resampling
-
+from datetime import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.geotiff import resample_geotiff_aligned
+
 
 f0 = "/home/juju/gisco/accessibility/"
 folder = f0 + "gridviz/"
@@ -22,7 +23,7 @@ def aggregate():
 
             # it is better to resample all resolution from 100m one. Otherwise, we do averages of averages which may create some biais around places with many nodata pixels
             for resolution in [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000]:
-                print(service, year, resolution)
+                print(datetime.now(), service, year, resolution)
                 resample_geotiff_aligned(f0 + "euro_access_"+service+"_"+year+"_100m.tif", folder+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m.tif", resolution, Resampling.average)
 
             '''
@@ -45,7 +46,7 @@ def tiling():
 
         for service in ["education", "healthcare"]:
 
-            print("Tiling", service, resolution)
+            print(datetime.now(), "Tiling", service, resolution)
 
             # make folder for resolution
             folder_ = folder+"tiles/"+service+"_"+str(resolution)+"/"
@@ -69,9 +70,9 @@ def tiling():
                 )
 
 
-print("aggregate")
+print(datetime.now(), "aggregate")
 aggregate()
 
-print("tiling")
+print(datetime.now(), "tiling")
 tiling()
 
