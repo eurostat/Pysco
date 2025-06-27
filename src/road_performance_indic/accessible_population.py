@@ -140,7 +140,6 @@ def accessiblity_population(xy,
         #for nn in populated_nodes: graph_id_to_vertex[nn] = graph.vertex(node_id_to_index[nn])
 
         # create numpy arrays for lookups
-        # 
         populated_graph_vertex_indices = np.array([graph.vertex(node_id_to_index[nn]) for nn in node_pop_dict.keys()], dtype=np.int64)
         #populated_pops = np.array([node_pop_dict[nn] for nn in populated_nodes], dtype=np.int64)
         populated_pops = np.array(list(node_pop_dict.values()), dtype=np.int64)
@@ -213,6 +212,7 @@ def accessiblity_population(xy,
                 #TODO
                 #reachable_mask = dist_arr[populated_graph_vertex_indices] < np.inf and True
                 #sum_pop2 = np.sum(populated_pops[reachable_mask])
+                sum_pop2 = 0
 
                 # store cell value
                 accessible_populations.append(sum_pop)
@@ -309,21 +309,21 @@ grid_resolution = 1000
 detailled = False
 densification_distance = grid_resolution
 shuffle = True
-show_detailled_messages = False
+show_detailled_messages = True
 
 
 # define output bounding box
 # whole europe
-bbox = [ 900000, 900000, 6600000, 5500000 ]
+#bbox = [ 900000, 900000, 6600000, 5500000 ]
 #luxembourg
-#bbox = [4030000, 2930000, 4060000, 2960000]
+bbox = [4030000, 2930000, 4060000, 2960000]
 #greece
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
-file_size = 200000
-extention_buffer = 180000 # 180000
-duration_max_s = 60 * 90 #1h30=90min
-distance_max_m = 120 * 1000 #120km
+file_size = 30000 # 200000
+extention_buffer = 18000 # 180000
+duration_max_s = 6 * 90 #1h30=90min
+distance_max_m = 12 * 1000 #120km
 num_processors_to_use = 9
 
 def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
@@ -331,7 +331,7 @@ def population_grid_loader_2018(bbox): return iter_features("/home/juju/geodata/
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 
 
-for year in ["2018"]:
+for year in ["2021"]:
 
     # ouput folder
     out_folder_year = out_folder + "out_" + year + "_" + str(grid_resolution) + "m/"
