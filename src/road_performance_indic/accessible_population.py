@@ -218,7 +218,7 @@ def accessiblity_population(xy,
                 sum_pop = np.sum(populated_pops[reachable_mask])
 
                 # compute population within duration_max_s and distance_max_m
-                def my_condition(id): return True #TODO
+                def my_condition(id): return random.random()<0.3 #TODO
                 condition_mask = np.array([my_condition(idx) for idx in populated_graph_vertex_indices])
                 combined_mask = reachable_mask & condition_mask
                 sum_pop2 = np.sum(populated_pops[combined_mask])
