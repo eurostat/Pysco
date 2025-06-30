@@ -97,140 +97,143 @@ def accessiblity_population(xy,
     accessible_populations = [] # the values corresponding to the cell identifiers
     near_accessible_populations = [] # the values corresponding to the cell identifiers
 
-    if len(snappable_nodes) > 0:
+    if len(snappable_nodes) == 0:
+        pd.DataFrame({}).to_parquet(out_file)
+        print(datetime.now(), x_part, y_part, "0 cells saved")
+        return
 
-        if show_detailled_messages: print(datetime.now(), x_part, y_part, "build graph-tool graph")
-        graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
+    if show_detailled_messages: print(datetime.now(), x_part, y_part, "build graph-tool graph")
+    graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
 
-        if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
-        idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
+    if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
+    idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
-        # dictionnary that assign population to graph node
-        node_pop_dict = {}
+    # dictionnary that assign population to graph node
+    node_pop_dict = {}
 
-        if show_detailled_messages: print(datetime.now(), x_part, y_part, "Project population grid on graph nodes")
-        cells = population_grid_loader(extended_bbox)
-        r2 = grid_resolution/2
-        for c in cells:
-            c = c['properties']
-            pop = c[pop_col]
-            if pop is None or pop == 0: continue
+    if show_detailled_messages: print(datetime.now(), x_part, y_part, "Project population grid on graph nodes")
+    cells = population_grid_loader(extended_bbox)
+    r2 = grid_resolution/2
+    for c in cells:
+        c = c['properties']
+        pop = c[pop_col]
+        if pop is None or pop == 0: continue
 
-            id = c['GRD_ID']
-            x,y = get_cell_xy_from_id(id)
-            x+=r2
-            y+=r2
+        id = c['GRD_ID']
+        x,y = get_cell_xy_from_id(id)
+        x+=r2
+        y+=r2
 
-            # get closest graph snappable node
-            ni = next(idx.nearest((x, y, x, y), 1), None)
-            if ni == None:
-                print("Could not find network node for grid cell", id)
-                continue
-            n = snappable_nodes[ni]
-            if n in node_pop_dict: node_pop_dict[n] += pop
-            else: node_pop_dict[n] = pop
+        # get closest graph snappable node
+        ni = next(idx.nearest((x, y, x, y), 1), None)
+        if ni == None:
+            print("Could not find network node for grid cell", id)
+            continue
+        n = snappable_nodes[ni]
+        if n in node_pop_dict: node_pop_dict[n] += pop
+        else: node_pop_dict[n] = pop
 
-        del cells
+    del cells
 
-        # destination nodes: all nodes with population
-        #populated_nodes = node_pop_dict.keys()
+    # destination nodes: all nodes with population
+    #populated_nodes = node_pop_dict.keys()
 
-        # index graph vertexes by populated node codes
-        #graph_id_to_vertex = {}
-        #for nn in populated_nodes: graph_id_to_vertex[nn] = graph.vertex(node_id_to_index[nn])
+    # index graph vertexes by populated node codes
+    #graph_id_to_vertex = {}
+    #for nn in populated_nodes: graph_id_to_vertex[nn] = graph.vertex(node_id_to_index[nn])
 
-        # create numpy arrays for lookups
-        # list of graph vertex indices with some population
-        populated_graph_vertex_indices = np.array([graph.vertex(node_id_to_index[nn]) for nn in node_pop_dict.keys()], dtype=np.int64)
+    # create numpy arrays for lookups
+    # list of graph vertex indices with some population
+    populated_graph_vertex_indices = np.array([graph.vertex(node_id_to_index[nn]) for nn in node_pop_dict.keys()], dtype=np.int64)
 
-        # population of these nodes, same order
-        #populated_pops = np.array([node_pop_dict[nn] for nn in populated_nodes], dtype=np.int64)
-        populated_pops = np.array(list(node_pop_dict.values()), dtype=np.int64)
+    # population of these nodes, same order
+    #populated_pops = np.array([node_pop_dict[nn] for nn in populated_nodes], dtype=np.int64)
+    populated_pops = np.array(list(node_pop_dict.values()), dtype=np.int64)
 
-        # clean
-        #del graph_id_to_vertex
-        #del populated_nodes
-        del node_pop_dict
+    # clean
+    #del graph_id_to_vertex
+    #del populated_nodes
+    del node_pop_dict
 
-        # a cache structure, to ensure there is no double computation for some nodes. it could happen, since some cells may snap to a same graph node
-        cache = {}
+    # a cache structure, to ensure there is no double computation for some nodes. it could happen, since some cells may snap to a same graph node
+    cache = {}
 
-        # go through cells
-        if show_detailled_messages: print(datetime.now(), x_part, y_part, "compute accessible population by cell")
-        r2 = grid_resolution / 2
+    # go through cells
+    if show_detailled_messages: print(datetime.now(), x_part, y_part, "compute accessible population by cell")
+    r2 = grid_resolution / 2
 
-        for x in range(x_part, x_part+file_size, grid_resolution):
-            for y in range(y_part, y_part+file_size, grid_resolution):
+    for x in range(x_part, x_part+file_size, grid_resolution):
+        for y in range(y_part, y_part+file_size, grid_resolution):
 
-                # snap cell centre to the graph snappable nodes, using the spatial index
-                ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
-                if ni_ == None: raise(datetime.now(), x_part, y_part, "graph node not found for cell", x,y)
-                n = snappable_nodes[ni_]
+            # snap cell centre to the graph snappable nodes, using the spatial index
+            ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
+            if ni_ == None: raise(datetime.now(), x_part, y_part, "graph node not found for cell", x,y)
+            n = snappable_nodes[ni_]
 
-                # compute distance from cell centre to node, and skip if too far
-                dtn = distance_to_node(n, x+r2, y+r2)
-                if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
+            # compute distance from cell centre to node, and skip if too far
+            dtn = distance_to_node(n, x+r2, y+r2)
+            if cell_network_max_distance is not None and cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
 
-                # check if value was not already computed - try to find it in the cache
-                if n in cache:
-                    # no need to compute another time: take cached value
-                    sum_pop, sum_pop2 = cache[n]
-                    accessible_populations.append(sum_pop)
-                    near_accessible_populations.append(sum_pop2)
-                    grd_ids.append(cell_id_fun(x,y))
-                    continue
-
-                # get origin node index
-                origin_idx = node_id_to_index[n]
-
-                # compute dijkstra from origin, with cutoff
-                #print(datetime.now())
-                # VertexPropertyMap of type double, where dist_map[v] gives the shortest distance from the source vertex origin_idx to vertex v
-                dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_max_s)
-                #print(datetime.now())
-
-                #check node n is reached. value should be 0. OK
-                #print("origin node:", dist_map[graph.vertex(origin_idx)])
-
-                '''
-                sum_pop = 0
-                inf = float('inf')
-                for nn in populated_nodes:
-                    dist = dist_map[graph_id_to_vertex[nn]]
-                    if dist < inf:
-                        # check node is in list
-                        #if nn == n: print("ok", dist)
-                        sum_pop += node_pop_dict[nn]
-
-                print(sum_pop)
-                '''
-
-                # NumPy array view of the values stored in dist_map.
-                # where each position i contains the distance from source vertex to vertex i.
-                # The array follows the order of internal vertex indices (v such that int(v) == i).
-                # Values are inf for vertices unreachable within max_dist
-                dist_arr = dist_map.get_array()
-
-                # compute population within duration_max_s
-                # dist_arr[populated_graph_vertex_indices] selects the distances to populated vertices.
-                # < np.inf returns a boolean array: True for each vertex in the selection if its distance is finite.
-                reachable_mask = dist_arr[populated_graph_vertex_indices] < np.inf
-                sum_pop = np.sum(populated_pops[reachable_mask])
-
-                # compute population within duration_max_s and distance_max_m
-                def my_condition(id): return random.random()<0.3 #TODO
-                condition_mask = np.array([my_condition(idx) for idx in populated_graph_vertex_indices])
-                combined_mask = reachable_mask & condition_mask
-                sum_pop2 = np.sum(populated_pops[combined_mask])
-
-                # store cell value
+            # check if value was not already computed - try to find it in the cache
+            if n in cache:
+                # no need to compute another time: take cached value
+                sum_pop, sum_pop2 = cache[n]
                 accessible_populations.append(sum_pop)
                 near_accessible_populations.append(sum_pop2)
                 grd_ids.append(cell_id_fun(x,y))
+                continue
 
-                # cache value, to be sure is is not computed another time
-                cache[n] = [ sum_pop, sum_pop2 ]
-                #print(datetime.now(),"end")
+            # get origin node index
+            origin_idx = node_id_to_index[n]
+
+            # compute dijkstra from origin, with cutoff
+            #print(datetime.now())
+            # VertexPropertyMap of type double, where dist_map[v] gives the shortest distance from the source vertex origin_idx to vertex v
+            dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_max_s)
+            #print(datetime.now())
+
+            #check node n is reached. value should be 0. OK
+            #print("origin node:", dist_map[graph.vertex(origin_idx)])
+
+            '''
+            sum_pop = 0
+            inf = float('inf')
+            for nn in populated_nodes:
+                dist = dist_map[graph_id_to_vertex[nn]]
+                if dist < inf:
+                    # check node is in list
+                    #if nn == n: print("ok", dist)
+                    sum_pop += node_pop_dict[nn]
+
+            print(sum_pop)
+            '''
+
+            # NumPy array view of the values stored in dist_map.
+            # where each position i contains the distance from source vertex to vertex i.
+            # The array follows the order of internal vertex indices (v such that int(v) == i).
+            # Values are inf for vertices unreachable within max_dist
+            dist_arr = dist_map.get_array()
+
+            # compute population within duration_max_s
+            # dist_arr[populated_graph_vertex_indices] selects the distances to populated vertices.
+            # < np.inf returns a boolean array: True for each vertex in the selection if its distance is finite.
+            reachable_mask = dist_arr[populated_graph_vertex_indices] < np.inf
+            sum_pop = np.sum(populated_pops[reachable_mask])
+
+            # compute population within duration_max_s and distance_max_m
+            def my_condition(id): return random.random()<0.5 #TODO
+            condition_mask = np.array([my_condition(idx) for idx in populated_graph_vertex_indices])
+            combined_mask = reachable_mask & condition_mask
+            sum_pop2 = np.sum(populated_pops[combined_mask])
+
+            # store cell value
+            accessible_populations.append(sum_pop)
+            near_accessible_populations.append(sum_pop2)
+            grd_ids.append(cell_id_fun(x,y))
+
+            # cache value, to be sure is is not computed another time
+            cache[n] = [ sum_pop, sum_pop2 ]
+            #print(datetime.now(),"end")
 
     # save output as parquet
     data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations, 'ACC_POP_1H30_120KM':near_accessible_populations }
