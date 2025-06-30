@@ -377,7 +377,7 @@ show_detailled_messages = True
 #greece
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 #SW portugal
-bbox = [ 2600000, 1700000, 2700000, 1800000 ]
+bbox = [ 2600000, 1800000, 2700000, 1900000 ]
 
 
 file_size = 100000 # 200000
