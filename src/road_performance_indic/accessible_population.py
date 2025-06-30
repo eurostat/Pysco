@@ -210,8 +210,8 @@ def accessiblity_population(xy,
 
     # pre-compute node (x,y)
     node_positions = {}
-    for idx in index_to_node_id.keys():
-        node_positions[idx] = node_coordinate(index_to_node_id[idx])
+    for idx__ in index_to_node_id.keys():
+        node_positions[idx__] = node_coordinate(index_to_node_id[idx__])
 
 
     def get_is_within_distance_fun(xo, yo):
@@ -287,7 +287,7 @@ def accessiblity_population(xy,
             # compute population within duration_max_s and distance_max_m
             print(datetime.now(), "sum pop2")
             is_within_distance = get_is_within_distance_fun(xo, yo)
-            distance_mask = np.array([is_within_distance(idx) for idx in populated_graph_vertex_indices])
+            distance_mask = np.array([is_within_distance(idx_) for idx_ in populated_graph_vertex_indices])
             combined_mask = reachable_mask & distance_mask
             sum_pop2 = np.sum(populated_pops[combined_mask])
             print(datetime.now(), "-")
