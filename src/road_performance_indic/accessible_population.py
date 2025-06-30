@@ -105,7 +105,8 @@ def accessiblity_population(xy,
     # output file
     out_file = out_folder + "ap_" + str(grid_resolution) + "m_" + str(x_part) + "_" + str(y_part) + ".parquet"
     # skip if output file was already produced
-    if os.path.isfile(out_file): return
+    #TODO put it back
+    #if os.path.isfile(out_file): return
 
     if not show_detailled_messages: print(datetime.now(), x_part, y_part)
 
