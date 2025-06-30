@@ -276,5 +276,5 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(pois_loader,
             show_detailled_messages,
         ) for xy in processes_params ]
 
-    print(datetime.now(), "launch", len(processes_params), "processes on", num_processors, "processor(s)")
+    print(datetime.now(), "launch", len(processes_params), "process(es) on", num_processors, "processor(s)")
     Pool(num_processors).starmap(accessiblity_grid_k_nearest_dijkstra, processes_params)

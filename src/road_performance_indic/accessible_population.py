@@ -367,7 +367,7 @@ def accessiblity_population_parallel(
         for xy in processes_params
         ]
 
-    print(datetime.now(), "launch", len(processes_params), "processes on", num_processors_to_use, "processor(s)")
+    print(datetime.now(), "launch", len(processes_params), "process(es) on", num_processors_to_use, "processor(s)")
     Pool(num_processors_to_use).starmap(accessiblity_population, processes_params)
 
 
