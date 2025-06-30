@@ -391,7 +391,7 @@ bbox = [ 3900000, 3200000, 4000000, 3300000 ]
 
 file_size = 100000 # 200000
 extention_buffer = 180000 # 180000
-duration_max_s = 60 * 90 #1h30=90min
+duration_max_s = 90 * 60 #1h30=90min
 distance_max_m = 120 * 1000 #120km
 num_processors_to_use = 9
 
