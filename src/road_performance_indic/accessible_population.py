@@ -205,7 +205,7 @@ def accessiblity_population(xy,
         #TODO
         # get origin coordinates
         # get destination coordinates
-        # return distance
+        # return distance < thr
         return random.random()<0.5
 
 
