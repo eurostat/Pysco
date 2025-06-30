@@ -377,10 +377,10 @@ bbox = [4030000, 2930000, 4060000, 2960000]
 #greece
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
-file_size = 30000 # 200000
-extention_buffer = 18000 # 180000
-duration_max_s = 6 * 90 #1h30=90min
-distance_max_m = 12 * 1000 #120km
+file_size = 200000 # 200000
+extention_buffer = 180000 # 180000
+duration_max_s = 60 * 90 #1h30=90min
+distance_max_m = 120 * 1000 #120km
 num_processors_to_use = 9
 
 def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
