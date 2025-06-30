@@ -10,7 +10,7 @@ import graph_tool.all as gt
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.utils import cartesian_product_comp
-from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_to_node, nodes_spatial_index_adjacendy_list
+from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_to_node, node_coordinate, nodes_spatial_index_adjacendy_list
 from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function
 from utils.featureutils import iter_features
 from utils.gridutils import get_cell_xy_from_id
@@ -201,9 +201,9 @@ def accessiblity_population(xy,
     r2 = grid_resolution / 2
 
 
-    def my_condition(origin_idx, dest_idx):
+    def my_condition(xo, yo, dest_idx):
+        print(xo,yo)
         #TODO
-        # get origin coordinates
         # get destination coordinates
         # return distance < thr
         return random.random()<0.5
@@ -232,6 +232,7 @@ def accessiblity_population(xy,
 
             # get origin node index
             origin_idx = node_id_to_index[n]
+            xo,yo = node_coordinate(n)
 
             # compute dijkstra from origin, with cutoff
             #print(datetime.now())
@@ -268,7 +269,7 @@ def accessiblity_population(xy,
             sum_pop = np.sum(populated_pops[reachable_mask])
 
             # compute population within duration_max_s and distance_max_m
-            condition_mask = np.array([my_condition(idx) for idx in populated_graph_vertex_indices])
+            condition_mask = np.array([my_condition(xo, yo, idx) for idx in populated_graph_vertex_indices])
             combined_mask = reachable_mask & condition_mask
             sum_pop2 = np.sum(populated_pops[combined_mask])
 
