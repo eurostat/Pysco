@@ -200,6 +200,15 @@ def accessiblity_population(xy,
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "compute accessible population by cell")
     r2 = grid_resolution / 2
 
+
+    def my_condition(origin_idx, dest_idx):
+        #TODO
+        # get origin coordinates
+        # get destination coordinates
+        # return distance
+        return random.random()<0.5
+
+
     for x in range(x_part, x_part+file_size, grid_resolution):
         for y in range(y_part, y_part+file_size, grid_resolution):
 
@@ -259,7 +268,6 @@ def accessiblity_population(xy,
             sum_pop = np.sum(populated_pops[reachable_mask])
 
             # compute population within duration_max_s and distance_max_m
-            def my_condition(id): return random.random()<0.5 #TODO
             condition_mask = np.array([my_condition(idx) for idx in populated_graph_vertex_indices])
             combined_mask = reachable_mask & condition_mask
             sum_pop2 = np.sum(populated_pops[combined_mask])
