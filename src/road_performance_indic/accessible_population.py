@@ -373,11 +373,14 @@ show_detailled_messages = True
 # whole europe
 #bbox = [ 900000, 900000, 6600000, 5500000 ]
 #luxembourg
-bbox = [4030000, 2930000, 4060000, 2960000]
+#bbox = [4030000, 2930000, 4060000, 2960000]
 #greece
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
+#SW portugal
+bbox = [ 2600000, 1700000, 2700000, 1800000 ]
 
-file_size = 200000 # 200000
+
+file_size = 100000 # 200000
 extention_buffer = 180000 # 180000
 duration_max_s = 60 * 90 #1h30=90min
 distance_max_m = 120 * 1000 #120km
