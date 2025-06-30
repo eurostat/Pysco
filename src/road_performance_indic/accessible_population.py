@@ -138,7 +138,9 @@ def accessiblity_population(xy,
         return
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "build graph-tool graph")
+    print(datetime.now())
     graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
+    print(datetime.now())
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
