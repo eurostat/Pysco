@@ -16,7 +16,7 @@ from utils.featureutils import iter_features
 from utils.gridutils import get_cell_xy_from_id
 
 
-
+'''
 def build_graph_tool_graph(graph):
     g = gt.Graph(directed=True)
     weight_prop = g.new_edge_property("double")
@@ -38,7 +38,7 @@ def build_graph_tool_graph(graph):
             weight_prop[e] = w
 
     return g, weight_prop, node_id_to_index, index_to_node_id
-
+'''
 
 
 def build_graph_tool_graph_fast(graph):
@@ -140,7 +140,7 @@ def accessiblity_population(xy,
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "build graph-tool graph")
     print(datetime.now())
-    graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph(graph)
+    graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph_fast(graph)
     print(datetime.now())
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
