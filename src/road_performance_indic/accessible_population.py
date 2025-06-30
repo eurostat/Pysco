@@ -387,7 +387,7 @@ show_detailled_messages = True
 #bbox = [ 2600000, 1900000, 2700000, 2000000 ]
 # amsterdam
 bbox = [ 3900000, 3200000, 4000000, 3300000 ]
-  
+
 
 file_size = 100000 # 200000
 extention_buffer = 180000 # 180000
