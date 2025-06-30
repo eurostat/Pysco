@@ -384,8 +384,10 @@ show_detailled_messages = True
 #greece
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 #SW lisbon
-bbox = [ 2600000, 1900000, 2700000, 2000000 ]
-
+#bbox = [ 2600000, 1900000, 2700000, 2000000 ]
+# amsterdam
+bbox = [ 3900000, 3200000, 4000000, 3300000 ]
+  
 
 file_size = 100000 # 200000
 extention_buffer = 180000 # 180000
