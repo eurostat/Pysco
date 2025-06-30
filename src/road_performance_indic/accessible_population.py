@@ -41,6 +41,41 @@ def build_graph_tool_graph(graph):
 
 
 
+def build_graph_tool_graph_fast(graph):
+    g = gt.Graph(directed=True)
+    N = len(graph)
+    g.add_vertex(N)  # preallocate all vertices at once
+
+    # Map node ids to consecutive indices
+    node_id_list = list(graph.keys())
+    node_id_to_index = {node_id: idx for idx, node_id in enumerate(node_id_list)}
+    index_to_node_id = {idx: node_id for idx, node_id in enumerate(node_id_list)}
+
+    # Collect edges and weights
+    edge_list = []
+    weights = []
+    for source_id, neighbors in graph.items():
+        u_idx = node_id_to_index[source_id]
+        for dest_id, w in neighbors:
+            v_idx = node_id_to_index[dest_id]
+            edge_list.append((u_idx, v_idx))
+            weights.append(w)
+
+    # Add all edges in bulk
+    g.add_edge_list(edge_list)
+
+    # Assign weights
+    weight_prop = g.new_edge_property("double")
+    for e, w in zip(g.edges(), weights):
+        weight_prop[e] = w
+
+    return g, weight_prop, node_id_to_index, index_to_node_id
+
+
+
+
+
+
 
 def accessiblity_population(xy,
             out_folder,
