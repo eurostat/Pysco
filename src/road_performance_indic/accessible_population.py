@@ -209,7 +209,7 @@ def accessiblity_population(xy,
 
     for x in range(x_part, x_part+file_size, grid_resolution):
         for y in range(y_part, y_part+file_size, grid_resolution):
-            print(datetime.now(), "*******")
+            #print(datetime.now(), "*******")
 
             # snap cell centre to the graph snappable nodes, using the spatial index
             ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
@@ -234,7 +234,7 @@ def accessiblity_population(xy,
             xo,yo = node_coordinate(n)
 
             # compute dijkstra from origin, with cutoff
-            print(datetime.now(), "dijskra")
+            #print(datetime.now(), "dijskra")
             # VertexPropertyMap of type double, where dist_map[v] gives the shortest distance from the source vertex origin_idx to vertex v
             dist_map = gt.shortest_distance(graph, source=graph.vertex(origin_idx), weights=weight_prop, max_dist=duration_max_s)
 
@@ -258,22 +258,24 @@ def accessiblity_population(xy,
             # where each position i contains the distance from source vertex to vertex i.
             # The array follows the order of internal vertex indices (v such that int(v) == i).
             # Values are inf for vertices unreachable within max_dist
-            print(datetime.now(), "get arry")
+            #print(datetime.now(), "get arry")
             dist_arr = dist_map.get_array()
 
             # compute population within duration_max_s
             # dist_arr[populated_graph_vertex_indices] selects the distances to populated vertices.
             # < np.inf returns a boolean array: True for each vertex in the selection if its distance is finite.
-            print(datetime.now(), "sum pop")
+            #print(datetime.now(), "sum pop")
             reachable_mask = dist_arr[populated_graph_vertex_indices] < np.inf
             sum_pop = np.sum(populated_pops[reachable_mask])
 
             # compute population within duration_max_s and distance_max_m
-            print(datetime.now(), "sum pop2")
+            #print(datetime.now(), "sum pop2")
             distance_mask = np.array([is_within_distance(xo, yo, idx) for idx in populated_graph_vertex_indices])
             combined_mask = reachable_mask & distance_mask
             sum_pop2 = np.sum(populated_pops[combined_mask])
-            print(datetime.now(), "-")
+            #print(datetime.now(), "-")
+
+            if sum_pop != sum_pop2: print(sum_pop2 / sum_pop)
 
             # store cell value
             accessible_populations.append(sum_pop)
@@ -282,7 +284,7 @@ def accessiblity_population(xy,
 
             # cache value, to be sure is is not computed another time
             cache[n] = [ sum_pop, sum_pop2 ]
-            print(datetime.now(),"end")
+            #print(datetime.now(),"end")
 
     # save output as parquet
     data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations, 'ACC_POP_1H30_120KM':near_accessible_populations }
