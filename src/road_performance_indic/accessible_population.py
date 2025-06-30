@@ -139,9 +139,7 @@ def accessiblity_population(xy,
         return
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "build graph-tool graph")
-    print(datetime.now())
     graph, weight_prop, node_id_to_index, index_to_node_id = build_graph_tool_graph_fast(graph)
-    print(datetime.now())
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
@@ -201,12 +199,12 @@ def accessiblity_population(xy,
     r2 = grid_resolution / 2
 
 
-    def my_condition(xo, yo, dest_idx):
-        print(xo,yo)
-        #TODO
-        # get destination coordinates
-        # return distance < thr
-        return random.random()<0.5
+    def is_within_distance(xo, yo, dest_idx):
+        nd = index_to_node_id[dest_idx]
+        x,y = node_coordinate(nd)
+        #out = np.hypot(xo-x, yo-y) <= distance_max_m
+        #if out: print(np.hypot(xo-x, yo-y), nd)
+        return np.hypot(xo-x, yo-y) <= distance_max_m
 
 
     for x in range(x_part, x_part+file_size, grid_resolution):
@@ -269,8 +267,8 @@ def accessiblity_population(xy,
             sum_pop = np.sum(populated_pops[reachable_mask])
 
             # compute population within duration_max_s and distance_max_m
-            condition_mask = np.array([my_condition(xo, yo, idx) for idx in populated_graph_vertex_indices])
-            combined_mask = reachable_mask & condition_mask
+            distance_mask = np.array([is_within_distance(xo, yo, idx) for idx in populated_graph_vertex_indices])
+            combined_mask = reachable_mask & distance_mask
             sum_pop2 = np.sum(populated_pops[combined_mask])
 
             # store cell value
