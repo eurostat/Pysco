@@ -151,9 +151,9 @@ def accessiblity_population(xy,
     cells = population_grid_loader(extended_bbox)
     r2 = grid_resolution/2
     for c in cells:
-        x = c.x
-        y = c.y
-        pop = c.value
+        x = c['x']
+        y = c['y']
+        pop = c['value']
         '''
         c = c['properties']
         pop = c[pop_col]
