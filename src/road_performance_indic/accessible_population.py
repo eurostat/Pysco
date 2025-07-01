@@ -249,7 +249,7 @@ def accessiblity_population(xy,
 
             # get origin node index
             origin_idx = node_id_to_index[n]
-            #xo,yo = node_coordinate(n)
+            # xo,yo = node_coordinate(n)
 
             # compute dijkstra from origin, with cutoff
             #print(datetime.now(), "dijskra")
