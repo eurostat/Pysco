@@ -145,7 +145,7 @@ def circular_kernel_sum_per_code(
 
 folder = "/home/juju/gisco/road_transport_performance/"
 
-pop = {
+pop_grids = {
     "2018" : "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
     "2021" : "/home/juju/geodata/census/2021/ESTAT_OBS-VALUE-T_2021_V2_clean.tiff",
 }
@@ -157,6 +157,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 for resolution in ["1000"]:
 
     print("rasterise land mass index")
+    # create tiff with each pixel assigned to its landmass.
     rasterise_tesselation_gpkg(
         folder + "land_mass_gridded.gpkg",
         folder + "land_mass_gridded.tif",
@@ -168,13 +169,27 @@ for resolution in ["1000"]:
         all_touched = True
     )
 
-    for year in ["2018", "2021"]: #, 
+    for year in ["2018", "2021"]:
         print(year)
+
+        print(year, "apply mask to keep only countries of interest")
+        cnts = ["AT", "BE", "BG", "CH", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
+                "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
+                "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO"]
+        #exclude: ["RS", "BA", "MK", "AL", "ME", "MD"],
+        geotiff_mask_by_countries(
+            pop_grids[year],
+            folder + "population_"+year+".tif",
+            gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
+            gpkg_column = 'CNTR_ID',
+            values = cnts,
+            compress="deflate"
+        )
 
         # apply fast convolution - without taking into account land mass index
         print("convolution (fast)", year)
         circular_kernel_sum(
-            pop[year],
+            folder + "population_"+year+".tif",
             folder + "nearby_population_"+year+"_"+resolution+"m_fast.tif",
             120000,
             rasterio.uint32,
@@ -183,7 +198,7 @@ for resolution in ["1000"]:
         print("combine population + land mass index")
         combine_geotiffs(
             [
-                pop[year],
+                folder + "population_"+year+".tif",
                 folder + "land_mass_gridded.tif",
             ],
             folder + "pop_"+year+"_lmi.tif",
