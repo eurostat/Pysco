@@ -468,7 +468,7 @@ def crop_extend_bbox(input_path, bbox, output_path, nodata_value=None):
 
 
 
-def read_geotiff_pixels_as_dicts(geotiff_path, bbox=None, band_number=1, value_criteria_fun=None):
+def read_geotiff_pixels_as_dicts(geotiff_path, bbox=None, band_number=1, value_criteria_fun=None, offset='ll'):
     """
     Extracts pixel values and positions within a bounding box from a specific band in a GeoTIFF.
 
@@ -513,9 +513,7 @@ def read_geotiff_pixels_as_dicts(geotiff_path, bbox=None, band_number=1, value_c
             )
 
         # Get coordinates for each pixel lower left corner
-        xs, ys = rasterio.transform.xy(
-            transform, row_indices, col_indices, offset='ll'
-        )
+        xs, ys = rasterio.transform.xy(transform, row_indices, col_indices, offset=offset)
 
         xs = np.array(xs).flatten()
         ys = np.array(ys).flatten()
