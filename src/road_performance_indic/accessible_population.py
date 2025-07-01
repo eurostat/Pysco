@@ -413,7 +413,7 @@ file_size = 200000 # 200000
 extention_buffer = 180000 # 180000
 duration_max_s = 90 * 60 #1h30=90min
 distance_max_m = 120 * 1000 #120km
-num_processors_to_use = 5
+num_processors_to_use = 8
 
 def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
 def population_grid_loader_2018(bbox): return iter_features("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", bbox=bbox)
