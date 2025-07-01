@@ -16,7 +16,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 
 for grid_resolution in ["1000"]:
-    for year in ["2021"]:
+    for year in ["2021", "2018"]:
 
         # ouput folder
         out_folder_year = out_folder + "out_" + year + "_" + str(grid_resolution) + "m/"

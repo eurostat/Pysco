@@ -105,8 +105,7 @@ def accessiblity_population(xy,
     # output file
     out_file = out_folder + "ap_" + str(grid_resolution) + "m_" + str(x_part) + "_" + str(y_part) + ".parquet"
     # skip if output file was already produced
-    #TODO put it back
-    #if os.path.isfile(out_file): return
+    if os.path.isfile(out_file): return
 
     if not show_detailled_messages: print(datetime.now(), x_part, y_part)
 
@@ -284,6 +283,7 @@ def accessiblity_population(xy,
             reachable_mask = dist_arr[populated_graph_vertex_indices] < np.inf
             sum_pop = np.sum(populated_pops[reachable_mask])
 
+            '''
             # compute population within duration_max_s and distance_max_m
             #print(datetime.now(), "sum pop2")
             is_within_distance = get_is_within_distance_fun(xo, yo)
@@ -293,6 +293,8 @@ def accessiblity_population(xy,
             #print(datetime.now(), "-")
 
             if sum_pop != sum_pop2: print(sum_pop2 / sum_pop, sum_pop2, sum_pop)
+            '''
+            sum_pop2 = 0
 
             # store cell value
             accessible_populations.append(sum_pop)
@@ -395,7 +397,7 @@ show_detailled_messages = True
 
 # define output bounding box
 # whole europe
-#bbox = [ 900000, 900000, 6600000, 5500000 ]
+bbox = [ 900000, 900000, 6600000, 5500000 ]
 #luxembourg
 #bbox = [4030000, 2930000, 4060000, 2960000]
 #greece
@@ -403,21 +405,21 @@ show_detailled_messages = True
 #SW lisbon
 #bbox = [ 2600000, 1900000, 2700000, 2000000 ]
 # amsterdam
-bbox = [ 3900000, 3200000, 4000000, 3300000 ]
+#bbox = [ 3900000, 3200000, 4000000, 3300000 ]
 
 
-file_size = 100000 # 200000
+file_size = 200000 # 200000
 extention_buffer = 180000 # 180000
 duration_max_s = 90 * 60 #1h30=90min
 distance_max_m = 120 * 1000 #120km
-num_processors_to_use = 9
+num_processors_to_use = 5
 
 def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
 def population_grid_loader_2018(bbox): return iter_features("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", bbox=bbox)
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 
 
-for year in ["2021"]:
+for year in ["2021", "2018"]:
 
     # ouput folder
     out_folder_year = out_folder + "out_" + year + "_" + str(grid_resolution) + "m/"
