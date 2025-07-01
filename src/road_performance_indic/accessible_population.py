@@ -296,6 +296,7 @@ def accessiblity_population(xy,
             '''
             sum_pop2 = 0
 
+
             # store cell value
             accessible_populations.append(sum_pop)
             near_accessible_populations.append(sum_pop2)
