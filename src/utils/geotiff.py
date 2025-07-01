@@ -3,7 +3,7 @@ import rasterio
 from rasterio.transform import from_bounds, Affine
 from rasterio.windows import Window, from_bounds as window_from_bounds
 from rasterio.enums import Resampling
-from rasterio.warp import reproject
+#from rasterio.warp import reproject
 from rasterio.features import rasterize
 import numpy as np
 import os
@@ -464,3 +464,67 @@ def crop_extend_bbox(input_path, bbox, output_path, nodata_value=None):
         # Write output raster
         with rasterio.open(output_path, 'w', **profile) as dst:
             dst.write(out_data)
+
+
+
+
+def extract_pixels_in_bbox(geotiff_path, bbox=None, band_number=1, value_criteria_fun=None):
+    """
+    Extracts pixel values and positions within a bounding box from a specific band in a GeoTIFF.
+
+    Parameters:
+        geotiff_path (str): Path to the GeoTIFF file.
+        bbox (tuple or None): (minx, miny, maxx, maxy) in the GeoTIFF's CRS.
+                              If None, reads the entire raster extent.
+        band_number (int): Band number to read (1-based index). Defaults to 1.
+        value_criteria_fun (fun): Keep only the pixels whose values meet this criteria.
+
+    Returns:
+        List[dict]: List of dictionaries with 'x', 'y', and 'value' for each pixel.
+    """
+    results = []
+
+    with rasterio.open(geotiff_path) as src:
+        nodata = src.nodata
+        transform = src.transform
+
+        if bbox is None:
+            # Use entire dataset bounds
+            window = None
+            data = src.read(band_number)
+            # Full image indices
+            row_indices, col_indices = np.meshgrid(
+                np.arange(src.height),
+                np.arange(src.width),
+                indexing='ij'
+            )
+        else:
+            # Compute window for the given bounding box
+            window = window_from_bounds(*bbox, transform=transform)
+            window = window.round_offsets().round_lengths()
+
+            data = src.read(band_number, window=window)
+
+            # Windowed indices
+            row_indices, col_indices = np.meshgrid(
+                np.arange(window.row_off, window.row_off + window.height),
+                np.arange(window.col_off, window.col_off + window.width),
+                indexing='ij'
+            )
+
+        # Get coordinates for each pixel lower left corner
+        xs, ys = rasterio.transform.xy(
+            transform, row_indices, col_indices, offset='lower'
+        )
+
+        xs = np.array(xs).flatten()
+        ys = np.array(ys).flatten()
+        values = data.flatten()
+
+        # Build result list, excluding nodata values
+        for x, y, value in zip(xs, ys, values):
+            if nodata is not None and value == nodata:
+                continue
+            results.append({'x': x, 'y': y, 'value': value})
+
+    return results
