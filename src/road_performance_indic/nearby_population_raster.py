@@ -144,7 +144,7 @@ def circular_kernel_sum_per_code(
 
 
 folder = "/home/juju/gisco/road_transport_performance/"
-f2 = folder + "/np"
+f2 = folder + "np/"
 if not os.path.exists(f2): os.makedirs(f2)
 
 
