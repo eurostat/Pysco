@@ -393,7 +393,7 @@ grid_resolution = 1000
 detailled = False
 densification_distance = grid_resolution
 shuffle = True
-show_detailled_messages = True
+show_detailled_messages = False
 
 
 # define output bounding box
