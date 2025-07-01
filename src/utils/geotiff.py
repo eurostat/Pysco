@@ -514,7 +514,7 @@ def read_geotiff_pixels_as_dicts(geotiff_path, bbox=None, band_number=1, value_c
 
         # Get coordinates for each pixel lower left corner
         xs, ys = rasterio.transform.xy(
-            transform, row_indices, col_indices, offset='lower'
+            transform, row_indices, col_indices, offset='ll'
         )
 
         xs = np.array(xs).flatten()
@@ -530,3 +530,8 @@ def read_geotiff_pixels_as_dicts(geotiff_path, bbox=None, band_number=1, value_c
             results.append({'x': x, 'y': y, 'value': value})
 
     return results
+
+
+#out = read_geotiff_pixels_as_dicts('/home/juju/gisco/road_transport_performance/population_2021.tif', bbox=[4030000, 2930000, 4060000, 2960000], value_criteria_fun=lambda v:v>0)
+#for c in out: print(c['x'], c['y'], c['value'])
+
