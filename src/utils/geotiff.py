@@ -468,7 +468,7 @@ def crop_extend_bbox(input_path, bbox, output_path, nodata_value=None):
 
 
 
-def extract_pixels_in_bbox(geotiff_path, bbox=None, band_number=1, value_criteria_fun=None):
+def read_geotiff_pixels_as_dicts(geotiff_path, bbox=None, band_number=1, value_criteria_fun=None):
     """
     Extracts pixel values and positions within a bounding box from a specific band in a GeoTIFF.
 
