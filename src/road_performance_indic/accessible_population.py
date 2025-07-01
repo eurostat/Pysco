@@ -14,6 +14,7 @@ from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_t
 from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function
 from utils.featureutils import iter_features
 from utils.gridutils import get_cell_xy_from_id
+from utils.geotiff import read_geotiff_pixels_as_dicts
 
 
 '''
@@ -207,12 +208,14 @@ def accessiblity_population(xy,
         return np.hypot(xo-x, yo-y) <= distance_max_m
     '''
 
+    '''
     # pre-compute node (x,y)
     node_positions = {}
     for idx__ in index_to_node_id.keys():
         node_positions[idx__] = node_coordinate(index_to_node_id[idx__])
+    '''
 
-
+    '''
     def get_is_within_distance_fun(xo, yo):
         def is_within_distance(dest_idx):
             #nd = index_to_node_id[dest_idx]
@@ -220,7 +223,7 @@ def accessiblity_population(xy,
             x,y = node_positions[dest_idx]
             return np.hypot(xo-x, yo-y) <= distance_max_m
         return is_within_distance
-
+    '''
 
     for x in range(x_part, x_part+file_size, grid_resolution):
         for y in range(y_part, y_part+file_size, grid_resolution):
@@ -415,8 +418,10 @@ duration_max_s = 90 * 60 #1h30=90min
 distance_max_m = 120 * 1000 #120km
 num_processors_to_use = 8
 
-def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
-def population_grid_loader_2018(bbox): return iter_features("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", bbox=bbox)
+def population_grid_loader_2021(bbox): return read_geotiff_pixels_as_dicts(out_folder+"population_2021.tif", bbox=bbox)
+def population_grid_loader_2018(bbox): return read_geotiff_pixels_as_dicts(out_folder+"population_2018.tif", bbox=bbox)
+#def population_grid_loader_2021(bbox): return iter_features("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg", bbox=bbox)
+#def population_grid_loader_2018(bbox): return iter_features("/home/juju/geodata/gisco/grids/grid_1km_point.gpkg", bbox=bbox)
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 
 
