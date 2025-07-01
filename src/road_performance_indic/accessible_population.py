@@ -383,12 +383,11 @@ def accessiblity_population_parallel(
 
 
 
-#TODO accessible population issues: IE east coast, manche coast, croatia border
 #TODO compute population <1H30 AND < 120km: not necessary ? All<100. Compare with regio why.
 #TODO check places with index>100: islands connected with bridge - should be connected !
-#TODO check and fix 2018-2021 inconstiscencies
-#TODO take right tomtom versions - 2018 and 2021
+#TODO check and fix 2018-2021 inconsistencies
 
+#TODO take right tomtom versions - 2018 and 2021 ?
 #TODO 2011 version ?
 #TODO test 100m ?
 
