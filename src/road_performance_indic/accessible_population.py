@@ -434,7 +434,6 @@ for year in ["2021", "2018"]:
     if not os.path.exists(out_folder_year): os.makedirs(out_folder_year)
 
     tomtom_year = "2023" if year == "2021" else "2019"
-    #TODO take right tomtom version
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW==-1 AND FEATTYP==4130)")
 
     accessiblity_population_parallel(
