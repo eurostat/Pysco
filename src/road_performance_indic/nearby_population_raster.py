@@ -165,7 +165,7 @@ for resolution in ["1000"]:
         folder + "land_mass_gridded.gpkg",
         f2 + "land_mass_gridded.tif",
         fieldname='code',
-        resolution=resolution,
+        resolution=int(resolution),
         compression='deflate',
         nodata_value=-9999,
         dtype=np.int32,
