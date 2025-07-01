@@ -421,7 +421,7 @@ file_size = 200000 # 200000
 extention_buffer = 180000 # 180000
 duration_max_s = 90 * 60 #1h30=90min
 distance_max_m = 120 * 1000 #120km
-num_processors_to_use = 8
+num_processors_to_use = 9
 
 def population_grid_loader_2021(bbox): return read_geotiff_pixels_as_dicts(out_folder+"population_2021.tif", bbox=bbox, value_criteria_fun=lambda v:v>0)
 def population_grid_loader_2018(bbox): return read_geotiff_pixels_as_dicts(out_folder+"population_2018.tif", bbox=bbox, value_criteria_fun=lambda v:v>0)
