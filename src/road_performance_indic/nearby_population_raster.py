@@ -144,6 +144,9 @@ def circular_kernel_sum_per_code(
 
 
 folder = "/home/juju/gisco/road_transport_performance/"
+f2 = folder + "/np"
+if not os.path.exists(f2): os.makedirs(f2)
+
 
 pop_grids = {
     "2018" : "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
@@ -160,7 +163,7 @@ for resolution in ["1000"]:
     # create tiff with each pixel assigned to its landmass.
     rasterise_tesselation_gpkg(
         folder + "land_mass_gridded.gpkg",
-        folder + "land_mass_gridded.tif",
+        f2 + "land_mass_gridded.tif",
         fieldname='code',
         resolution=resolution,
         compression='deflate',
@@ -199,9 +202,9 @@ for resolution in ["1000"]:
         combine_geotiffs(
             [
                 folder + "population_"+year+".tif",
-                folder + "land_mass_gridded.tif",
+                f2 + "land_mass_gridded.tif",
             ],
-            folder + "pop_"+year+"_lmi.tif",
+            f2 + "pop_"+year+"_lmi.tif",
             compress="deflate",
             nodata_value=-9999,
             dtype=np.int64,
@@ -209,7 +212,7 @@ for resolution in ["1000"]:
 
         print("compute convolution")
         circular_kernel_sum_per_code(
-            folder + "pop_"+year+"_lmi.tif",
+            f2 + "pop_"+year+"_lmi.tif",
             folder + "nearby_population_"+year+"_"+resolution+"m.tif",
             radius_m=120000,
             dtype=rasterio.int64,
