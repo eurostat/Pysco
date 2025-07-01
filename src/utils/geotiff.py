@@ -477,7 +477,7 @@ def extract_pixels_in_bbox(geotiff_path, bbox=None, band_number=1, value_criteri
         bbox (tuple or None): (minx, miny, maxx, maxy) in the GeoTIFF's CRS.
                               If None, reads the entire raster extent.
         band_number (int): Band number to read (1-based index). Defaults to 1.
-        value_criteria_fun (fun): Keep only the pixels whose values meet this criteria.
+        value_criteria_fun (fun): Keep only the pixels whose values meet this criteria. The function returns True if the value should be kept, False otherwise.
 
     Returns:
         List[dict]: List of dictionaries with 'x', 'y', and 'value' for each pixel.
@@ -524,6 +524,8 @@ def extract_pixels_in_bbox(geotiff_path, bbox=None, band_number=1, value_criteri
         # Build result list, excluding nodata values
         for x, y, value in zip(xs, ys, values):
             if nodata is not None and value == nodata:
+                continue
+            if value_criteria_fun and not value_criteria_fun(value):
                 continue
             results.append({'x': x, 'y': y, 'value': value})
 
