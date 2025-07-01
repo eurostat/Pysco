@@ -306,7 +306,7 @@ def accessiblity_population(xy,
             #print(datetime.now(),"end")
 
     # save output as parquet
-    data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations, 'ACC_POP_1H30_120KM':near_accessible_populations }
+    data = { 'GRD_ID':grd_ids, 'ACC_POP_1H30':accessible_populations } #, 'ACC_POP_1H30_120KM':near_accessible_populations }
     pd.DataFrame(data).to_parquet(out_file)
 
     print(datetime.now(), x_part, y_part, len(grd_ids), "cells saved")
