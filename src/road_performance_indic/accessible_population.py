@@ -382,7 +382,7 @@ def accessiblity_population_parallel(
     Pool(num_processors_to_use).starmap(accessiblity_population, processes_params)
 
 
-
+#TODO compare figures
 #TODO compute population <1H30 AND < 120km: not necessary ? All<100. Compare with regio why.
 #TODO check places with index>100: islands connected with bridge - should be connected !
 #TODO check and fix 2018-2021 inconsistencies
