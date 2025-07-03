@@ -3,7 +3,7 @@ import geopandas as gpd
 import os
 
 folder = "/home/juju/geodata/gisco/grids/"
-for res in ["100"]: #, "50", "20", "10", "5", "2", "1"]:
+for res in ["100", "50", "20", "10", "5", "2", "1"]:
 
     grid = folder + "grid_"+res+"km_surf.gpkg"
 
