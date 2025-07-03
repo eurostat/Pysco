@@ -11,19 +11,24 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import gridify_gpkg
 
 
-nuts_version = "2024"
-nuts = "/home/juju/geodata/gisco/NUTS_RG_100K_"+nuts_version+"_3035.gpkg"
-nuts_gridified = "/home/juju/geodata/gisco/grids/temp/nuts_gridified_"+nuts_version+".gpkg"
+# gridify nuts datasets
+for nuts_version in ["2024", "2021", "2016"]:
+    nuts = "/home/juju/geodata/gisco/NUTS_RG_100K_"+nuts_version+"_3035.gpkg"
+    nuts_gridified = "/home/juju/geodata/gisco/grids/temp/nuts_gridified_"+nuts_version+".gpkg"
 
-#print("gridifiy nuts dataset")
-#gridify_gpkg(nuts, 50000, nuts_gridified)
+    print("gridifiy nuts", nuts_version)
+    gridify_gpkg(nuts, 50000, nuts_gridified)
 
 
-distance = None #1500 # get nuts regions within 1.5 km
+distance = 1500 # get nuts regions within 1.5 km
 
-print("load nuts regions")
-nuts = gpd.read_file(nuts_gridified)
-#print(len(nuts))
+
+nuts_data = {}
+for nuts_version in ["2024", "2021", "2016"]:
+    print("load nuts regions", nuts_version)
+
+    nuts_gridified = "/home/juju/geodata/gisco/grids/temp/nuts_gridified_"+nuts_version+".gpkg"
+    nuts_data[nuts_version] = gpd.read_file(nuts_gridified)
 
 
 
@@ -33,33 +38,36 @@ for res in ["100", "50", "20", "10", "5", "2", "1"]:
     grid = gpd.read_file(grid_path)
     print(len(grid))
 
-    for lev in ["3", "2", "1", "0"]:
-        print(res+"km", "level", lev)
-        nuts_lev = nuts[nuts['STAT_LEVL_CODE'] == int(lev)]
-        #print(len(nuts_lev))
+    for nuts_version in ["2024", "2021", "2016"]:
 
-        # make spatial index
-        sindex = nuts_lev.sindex
+        for lev in ["3", "2", "1", "0"]:
+            print(res+"km", "level", lev, nuts_version)
+            nuts = nuts_data[nuts_version]
+            nuts_lev = nuts[nuts['STAT_LEVL_CODE'] == int(lev)]
+            #print(len(nuts_lev))
 
-        # function that finds a cell nuts codes
-        def fun(cell):
-            geom = cell["geometry"]
-            if distance: geom = geom.buffer(distance)
-            approx_matches = sindex.intersection(geom.bounds)
+            # make spatial index
+            sindex = nuts_lev.sindex
 
-            codes = []
-            for index in approx_matches:
-                row = nuts_lev.iloc[index]
-                if distance and not geom.intersects(row["geometry"]): continue
-                codes.append(row["NUTS_ID"])
+            # function that finds a cell nuts codes
+            def fun(cell):
+                geom = cell["geometry"]
+                if distance: geom = geom.buffer(distance)
+                approx_matches = sindex.intersection(geom.bounds)
 
-            codes = list(set(codes))
-            codes.sort()
-            codes = "-".join(codes)
-            return(codes)
+                codes = []
+                for index in approx_matches:
+                    row = nuts_lev.iloc[index]
+                    if distance and not geom.intersects(row["geometry"]): continue
+                    codes.append(row["NUTS_ID"])
 
-        # set cell nuts codes
-        grid['NUTS' + nuts_version + "_" + lev] = grid.apply( fun, axis=1 )
+                codes = list(set(codes))
+                codes.sort()
+                codes = "-".join(codes)
+                return(codes)
+
+            # set cell nuts codes
+            grid['NUTS' + nuts_version + "_" + lev] = grid.apply( fun, axis=1 )
 
     print("save", res, "km")
     if os.path.exists(grid_path): os.remove(grid_path)
