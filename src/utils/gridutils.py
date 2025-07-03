@@ -78,8 +78,15 @@ def gridify_gpkg(input_gpkg_path, grid_spacing, output_gpkg_path):
     grid_gdf = gpd.GeoDataFrame(geometry=grid_cells, crs=gdf.crs)
 
     # Perform spatial intersection
-    intersected_features = gpd.overlay(gdf, grid_gdf, how='intersection')
+    out = gpd.overlay(gdf, grid_gdf, how='intersection')
+    del grid_gdf
+
+    # Explode MultiPolygons into Polygons
+    out = out.explode(index_parts=False)
+
+    # Reset index to avoid index duplication after explode
+    out = out.reset_index(drop=True)
 
     # Save the result to the output GeoPackage file
-    intersected_features.to_file(output_gpkg_path, driver='GPKG')
+    out.to_file(output_gpkg_path, driver='GPKG')
 
