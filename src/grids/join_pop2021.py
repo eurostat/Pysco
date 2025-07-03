@@ -10,7 +10,7 @@ from utils.gridutils import get_cell_id
 
 
 
-for res in ["10"]:
+for res in ["100", "50", "20", "10", "5", "2", "1"]:
 
     grid = "/home/juju/geodata/gisco/grids/grid_"+res+"km_surf.gpkg"
     pop_2021 = "/home/juju/geodata/census/2021/aggregated_tiff/pop_2021_"+res+"000.tif"
@@ -28,7 +28,7 @@ for res in ["10"]:
     pop = {}
     for d in pop_data:
         id = get_cell_id(res+"000", "3035", d["x"], d["y"])
-        pop[id] = int(d["value"])
+        pop[id] = float(d["value"])
     del pop_data
 
 
@@ -40,5 +40,6 @@ for res in ["10"]:
         axis=1
     )
 
-    gdf.to_file("/home/juju/geodata/gisco/grids/grid_"+res+"km_surf___.gpkg", driver="GPKG")
+    print("save", res)
+    gdf.to_file("/home/juju/geodata/gisco/grids/grid_"+res+"km_surf.gpkg", driver="GPKG")
 
