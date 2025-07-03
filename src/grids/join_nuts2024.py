@@ -23,7 +23,17 @@ for res in ["100"]: #, "50", "20", "10", "5", "2", "1"]:
         nuts_lev = nuts[nuts['STAT_LEVL_CODE'] == int(lev)]
         #print(len(nuts_lev))
 
+        # make spatial index
+        sindex = nuts_lev.sindex
+
         def fun(cell):
+            geom = cell["geometry"]
+            print(geom)
+
+            #buffered_geometry = input_geometry.buffer(distance)
+            #approx_matches = list(spatial_index.intersection(buffered_geometry.bounds))
+            #precise_matches = gdf.iloc[approx_matches][gdf.intersects(buffered_geometry)]
+
             return "TODO"
             # get NUTS_ID within dist
             #"NUTS_ID"
