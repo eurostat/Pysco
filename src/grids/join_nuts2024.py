@@ -28,13 +28,22 @@ for res in ["100"]: #, "50", "20", "10", "5", "2", "1"]:
 
         def fun(cell):
             geom = cell["geometry"].buffer(distance)
-            approx_matches = list(sindex.intersection(geom.bounds))
-            precise_matches = nuts_lev.iloc[approx_matches][nuts_lev.intersects(geom)]
-            print(len(approx_matches), len(precise_matches))
+            approx_matches = sindex.intersection(geom.bounds)
+
+            codes = []
+            for index in approx_matches:
+                row = nuts_lev.iloc[index]
+                if not geom.intersects(row["geometry"]):
+                    print("a!")
+                    continue
+                codes.append(row["NUTS_ID"])
+
+            codes.sort()
+            codes = "-".join(codes)
+            print(codes)
 
             return "TODO"
-            # get NUTS_ID within dist
-            #"NUTS_ID"
+
 
         grid['NUTS_' + nuts_version + "_" + lev] = grid.apply(
             fun,
