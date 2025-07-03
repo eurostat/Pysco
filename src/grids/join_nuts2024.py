@@ -11,7 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import gridify_gpkg
 
 
-
+'''
 # gridify nuts datasets
 for nuts_version in ["2024", "2021", "2016"]:
     nuts = "/home/juju/geodata/gisco/NUTS_RG_100K_"+nuts_version+"_3035.gpkg"
@@ -19,9 +19,7 @@ for nuts_version in ["2024", "2021", "2016"]:
 
     print("gridifiy nuts", nuts_version)
     gridify_gpkg(nuts, 50000, nuts_gridified)
-
-
-
+'''
 
 
 distance = 1500 # get nuts regions within 1.5 km
@@ -40,12 +38,12 @@ for res in ["100", "50", "20", "10", "5", "2", "1"]:
 
     grid_path = "/home/juju/geodata/gisco/grids/grid_"+res+"km_surf.gpkg"
     grid = gpd.read_file(grid_path)
-    print(len(grid))
+    #print(len(grid))
 
     for nuts_version in ["2024", "2021", "2016"]:
 
         for lev in ["3", "2", "1", "0"]:
-            print(res+"km", "level", lev, nuts_version)
+            print(res+"km", nuts_version, "level", lev)
             nuts = nuts_data[nuts_version]
             nuts_lev = nuts[nuts['STAT_LEVL_CODE'] == int(lev)]
             #print(len(nuts_lev))
