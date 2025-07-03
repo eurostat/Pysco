@@ -50,7 +50,7 @@ def grid_to_geopackage(cells, gpkg_grid_path, geom="surf"):
 
 
 
-def cut_features_with_grid(input_gpkg_path, grid_spacing, output_gpkg_path):
+def gridify_gpkg(input_gpkg_path, grid_spacing, output_gpkg_path):
     # Load the input GeoPackage file
     gdf = gpd.read_file(input_gpkg_path)
 

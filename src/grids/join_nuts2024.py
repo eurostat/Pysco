@@ -2,16 +2,27 @@
 import geopandas as gpd
 import sys
 import os
-#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.gridutils import gridify_gpkg
+
+
+nuts_version = "2024"
+nuts = "/home/juju/geodata/gisco/NUTS_RG_100K_"+nuts_version+"_3035.gpkg"
+nuts_gridified = "/home/juju/geodata/gisco/grids/nuts_gridified_"+nuts_version+".gpkg"
+
+print("gridifiy")
+gridify_gpkg(nuts, 50000, nuts_gridified)
 
 
 distance = 1500 # get nuts regions within 1.5 km
-nuts_version = "2024"
-nuts = "/home/juju/geodata/gisco/NUTS_RG_100K_"+nuts_version+"_3035.gpkg"
 
 print("load nuts regions")
-nuts = gpd.read_file(nuts)
+nuts = gpd.read_file(nuts_gridified)
 #print(len(nuts))
+
+
+
 
 for res in ["50"]: # "100", "50", "20", "10", "5", "2", "1"]:
 
