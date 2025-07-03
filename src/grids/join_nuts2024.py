@@ -5,7 +5,7 @@ import os
 #sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 
-dist = 1500 # get nuts regions within 1.5 km
+distance = 1500 # get nuts regions within 1.5 km
 nuts_version = "2024"
 nuts = "/home/juju/geodata/gisco/NUTS_RG_100K_"+nuts_version+"_3035.gpkg"
 
@@ -27,12 +27,10 @@ for res in ["100"]: #, "50", "20", "10", "5", "2", "1"]:
         sindex = nuts_lev.sindex
 
         def fun(cell):
-            geom = cell["geometry"]
-            print(geom)
-
-            #buffered_geometry = input_geometry.buffer(distance)
-            #approx_matches = list(spatial_index.intersection(buffered_geometry.bounds))
-            #precise_matches = gdf.iloc[approx_matches][gdf.intersects(buffered_geometry)]
+            geom = cell["geometry"].buffer(distance)
+            approx_matches = list(sindex.intersection(geom.bounds))
+            precise_matches = nuts_lev.iloc[approx_matches][nuts_lev.intersects(geom)]
+            print(len(approx_matches), len(precise_matches))
 
             return "TODO"
             # get NUTS_ID within dist
