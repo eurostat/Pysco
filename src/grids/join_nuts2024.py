@@ -27,8 +27,7 @@ nuts = gpd.read_file(nuts_gridified)
 
 
 
-
-for res in ["50"]: # "100", "50", "20", "10", "5", "2", "1"]:
+for res in ["100", "50", "20", "10", "5", "2", "1"]:
 
     grid_path = "/home/juju/geodata/gisco/grids/grid_"+res+"km_surf.gpkg"
     grid = gpd.read_file(grid_path)
