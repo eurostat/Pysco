@@ -41,6 +41,6 @@ for res in ["100", "50", "20", "10", "5", "2", "1"]:
 
     print("save", res)
     f = "/home/juju/geodata/gisco/grids/grid_"+res+"km_surf.gpkg"
-    os.remove(f)
+    if os.path.exists(f): os.remove(f)
     gdf.to_file(f, driver="GPKG")
 

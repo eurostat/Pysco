@@ -1,5 +1,6 @@
 
 import geopandas as gpd
+import os
 
 folder = "/home/juju/geodata/gisco/grids/"
 for res in ["100"]: #, "50", "20", "10", "5", "2", "1"]:
@@ -11,7 +12,9 @@ for res in ["100"]: #, "50", "20", "10", "5", "2", "1"]:
 
     print("save gpkg point", res+"000m")
     gdf['geometry'] = gdf.geometry.centroid
-    gdf.to_file(folder + "grid_"+res+"km_point.gpkg", driver="GPKG")
+    f = folder + "grid_"+res+"km_point.gpkg"
+    if os.path.exists(f): os.remove(f)
+    gdf.to_file(f, driver="GPKG")
 
     print("save CSV", res+"000m")
     gdf = gdf.drop(columns='geometry')
