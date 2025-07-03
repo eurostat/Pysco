@@ -1,5 +1,8 @@
 import csv
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon, box
+import geopandas as gpd
+import numpy as np
+from math import floor, ceil
 
 import sys
 import os
@@ -42,4 +45,41 @@ def grid_to_geopackage(cells, gpkg_grid_path, geom="surf"):
 
     #save as gpkg
     save_features_to_gpkg(cells, gpkg_grid_path)
+
+
+
+
+
+def cut_features_with_grid(input_gpkg_path, grid_spacing, output_gpkg_path):
+    # Load the input GeoPackage file
+    gdf = gpd.read_file(input_gpkg_path)
+
+    # Determine the bounds of the input features
+    minx, miny, maxx, maxy = gdf.total_bounds
+
+    # Clamp
+    minx = floor(minx/grid_spacing) * grid_spacing
+    miny = floor(miny/grid_spacing) * grid_spacing
+    maxx = ceil(maxx/grid_spacing) * grid_spacing
+    maxy = ceil(maxy/grid_spacing) * grid_spacing
+
+    # Create a grid
+    grid_cells = []
+    x_coords = np.arange(minx, maxx, grid_spacing)
+    y_coords = np.arange(miny, maxy, grid_spacing)
+
+    for x in x_coords:
+        for y in y_coords:
+            # Create a grid cell polygon
+            cell = box(x, y, x + grid_spacing, y + grid_spacing)
+            grid_cells.append(cell)
+
+    # Create a GeoDataFrame for the grid
+    grid_gdf = gpd.GeoDataFrame(geometry=grid_cells, crs=gdf.crs)
+
+    # Perform spatial intersection
+    intersected_features = gpd.overlay(gdf, grid_gdf, how='intersection')
+
+    # Save the result to the output GeoPackage file
+    intersected_features.to_file(output_gpkg_path, driver='GPKG')
 

@@ -137,3 +137,4 @@ def index_from_geo_fiona(file_path, key_att, value_att, bbox=None, layer=None, w
             p = f[1]['properties']
             dict[ p[key_att] ] = p[value_att]
     return dict
+

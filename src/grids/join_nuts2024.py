@@ -13,7 +13,7 @@ print("load nuts regions")
 nuts = gpd.read_file(nuts)
 #print(len(nuts))
 
-for res in ["10"]: #, "50", "20", "10", "5", "2", "1"]:
+for res in ["50"]: # "100", "50", "20", "10", "5", "2", "1"]:
 
     grid_path = "/home/juju/geodata/gisco/grids/grid_"+res+"km_surf.gpkg"
     grid = gpd.read_file(grid_path)
@@ -27,6 +27,7 @@ for res in ["10"]: #, "50", "20", "10", "5", "2", "1"]:
         # make spatial index
         sindex = nuts_lev.sindex
 
+        # function that finds a cell nuts codes
         def fun(cell):
             geom = cell["geometry"].buffer(distance)
             approx_matches = sindex.intersection(geom.bounds)
@@ -37,11 +38,13 @@ for res in ["10"]: #, "50", "20", "10", "5", "2", "1"]:
                 if not geom.intersects(row["geometry"]): continue
                 codes.append(row["NUTS_ID"])
 
+            codes = list(set(codes))
             codes.sort()
             codes = "-".join(codes)
             return(codes)
 
-        grid['NUTS_' + nuts_version + "_" + lev] = grid.apply( fun, axis=1 )
+        # set cell nuts codes
+        grid['NUTS' + nuts_version + "_" + lev] = grid.apply( fun, axis=1 )
 
     print("save", res, "km")
     if os.path.exists(grid_path): os.remove(grid_path)
