@@ -1,3 +1,4 @@
+# update pop_2021 attribute of grid cells in gpkg_surf files
 
 import geopandas as gpd
 
