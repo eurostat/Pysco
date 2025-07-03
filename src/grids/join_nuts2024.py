@@ -9,7 +9,7 @@ from utils.gridutils import gridify_gpkg
 
 nuts_version = "2024"
 nuts = "/home/juju/geodata/gisco/NUTS_RG_100K_"+nuts_version+"_3035.gpkg"
-nuts_gridified = "/home/juju/geodata/gisco/grids/nuts_gridified_"+nuts_version+".gpkg"
+nuts_gridified = "/home/juju/geodata/gisco/grids/temp/nuts_gridified_"+nuts_version+".gpkg"
 
 print("gridifiy")
 gridify_gpkg(nuts, 50000, nuts_gridified)
