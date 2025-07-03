@@ -24,14 +24,21 @@ for res in ["10"]:
     pop_data = read_geotiff_pixels_as_dicts(pop_2021)
     #print(pop_data)
 
-    # make pop_data grid id
+    # get pop 2021 data
     pop = {}
     for d in pop_data:
         id = get_cell_id(res+"000", "3035", d["x"], d["y"])
         pop[id] = int(d["value"])
     del pop_data
-    print(pop)
 
 
     # set population to 0 everywhere
     gdf['TOT_P_2021'] = 0
+
+    gdf['TOT_P_2021'] = gdf.apply(
+        lambda row: pop.get(row['GRD_ID'], row['TOT_P_2021']),
+        axis=1
+    )
+
+    gdf.to_file("/home/juju/geodata/gisco/grids/grid_"+res+"km_surf___.gpkg", driver="GPKG")
+
