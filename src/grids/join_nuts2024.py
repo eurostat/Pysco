@@ -19,7 +19,7 @@ nuts_gridified = "/home/juju/geodata/gisco/grids/temp/nuts_gridified_"+nuts_vers
 #gridify_gpkg(nuts, 50000, nuts_gridified)
 
 
-distance = 1500 # get nuts regions within 1.5 km
+distance = None #1500 # get nuts regions within 1.5 km
 
 print("load nuts regions")
 nuts = gpd.read_file(nuts_gridified)
@@ -43,13 +43,14 @@ for res in ["100", "50", "20", "10", "5", "2", "1"]:
 
         # function that finds a cell nuts codes
         def fun(cell):
-            geom = cell["geometry"].buffer(distance)
+            geom = cell["geometry"]
+            if distance: geom = geom.buffer(distance)
             approx_matches = sindex.intersection(geom.bounds)
 
             codes = []
             for index in approx_matches:
                 row = nuts_lev.iloc[index]
-                if not geom.intersects(row["geometry"]): continue
+                if distance and not geom.intersects(row["geometry"]): continue
                 codes.append(row["NUTS_ID"])
 
             codes = list(set(codes))
