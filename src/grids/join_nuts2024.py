@@ -33,7 +33,7 @@ for res in ["100"]: #, "50", "20", "10", "5", "2", "1"]:
         axis=1
     )
 
-    print("save", res)
+    print("save", res, "km")
     if os.path.exists(grid_path): os.remove(grid_path)
     grid.to_file(f, driver="GPKG")
 

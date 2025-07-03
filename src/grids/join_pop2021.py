@@ -14,12 +14,12 @@ for res in ["100", "50", "20", "10", "5", "2", "1"]:
     grid = "/home/juju/geodata/gisco/grids/grid_"+res+"km_surf.gpkg"
     pop_2021 = "/home/juju/geodata/census/2021/aggregated_tiff/pop_2021_"+res+"000.tif"
 
-    print("load gpkg grid", res+"000m")
+    print("load gpkg grid", res, "km")
     gdf = gpd.read_file(grid)
     #print(gdf.head())
     #print(gdf['TOT_P_2021'].tolist())
 
-    print("load tiff pop 2021", res+"000m")
+    print("load tiff pop 2021", res, "km")
     pop_data = read_geotiff_pixels_as_dicts(pop_2021)
     #print(pop_data)
 
@@ -39,7 +39,7 @@ for res in ["100", "50", "20", "10", "5", "2", "1"]:
         axis=1
     )
 
-    print("save", res)
+    print("save", res, "km")
     f = "/home/juju/geodata/gisco/grids/grid_"+res+"km_surf.gpkg"
     if os.path.exists(f): os.remove(f)
     gdf.to_file(f, driver="GPKG")
