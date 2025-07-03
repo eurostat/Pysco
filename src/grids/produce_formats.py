@@ -9,6 +9,10 @@ for res in ["100"]: #, "50", "20", "10", "5", "2", "1"]:
     print("load gpkg grid", res+"000m")
     gdf = gpd.read_file(grid)
 
+    print("save gpkg point", res+"000m")
+    gdf['geometry'] = gdf.geometry.centroid
+    gdf.to_file(folder + "grid_"+res+"km_point.gpkg", driver="GPKG")
+
     print("save CSV", res+"000m")
     gdf = gdf.drop(columns='geometry')
     gdf.to_csv(folder + "grid_"+res+"km.csv", index=False)
