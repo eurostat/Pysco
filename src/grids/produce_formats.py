@@ -1,3 +1,5 @@
+# produce all format files from the surfacic GPKG files: gpkg_point, csv, parquet
+
 
 import geopandas as gpd
 import os

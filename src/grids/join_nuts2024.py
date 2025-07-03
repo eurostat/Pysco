@@ -1,6 +1,6 @@
 # compute nuts_id field of grid cells
 # the nuts dataset is gridified
-# for each cell, the 
+# for each cell, the nuts patches within 1.5km are selected and a list of their codes is assigned to the grid cell.
 
 
 import geopandas as gpd
