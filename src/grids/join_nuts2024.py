@@ -11,6 +11,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import gridify_gpkg
 
 
+
 # gridify nuts datasets
 for nuts_version in ["2024", "2021", "2016"]:
     nuts = "/home/juju/geodata/gisco/NUTS_RG_100K_"+nuts_version+"_3035.gpkg"
@@ -18,6 +19,9 @@ for nuts_version in ["2024", "2021", "2016"]:
 
     print("gridifiy nuts", nuts_version)
     gridify_gpkg(nuts, 50000, nuts_gridified)
+
+
+
 
 
 distance = 1500 # get nuts regions within 1.5 km
