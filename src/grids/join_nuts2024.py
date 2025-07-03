@@ -20,7 +20,7 @@ for res in ["10"]: #, "50", "20", "10", "5", "2", "1"]:
     print(len(grid))
 
     for lev in ["3", "2", "1", "0"]:
-        print(res+"km", lev, "level")
+        print(res+"km", "level", lev)
         nuts_lev = nuts[nuts['STAT_LEVL_CODE'] == int(lev)]
         #print(len(nuts_lev))
 
