@@ -35,5 +35,5 @@ for res in ["100"]: #, "50", "20", "10", "5", "2", "1"]:
 
     print("save", res, "km")
     if os.path.exists(grid_path): os.remove(grid_path)
-    grid.to_file(f, driver="GPKG")
+    grid.to_file(grid_path, driver="GPKG")
 
