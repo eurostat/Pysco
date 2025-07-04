@@ -215,6 +215,7 @@ def count_vertices(geometry):
 folder = "/home/juju/geodata/eurogeographics/EBM/"
 version = "2025_2"
 for case in ["NUTS_1", "NUTS_2", "NUTS_3", "LAU", "A"]:
+    print("*******", case)
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 "/home/juju/Bureau/issues_"+case+"_"+version+".gpkg",
