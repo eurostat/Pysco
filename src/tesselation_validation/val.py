@@ -212,16 +212,19 @@ def count_vertices(geometry):
 
 
 
-validate_polygonal_tesselation(
-            "/home/juju/Bureau/jorge_stuff/AU_NO_SE_FI_V.gpkg",
-            "/home/juju/Bureau/jorge_stuff/issues.gpkg",
-            bbox = None, #(4500000, 3900000, 4600000, 3970000),
-            epsilon = 0.01,
-            check_ogc_validity=True,
-            check_thin_parts=True,
-            check_intersection=True,
-            check_polygonisation=True,
-            check_microscopic_segments=True,
-            check_noding_issues=True,
-            )
+folder = "/home/juju/geodata/eurogeographics/EBM/"
+version = "2025_2"
+for case in ["NUTS_1", "NUTS_2", "NUTS_3", "LAU", "A"]:
+    validate_polygonal_tesselation(
+                folder + "EBM_"+case+"_"+version+".gpkg",
+                "/home/juju/Bureau/issues_"+case+"_"+version+".gpkg",
+                bbox = None, #(4500000, 3900000, 4600000, 3970000),
+                epsilon = 0.01,
+                check_ogc_validity=True,
+                check_thin_parts=True,
+                check_intersection=True,
+                check_polygonisation=True,
+                check_microscopic_segments=True,
+                check_noding_issues=True,
+                )
 
