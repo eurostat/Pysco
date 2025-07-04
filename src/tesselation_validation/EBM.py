@@ -9,7 +9,7 @@ from tesselation_validation.validation import validate_polygonal_tesselation
 folder = "/home/juju/geodata/eurogeographics/EBM/"
 out_folder = "/home/juju/Bureau/EBM_2025_2_validation"
 version = "2025_2"
-for case in ["A"]: #"NUTS_1", "NUTS_2", "NUTS_3", "LAU"
+for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
     print("*******", case)
 
     validate_polygonal_tesselation(
@@ -40,6 +40,7 @@ for case in ["A"]: #"NUTS_1", "NUTS_2", "NUTS_3", "LAU"
                 check_noding_issues=True,
                 )
 
+    '''
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_thin_parts.gpkg",
@@ -53,3 +54,4 @@ for case in ["A"]: #"NUTS_1", "NUTS_2", "NUTS_3", "LAU"
                 epsilon = 0.01,
                 check_polygonisation=True,
                 )
+    '''
