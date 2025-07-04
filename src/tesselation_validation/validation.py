@@ -8,12 +8,12 @@ from shapely.ops import polygonize, unary_union, nearest_points
 
 def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
              epsilon = 0.001,
-             check_ogc_validity=True,
-             check_thin_parts=True,
-             check_intersection=True,
-             check_polygonisation=True,
-             check_microscopic_segments=True,
-             check_noding_issues=True,
+             check_ogc_validity=False,
+             check_thin_parts=False,
+             check_intersection=False,
+             check_polygonisation=False,
+             check_microscopic_segments=False,
+             check_noding_issues=False,
              ):
 
     # list of issues
