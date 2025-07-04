@@ -11,16 +11,46 @@ out_folder = "/home/juju/Bureau/"
 version = "2025_2"
 for case in ["A"]: #"NUTS_1", "NUTS_2", "NUTS_3", "LAU"
     print("*******", case)
+
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+".gpkg",
-                bbox = None, #(4500000, 3900000, 4600000, 3970000),
                 epsilon = 0.01,
                 check_ogc_validity=True,
+                )
+
+    validate_polygonal_tesselation(
+                folder + "EBM_"+case+"_"+version+".gpkg",
+                out_folder + "issues_"+case+"_"+version+".gpkg",
+                epsilon = 0.01,
                 check_thin_parts=True,
+                )
+
+    validate_polygonal_tesselation(
+                folder + "EBM_"+case+"_"+version+".gpkg",
+                out_folder + "issues_"+case+"_"+version+".gpkg",
+                epsilon = 0.01,
                 check_intersection=True,
+                )
+
+    validate_polygonal_tesselation(
+                folder + "EBM_"+case+"_"+version+".gpkg",
+                out_folder + "issues_"+case+"_"+version+".gpkg",
+                epsilon = 0.01,
                 check_polygonisation=True,
+                )
+
+    validate_polygonal_tesselation(
+                folder + "EBM_"+case+"_"+version+".gpkg",
+                out_folder + "issues_"+case+"_"+version+".gpkg",
+                epsilon = 0.01,
                 check_microscopic_segments=True,
+                )
+
+    validate_polygonal_tesselation(
+                folder + "EBM_"+case+"_"+version+".gpkg",
+                out_folder + "issues_"+case+"_"+version+".gpkg",
+                epsilon = 0.01,
                 check_noding_issues=True,
                 )
 
