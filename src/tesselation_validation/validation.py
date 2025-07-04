@@ -29,14 +29,17 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
         print(len(mps), "feature geometries")
 
         for g in mps:
-            v = g.is_valid
-            if not v:
-                issues.append(["Non valid geometry", "validity", g.centroid])
-            # in addition, check effect of the buffer_0.
-            # Buffer_0 operation cleans geometries. It removes duplicate vertices.
-            g_ = g.buffer(0)
-            if count_vertices(g) != count_vertices(g_):
-                issues.append(["Non valid geometry - buffer0", "validity_buffer0", g.centroid])
+            try:
+                v = g.is_valid
+                if not v:
+                    issues.append(["Non valid geometry", "validity", g.centroid])
+                # in addition, check effect of the buffer_0.
+                # Buffer_0 operation cleans geometries. It removes duplicate vertices.
+                g_ = g.buffer(0)
+                if count_vertices(g) != count_vertices(g_):
+                    issues.append(["Non valid geometry - buffer0", "validity_buffer0", g.centroid])
+            except:
+                continue
         del mps
 
     # get polygons
@@ -54,24 +57,27 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
 
         r = 1.5
         for p in polys:
-            # get eroded geometry
-            p2 = p.buffer(-r*epsilon).buffer(r*epsilon)
-            # compute hdistance to original geometry
-            d = p.hausdorff_distance(p2)
-            # if distance is small, continue
-            if d < epsilon * r * 3: continue
-            # compute difference
-            diff = p.difference(p2)
+            try:
+                # get eroded geometry
+                p2 = p.buffer(-r*epsilon).buffer(r*epsilon)
+                # compute hdistance to original geometry
+                d = p.hausdorff_distance(p2)
+                # if distance is small, continue
+                if d < epsilon * r * 3: continue
+                # compute difference
+                diff = p.difference(p2)
 
-            # convert into polygons
-            if diff.geom_type == "Polygon": diff = [diff]
-            else: diff = diff.geoms
+                # convert into polygons
+                if diff.geom_type == "Polygon": diff = [diff]
+                else: diff = diff.geoms
 
-            # check parts: raise issue for the large ones
-            for part in diff:
-                a = part.area
-                if a < r*r*epsilon*epsilon * 7: continue
-                issues.append(["Thin polygon part. area="+str(a), "thin_polygon_part", part.centroid])
+                # check parts: raise issue for the large ones
+                for part in diff:
+                    a = part.area
+                    if a < r*r*epsilon*epsilon * 7: continue
+                    issues.append(["Thin polygon part. area="+str(a), "thin_polygon_part", part.centroid])
+            except:
+                continue
 
 
     if check_intersection:
@@ -92,16 +98,19 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
 
         print("check intersection")
         for i in range(len(polys)):
-            g = polys[i]
-            intersl = list(idx.intersection(g.bounds))
-            for j in intersl:
-                if i<=j: continue
-                gj = polys[j]
-                inte = g.intersects(gj)
-                if not inte: continue
-                inte = g.intersection(gj)
-                if inte.area == 0: continue
-                issues.append(["Polygon intersection - area="+str(inte.area), "intersection", inte.centroid])
+            try:
+                g = polys[i]
+                intersl = list(idx.intersection(g.bounds))
+                for j in intersl:
+                    if i<=j: continue
+                    gj = polys[j]
+                    inte = g.intersects(gj)
+                    if not inte: continue
+                    inte = g.intersection(gj)
+                    if inte.area == 0: continue
+                    issues.append(["Polygon intersection - area="+str(inte.area), "intersection", inte.centroid])
+            except:
+                continue
         del polys
 
     # get lines
@@ -127,9 +136,11 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
 
         # check polygons
         for poly in polygons:
-            poly_ = poly.buffer(-epsilon)
-            if poly_.is_empty:
-                issues.append(["Thin polygon", "thin polygon", poly.centroid])
+            try:
+                poly_ = poly.buffer(-epsilon)
+                if poly_.is_empty:
+                    issues.append(["Thin polygon", "thin polygon", poly.centroid])
+            except: continue
         del polygons
 
 
@@ -138,14 +149,16 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
         segments = []
         nodes = []
         for line in gdf:
-            cs = list(line.coords)
-            c0 = cs[0]
-            nodes.append(Point(c0))
-            for i in range(1, len(cs)):
-                c1 = cs[i]
-                nodes.append(Point(c1))
-                segments.append( LineString([c0, c1]) )
-                c0 = c1
+            try:
+                cs = list(line.coords)
+                c0 = cs[0]
+                nodes.append(Point(c0))
+                for i in range(1, len(cs)):
+                    c1 = cs[i]
+                    nodes.append(Point(c1))
+                    segments.append( LineString([c0, c1]) )
+                    c0 = c1
+            except: continue
         print(len(nodes), "nodes", len(segments), "segments")
 
         #TODO remove duplicate nodes and segments ?
@@ -171,16 +184,18 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
 
         print("compute node to segment analysis")
         for seg in segments:
-            candidate_nodes = idx.intersection(seg.bounds)
-            #print(len(candidate_nodes))
-            for cn in candidate_nodes:
-                cn = nodes[cn]
-                pos = nearest_points(cn, seg)[1]
-                dist = cn.distance(pos)
-                if dist == 0: continue
-                if dist > epsilon: continue
-                #print(cn, dist)
-                issues.append(["Noding issue. dist =" + str(dist), "noding", cn])
+            try:
+                candidate_nodes = idx.intersection(seg.bounds)
+                #print(len(candidate_nodes))
+                for cn in candidate_nodes:
+                    cn = nodes[cn]
+                    pos = nearest_points(cn, seg)[1]
+                    dist = cn.distance(pos)
+                    if dist == 0: continue
+                    if dist > epsilon: continue
+                    #print(cn, dist)
+                    issues.append(["Noding issue. dist =" + str(dist), "noding", cn])
+            except: continue
 
     print("save issues as gpkg", len(issues))
     gdf = gpd.GeoDataFrame(issues, columns=["description", "type", "geometry"], crs="EPSG:3035" )
