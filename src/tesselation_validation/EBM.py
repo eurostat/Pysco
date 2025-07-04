@@ -7,7 +7,7 @@ from tesselation_validation.validation import validate_polygonal_tesselation
 
 
 folder = "/home/juju/geodata/eurogeographics/EBM/"
-out_folder = "/home/juju/Bureau/EBM_2025_2_validation"
+out_folder = "/home/juju/Bureau/EBM_2025_2_validation/"
 version = "2025_2"
 for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
     print("*******", case)
