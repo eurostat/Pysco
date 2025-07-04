@@ -1,6 +1,8 @@
 
 
-
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from tesselation_validation.validation import validate_polygonal_tesselation
 
 
