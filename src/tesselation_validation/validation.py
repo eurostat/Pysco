@@ -225,4 +225,3 @@ def count_vertices(geometry):
     else:
         raise ValueError(f"Unsupported geometry type: {geometry.geom_type}")
 
-
