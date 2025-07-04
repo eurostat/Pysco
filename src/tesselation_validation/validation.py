@@ -198,6 +198,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
     gdf = gpd.GeoDataFrame(issues, columns=["description", "type", "geometry"], crs="EPSG:3035" )
     gdf = gdf.drop_duplicates()
     print("    without duplicates:", len(gdf))
+    if len(gdf) == 0: return
     gdf.to_file(output_gpkg, layer="issues", driver="GPKG")
 
 
