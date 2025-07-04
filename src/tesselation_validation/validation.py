@@ -28,6 +28,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
         mps = gdf["geometry"].geometry.tolist()
         print(len(mps), "feature geometries")
 
+        print("check OGC validity")
         for g in mps:
             try:
                 v = g.is_valid
@@ -42,19 +43,18 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
                 continue
         del mps
 
-    # get polygons
+    print("explode polygons")
     gdf = gdf.explode(index_parts=True)
     print(len(gdf), "polygons")
 
 
     if check_thin_parts:
-        print("check thin parts")
-
         print("decompose multi polygons into simple polygons")
         polys = gdf.explode(index_parts=False)["geometry"]
         polys = polys.geometry.tolist()
         print(len(gdf), "polygons")
 
+        print("check thin parts")
         r = 1.5
         for p in polys:
             try:
@@ -81,8 +81,6 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
 
 
     if check_intersection:
-        print("check intersection")
-
         print("decompose multi polygons into simple polygons")
         polys = gdf.explode(index_parts=False)["geometry"]
         polys = polys.geometry.tolist()
@@ -113,7 +111,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
                 continue
         del polys
 
-    # get lines
+    print("get lines")
     gdf = gdf.geometry.boundary
     gdf = gdf.explode(index_parts=True)
     gdf = gdf.geometry.tolist()
@@ -121,20 +119,19 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
 
 
     if check_polygonisation:
-        print("check thin polygons")
-
         # unionise lines, to remove duplicates
         # TODO: check without it ?
+        print("unionise lines")
         lines = unary_union(gdf)
         lines = list(lines.geoms)
         print(len(lines), "lines")
 
-        # polygonise lines
+        print("polygonise lines")
         polygons = list(polygonize(lines))
         print(len(polygons), "polygons after polygonisation")
         del lines
 
-        # check polygons
+        print("check thin polygons")
         for poly in polygons:
             try:
                 poly_ = poly.buffer(-epsilon)
