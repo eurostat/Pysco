@@ -14,6 +14,7 @@ for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
 
     epsilon = 0.01
 
+    '''
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_ogc_validity.gpkg",
@@ -49,7 +50,7 @@ for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
                 epsilon = epsilon,
                 check_thin_parts=True,
                 )
-
+    '''
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_polygonisation.gpkg",
