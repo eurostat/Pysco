@@ -12,7 +12,7 @@ version = "2025_2"
 for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
     print("*******", case)
 
-    epsilon = 0.001
+    epsilon = 0.01
 
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
@@ -42,18 +42,18 @@ for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
                 check_noding_issues=True,
                 )
 
-    validate_polygonal_tesselation(
-                folder + "EBM_"+case+"_"+version+".gpkg",
-                out_folder + "issues_"+case+"_"+version+"_check_thin_parts.gpkg",
-                epsilon = 0.01,
-                check_thin_parts=True,
-                )
-
     '''
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
+                out_folder + "issues_"+case+"_"+version+"_check_thin_parts.gpkg",
+                epsilon = epsilon,
+                check_thin_parts=True,
+                )
+
+    validate_polygonal_tesselation(
+                folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_polygonisation.gpkg",
-                epsilon = 0.01,
+                epsilon = epsilon,
                 check_polygonisation=True,
                 )
     '''
