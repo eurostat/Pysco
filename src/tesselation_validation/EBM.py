@@ -42,7 +42,6 @@ for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
                 )
 
     '''
-
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_thin_parts.gpkg",
