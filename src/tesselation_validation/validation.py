@@ -7,13 +7,13 @@ from shapely.ops import polygonize, unary_union, nearest_points
 
 
 def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
-             epsilon = 0.001,
              check_ogc_validity=False,
              check_thin_parts=False,
              check_intersection=False,
              check_polygonisation=False,
              check_microscopic_segments=False,
              check_noding_issues=False,
+             epsilon = 0.001,
              ):
 
     # list of issues
