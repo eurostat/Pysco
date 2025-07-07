@@ -9,11 +9,11 @@ from shapely.ops import polygonize, unary_union, nearest_points
 def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
              check_ogc_validity=False,
              check_thin_parts=False,
+             thin_part_threshold = 0.1,
              check_intersection=False,
              check_polygonisation=False,
              check_microscopic_segments=False,
              check_noding_issues=False,
-             epsilon = 0.001,
              ):
 
     # list of issues
@@ -55,15 +55,14 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
         print(len(gdf), "polygons")
 
         print("check thin parts")
-        r = 1.5
         for p in polys:
             try:
                 # get eroded geometry
-                p2 = p.buffer(-r*epsilon).buffer(r*epsilon)
+                p2 = p.buffer(-thin_part_threshold).buffer(thin_part_threshold)
                 # compute hdistance to original geometry
                 d = p.hausdorff_distance(p2)
                 # if distance is small, continue
-                if d < epsilon * r * 3: continue
+                if d < thin_part_threshold * 3: continue
                 # compute difference
                 diff = p.difference(p2)
 
@@ -74,7 +73,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
                 # check parts: raise issue for the large ones
                 for part in diff:
                     a = part.area
-                    if a < r*r*epsilon*epsilon * 7: continue
+                    if a < thin_part_threshold*thin_part_threshold * 7: continue
                     issues.append(["Thin polygon part. area="+str(a), "thin_polygon_part", part.centroid])
             except:
                 continue
