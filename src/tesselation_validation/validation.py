@@ -12,8 +12,11 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
              thin_part_threshold = 0.1,
              check_intersection=False,
              check_polygonisation=False,
+             polygonation_check_distance_threshold = 0.1,
              check_microscopic_segments=False,
+             microscopic_segment_threshold = 0.1,
              check_noding_issues=False,
+             node_to_segment_distance_threshold = 0.1,
              ):
 
     # list of issues
@@ -133,7 +136,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
         print("check thin polygons")
         for poly in polygons:
             try:
-                poly_ = poly.buffer(-epsilon)
+                poly_ = poly.buffer(-polygonation_check_distance_threshold)
                 if poly_.is_empty:
                     issues.append(["Thin polygon", "thin polygon", poly.centroid])
             except: continue
@@ -165,7 +168,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
     if check_microscopic_segments:
         print("check microscopic segments")
         for seg in segments:
-            if seg.length < epsilon:
+            if seg.length < microscopic_segment_threshold:
                 issues.append(["Microscopic segment. length =" + str(seg.length), "micro_segment", seg.centroid])
 
     if check_noding_issues:
@@ -188,7 +191,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
                     pos = nearest_points(cn, seg)[1]
                     dist = cn.distance(pos)
                     if dist == 0: continue
-                    if dist > epsilon: continue
+                    if dist > node_to_segment_distance_threshold: continue
                     #print(cn, dist)
                     issues.append(["Noding issue. dist =" + str(dist), "noding", cn])
             except: continue
