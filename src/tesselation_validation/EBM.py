@@ -12,13 +12,11 @@ version = "2025_2"
 for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
     print("*******", case)
 
-    '''
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_ogc_validity.gpkg",
                 check_ogc_validity=True,
                 )
-    '''
 
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
@@ -29,28 +27,26 @@ for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_microscopic_segments.gpkg",
-                epsilon = 0.1,
                 check_microscopic_segments=True,
+                microscopic_segment_threshold=0.1,
                 )
 
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_noding_issues.gpkg",
-                epsilon = 0.5,
                 check_noding_issues=True,
+                node_to_segment_distance_threshold=0.5,
                 )
 
-    '''
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_thin_parts.gpkg",
-                epsilon = epsilon,
                 check_thin_parts=True,
+                thin_part_threshold=0.1,
                 )
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_polygonisation.gpkg",
-                epsilon = epsilon,
                 check_polygonisation=True,
+                polygonation_check_distance_threshold=1,
                 )
-    '''
