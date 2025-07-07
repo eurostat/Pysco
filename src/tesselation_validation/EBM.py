@@ -23,21 +23,20 @@ for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_intersection.gpkg",
-                resolution = 0.0001,
                 check_intersection=True,
                 )
 
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_microscopic_segments.gpkg",
-                resolution = 0.1,
+                epsilon = 0.1,
                 check_microscopic_segments=True,
                 )
 
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_noding_issues.gpkg",
-                resolution = 0.5,
+                epsilon = 0.5,
                 check_noding_issues=True,
                 )
 
