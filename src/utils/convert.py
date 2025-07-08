@@ -3,7 +3,7 @@ import rasterio
 from shapely.geometry import Polygon,Point
 from rasterio.transform import from_origin
 import numpy as np
-from math import ceil
+from math import ceil,isnan
 from datetime import datetime
 import geopandas as gpd
 import pandas as pd
@@ -203,6 +203,7 @@ def parquet_grid_to_geotiff(
                 value = getattr(cell, a)
                 if value_fun: value = value_fun(value)
                 if value is None: continue
+                if isnan(value): continue
                 if parquet_nodata_values is not None and value in parquet_nodata_values: continue
                 band_arrays[a][row, col] = value
 
