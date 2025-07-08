@@ -12,6 +12,7 @@ version = "2025_2"
 for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
     print("*******", case)
 
+    '''
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_ogc_validity.gpkg",
@@ -23,6 +24,7 @@ for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
                 out_folder + "issues_"+case+"_"+version+"_check_intersection.gpkg",
                 check_intersection=True,
                 )
+    '''
 
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
@@ -38,6 +40,7 @@ for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
                 node_to_segment_distance_threshold=0.5,
                 )
 
+    '''
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_thin_parts.gpkg",
@@ -50,3 +53,4 @@ for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
                 check_polygonisation=True,
                 polygonation_check_distance_threshold=1,
                 )
+    '''
