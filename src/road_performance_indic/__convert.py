@@ -1,4 +1,10 @@
+import numpy as np
 import pandas as pd
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.convert import parquet_grid_to_geotiff
 
 
 
@@ -8,23 +14,11 @@ df = df.drop(columns=["x", "y"])
 # Sauvegarder en fichier Parquet
 df.to_parquet("/home/juju/gisco/road_transport_performance/grid_network_perf_2011_2019_2021_c.parquet", index=False)
 
-
-
-# open csv.
-# select columns
-# save as parquet
-# convert to geotiff
-'''
-def parquet_grid_to_geotiff(
-    input_parquet_files,
-    output_tiff,
-    grid_id_field='GRD_ID',
-    attributes=None,
-    bbox=None,
-    parquet_nodata_values=None,
-    tiff_nodata_value=-9999,
-    dtype=np.int16,
-    value_fun=None,
-    compress='none'
-):
-'''
+parquet_grid_to_geotiff(
+    ["/home/juju/gisco/road_transport_performance/grid_network_perf_2011_2019_2021_c.parquet"],
+    "/home/juju/gisco/road_transport_performance/grid_network_perf_2011_2019_2021_c.tif",
+    grid_id_field="grd_id",
+    #attributes=[""]
+    dtype=np.int64,
+    compress="deflate",
+    )
