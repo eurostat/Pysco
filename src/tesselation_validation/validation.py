@@ -5,6 +5,7 @@ from shapely.ops import polygonize, unary_union, nearest_points
 
 
 
+#TODO: document
 
 def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
              check_ogc_validity=False,
