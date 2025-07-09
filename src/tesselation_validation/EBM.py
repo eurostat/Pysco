@@ -26,6 +26,7 @@ for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
                 )
     '''
 
+    '''
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_microscopic_segments.gpkg",
@@ -39,8 +40,8 @@ for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
                 check_noding_issues=True,
                 node_to_segment_distance_threshold=0.5,
                 )
-
     '''
+                
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
                 out_folder + "issues_"+case+"_"+version+"_check_thin_parts.gpkg",
@@ -53,4 +54,5 @@ for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
                 check_polygonisation=True,
                 polygonation_check_distance_threshold=1,
                 )
-    '''
+
+
