@@ -21,4 +21,3 @@ parquet_grid_to_geotiff(
     dtype=np.int64,
     compress="deflate",
     )
-
