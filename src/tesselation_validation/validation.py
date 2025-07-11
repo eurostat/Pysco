@@ -7,6 +7,7 @@ from shapely.ops import polygonize, unary_union, nearest_points
 
 #TODO: document and share with eurogeographics
 
+
 def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
              check_ogc_validity=False,
              check_thin_parts=False,
@@ -19,6 +20,27 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
              check_noding_issues=False,
              node_to_segment_distance_threshold = 0.1,
              ):
+    """
+    Detect issues on a polygonal tesselation dataset. Various validation rules are tested. The issues detected are stored into a gpkg file.
+
+    Args:
+        gpkg_path (str): the path to the input dataset to test, which should contain a polygonal tesselation.
+        output_gpkg (str): the path to the output gpkg file describing the detected issues.
+        bbox (_type_, optional): _description_. Defaults to None.
+        check_ogc_validity (bool, optional): _description_. Defaults to False.
+        check_thin_parts (bool, optional): _description_. Defaults to False.
+        thin_part_threshold (float, optional): _description_. Defaults to 0.1.
+        check_intersection (bool, optional): _description_. Defaults to False.
+        check_polygonisation (bool, optional): _description_. Defaults to False.
+        polygonation_check_distance_threshold (float, optional): _description_. Defaults to 0.1.
+        check_microscopic_segments (bool, optional): _description_. Defaults to False.
+        microscopic_segment_threshold (float, optional): _description_. Defaults to 0.1.
+        check_noding_issues (bool, optional): _description_. Defaults to False.
+        node_to_segment_distance_threshold (float, optional): _description_. Defaults to 0.1.
+    """
+
+
+
 
     # list of issues
     issues = []
