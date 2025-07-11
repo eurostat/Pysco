@@ -118,15 +118,25 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
         print("check intersection")
         for i in range(len(polys)):
             try:
+                # get polygon
                 g = polys[i]
+                # get intersecting ones using spatial index
                 intersl = list(idx.intersection(g.bounds))
                 for j in intersl:
+                    # do not handle pairs twice
                     if i<=j: continue
+                    # get other polygon
                     gj = polys[j]
+
+                    # check intersection
                     inte = g.intersects(gj)
                     if not inte: continue
+
+                    # compute intersection
                     inte = g.intersection(gj)
                     if inte.area == 0: continue
+
+                    # raise issue
                     issues.append(["Polygon intersection - area="+str(inte.area), "intersection", inte.centroid])
             except:
                 continue
