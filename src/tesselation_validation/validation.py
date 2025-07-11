@@ -26,20 +26,18 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
     Args:
         gpkg_path (str): the path to the input dataset to test, which should contain a polygonal tesselation.
         output_gpkg (str): the path to the output gpkg file describing the detected issues.
-        bbox (_type_, optional): _description_. Defaults to None.
-        check_ogc_validity (bool, optional): _description_. Defaults to False.
-        check_thin_parts (bool, optional): _description_. Defaults to False.
-        thin_part_threshold (float, optional): _description_. Defaults to 0.1.
-        check_intersection (bool, optional): _description_. Defaults to False.
-        check_polygonisation (bool, optional): _description_. Defaults to False.
-        polygonation_check_distance_threshold (float, optional): _description_. Defaults to 0.1.
-        check_microscopic_segments (bool, optional): _description_. Defaults to False.
-        microscopic_segment_threshold (float, optional): _description_. Defaults to 0.1.
-        check_noding_issues (bool, optional): _description_. Defaults to False.
-        node_to_segment_distance_threshold (float, optional): _description_. Defaults to 0.1.
+        bbox (bbox, optional): if the validation should focus only on a part of the dataset, here is the bounding box. Defaults to None, for the entire dataset.
+        check_ogc_validity (bool, optional): Set to true to check the OGC validy of the polygons. Defaults to False.
+        check_thin_parts (bool, optional): Set to true to detect too thin polygon parts, which may be due to gaps in the datasets. Defaults to False.
+        thin_part_threshold (float, optional): the threshold for the thin part. Should be the dataset resolution. Defaults to 0.1.
+        check_intersection (bool, optional): Set to true to check no polygons intersect. Defaults to False.
+        check_polygonisation (bool, optional): Set to true to check no gaps exist between polygons. Defaults to False.
+        polygonation_check_distance_threshold (float, optional): the threshold for the polygon gaps. Should be the dataset resolution. Defaults to 0.1.
+        check_microscopic_segments (bool, optional): Set to true to check polygons with microscopic segments. Defaults to False.
+        microscopic_segment_threshold (float, optional): the threshold length for what is considered as a microscopic segment. Should be the dataset resolution. Defaults to 0.1.
+        check_noding_issues (bool, optional): Set to true to detect noding issues. A noding issue occurs when a polygon vertex is close to the segment of another polygon but not exactly snapped. This should result in a polygon overlap or gap between them. Defaults to False.
+        node_to_segment_distance_threshold (float, optional): the threshold distance for noding issue detection. It is the distance between nodes and segments. Defaults to 0.1.
     """
-
-
 
 
     # list of issues
