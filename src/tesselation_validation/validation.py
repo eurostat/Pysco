@@ -142,7 +142,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
                 continue
         del polys
 
-    print("get lines")
+    print("turn polygons into lines")
     gdf = gdf.geometry.boundary
     gdf = gdf.explode(index_parts=True)
     gdf = gdf.geometry.tolist()
@@ -165,7 +165,9 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
         print("check thin polygons")
         for poly in polygons:
             try:
+                # erode polygon to check if it is too thin
                 poly_ = poly.buffer(-polygonation_check_distance_threshold)
+                # raise issue when polygon was entirely eroded
                 if poly_.is_empty:
                     issues.append(["Thin polygon", "thin polygon", poly.centroid])
             except: continue
@@ -173,17 +175,20 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
 
 
     if check_noding_issues or check_microscopic_segments:
-        print("make list of segments and nodes")
+        print("make lists of segments and nodes")
         segments = []
         nodes = []
         for line in gdf:
             try:
                 cs = list(line.coords)
                 c0 = cs[0]
+                # keep node
                 nodes.append(Point(c0))
                 for i in range(1, len(cs)):
                     c1 = cs[i]
+                    # keep node
                     nodes.append(Point(c1))
+                    # keep segment, as linestring
                     segments.append( LineString([c0, c1]) )
                     c0 = c1
             except: continue
