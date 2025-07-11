@@ -202,6 +202,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
     if check_microscopic_segments:
         print("check microscopic segments")
         for seg in segments:
+            # if segment is microscopic, raise issue
             if seg.length < microscopic_segment_threshold:
                 issues.append(["Microscopic segment. length =" + str(seg.length), "micro_segment", seg.centroid])
 
@@ -218,15 +219,16 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
         print("compute node to segment analysis")
         for seg in segments:
             try:
+                # get nodes nearby the segment
                 candidate_nodes = idx.intersection(seg.bounds)
-                #print(len(candidate_nodes))
                 for cn in candidate_nodes:
                     cn = nodes[cn]
                     pos = nearest_points(cn, seg)[1]
                     dist = cn.distance(pos)
+                    # TODO check instead that cn is not one of the segment extremities
                     if dist == 0: continue
                     if dist > node_to_segment_distance_threshold: continue
-                    #print(cn, dist)
+                    # raise issue
                     issues.append(["Noding issue. dist =" + str(dist), "noding", cn])
             except: continue
 
