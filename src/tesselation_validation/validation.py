@@ -5,9 +5,6 @@ from shapely.ops import polygonize, unary_union, nearest_points
 
 
 
-#TODO: document and share with eurogeographics
-
-
 def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
              check_ogc_validity=False,
              check_thin_parts=False,
@@ -41,6 +38,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
 
 
     # list of issues
+    # each issue is a dictionnary with "description", "type" and point "geometry" where the issue happens.
     issues = []
 
     print("load features")
@@ -58,9 +56,9 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
                 v = g.is_valid
                 if not v:
                     issues.append(["Non valid geometry", "validity", g.centroid])
-                # in addition, check effect of the buffer_0.
-                # Buffer_0 operation cleans geometries. It removes duplicate vertices.
+                # in addition, check effect of the buffer_0. Buffer_0 operation cleans geometries. It removes duplicate vertices.
                 g_ = g.buffer(0)
+                # check if the buffer(0) operation changed the number of vertices.
                 if count_vertices(g) != count_vertices(g_):
                     issues.append(["Non valid geometry - buffer0", "validity_buffer0", g.centroid])
             except:
@@ -94,7 +92,7 @@ def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
                 if diff.geom_type == "Polygon": diff = [diff]
                 else: diff = diff.geoms
 
-                # check parts: raise issue for the large ones
+                # check parts: raise issue for the large ones only
                 for part in diff:
                     a = part.area
                     if a < thin_part_threshold*thin_part_threshold * 7: continue
