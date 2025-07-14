@@ -249,7 +249,32 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         show_detailled_messages = False,
         shuffle = False,
         ):
-    
+    """
+    Compute accessiblity grid using k-nearest dijkstra algorithm.
+
+    Args:
+        pois_loader (fun): the POIs loader.
+        road_network_loader (fun): the road network sections loader.
+        bbox (bounding box): the bounding box to restrict the analysis.
+        out_folder (str): the output folder path where to create the output parquet files, one per tile.
+        k (int, optional): _description_. Defaults to 3.
+        weight_function (_type_, optional): _description_. Defaults to lambdafeature.
+        direction_fun (_type_, optional): _description_. Defaults to lambdafeature:"both".
+        initial_node_level_fun (_type_, optional): _description_. Defaults to None.
+        final_node_level_fun (_type_, optional): _description_. Defaults to None.
+        cell_id_fun (_type_, optional): _description_. Defaults to lambdax.
+        grid_resolution (int, optional): _description_. Defaults to 1000.
+        cell_network_max_distance (int, optional): _description_. Defaults to -1.
+        file_size (int, optional): _description_. Defaults to 100000.
+        extention_buffer (int, optional): _description_. Defaults to 30000.
+        detailled (bool, optional): _description_. Defaults to False.
+        densification_distance (_type_, optional): _description_. Defaults to None.
+        duration_simplification_fun (_type_, optional): _description_. Defaults to None.
+        keep_distance_to_node (bool, optional): _description_. Defaults to False.
+        num_processors (int, optional): _description_. Defaults to 1.
+        show_detailled_messages (bool, optional): _description_. Defaults to False.
+        shuffle (bool, optional): _description_. Defaults to False.
+    """
 
     # launch parallel computation   
     processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], file_size)
