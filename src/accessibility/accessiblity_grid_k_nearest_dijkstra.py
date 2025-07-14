@@ -248,9 +248,8 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         num_processors = 1,
         show_detailled_messages = False,
         shuffle = False,
-    ):
-    '''
-    '''
+        ):
+    
 
     # launch parallel computation   
     processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], file_size)
