@@ -225,29 +225,32 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
 
 
 
-def accessiblity_grid_k_nearest_dijkstra_parallel(pois_loader,
-                       road_network_loader,
-                       bbox,
-                       out_folder,
-                       k = 3,
-                       weight_function = lambda feature,sl:sl,
-                       direction_fun=lambda feature:"both", #('both', 'oneway', 'forward', 'backward')
-                       is_not_snappable_fun = None,
-                       initial_node_level_fun=None,
-                       final_node_level_fun=None,
-                       cell_id_fun=lambda x,y:str(x)+"_"+str(y),
-                       grid_resolution=1000,
-                       cell_network_max_distance=-1,
-                       file_size = 100000,
-                       extention_buffer = 30000,
-                       detailled = False,
-                       densification_distance = None,
-                       duration_simplification_fun = None,
-                       keep_distance_to_node = False,
-                       num_processors = 1,
-                       show_detailled_messages = False,
-                       shuffle = False,
-                       ):
+def accessiblity_grid_k_nearest_dijkstra_parallel(
+        pois_loader,
+        road_network_loader,
+        bbox,
+        out_folder,
+        k = 3,
+        weight_function = lambda feature,sl:sl,
+        direction_fun=lambda feature:"both", #('both', 'oneway', 'forward', 'backward')
+        is_not_snappable_fun = None,
+        initial_node_level_fun=None,
+        final_node_level_fun=None,
+        cell_id_fun=lambda x,y:str(x)+"_"+str(y),
+        grid_resolution=1000,
+        cell_network_max_distance=-1,
+        file_size = 100000,
+        extention_buffer = 30000,
+        detailled = False,
+        densification_distance = None,
+        duration_simplification_fun = None,
+        keep_distance_to_node = False,
+        num_processors = 1,
+        show_detailled_messages = False,
+        shuffle = False,
+    ):
+    '''
+    '''
 
     # launch parallel computation   
     processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], file_size)

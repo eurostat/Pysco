@@ -20,7 +20,6 @@ from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_f
 #TODO handle case when speed depends on driving direction ?
 
 
-
 # where to store the outputs
 out_folder = '/home/juju/gisco/accessibility/'
 
@@ -43,7 +42,9 @@ for grid_resolution in [100]: # 1000
             detailled_network_decomposition = grid_resolution == 100
             # densification
             densification_distance = grid_resolution
-            cell_network_max_distance = grid_resolution * 3
+            # keep cells whose centre is within 3 * grid_resolution from a network node
+            cell_network_max_distance = 3 * grid_resolution
+            # tile file size, in m
             file_size = 200000 if grid_resolution == 100 else 500000
 
             def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
@@ -54,16 +55,22 @@ for grid_resolution in [100]: # 1000
             [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
             bbox = [xmin,ymin,xmax,ymax]
 
+            # choose number of processors, depending on service type and resolution
             if grid_resolution == 100:
                 num_processors_to_use = 6 if service == "education" else 3 #3
             else: num_processors_to_use = 10
+
+            # define tile buffer, depending on service type
             extention_buffer = 20000 if service=="education" else 60000
 
-            # ouput folder
+            # define and create ouput folder, depending on year, service, resolution
             out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(grid_resolution) + "m/"
             if not os.path.exists(out_folder_service_year): os.makedirs(out_folder_service_year)
 
+            # define tomtom year TODO: use other version, closer from POI reference year
             tomtom_year = "2019" if year == "2020" else year
+
+            # define tomtom and POI loaders
             def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
             def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
