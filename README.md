@@ -1,17 +1,16 @@
-# pyEx
+# Pysco
 
-A python programming sandbox. A bit of everything.
-
+Python code sandbox for GISCO.
 
 
 ### Notes
 
-pyrostat
-happygisco
-healthcare-gisco
-https://pypi.org/project/eurostat/
+See also:
+- [pyrostat](https://github.com/eurostat/pyrostat)
+- [happygisco](https://github.com/eurostat/happygisco)
 
-Other
-https://mapscaping.com/blogs/the-mapscaping-podcast/geospatial-python
-https://anitagraser.com/pyqgis-101-introduction-to-qgis-python-programming-for-non-programmers/
+Other resources
+- https://pypi.org/project/eurostat/
+- https://mapscaping.com/blogs/the-mapscaping-podcast/geospatial-python
+- https://anitagraser.com/pyqgis-101-introduction-to-qgis-python-programming-for-non-programmers/
 
