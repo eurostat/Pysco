@@ -14,6 +14,7 @@ from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_f
 # healthcare Estonia: see the two islands
 # healthcare FI, SE: north
 # healthcare Spain: see new hospitals, benavente - add in 2020
+# analyse differences 2020/2023 for hospitals (and maybe education) and make corrections in POI datasets
 
 #TODO QGIS plugin for parquet grids ?
 #TODO handle case when speed depends on driving direction ?
@@ -32,7 +33,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
 
-for grid_resolution in [100, 1000]:
+for grid_resolution in [100]: # 1000
 
     for year in ["2023","2020"]:
 
