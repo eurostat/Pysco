@@ -3,6 +3,7 @@ import pandas as pd
 from datetime import datetime
 import heapq
 from multiprocessing import Pool
+from math import floor
 
 import sys
 import os
@@ -277,10 +278,17 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         shuffle (bool, optional): set to true to shuffle the tiles before processing. Keep to false to process the tiles in sequential order. Defaults to False.
     """
 
-    # launch parallel computation   
-    processes_params = cartesian_product_comp(bbox[0], bbox[1], bbox[2], bbox[3], file_size)
+    # clamp bbox to fit with file_size
+    clamp = lambda v : floor(v/file_size)*file_size
+    [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
+
+    # build list of tiles
+    processes_params = cartesian_product_comp(xmin, ymin, xmax, ymax, file_size)
+
+    # shuffle, if required
     if shuffle: random.shuffle(processes_params)
 
+    # build list of processes parameters
     processes_params = [ (
             xy,
             extention_buffer,
@@ -304,5 +312,6 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
             show_detailled_messages,
         ) for xy in processes_params ]
 
+    # launch parallel processes
     print(datetime.now(), "launch", len(processes_params), "process(es) on", num_processors, "processor(s)")
     Pool(num_processors).starmap(accessiblity_grid_k_nearest_dijkstra, processes_params)

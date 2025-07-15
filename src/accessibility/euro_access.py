@@ -50,11 +50,6 @@ for grid_resolution in [100]: # 1000
             def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
             def duration_simplification_fun(x): return int(round(x))
 
-            # clamp bbox to fit with file_size
-            clamp = lambda v : floor(v/file_size)*file_size
-            [xmin,ymin,xmax,ymax] = [clamp(v) for v in bbox]
-            bbox = [xmin,ymin,xmax,ymax]
-
             # choose number of processors, depending on service type and resolution
             if grid_resolution == 100:
                 num_processors_to_use = 6 if service == "education" else 3 #3
