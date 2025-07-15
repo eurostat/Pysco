@@ -8,6 +8,7 @@ from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
 
 # where to store the outputs
 out_folder = '/home/juju/gisco/accessibility/'
+country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 
 # whole europe
 bbox = [ 900000, 900000, 6600000, 5500000 ]
@@ -53,7 +54,7 @@ for resolution in [100]:
             geotiff_mask_by_countries(
                 geotiff,
                 geotiff,
-                gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg',
+                gpkg = country_gpkg,
                 gpkg_column = 'CNTR_ID',
                 values = cnts,
                 compress="deflate"
