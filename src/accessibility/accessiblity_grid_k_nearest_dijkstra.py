@@ -91,6 +91,7 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
             keep_distance_to_node,
             show_detailled_messages = False,
             ):
+    """ see accessiblity_grid_k_nearest_dijkstra_parallel below """
 
     # get position
     [ x_part, y_part ] = xy
