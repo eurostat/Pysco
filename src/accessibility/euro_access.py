@@ -20,7 +20,10 @@ from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_f
 #TODO handle case when speed depends on driving direction ?
 
 
-# where to store the outputs
+# folders where to find the inputs
+tomtom_data_folder = "/home/juju/geodata/tomtom/"
+pois_data_folder = "/home/juju/geodata/gisco/basic_services/"
+# folders where to store the outputs
 out_folder = '/home/juju/gisco/accessibility/'
 
 # define output bounding box
@@ -66,8 +69,8 @@ for grid_resolution in [100]: # 1000
             tomtom_year = "2019" if year == "2020" else year
 
             # define tomtom and POI loaders
-            def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
-            def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/"+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels IS NULL or levels!='0'" if service=="education" else "")
+            def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
+            def pois_loader(bbox): return iter_features(pois_data_folder+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
             # build accessibility grid
             accessiblity_grid_k_nearest_dijkstra_parallel(
