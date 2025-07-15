@@ -257,23 +257,24 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         road_network_loader (fun): the road network sections loader.
         bbox (bounding box): the bounding box to restrict the analysis.
         out_folder (str): the output folder path where to create the output parquet files, one per tile.
-        k (int, optional): _description_. Defaults to 3.
-        weight_function (_type_, optional): _description_. Defaults to lambdafeature.
-        direction_fun (_type_, optional): _description_. Defaults to lambdafeature:"both".
-        initial_node_level_fun (_type_, optional): _description_. Defaults to None.
-        final_node_level_fun (_type_, optional): _description_. Defaults to None.
-        cell_id_fun (_type_, optional): _description_. Defaults to lambdax.
-        grid_resolution (int, optional): _description_. Defaults to 1000.
-        cell_network_max_distance (int, optional): _description_. Defaults to -1.
-        file_size (int, optional): _description_. Defaults to 100000.
-        extention_buffer (int, optional): _description_. Defaults to 30000.
-        detailled (bool, optional): _description_. Defaults to False.
-        densification_distance (_type_, optional): _description_. Defaults to None.
-        duration_simplification_fun (_type_, optional): _description_. Defaults to None.
-        keep_distance_to_node (bool, optional): _description_. Defaults to False.
-        num_processors (int, optional): _description_. Defaults to 1.
-        show_detailled_messages (bool, optional): _description_. Defaults to False.
-        shuffle (bool, optional): _description_. Defaults to False.
+        k (int, optional): the k parmeter, to compute the average time to k nearest pois. Defaults to 3.
+        weight_function (fun, optional): a function returning the weight of a network section part. Defaults to lambdafeature.
+        direction_fun (fun, optional): a function returning the direction of a network section. Defaults to lambda feature:"both".
+        is_not_snappable_fun (fun, optional): a function specifying the network sections that should not be used to snap cell centres. These are network sections that are forbidden to be used as origin/destination such as highway sections or access lanes.
+        initial_node_level_fun (_type_, optional): a function returning the section initial node level code, to manage properly multi-level intersections. Defaults to None.
+        final_node_level_fun (_type_, optional): a function returning the section final node level code, to manage properly multi-level intersections. Defaults to None.
+        cell_id_fun (_type_, optional): a function returning the output grid cell code. Defaults to lambda x+y.
+        grid_resolution (int, optional): the output grid resolution. Defaults to 1000.
+        cell_network_max_distance (int, optional): the maximum distance from a cell centre to a network node. cells too far away from the network are ignored. Defaults to -1.
+        file_size (int, optional): the size of each tile file. the larger, the fewer file but the more intensive. Defaults to 100000.
+        extention_buffer (int, optional): the buffer distance around the tile area. The network and pois within the tile extended by this distance is loaded. Data only for the cell within the tile are stored. Defaults to 30000.
+        detailled (bool, optional): Set to true to create a network node for each network section geometry vertice. Set to false to create nodes only for the initial and final nodes. Defaults to False.
+        densification_distance (_type_, optional): densify the network section geometries to ensure network edges are not longer than this threshold. This ensures cell centres are properly snapped to interior section nodes. Defaults to None.
+        duration_simplification_fun (_type_, optional): function applied to output duration indicators to simplify it. It could be a simple rounding. Defaults to None.
+        keep_distance_to_node (bool, optional): Set to true to store the distance from the grid cell to the network node it is snapped to. Can be used to control snapping effect. Defaults to False.
+        num_processors (int, optional): Number of processes to use, for parallel processing. Defaults to 1.
+        show_detailled_messages (bool, optional): set to true to see verbode debugging messages. Defaults to False.
+        shuffle (bool, optional): set to true to shuffle the tiles before processing. Keep to false to process the tiles in sequential order. Defaults to False.
     """
 
     # launch parallel computation   
