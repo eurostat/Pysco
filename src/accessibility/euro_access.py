@@ -88,7 +88,7 @@ for grid_resolution in [100]: # 1000
                 grid_resolution= grid_resolution,
                 cell_network_max_distance= grid_resolution * 2,
                 file_size = file_size,
-                extention_buffer = 20000 if service=="education" else 60000,
+                extention_buffer = extention_buffer,
                 detailled = detailled_network_decomposition,
                 densification_distance=densification_distance,
                 duration_simplification_fun = duration_simplification_fun,

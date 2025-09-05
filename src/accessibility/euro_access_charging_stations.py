@@ -48,23 +48,22 @@ for grid_resolution in [100]: # 1000
         def duration_simplification_fun(x): return int(round(x))
 
         # choose number of processors, depending on service type and resolution
-        if grid_resolution == 100:
-            num_processors_to_use = 6 if service == "education" else 3 #3
+        if grid_resolution == 100: num_processors_to_use = 6
         else: num_processors_to_use = 10
 
         # define tile buffer, depending on service type
-        extention_buffer = 20000 if service=="education" else 60000
+        extention_buffer = 30000
 
         # define and create ouput folder, depending on year, service, resolution
-        out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(grid_resolution) + "m/"
+        out_folder_service_year = out_folder + "out_" + year + "_" + str(grid_resolution) + "m/"
         if not os.path.exists(out_folder_service_year): os.makedirs(out_folder_service_year)
 
         # define tomtom year TODO: use other version, closer from POI reference year
-        tomtom_year = "2019" if year == "2020" else year
+        tomtom_year = "2023"
 
         # define tomtom and POI loaders
         def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
-        def pois_loader(bbox): return iter_features(pois_data_folder+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels IS NULL or levels!='0'" if service=="education" else "")
+        def pois_loader(bbox): return iter_features(pois_data_folder+year+".gpkg", bbox=bbox)
 
         # build accessibility grid
         accessiblity_grid_k_nearest_dijkstra_parallel(
@@ -82,7 +81,7 @@ for grid_resolution in [100]: # 1000
             grid_resolution= grid_resolution,
             cell_network_max_distance= grid_resolution * 2,
             file_size = file_size,
-            extention_buffer = 20000 if service=="education" else 60000,
+            extention_buffer = extention_buffer,
             detailled = detailled_network_decomposition,
             densification_distance=densification_distance,
             duration_simplification_fun = duration_simplification_fun,
