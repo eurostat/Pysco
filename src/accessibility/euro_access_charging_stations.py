@@ -36,7 +36,7 @@ for grid_resolution in [100]: # 1000
     for year in ["2025", "2023"]:
 
         # detailled network decomposition only when resolution to 100m
-        detailled_network_decomposition = grid_resolution == 100
+        detailled_network_decomposition = True
         # densification
         densification_distance = grid_resolution
         # keep cells whose centre is within 3 * grid_resolution from a network node
@@ -48,8 +48,7 @@ for grid_resolution in [100]: # 1000
         def duration_simplification_fun(x): return int(round(x))
 
         # choose number of processors, depending on service type and resolution
-        if grid_resolution == 100: num_processors_to_use = 6
-        else: num_processors_to_use = 10
+        num_processors_to_use = 5
 
         # define tile buffer, depending on service type
         extention_buffer = 30000
