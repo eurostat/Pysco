@@ -1,5 +1,4 @@
 
-from math import floor
 from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra_parallel
 
 import sys
@@ -8,7 +7,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
 from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
-
+# TODO
+# correct speed !
 
 
 # folders where to find the inputs
@@ -17,18 +17,10 @@ pois_data_folder = "/home/juju/geodata/gisco/charging_stations/"
 # folders where to store the outputs
 out_folder = '/home/juju/gisco/accessibility_charging_stations/'
 
-# TODO
-
-
 
 # define output bounding box
 # whole europe
 bbox = [ 900000, 900000, 6600000, 5500000 ]
-#luxembourg
-#bbox = [4030000, 2930000, 4060000, 2960000]
-#greece
-#bbox = [ 5000000, 1500000, 5500000, 2000000 ]
-
 
 
 for grid_resolution in [100]: # 1000
