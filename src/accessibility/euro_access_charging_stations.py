@@ -34,7 +34,7 @@ for grid_resolution in [100]: # 1000
         # keep cells whose centre is within 3 * grid_resolution from a network node
         cell_network_max_distance = 3 * grid_resolution
         # tile file size, in m
-        file_size = 200000 if grid_resolution == 100 else 500000
+        file_size = 200000
 
         def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
         def duration_simplification_fun(x): return int(round(x))
@@ -43,7 +43,7 @@ for grid_resolution in [100]: # 1000
         num_processors_to_use = 5
 
         # define tile buffer, depending on service type
-        extention_buffer = 30000
+        extention_buffer = 20000
 
         # define and create ouput folder, depending on year, service, resolution
         out_folder_service_year = out_folder + "out_" + year + "_" + str(grid_resolution) + "m/"
@@ -62,7 +62,7 @@ for grid_resolution in [100]: # 1000
             road_network_loader = road_network_loader,
             bbox = bbox,
             out_folder = out_folder_service_year,
-            k = 10,
+            k = 5,
             weight_function = weight_function,
             direction_fun = direction_fun,
             is_not_snappable_fun = is_not_snappable_fun,
