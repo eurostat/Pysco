@@ -71,7 +71,7 @@ for grid_resolution in [100]: # 1000
             road_network_loader = road_network_loader,
             bbox = bbox,
             out_folder = out_folder_service_year,
-            k = 3,
+            k = 10,
             weight_function = weight_function,
             direction_fun = direction_fun,
             is_not_snappable_fun = is_not_snappable_fun,
