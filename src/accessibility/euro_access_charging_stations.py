@@ -23,9 +23,9 @@ out_folder = '/home/juju/gisco/accessibility_charging_stations/'
 
 # define output bounding box
 # whole europe
-#bbox = [ 900000, 900000, 6600000, 5500000 ]
+bbox = [ 900000, 900000, 6600000, 5500000 ]
 #luxembourg
-bbox = [4030000, 2930000, 4060000, 2960000]
+#bbox = [4030000, 2930000, 4060000, 2960000]
 #greece
 #bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
