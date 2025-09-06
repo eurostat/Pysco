@@ -40,7 +40,7 @@ for grid_resolution in [100]: # 1000
         def duration_simplification_fun(x): return int(round(x))
 
         # choose number of processors, depending on service type and resolution
-        num_processors_to_use = 4
+        num_processors_to_use = 2
 
         # define tile buffer, depending on service type
         extention_buffer = 20000
