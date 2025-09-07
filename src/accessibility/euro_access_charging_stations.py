@@ -52,6 +52,7 @@ for grid_resolution in [100]: # 1000
         # define tomtom year TODO: use other version, closer from POI reference year
         tomtom_year = "2023"
 
+
         # define tomtom and POI loaders
         def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
         def pois_loader(bbox): return iter_features(pois_data_folder+year+".gpkg", bbox=bbox)
