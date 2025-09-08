@@ -13,6 +13,7 @@ country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 # whole europe
 bbox = [ 900000, 900000, 6600000, 5500000 ]
 service = "charging_stations"
+k = "5"
 
 cnts = None #["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
        # "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
@@ -42,7 +43,7 @@ for resolution in [100]:
             files,
             geotiff,
             bbox = bbox,
-            attributes=["duration_s_1", "duration_average_s_3"],
+            attributes=["duration_s_1", "duration_average_s_" + k],
             parquet_nodata_values=[-1],
             dtype=np.int16,
             value_fun= lambda v:v if v<32767 else 32767, # np.int16(v),
@@ -61,5 +62,5 @@ for resolution in [100]:
             )
 
         print(resolution, service, year, "rename tiff bands")
-        rename_geotiff_bands(geotiff, [service + "_" + year + "_1", service + "_" + year + "_a3"])
+        rename_geotiff_bands(geotiff, [service + "_" + year + "_1", service + "_" + year + "_a"+k])
 
