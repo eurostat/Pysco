@@ -24,7 +24,7 @@ for resolution in [100]:
     for year in ["2025","2023"]:
 
         # ouput folder
-        out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(resolution) + "m/"
+        out_folder_service_year = out_folder + "out_" + year + "_" + str(resolution) + "m/"
         if not os.path.exists(out_folder_service_year): continue
 
         # combine parquet files to a single tiff file
