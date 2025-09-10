@@ -19,7 +19,6 @@ cnts = None #["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
        # "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
        # "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO"]
 
-
 for resolution in [100]:
 
     for year in ["2025","2023"]:
