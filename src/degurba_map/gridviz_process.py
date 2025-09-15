@@ -8,7 +8,6 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.geotiff import resample_geotiff_aligned
 
-
 path = "/home/juju/gisco/degurba/"
 resolutions = [10000, 5000, 2000, 1000]
 
@@ -21,6 +20,7 @@ for resolution in resolutions:
 
 
 # tiling
+# TODO modify gridtiler to ignore value=10 (water)
 for resolution in resolutions:
     print(datetime.now(), "Tiling", resolution)
 
@@ -30,7 +30,7 @@ for resolution in resolutions:
 
     # prepare dict for geotiff bands
     dict = {}
-    for year in ["2024"]:
+    for year in ["2024"]: #TODO check that
         dict["du" + year] = {"file":path + "/out/"+str(resolution)+".tif", "band":1}
 
     # launch tiling
@@ -39,8 +39,8 @@ for resolution in resolutions:
         folder_,
         crs="EPSG:3035",
         tile_size_cell = 512,
-        format="csv",
+        format="parquet",
         num_processors_to_use = 8,
-        modif_fun = lambda v: int(v),
+        #modif_fun = lambda v: int(v),
         )
 
