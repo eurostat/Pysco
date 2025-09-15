@@ -25,7 +25,7 @@ for resolution in resolutions:
     print(datetime.now(), "Tiling", resolution)
 
     # make folder for resolution
-    folder_ = path+"tiles/"+str(resolution)+"/"
+    folder_ = path+"out/"+str(resolution)+"/"
     if not os.path.exists(folder_): os.makedirs(folder_)
 
     # prepare dict for geotiff bands
