@@ -13,15 +13,14 @@ path = "/home/juju/gisco/degurba/"
 resolutions = [10000, 5000, 2000, 1000]
 
 # resampling
+'''
 for resolution in resolutions:
     print(datetime.now(), "resampling", resolution)
     resample_geotiff_aligned(path + "GHS-DUG_GRID_L2.tif", path + "/out/"+str(resolution)+".tif", resolution, resampling=Resampling.mode, dtype=np.int8)
+'''
 
 
 # tiling
-
-
-
 for resolution in resolutions:
     print(datetime.now(), "Tiling", resolution)
 
