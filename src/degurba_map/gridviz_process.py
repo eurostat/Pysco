@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.geotiff import resample_geotiff_aligned
 
 path = "/home/juju/geodata/gisco/degurba/"
-years = [ "2011" ]
+years = [ "2021", "2011" ]
 resolutions = [10000, 5000, 2000, 1000]
 resampling = True
 tiling = False
@@ -18,12 +18,12 @@ tiling = False
 if resampling:
     for resolution in resolutions:
         for year in years:
-            print(datetime.now(), "resampling", resolution)
+            print(datetime.now(), "resampling", year, resolution)
             resample_geotiff_aligned(path + "GHS-DUG_GRID_L2_"+year+".tif", "./tmp/degurba/"+year+"_"+str(resolution)+".tif", resolution, resampling=Resampling.mode, dtype=np.int8)
 
 
 # tiling
-# TODO modify gridtiler to ignore value=10 (water)
+# TODO modify gridtiler to ignore value=10 (water) ?
 if tiling:
     for resolution in resolutions:
         print(datetime.now(), "Tiling", resolution)
@@ -35,7 +35,7 @@ if tiling:
         # prepare dict for geotiff bands
         dict = {}
         for year in years:
-            dict["du" + year] = { "file" : path + "/out/"+year+"_"+str(resolution)+".tif", "band":1 }
+            dict["du" + year] = { "file" : "./tmp/degurba/"+year+"_"+str(resolution)+".tif", "band":1 }
 
         # launch tiling
         gridtiler_raster.tiling_raster(
@@ -45,6 +45,5 @@ if tiling:
             tile_size_cell = 512,
             format="parquet",
             num_processors_to_use = 8,
-            #modif_fun = lambda v: int(v),
             )
 
