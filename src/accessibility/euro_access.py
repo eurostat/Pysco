@@ -31,7 +31,8 @@ for grid_resolution in [100]: # 1000
 
     for year in ["2023","2020"]:
 
-        for service in ["education", "healthcare"]:
+        for service in ["healthcare"]:
+            file_path_suffix = "_20250916"
 
             # detailled network decomposition only when resolution to 100m
             detailled_network_decomposition = grid_resolution == 100
@@ -62,7 +63,7 @@ for grid_resolution in [100]: # 1000
 
             # define tomtom and POI loaders
             def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
-            def pois_loader(bbox): return iter_features(pois_data_folder+service+"_"+year+"_3035.gpkg", bbox=bbox, where="levels IS NULL or levels!='0'" if service=="education" else "")
+            def pois_loader(bbox): return iter_features(pois_data_folder+service+"_"+year+"_3035"+file_path_suffix+".gpkg", bbox=bbox, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
             # build accessibility grid
             accessiblity_grid_k_nearest_dijkstra_parallel(
