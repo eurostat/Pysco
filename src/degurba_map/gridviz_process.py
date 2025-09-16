@@ -43,11 +43,15 @@ if tiling:
             dict["du" + year] = { "file" : "./tmp/degurba/"+year+"_"+str(resolution)+".tif", "band":1 }
 
         # launch tiling
-        gridtiler_raster.tiling_raster(
+        gridtiler_raster.tiling_raster_generic(
             dict,
             folder_,
+            resolution,
+            #x_min=0, y_min=0, x_max=0, y_max=0,
+            -2820000,-3070000, 10030000, 5420000,
             crs="EPSG:3035",
             tile_size_cell = 512,
             format="parquet",
             num_processors_to_use = 6,
             )
+
