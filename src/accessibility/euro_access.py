@@ -7,9 +7,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
 from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
-
 #TODO
-#TODO handle case when speed depends on driving direction ?
+# handle case when speed depends on driving direction ?
 
 
 # folders where to find the inputs
