@@ -14,12 +14,15 @@ resolutions = [10000, 5000, 2000, 1000]
 resampling = False
 tiling = True
 
+
+
 # resampling
 if resampling:
     for resolution in resolutions:
         for year in years:
             print(datetime.now(), "resampling", year, resolution)
             resample_geotiff_aligned(path + "GHS-DUG_GRID_L2_"+year+".tif", "./tmp/degurba/"+year+"_"+str(resolution)+".tif", resolution, resampling=Resampling.mode, dtype=np.int8)
+
 
 
 # tiling
@@ -46,4 +49,3 @@ if tiling:
             format="parquet",
             num_processors_to_use = 6,
             )
-
