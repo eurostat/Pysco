@@ -9,14 +9,6 @@ from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_f
 
 
 #TODO
-# healthcare EL 2023: add new data.
-# healthcare EL 2020: missing services in centre.
-# healthcare Estonia: see the two islands
-# healthcare FI, SE: north
-# healthcare Spain: see new hospitals, benavente - add in 2020
-# analyse differences 2020/2023 for hospitals (and maybe education) and make corrections in POI datasets
-
-#TODO QGIS plugin for parquet grids ?
 #TODO handle case when speed depends on driving direction ?
 
 
