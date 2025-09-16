@@ -8,39 +8,43 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.geotiff import resample_geotiff_aligned
 
-path = "/home/juju/gisco/degurba/"
+path = "/home/juju/geodata/gisco/degurba/"
+years = [ "2011" ]
 resolutions = [10000, 5000, 2000, 1000]
+resampling = True
+tiling = False
 
 # resampling
-'''
-for resolution in resolutions:
-    print(datetime.now(), "resampling", resolution)
-    resample_geotiff_aligned(path + "GHS-DUG_GRID_L2.tif", path + "/out/"+str(resolution)+".tif", resolution, resampling=Resampling.mode, dtype=np.int8)
-'''
+if resampling:
+    for resolution in resolutions:
+        for year in years:
+            print(datetime.now(), "resampling", resolution)
+            resample_geotiff_aligned(path + "GHS-DUG_GRID_L2_"+year+".tif", path + ".tmp/degurba/"+year+"_"+str(resolution)+".tif", resolution, resampling=Resampling.mode, dtype=np.int8)
 
 
 # tiling
 # TODO modify gridtiler to ignore value=10 (water)
-for resolution in resolutions:
-    print(datetime.now(), "Tiling", resolution)
+if tiling:
+    for resolution in resolutions:
+        print(datetime.now(), "Tiling", resolution)
 
-    # make folder for resolution
-    folder_ = path+"out/"+str(resolution)+"/"
-    if not os.path.exists(folder_): os.makedirs(folder_)
+        # make folder for resolution
+        folder_ = "./tmp/degurba/"+str(resolution)+"/"
+        if not os.path.exists(folder_): os.makedirs(folder_)
 
-    # prepare dict for geotiff bands
-    dict = {}
-    for year in ["2024"]: #TODO check that
-        dict["du" + year] = {"file":path + "/out/"+str(resolution)+".tif", "band":1}
+        # prepare dict for geotiff bands
+        dict = {}
+        for year in years:
+            dict["du" + year] = { "file" : path + "/out/"+year+"_"+str(resolution)+".tif", "band":1 }
 
-    # launch tiling
-    gridtiler_raster.tiling_raster(
-        dict,
-        folder_,
-        crs="EPSG:3035",
-        tile_size_cell = 512,
-        format="parquet",
-        num_processors_to_use = 8,
-        #modif_fun = lambda v: int(v),
-        )
+        # launch tiling
+        gridtiler_raster.tiling_raster(
+            dict,
+            folder_,
+            crs="EPSG:3035",
+            tile_size_cell = 512,
+            format="parquet",
+            num_processors_to_use = 8,
+            #modif_fun = lambda v: int(v),
+            )
 
