@@ -28,7 +28,7 @@ def weight_function(feature, length):
 
     # duration in seconds, rounded, based on the speed. Plus 10% assuming kph is the maximum speed with no traffic and no stops.
     # 1.1 * 
-    return round(length / kph * 3.6)
+    return 1.1 * round(length / kph * 3.6)
 
 
 # return wether a section cannot be used as access point. Residential roads can, highways and ferry lines cannot.
