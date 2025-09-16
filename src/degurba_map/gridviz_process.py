@@ -15,6 +15,8 @@ resampling = False
 tiling = True
 
 
+#TODO ensure both tiffs have the same extent !!!
+
 
 # resampling
 if resampling:
