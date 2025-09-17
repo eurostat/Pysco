@@ -10,12 +10,9 @@ from utils.geotiff import resample_geotiff_aligned
 
 path = "/home/juju/geodata/gisco/degurba/"
 years = [ "2021", "2011" ]
-resolutions = [10000, 5000, 2000, 1000]
+resolutions = [1000]
 resampling = False
 tiling = True
-
-
-#TODO ensure both tiffs have the same extent !!!
 
 
 # resampling
@@ -52,6 +49,6 @@ if tiling:
             crs="EPSG:3035",
             tile_size_cell = 512,
             format="parquet",
-            num_processors_to_use = 6,
+            num_processors_to_use = 10,
             )
 
