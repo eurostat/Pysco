@@ -15,7 +15,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for resolution in [100]:
 
-    for service in ["education", "healthcare"]:
+    for service in ["healthcare"]: #education
 
         for year in ["2023","2020"]:
 
