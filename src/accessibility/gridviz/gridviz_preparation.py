@@ -9,13 +9,15 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from utils.geotiff import resample_geotiff_aligned
 
 
+version_tag = "2025_09"
+services = ["healthcare"]  #ecucation
+
+
 f0 = "/home/juju/gisco/accessibility/"
 folder = f0 + "gridviz/"
 if not os.path.exists(folder): os.makedirs(folder)
 
 folder_pop_tiff = "/home/juju/geodata/census/2021/aggregated_tiff/"
-version_tag = "2025_09"
-services = ["healthcare"]  #ecucation
 
 # aggregate at various resolutions - average
 def aggregate():
