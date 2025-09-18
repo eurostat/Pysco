@@ -12,6 +12,7 @@ country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 
 # whole europe
 bbox = [ 900000, 900000, 6600000, 5500000 ]
+version_tag = "2025_09"
 
 for resolution in [100]:
 
@@ -24,7 +25,7 @@ for resolution in [100]:
             if not os.path.exists(out_folder_service_year): continue
 
             # combine parquet files to a single tiff file
-            geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(resolution) + "m.tif"
+            geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(resolution) + "m_"+version_tag+".tif"
 
             # check if tiff file was already produced
             if os.path.isfile(geotiff): continue
