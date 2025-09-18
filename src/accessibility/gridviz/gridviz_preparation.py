@@ -11,7 +11,7 @@ from utils.geotiff import resample_geotiff_aligned
 
 version_tag = "2025_09"
 services = ["healthcare"]  #ecucation
-
+resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
 
 f0 = "/home/juju/gisco/accessibility/"
 folder = f0 + "gridviz/"
@@ -26,7 +26,7 @@ def aggregate():
         for service in services:
 
             # it is better to resample all resolution from 100m one. Otherwise, we do averages of averages which may create some biais around places with many nodata pixels
-            for resolution in [100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000]:
+            for resolution in resolution:
                 print(datetime.now(), service, year, resolution)
                 resample_geotiff_aligned(f0 + "euro_access_"+service+"_"+year+"_100m_"+version_tag+".tif", folder+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m.tif", resolution, Resampling.average)
 
@@ -45,15 +45,13 @@ def aggregate():
 
 def tiling():
 
-    for f in [ 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1 ]:
-        resolution = 100 * f
-
+    for resolution in resolutions:
         for service in services:
 
             print(datetime.now(), "Tiling", service, resolution)
 
             # make folder for resolution
-            folder_ = folder+"tiles"+version_tag+"/"+service+"_"+str(resolution)+"/"
+            folder_ = folder+"tiles_"+service+"_"+version_tag+"/"+str(resolution)+"/"
             if not os.path.exists(folder_): os.makedirs(folder_)
 
             # prepare dict for geotiff bands
