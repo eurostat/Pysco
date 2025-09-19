@@ -26,7 +26,7 @@ def aggregate():
         for service in services:
 
             # it is better to resample all resolution from 100m one. Otherwise, we do averages of averages which may create some biais around places with many nodata pixels
-            for resolution in resolution:
+            for resolution in resolutions:
                 print(datetime.now(), service, year, resolution)
                 resample_geotiff_aligned(f0 + "euro_access_"+service+"_"+year+"_100m_"+version_tag+".tif", folder+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m.tif", resolution, Resampling.average)
 
