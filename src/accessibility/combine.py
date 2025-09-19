@@ -22,6 +22,7 @@ for resolution in [100]:
     for service in services:
 
         for year in years:
+            print(resolution, service, year)
 
             # ouput folder
             out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(resolution) + "m/"
@@ -31,11 +32,15 @@ for resolution in [100]:
             geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(resolution) + "m_"+version_tag+".tif"
 
             # check if tiff file was already produced
-            if os.path.isfile(geotiff): continue
+            if os.path.isfile(geotiff):
+                print("Combined file already produced")
+                continue
 
             # get all parquet files in the output folder
             files = [os.path.join(out_folder_service_year, f) for f in os.listdir(out_folder_service_year) if f.endswith('.parquet')]
-            if len(files)==0: continue
+            if len(files)==0:
+                print("No file to combine")
+                continue
 
             print(resolution, service, year, "transforming", len(files), "parquet files into tif for", service, year)
             parquet_grid_to_geotiff(
