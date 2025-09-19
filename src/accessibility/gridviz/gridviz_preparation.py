@@ -8,6 +8,8 @@ from datetime import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.geotiff import resample_geotiff_aligned
 
+aggregate = True
+tiling = True
 
 version_tag = "2025_09"
 services = ["healthcare"]  #education
@@ -19,9 +21,10 @@ if not os.path.exists(folder): os.makedirs(folder)
 
 folder_pop_tiff = "/home/juju/geodata/census/2021/aggregated_tiff/"
 
-# aggregate at various resolutions - average
-def aggregate():
 
+# aggregate at various resolutions - average
+if aggregate:
+    print(datetime.now(), "aggregate")
     for year in ["2023", "2020"]:
         for service in services:
 
@@ -43,8 +46,8 @@ def aggregate():
                 resample_geotiff_aligned(folder+"euro_access_"+service+"_" + year+"_10000m.tif", folder+"euro_access_"+service+"_" + year+"_"+str(resolution)+"m.tif", resolution, Resampling.average)
             '''
 
-def tiling():
-
+if tiling:
+    print(datetime.now(), "tiling")
     for resolution in resolutions:
         for service in services:
 
@@ -71,11 +74,4 @@ def tiling():
                 num_processors_to_use = 10,
                 modif_fun = round,
                 )
-
-
-print(datetime.now(), "aggregate")
-aggregate()
-
-print(datetime.now(), "tiling")
-tiling()
 
