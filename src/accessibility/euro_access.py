@@ -8,7 +8,8 @@ from utils.featureutils import iter_features
 from utils.tomtomutils import weight_function, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
 #TODO
-# handle case when speed depends on driving direction ?
+# handle case when speed depends on driving direction
+# education: remove non-primary for those with with type differenciation
 
 
 # folders where to find the inputs
