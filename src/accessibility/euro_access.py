@@ -29,7 +29,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for grid_resolution in [100]: # 1000
 
-    for year in ["2023","2020"]:
+    for year in ["2020","2023"]:
 
         for service in ["healthcare"]:
             file_path_suffix = "_20251006"
@@ -72,7 +72,8 @@ for grid_resolution in [100]: # 1000
                 bbox = bbox,
                 out_folder = out_folder_service_year,
                 k = 3,
-                weight_function = weight_function,
+                weight_function_positive = weight_function,
+                weight_function_negative = weight_function,
                 direction_fun = direction_fun,
                 is_not_snappable_fun = is_not_snappable_fun,
                 initial_node_level_fun = initial_node_level_fun,

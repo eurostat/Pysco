@@ -29,7 +29,8 @@ def distance(node1, node2):
 
 
 def ___graph_adjacency_list_from_geodataframe(sections_iterator,
-                                              weight_fun = lambda feature,sl:sl,
+                                              weight_fun_pos = lambda feature,sl:sl,
+                                              weight_fun_neg = lambda feature,sl:sl,
                                               direction_fun=lambda feature:"both",
                                               is_not_snappable_fun = None,
                                               coord_simp=round,
@@ -105,23 +106,23 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
             # may happen
             if n1==n2: continue
 
-            # get segment weight
+            # get segment weights
             if detailled: segment_length_m = math.hypot(p1[0]-p2[0], p1[1]-p2[1])
             else: segment_length_m = shape(geom).length
-            w = weight_fun(f, segment_length_m)
-            if w<0: continue
+            w_pos = weight_fun_pos(f, segment_length_m)
+            w_neg = weight_fun_neg(f, segment_length_m)
 
             # Add directed edge(s)
             if direction == 'both':
-                graph[n1].append((n2, w))
-                graph[n2].append((n1, w))
+                if w_pos>=0: graph[n1].append((n2, w_pos))
+                if w_neg>=0: graph[n2].append((n1, w_neg))
             # (assume 'oneway' means forward)
             if direction == 'forward' or  direction == 'oneway':
-                graph[n1].append((n2, w))
+                if w_pos>=0: graph[n1].append((n2, w_pos))
                 if graph[n2] is None: graph[n2] = []
             if direction == 'backward':
                 if graph[n1] is None: graph[n1] = []
-                graph[n2].append((n1, w))
+                if w_neg>=0: graph[n2].append((n1, w_neg))
 
             # collect snappable nodes
             if is_snappable: snappable_nodes.update([n1, n2])
