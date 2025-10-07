@@ -1,4 +1,3 @@
-from math import floor
 from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra_parallel
 
 import sys
