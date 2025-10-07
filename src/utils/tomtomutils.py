@@ -31,6 +31,15 @@ def weight_function(feature, length):
     return 1.1 * round(length / kph * 3.6)
 
 
+
+def weight_function_positive(feature, length):
+    return 0
+
+def weight_function_negative(feature, length):
+    return 0
+
+
+
 # return wether a section cannot be used as access point. Residential roads can, highways and ferry lines cannot.
 def is_not_snappable_fun(f):
     p = f['properties']
