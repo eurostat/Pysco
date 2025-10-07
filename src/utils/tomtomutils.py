@@ -33,10 +33,40 @@ def weight_function(feature, length):
 
 
 def weight_function_positive(feature, length):
-    return 0
+    p = feature['properties']
+    kph = 0
+
+    # ferry
+    if p['FOW']==-1 and p['FEATTYP']==4130: kph = 30
+    # private/restricted/pedestrian roads
+    elif p['ONEWAY']=='N': kph = 15
+    # default case
+    else: kph = p['KPH']
+
+    # non drivable case
+    if kph == 0: return -1
+
+    # duration in seconds, rounded, based on the speed. Plus 10% assuming kph is the maximum speed with no traffic and no stops.
+    # 1.1 * 
+    return 1.1 * round(length / kph * 3.6)
 
 def weight_function_negative(feature, length):
-    return 0
+    p = feature['properties']
+    kph = 0
+
+    # ferry
+    if p['FOW']==-1 and p['FEATTYP']==4130: kph = 30
+    # private/restricted/pedestrian roads
+    elif p['ONEWAY']=='N': kph = 15
+    # default case
+    else: kph = p['KPH']
+
+    # non drivable case
+    if kph == 0: return -1
+
+    # duration in seconds, rounded, based on the speed. Plus 10% assuming kph is the maximum speed with no traffic and no stops.
+    # 1.1 * 
+    return 1.1 * round(length / kph * 3.6)
 
 
 
