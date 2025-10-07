@@ -31,7 +31,7 @@ for grid_resolution in [100]: # 1000
     for year in ["2023","2020"]:
 
         for service in ["healthcare"]:
-            file_path_suffix = "_20250916"
+            file_path_suffix = "_20251006"
 
             # detailled network decomposition only when resolution to 100m
             detailled_network_decomposition = grid_resolution == 100
