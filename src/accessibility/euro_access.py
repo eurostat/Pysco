@@ -4,7 +4,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
-from utils.tomtomutils import weight_function_positive, weight_function_negative, direction_fun, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
+from utils.tomtomutils import weight_function_positive, weight_function_negative, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
 #TODO
 # define weight functions for tomtom, pos and neg directions
@@ -73,7 +73,6 @@ for grid_resolution in [100]: # 1000
                 k = 3,
                 weight_function_positive = weight_function_positive,
                 weight_function_negative = weight_function_negative,
-                direction_fun = direction_fun,
                 is_not_snappable_fun = is_not_snappable_fun,
                 initial_node_level_fun = initial_node_level_fun,
                 final_node_level_fun = final_node_level_fun,

@@ -31,7 +31,6 @@ def distance(node1, node2):
 def ___graph_adjacency_list_from_geodataframe(sections_iterator,
                                               weight_fun_pos = lambda feature,sl:sl,
                                               weight_fun_neg = lambda feature,sl:sl,
-                                              direction_fun=lambda feature:"both",
                                               is_not_snappable_fun = None,
                                               coord_simp=round,
                                               detailled=False,
@@ -63,10 +62,6 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
         #return f"{point.x:.6f}_{point.y:.6f}"
 
     for f in sections_iterator:
-
-        # get driving direction
-        direction = direction_fun(f)
-        if direction == None: continue
 
         # get line coordinates
         geom = f['geometry']
@@ -113,6 +108,14 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
             w_neg = weight_fun_neg(f, segment_length_m)
 
             # Add directed edge(s)
+            if w_pos>=0: graph[n1].append((n2, w_pos))
+            elif graph[n1] is None: graph[n1] = []
+            if w_neg>=0: graph[n2].append((n1, w_neg))
+            elif graph[n2] is None: graph[n2] = []
+
+
+            '''
+            # Add directed edge(s)
             if direction == 'both':
                 if w_pos>=0: graph[n1].append((n2, w_pos))
                 if w_neg>=0: graph[n2].append((n1, w_neg))
@@ -123,6 +126,7 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
             if direction == 'backward':
                 if graph[n1] is None: graph[n1] = []
                 if w_neg>=0: graph[n2].append((n1, w_neg))
+            '''
 
             # collect snappable nodes
             if is_snappable: snappable_nodes.update([n1, n2])

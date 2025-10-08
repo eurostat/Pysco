@@ -1,5 +1,5 @@
 
-
+'''
 # driving direction
 def direction_fun(feature):
     d = feature['properties']['ONEWAY']
@@ -29,7 +29,7 @@ def weight_function(feature, length):
     # duration in seconds, rounded, based on the speed. Plus 10% assuming kph is the maximum speed with no traffic and no stops.
     # 1.1 * 
     return 1.1 * round(length / kph * 3.6)
-
+'''
 
 
 def weight_function_positive(feature, length):
