@@ -41,14 +41,13 @@ def weight_function_positive(feature, length):
     # private/restricted/pedestrian roads
     elif p['ONEWAY']=='N': kph = 15
     # default case
-    else: kph = p['KPH']
+    else: kph = p['average_speed_pos'] #p['KPH']
 
     # non drivable case
-    if kph == 0: return -1
+    if kph == None or kph == 0: return -1
 
-    # duration in seconds, rounded, based on the speed. Plus 10% assuming kph is the maximum speed with no traffic and no stops.
-    # 1.1 * 
-    return 1.1 * round(length / kph * 3.6)
+    # duration in seconds, rounded, based on the speed.
+    return round(length / kph * 3.6)
 
 def weight_function_negative(feature, length):
     p = feature['properties']
@@ -59,14 +58,16 @@ def weight_function_negative(feature, length):
     # private/restricted/pedestrian roads
     elif p['ONEWAY']=='N': kph = 15
     # default case
-    else: kph = p['KPH']
+    else: kph = p['average_speed_neg'] #p['KPH']
 
     # non drivable case
-    if kph == 0: return -1
+    if kph == None or kph == 0: return -1
 
     # duration in seconds, rounded, based on the speed. Plus 10% assuming kph is the maximum speed with no traffic and no stops.
     # 1.1 * 
-    return 1.1 * round(length / kph * 3.6)
+    return round(length / kph * 3.6)
+
+
 
 
 
