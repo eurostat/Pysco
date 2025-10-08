@@ -28,7 +28,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for grid_resolution in [100]: # 1000
 
-    for year in ["2020","2023"]:
+    for year in ["2020"]: #"2023"
 
         for service in ["healthcare"]:
             file_path_suffix = "_20251006"
