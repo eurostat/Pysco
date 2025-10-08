@@ -113,7 +113,6 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
             if w_neg>=0: graph[n2].append((n1, w_neg))
             elif graph[n2] is None: graph[n2] = []
 
-
             '''
             # Add directed edge(s)
             if direction == 'both':
