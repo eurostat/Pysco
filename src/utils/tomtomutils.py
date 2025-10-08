@@ -46,8 +46,8 @@ def weight_function_positive(feature, length):
     # non drivable case
     if kph == None or kph == 0: return -1
 
-    # duration in seconds, rounded, based on the speed.
-    return round(length / kph * 3.6)
+    # duration in seconds, based on the speed.
+    return length / kph * 3.6
 
 def weight_function_negative(feature, length):
     p = feature['properties']
@@ -63,9 +63,8 @@ def weight_function_negative(feature, length):
     # non drivable case
     if kph == None or kph == 0: return -1
 
-    # duration in seconds, rounded, based on the speed. Plus 10% assuming kph is the maximum speed with no traffic and no stops.
-    # 1.1 * 
-    return round(length / kph * 3.6)
+    # duration in seconds, based on the speed.
+    return length / kph * 3.6
 
 
 

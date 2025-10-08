@@ -1,6 +1,6 @@
 import math
 from rtree import index
-from shapely.geometry import shape
+from shapely.geometry import shape,LineString
 
 from utils.geomutils import densify_line
 from collections import defaultdict
@@ -65,8 +65,16 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
 
         # get line coordinates
         geom = f['geometry']
-        if geom['type'] != 'LineString': continue
-        coords = geom['coordinates']
+        if geom['type'] == 'MultiLineString':
+            nbls = len(geom['coordinates'])
+            if nbls != 1:
+                print("problem with network section", f)
+                continue
+            #geom = LineString(geom['coordinates'][0])
+            coords = geom['coordinates'][0]
+        #elif geom['type'] != 'LineString': continue
+        else:
+            coords = geom['coordinates']
 
         # use only first and last vertices if not detailled
         if not detailled:
@@ -88,6 +96,7 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
         n1 = node_id(p1) + ini_node_level
 
         nb = len(coords) - 1
+
         for i in range(nb):
 
             # make next node
@@ -106,8 +115,6 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
             else: segment_length_m = shape(geom).length
             w_pos = weight_fun_pos(f, segment_length_m)
             w_neg = weight_fun_neg(f, segment_length_m)
-
-            print(w_pos, w_neg)
 
             # Add directed edge(s)
             if w_pos>=0: graph[n1].append((n2, w_pos))
