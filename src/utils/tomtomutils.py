@@ -37,7 +37,7 @@ def weight_function_positive(feature, length):
     kph = 0
 
     # ferry
-    if p['FOW']==-1 and p['FEATTYP']==4130: kph = 30
+    if p['fow']==-1 and p['feattyp']==4130: kph = 30
     # private/restricted/pedestrian roads
     #elif p['ONEWAY']=='N': kph = 15
     # default case
@@ -54,7 +54,7 @@ def weight_function_negative(feature, length):
     kph = 0
 
     # ferry
-    if p['FOW']==-1 and p['FEATTYP']==4130: kph = 30
+    if p['fow']==-1 and p['feattyp']==4130: kph = 30
     # private/restricted/pedestrian roads
     #elif p['ONEWAY']=='N': kph = 15
     # default case
@@ -74,11 +74,11 @@ def weight_function_negative(feature, length):
 # return wether a section cannot be used as access point. Residential roads can, highways and ferry lines cannot.
 def is_not_snappable_fun(f):
     p = f['properties']
-    return p['FOW'] in [1,10,12,6] or p['FREEWAY'] == 1 or (p['FOW']==-1 and p['FEATTYP']==4130)
+    return p['fow'] in [1,10,12,6] or p['freeway'] == 1 or (p['fow']==-1 and p['feattyp']==4130)
 
 
 # code to tag the level of the initial node of the section
-def initial_node_level_fun(f): return f['properties']['F_ELEV']
+def initial_node_level_fun(f): return f['properties']['f_elev']
 # code to tag the level of the final node of the section
-def final_node_level_fun(f): return f['properties']['T_ELEV']
+def final_node_level_fun(f): return f['properties']['t_elev']
 
