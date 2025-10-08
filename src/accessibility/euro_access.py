@@ -85,6 +85,7 @@ for grid_resolution in [100]: # 1000
                 densification_distance=densification_distance,
                 duration_simplification_fun = duration_simplification_fun,
                 num_processors = num_processors_to_use,
-                shuffle=True
+                shuffle=True,
+                show_detailled_messages = True
             )
 
