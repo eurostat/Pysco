@@ -39,7 +39,7 @@ def weight_function_positive(feature, length):
     # ferry
     if p['FOW']==-1 and p['FEATTYP']==4130: kph = 30
     # private/restricted/pedestrian roads
-    elif p['ONEWAY']=='N': kph = 15
+    #elif p['ONEWAY']=='N': kph = 15
     # default case
     else: kph = p['average_speed_pos'] #p['KPH']
 
@@ -56,7 +56,7 @@ def weight_function_negative(feature, length):
     # ferry
     if p['FOW']==-1 and p['FEATTYP']==4130: kph = 30
     # private/restricted/pedestrian roads
-    elif p['ONEWAY']=='N': kph = 15
+    #elif p['ONEWAY']=='N': kph = 15
     # default case
     else: kph = p['average_speed_neg'] #p['KPH']
 
