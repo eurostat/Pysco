@@ -72,9 +72,11 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
                 continue
             #geom = LineString(geom['coordinates'][0])
             coords = geom['coordinates'][0]
-        #elif geom['type'] != 'LineString': continue
-        else:
+        elif geom['type'] == 'LineString':
             coords = geom['coordinates']
+        else:
+            print("unexpected geometry type", geom['type'], f)
+            continue
 
         # use only first and last vertices if not detailled
         if not detailled:
