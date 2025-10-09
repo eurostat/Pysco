@@ -31,40 +31,37 @@ def weight_function(feature, length):
     return 1.1 * round(length / kph * 3.6)
 '''
 
+# get duration in s from speed in kph and distance in meters
+kph_to_s = lambda kph,dm: dm / kph * 3.6
 
-def weight_function_positive(feature, length):
+
+def weight_function(feature, length):
     p = feature['properties']
-    kph = 0
 
-    # ferry
-    if p['fow']==-1 and p['feattyp']==4130: kph = 30
+    # ferry case: force 20 kph
+    if p['fow']==-1 and p['feattyp']==4130:
+        w = kph_to_s(20, length)
+        return [w,w]
+
     # private/restricted/pedestrian roads
     #elif p['ONEWAY']=='N': kph = 15
     # default case
-    else: kph = p['average_speed_pos'] #p['KPH']
+     #p['KPH']
 
-    # non drivable case
-    if kph == None or kph == 0: return -1
+    kph_pos = p['average_speed_pos']
+    kph_neg = p['average_speed_neg']
 
-    # duration in seconds, based on the speed.
-    return length / kph * 3.6
+    # case when no av speed is defined: use kph, or very slow value - 10 kph
+    if kph_pos == None and kph_neg == None:
+        kph = p['KPH']
+        if kph == None: kph = 10
+        w = kph_to_s(kph, length)
+        return [w,w]
 
-def weight_function_negative(feature, length):
-    p = feature['properties']
-    kph = 0
-
-    # ferry
-    if p['fow']==-1 and p['feattyp']==4130: kph = 30
-    # private/restricted/pedestrian roads
-    #elif p['ONEWAY']=='N': kph = 15
-    # default case
-    else: kph = p['average_speed_neg'] #p['KPH']
-
-    # non drivable case
-    if kph == None or kph == 0: return -1
-
-    # duration in seconds, based on the speed.
-    return length / kph * 3.6
+    # compute weights from speed
+    w_pos = -1 if kph_pos == None else kph_to_s(kph_pos, length)
+    w_neg = -1 if kph_neg == None else kph_to_s(kph_neg, length)
+    return [ w_pos, w_neg ]
 
 
 
