@@ -29,8 +29,7 @@ def distance(node1, node2):
 
 
 def ___graph_adjacency_list_from_geodataframe(sections_iterator,
-                                              weight_fun_pos = lambda feature,sl:sl,
-                                              weight_fun_neg = lambda feature,sl:sl,
+                                              weight_fun = lambda feature,sl:sl,
                                               is_not_snappable_fun = None,
                                               coord_simp=round,
                                               detailled=False,
@@ -115,8 +114,7 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
             # get segment weights
             if detailled: segment_length_m = math.hypot(p1[0]-p2[0], p1[1]-p2[1])
             else: segment_length_m = shape(geom).length
-            w_pos = weight_fun_pos(f, segment_length_m)
-            w_neg = weight_fun_neg(f, segment_length_m)
+            [w_pos, w_neg] = weight_fun(f, segment_length_m)
 
             # Add directed edge(s)
             if w_pos>=0: graph[n1].append((n2, w_pos))
