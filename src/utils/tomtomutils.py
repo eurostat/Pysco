@@ -53,8 +53,8 @@ def weight_function(feature, length):
 
     # case when no av speed is defined: use kph, or very slow value - 10 kph
     if kph_pos == None and kph_neg == None:
-        kph = p['KPH']
-        if kph == None: kph = 10
+        kph = p['kph']
+        if kph == None or kph<=0: kph = 10
         w = kph_to_s(kph, length)
         return [w,w]
 
