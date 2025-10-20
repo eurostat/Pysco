@@ -7,8 +7,6 @@ from utils.featureutils import iter_features
 from utils.tomtomutils import weight_function, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
 
 #TODO
-# weight function: merge both
-# handle case when speed_pos and speed_neg non defined
 # education: remove non-primary for those with with type differenciation
 
 
