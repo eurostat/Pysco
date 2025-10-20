@@ -83,6 +83,6 @@ for grid_resolution in [100]: # 1000
                 duration_simplification_fun = duration_simplification_fun,
                 num_processors = num_processors_to_use,
                 shuffle=True,
-                #show_detailled_messages = True
+                show_detailled_messages = True
             )
 
