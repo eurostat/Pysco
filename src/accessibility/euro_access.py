@@ -29,10 +29,10 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for grid_resolution in [100]: # 1000
 
-    for year in ["2020"]: #"2023"
+    for year in ["2020", "2023"]: #"2023"
 
         for service in ["healthcare"]:
-            file_path_suffix = "_20251006"
+            file_path_suffix = "_20251020"
 
             # detailled network decomposition only when resolution to 100m
             detailled_network_decomposition = grid_resolution == 100
@@ -62,7 +62,7 @@ for grid_resolution in [100]: # 1000
             tomtom_year = "2019" if year == "2020" else year
 
             # define tomtom and POI loaders
-            def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom_"+tomtom_year+"12.gpkg", bbox=bbox)
+            def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom"+tomtom_year+"12.gpkg", bbox=bbox)
             def pois_loader(bbox): return iter_features(pois_data_folder+service+"_"+year+"_3035"+file_path_suffix+".gpkg", bbox=bbox, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
             # build accessibility grid
