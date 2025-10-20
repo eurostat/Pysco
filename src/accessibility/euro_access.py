@@ -56,7 +56,7 @@ for grid_resolution in [100]: # 1000
             out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(grid_resolution) + "m/"
             if not os.path.exists(out_folder_service_year): os.makedirs(out_folder_service_year)
 
-            # define tomtom year TODO: use other version, closer from POI reference year
+            # define tomtom year
             tomtom_year = "2019" if year == "2020" else year
 
             # define tomtom and POI loaders
