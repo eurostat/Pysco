@@ -11,7 +11,7 @@ from utils.geotiff import resample_geotiff_aligned
 aggregate = True
 tiling = True
 
-version_tag = "2025_09"
+version_tag = "2025_10"
 services = ["healthcare"]  #education
 resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
 
