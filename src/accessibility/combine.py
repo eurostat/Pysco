@@ -11,7 +11,7 @@ out_folder = '/home/juju/gisco/accessibility/'
 country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 
 services = ["healthcare"] #education
-years = ["2020"] #"2023"
+years = ["2023"] #"2023"
 version_tag = "2025_10"
 
 # whole europe
