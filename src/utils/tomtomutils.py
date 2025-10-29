@@ -47,3 +47,20 @@ def initial_node_level_fun(f): return f['properties']['F_ELEV']
 # code to tag the level of the final node of the section
 def final_node_level_fun(f): return f['properties']['T_ELEV']
 
+
+'''
+F_BP - From blocked passage
+T_BP - To blocked passage
+1 : Blocked at Start Junction, notRemovable
+2 : Blocked at End Junction, notRemovable
+11 : Accessible for EmergencyVehicles at Start
+12 : Keyed Access at Start
+13 : Guard Controlled at Start
+21 : Accessible for EmergencyVehicles at End
+22 : Keyed Access at End
+23 : Guard Controlled at End
+'''
+
+
+
+
