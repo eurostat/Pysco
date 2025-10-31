@@ -48,6 +48,9 @@ def initial_node_level_fun(f): return f['properties']['F_ELEV']
 def final_node_level_fun(f): return f['properties']['T_ELEV']
 
 
+
+
+
 '''
 F_BP - From blocked passage
 T_BP - To blocked passage
@@ -59,6 +62,33 @@ T_BP - To blocked passage
 21 : Accessible for EmergencyVehicles at End
 22 : Keyed Access at End
 23 : Guard Controlled at End
+
+
+FOW
+-1 : Not Applicable
+1 : Part of Motorway
+2 : Part of Multi Carriageway which isNot a Motorway
+3 : Part of a Single Carriageway
+4 : Part of a Roundabout
+6 : Part of an ETA: Parking Place
+7 : Part of an ETA: Parking Garage(Building)
+8 : Part of an ETA: Unstructured TrafficSquare
+10 : Part of a Slip Road
+11 : Part of a Service Road
+12 : Entrance/Exit to/from a Car Park
+14 : Part of a Pedestrian Zone
+15 : Part of a Walkway
+17 : Special Traffic Figures
+18 : Part of an ETA: Gallery
+19 : Stairs
+20 : Road for Authorities
+21 : Connector
+22 : Cul-de-Sac
+
+FOW: exclude 20
+14, 15, 17, 18, 19: low speed
+snappable: exclude 1, 10, 20, 21
+
 '''
 
 
