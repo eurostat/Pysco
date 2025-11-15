@@ -10,9 +10,9 @@ from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
 out_folder = '/home/juju/gisco/accessibility/'
 country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 
-services = ["healthcare"] #education
-years = ["2023"] #"2023"
-version_tag = "2025_10"
+services = ["education"] #education healthcare
+years = ["2020"] #"2023" 2020
+version_tag = "2025_11"
 
 # whole europe
 bbox = [ 900000, 900000, 6600000, 5500000 ]
