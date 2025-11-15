@@ -88,6 +88,8 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
         if densification_distance is not None and densification_distance>0:
             coords = densify_line(coords, densification_distance)
 
+        nb = len(coords) - 1
+
         # code for initial and final node levels
         ini_node_level = "" if initial_node_level_fun == None else "_" + str(initial_node_level_fun(f))
         fin_node_level = "" if final_node_level_fun == None else "_" + str(final_node_level_fun(f))
@@ -96,17 +98,18 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
         start_blocked = False if is_start_blocked == None else is_start_blocked(f)
         end_blocked = False if is_end_blocked == None else is_end_blocked(f)
         #if start_blocked or end_blocked: print(start_blocked, end_blocked)
+        start_index = 1 if start_blocked else 0
+        end_index = nb-1 if end_blocked else nb
+        if(start_index >= end_index): continue
 
         # get if the section is snappable
         is_snappable = True if is_not_snappable_fun==None else not is_not_snappable_fun(f)
 
         # make first node
-        p1 = coords[0]
-        n1 = node_id(p1) + ini_node_level
+        p1 = coords[start_index]
+        n1 = node_id(p1) + (ini_node_level if start_index==0 else "")
 
-        nb = len(coords) - 1
-
-        for i in range(nb):
+        for i in range(start_index, end_index):
 
             # make next node
             p2 = coords[i+1]
