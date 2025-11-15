@@ -34,33 +34,38 @@ def weight_function(feature, length):
         w = kph_to_s(20, length)
         return [w,w]
 
+    # stairs
+    if fow==19: return [None,None]
+    # road for authorities
+    if fow==20: return [None,None]
+
+    # very slow cases, for pedestrian areas
+    if fow in [14,15,17,18]:
+        w = kph_to_s(10, length)
+        return [w,w]
+
+    # get average speed
     kph_pos = p['AVERAGE_SPEED_POS']
     kph_neg = p['AVERAGE_SPEED_NEG']
 
-    # case when no av speed is defined: use kph, or very slow value - 10 kph
     if kph_pos == None and kph_neg == None:
+        # case when no av speed is defined: use kph, or very slow value - 10 kph
         kph = p['KPH']
-        # very slow cases, for pedestrian areas
-        if fow in [14,15,17,18]: kph = 10
-        # stairs
-        if fow==19: return [None,None]
-        # authorities
-        if fow==20: return [None,None]
         if kph == None or kph<=0: kph = 10
         w = kph_to_s(kph, length)
         return [w,w]
-
-    # compute weights from speed
-    w_pos = -1 if kph_pos == None else kph_to_s(kph_pos, length)
-    w_neg = -1 if kph_neg == None else kph_to_s(kph_neg, length)
-    return [ w_pos, w_neg ]
+    else:
+        # compute weights from speed
+        w_pos = -1 if kph_pos == None else kph_to_s(kph_pos, length)
+        w_neg = -1 if kph_neg == None else kph_to_s(kph_neg, length)
+        return [ w_pos, w_neg ]
 
 
 # return wether a section cannot be used as access point. Residential roads can, highways and ferry lines cannot.
 def is_not_snappable_fun(f):
     p = f['properties']
     fow = p['FOW']
-    return fow in [1, 10, 20, 21] or p['FREEWAY'] == 1 or (fow==-1 and p['FEATTYP']==4130)
+    return fow in [1, 10, 19, 20, 21] or p['FREEWAY'] == 1 or (fow==-1 and p['FEATTYP']==4130)
 
 
 # code to tag the level of the initial node of the section
