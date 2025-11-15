@@ -95,7 +95,7 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
         # check if start/end are blocked
         start_blocked = False if is_start_blocked == None else is_start_blocked(f)
         end_blocked = False if is_end_blocked == None else is_end_blocked(f)
-        print(start_blocked, end_blocked)
+        if start_blocked or end_blocked: print(start_blocked, end_blocked)
 
         # get if the section is snappable
         is_snappable = True if is_not_snappable_fun==None else not is_not_snappable_fun(f)
