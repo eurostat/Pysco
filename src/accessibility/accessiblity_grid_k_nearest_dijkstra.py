@@ -81,6 +81,8 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
             is_not_snappable_fun,
             initial_node_level_fun,
             final_node_level_fun,
+            is_start_blocked,
+            is_end_blocked,
             cell_id_fun,
             grid_resolution,
             cell_network_max_distance,
@@ -120,7 +122,10 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
                                                         detailled = detailled,
                                                         densification_distance=densification_distance,
                                                         initial_node_level_fun = initial_node_level_fun,
-                                                        final_node_level_fun = final_node_level_fun)
+                                                        final_node_level_fun = final_node_level_fun,
+                                                        is_start_blocked = is_start_blocked,
+                                                        is_end_blocked = is_end_blocked,
+                                                        )
     graph = gb_['graph']
     snappable_nodes = gb_['snappable_nodes']
     del gb_, roads
@@ -235,6 +240,8 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         is_not_snappable_fun = None,
         initial_node_level_fun=None,
         final_node_level_fun=None,
+        is_start_blocked = None,
+        is_end_blocked = None,
         cell_id_fun=lambda x,y:str(x)+"_"+str(y),
         grid_resolution=1000,
         cell_network_max_distance=-1,
@@ -299,6 +306,8 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
             is_not_snappable_fun,
             initial_node_level_fun,
             final_node_level_fun,
+            is_start_blocked,
+            is_end_blocked,
             cell_id_fun,
             grid_resolution,
             cell_network_max_distance,

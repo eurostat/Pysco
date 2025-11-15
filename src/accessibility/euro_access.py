@@ -4,7 +4,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
-from utils.tomtomutils import weight_function, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun
+from utils.tomtomutils import weight_function, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun, is_start_blocked, is_end_blocked
 
 #TODO
 # use non accessible nodes
@@ -73,6 +73,8 @@ for grid_resolution in [100]: # 1000
                 weight_function = weight_function,
                 is_not_snappable_fun = is_not_snappable_fun,
                 initial_node_level_fun = initial_node_level_fun,
+                is_start_blocked = is_start_blocked,
+                is_end_blocked = is_end_blocked,
                 final_node_level_fun = final_node_level_fun,
                 cell_id_fun = cell_id_fun,
                 grid_resolution= grid_resolution,

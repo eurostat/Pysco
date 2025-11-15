@@ -33,9 +33,12 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
                                               is_not_snappable_fun = None,
                                               coord_simp=round,
                                               detailled=False,
-                                              densification_distance=None,
-                                              initial_node_level_fun=None,
-                                              final_node_level_fun=None):
+                                              densification_distance = None,
+                                              initial_node_level_fun = None,
+                                              final_node_level_fun = None,
+                                              is_start_blocked = None,
+                                              is_end_blocked = None,
+                                              ):
     """
     Build a directed graph from a network stored in a geo dataset.
 
