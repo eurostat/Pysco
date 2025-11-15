@@ -21,9 +21,9 @@ def weight_function(feature, length):
         # very slow cases, for pedestrian areas
         if p['FOW']==14 or p['FOW']==15 or p['FOW']==17 or p['FOW']==18: kph = 10
         # stairs
-        if p['FOW']==19: kph = 1e-12
+        if p['FOW']==19: return [None,None]
         # authorities
-        if p['FOW']==20: kph = 1e-12
+        if p['FOW']==20: return [None,None]
         if kph == None or kph<=0: kph = 10
         w = kph_to_s(kph, length)
         return [w,w]
