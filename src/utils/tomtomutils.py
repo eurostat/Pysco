@@ -22,6 +22,8 @@ def weight_function(feature, length):
         if p['FOW']==14 or p['FOW']==15 or p['FOW']==17 or p['FOW']==18: kph = 10
         # stairs
         if p['FOW']==19: kph = 1e-12
+        # authorities
+        if p['FOW']==20: kph = 1e-12
         if kph == None or kph<=0: kph = 10
         w = kph_to_s(kph, length)
         return [w,w]
@@ -83,11 +85,6 @@ FOW
 20 : Road for Authorities
 21 : Connector
 22 : Cul-de-Sac
-
-FOW: exclude 20
-14, 15, 17, 18: low speed
-19: no speed
-snappable: exclude 1, 10, 20, 21
 
 '''
 

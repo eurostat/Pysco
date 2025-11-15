@@ -117,9 +117,9 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
             [w_pos, w_neg] = weight_fun(f, segment_length_m)
 
             # Add directed edge(s)
-            if w_pos>=0: graph[n1].append((n2, w_pos))
+            if w_pos != None and w_pos>=0: graph[n1].append((n2, w_pos))
             elif graph[n1] is None: graph[n1] = []
-            if w_neg>=0: graph[n2].append((n1, w_neg))
+            if w_neg != None and w_neg>=0: graph[n2].append((n1, w_neg))
             elif graph[n2] is None: graph[n2] = []
 
             '''
