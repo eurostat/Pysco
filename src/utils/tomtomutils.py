@@ -49,7 +49,15 @@ def initial_node_level_fun(f): return f['properties']['F_ELEV']
 def final_node_level_fun(f): return f['properties']['T_ELEV']
 
 
-
+# return if the start/end of a section is blocked
+def is_start_blocked(f):
+    b = f['properties']['F_BP']
+    r = b in ['1','2','11','12','21','22']
+    return r
+def is_end_blocked(f):
+    b = f['properties']['T_BP']
+    r = b in ['1','2','11','12','21','22']
+    return r
 
 
 '''
