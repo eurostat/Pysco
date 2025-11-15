@@ -60,7 +60,7 @@ for grid_resolution in [100]: # 1000
             tomtom_year = "2019" if year == "2020" else year
 
             # define tomtom and POI loaders
-            def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom"+tomtom_year+"12.gpkg", bbox=bbox)
+            def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom"+tomtom_year+"12.gpkg", bbox=bbox, where="FOW!='20'")
             def pois_loader(bbox): return iter_features(pois_data_folder+service+"_"+year+"_3035"+".gpkg", bbox=bbox, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
             # build accessibility grid

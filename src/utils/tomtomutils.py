@@ -12,11 +12,6 @@ def weight_function(feature, length):
         w = kph_to_s(20, length)
         return [w,w]
 
-    # private/restricted/pedestrian roads
-    #elif p['ONEWAY']=='N': kph = 15
-    # default case
-     #p['KPH']
-
     kph_pos = p['AVERAGE_SPEED_POS']
     kph_neg = p['AVERAGE_SPEED_NEG']
 
@@ -39,7 +34,7 @@ def weight_function(feature, length):
 # return wether a section cannot be used as access point. Residential roads can, highways and ferry lines cannot.
 def is_not_snappable_fun(f):
     p = f['properties']
-    return p['FOW'] in [1,10,12,6] or p['FREEWAY'] == 1 or (p['FOW']==-1 and p['FEATTYP']==4130)
+    return p['FOW'] in [1, 10, 20, 21] or p['FREEWAY'] == 1 or (p['FOW']==-1 and p['FEATTYP']==4130)
 
 
 # code to tag the level of the initial node of the section
@@ -90,6 +85,4 @@ FOW: exclude 20
 snappable: exclude 1, 10, 20, 21
 
 '''
-
-
 
