@@ -133,20 +133,6 @@ def ___graph_adjacency_list_from_geodataframe(sections_iterator,
             if w_neg != None and w_neg>=0: graph[n2].append((n1, w_neg))
             elif graph[n2] is None: graph[n2] = []
 
-            '''
-            # Add directed edge(s)
-            if direction == 'both':
-                if w_pos>=0: graph[n1].append((n2, w_pos))
-                if w_neg>=0: graph[n2].append((n1, w_neg))
-            # (assume 'oneway' means forward)
-            if direction == 'forward' or  direction == 'oneway':
-                if w_pos>=0: graph[n1].append((n2, w_pos))
-                if graph[n2] is None: graph[n2] = []
-            if direction == 'backward':
-                if graph[n1] is None: graph[n1] = []
-                if w_neg>=0: graph[n2].append((n1, w_neg))
-            '''
-
             # collect snappable nodes
             if is_snappable: snappable_nodes.update([n1, n2])
 

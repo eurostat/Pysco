@@ -49,15 +49,13 @@ def weight_function(feature, length):
     kph_neg = p['AVERAGE_SPEED_NEG']
 
     if kph_pos == None and kph_neg == None:
-        # case when no av speed is defined: use kph, or very slow value - 10 kph
         kph = p['KPH']
         if kph == None or kph<=0: kph = 10
         w = kph_to_s(kph, length)
         return [w,w]
     else:
-        # compute weights from speed
-        w_pos = -1 if kph_pos == None else kph_to_s(kph_pos, length)
-        w_neg = -1 if kph_neg == None else kph_to_s(kph_neg, length)
+        w_pos = None if kph_pos == None else kph_to_s(kph_pos, length)
+        w_neg = None if kph_neg == None else kph_to_s(kph_neg, length)
         return [ w_pos, w_neg ]
 
 
