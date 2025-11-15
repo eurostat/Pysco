@@ -87,11 +87,11 @@ T_BP - To blocked passage
 # return if the start/end of a section is blocked
 def is_start_blocked(f):
     b = f['properties']['F_BP']
-    r = b in ['1','2','11','12','21','22']
+    r = b in [1,2,11,12,21,22]
     if r: print(r, b)
     return r
 def is_end_blocked(f):
     b = f['properties']['T_BP']
-    r = b in ['1','2','11','12','21','22']
+    r = b in [1,2,11,12,21,22]
     if r: print(r, b)
     return r
