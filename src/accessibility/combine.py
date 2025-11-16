@@ -60,7 +60,7 @@ for resolution in [100]:
                     "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO" ]
             #exclude: ["CH", "RS", "BA", "MK", "AL", "ME", "MD"],
             if service == "healthcare": cnts.append("CH")
-            if service == "healthcare" and year == "2023": cnts.append("AL")
+            if year == "2023": cnts.append("AL")
             geotiff_mask_by_countries(
                 geotiff,
                 geotiff,
