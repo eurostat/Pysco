@@ -60,10 +60,12 @@ def weight_function(feature, length):
 
 
 # return wether a section cannot be used as access point. Residential roads can, highways and ferry lines cannot.
+blocked = [1,2,11,12,21,22]
 def is_not_snappable_fun(f):
     p = f['properties']
     fow = p['FOW']
-    return fow in [1, 10, 19, 20, 21] or p['FREEWAY'] == 1 or (fow==-1 and p['FEATTYP']==4130)
+    return fow in [1, 10, 19, 20, 21] or p['FREEWAY'] == 1 or (fow==-1 and p['FEATTYP']==4130) or p['F_BP'] in blocked or p['T_BP'] in blocked
+
 
 
 # code to tag the level of the initial node of the section
@@ -89,12 +91,10 @@ T_BP - To blocked passage
 
 # return if the start/end of a section is blocked
 def is_start_blocked(f):
-    b = f['properties']['F_BP']
-    r = b in [1,2,11,12,21,22]
+    return f['properties']['F_BP'] in blocked
     #if r: print(r, b)
-    return r
+    #return r
 def is_end_blocked(f):
-    b = f['properties']['T_BP']
-    r = b in [1,2,11,12,21,22]
+    return f['properties']['T_BP'] in blocked
     #if r: print(r, b)
-    return r
+    #return r
