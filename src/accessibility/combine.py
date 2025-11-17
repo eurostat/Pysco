@@ -10,7 +10,7 @@ from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
 out_folder = '/home/juju/gisco/accessibility/'
 country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 
-services = ["education"] #education healthcare
+services = ["healthcare"] #education healthcare
 years = ["2023"] #"2023" 2020
 version_tag = "2025_11"
 
@@ -53,6 +53,8 @@ for resolution in [100]:
                 value_fun= lambda v:v if v<32767 else 32767, # np.int16(v),
                 compress='deflate'
             )
+            files.clear()
+            files = None
 
             print(resolution, service, year, "apply mask to force some countries to nodata")
             cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
