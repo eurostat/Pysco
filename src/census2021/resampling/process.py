@@ -25,5 +25,9 @@ def load_grid_data(tiff_path):
 
     with rasterio.open(tiff_path) as src:
         data = src.read(1)  # Read the first band
-    return data
+
+        # convert pixels to shapely geometries
+        array = np.array(data)
+
+
 
