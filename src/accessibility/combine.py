@@ -10,7 +10,7 @@ from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
 out_folder = '/home/juju/gisco/accessibility/'
 country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 
-services = ["healthcare"] #education healthcare
+services = ["education"] #education healthcare
 years = ["2020"] #"2023" 2020
 version_tag = "2025_11"
 skip_combination = True
