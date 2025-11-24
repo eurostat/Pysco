@@ -1,9 +1,16 @@
 import numpy as np
 import rasterio
 import shapely.geometry
+import geopandas as gpd
 
+# extent if iceland
+xmin, ymin, xmax, ymax = 2300000, 4470000, 3890000, 5440000
 
-extent = shapely.geometry.box(2300000, 4470000, 3890000, 5440000)
+# load iceland land area geometre from geopackage
+land_geometry = gpd.read_file('/home/juju/gisco/census_2021_iceland/land_100k.gpkg')
+land_geometry = land_geometry.geometry.iloc[0]
+
+print(land_geometry)
 
 
 # from a shapely geometry, make n random point geometries within the area
@@ -19,6 +26,8 @@ def random_points_within(geometry, n):
         if geometry.contains(random_point):
             points.append(random_point)
     return points
+
+
 
 
 
