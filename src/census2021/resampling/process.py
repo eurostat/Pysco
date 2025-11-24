@@ -25,11 +25,12 @@ for x in range(xmin, xmax, 1000):
         cell = shapely.geometry.box(x, y, x + 1000, y + 1000)
         if not land_geometry.intersects(cell): continue
 
-        intersection = land_geometry.intersection(cell)
-        if intersection.area <= 0: continue
+        #intersection = land_geometry.intersection(cell)
+        #if intersection.area <= 0: continue
 
-        print(f'Cell at ({x}, {y}) intersects land area with geometry: {intersection.area}')
-        output_cells.append( { "geometry": intersection, "area":intersection.area } )
+        inspire_id = f'CRS3035RES1000mN{int(y)}5{int(x)}'
+        #print(f'Cell at ({x}, {y}) intersects land area with geometry: {intersection.area}')
+        output_cells.append( { "geometry": cell, "GRD_ID": inspire_id, } )
 # save output cells to geopackage
 output_gdf = gpd.GeoDataFrame(output_cells, geometry='geometry', crs='EPSG:3035')
 output_gdf.to_file(workspace + 'out/land_1km_cells.gpkg', driver='GPKG')
