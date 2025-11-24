@@ -89,7 +89,7 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
     gdf_das = gpd.read_file(input_das_gpkg)
     # build spatial index
     das_index = index.Index()
-    for i, row in gdf_das.iterrows(): das_index.insert(i, row['geometry'].bounds)
+    for i, f in gdf_das.iterrows(): das_index.insert(f, f['geometry'].bounds)
 
     # get bounds of all geometries
     (minx, miny, maxx, maxy) = gdf_das.total_bounds
