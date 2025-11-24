@@ -8,7 +8,7 @@ from rtree import index
 workspace = '/home/juju/gisco/census_2021_iceland/'
 
 # extent if iceland
-xmin, ymin, xmax, ymax = 2300000, 4470000, 3890000, 5440000
+xmin, ymin, xmax, ymax = 2600000, 4700000, 3400000, 5300000
 
 # load iceland land area geometries from geopackage
 land_geometry = gpd.read_file(workspace + 'land_100k_decomposed.gpkg')
@@ -25,11 +25,12 @@ for x in range(xmin, xmax, 1000):
     for y in range(ymin, ymax, 1000):
 
         # get items using spatial index
-        land = list(lg_index.intersection( (x, y, x + 1000, y + 1000) ))
-        if len(land) == 0: continue
+        land_ = list(lg_index.intersection( (x, y, x + 1000, y + 1000) ))
+        if len(land_) == 0: continue
 
         # make list of geometries from land_ids
-        land = land.map(lambda i: land_geometry[i])
+        land = []
+        for id in land_: land.append(land_geometry[id])
         # make union of land geometries
         land = shapely.ops.unary_union(land)
 
