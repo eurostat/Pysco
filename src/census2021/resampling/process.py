@@ -9,7 +9,7 @@ from shapely.geometry import shape
 
 # use strandlina_flakar for land area
 #TODO nearest neighbor: input to point, then 2
-#TODO test GHSL
+#TODO GHSL: improve, with probability?
 #TODO OSM buildings ?
 
 
