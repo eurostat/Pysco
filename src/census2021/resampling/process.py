@@ -19,6 +19,7 @@ xmin_land, ymin_land, xmax_land, ymax_land = land_geometry.bounds
 
 output_cells = []
 for x in range(xmin, xmax, 1000):
+    print(xmin, x,xmax)
     for y in range(ymin, ymax, 1000):
         if x < xmin_land - 2000 or x > xmax_land + 2000 or y < ymin_land - 2000 or y > ymax_land + 2000: continue
 
