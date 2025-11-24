@@ -2,32 +2,42 @@ import numpy as np
 import rasterio
 import shapely.geometry
 import geopandas as gpd
+from rtree import index
+
 
 workspace = '/home/juju/gisco/census_2021_iceland/'
 
 # extent if iceland
 xmin, ymin, xmax, ymax = 2300000, 4470000, 3890000, 5440000
 
-# load iceland land area geometre from geopackage
-land_geometry = gpd.read_file(workspace + 'land_100k.gpkg')
-land_geometry = land_geometry.geometry.iloc[0]
-#print(land_geometry)
+# load iceland land area geometries from geopackage
+land_geometry = gpd.read_file(workspace + 'land_100k_decomposed.gpkg')
+land_geometry = land_geometry.geometry
+# build spatial index
+lg_index = index.Index()
+for i,g in enumerate(land_geometry): lg_index.insert(i, g.bounds)
 
-# get land_geometry bbox
-xmin_land, ymin_land, xmax_land, ymax_land = land_geometry.bounds
 
 
 output_cells = []
 for x in range(xmin, xmax, 1000):
     print(xmin, x,xmax)
     for y in range(ymin, ymax, 1000):
-        if x < xmin_land - 2000 or x > xmax_land + 2000 or y < ymin_land - 2000 or y > ymax_land + 2000: continue
 
+        # get items using spatial index
+        land = list(lg_index.intersection( (x, y, x + 1000, y + 1000) ))
+        if len(land) == 0: continue
+
+        # make list of geometries from land_ids
+        land = land.map(lambda i: land_geometry[i])
+        # make union of land geometries
+        land = shapely.ops.unary_union(land)
+
+        # make cell geometry
         cell = shapely.geometry.box(x, y, x + 1000, y + 1000)
-        if not land_geometry.intersects(cell): continue
 
-        #intersection = land_geometry.intersection(cell)
-        #if intersection.area <= 0: continue
+        cell = land.intersection(cell)
+        if cell.area <= 0: continue
 
         inspire_id = f'CRS3035RES1000mN{int(y)}5{int(x)}'
         #print(f'Cell at ({x}, {y}) intersects land area with geometry: {intersection.area}')
