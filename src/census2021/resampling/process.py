@@ -132,11 +132,55 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
 
 
 
-def dasymetric_aggregation(input_das_gpkg, pop_att, output_gpkg):
+def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
     'Aggregate population from dasymetric areas to grid cells.'
 
     # load dasymetric areas
     gdf_das = gpd.read_file(input_das_gpkg)
+    # build spatial index
+    das_index = index.Index()
+    for i,f in enumerate(gdf_das): das_index.insert(i, f.geometry.bounds)
+
+    # get bounds of all geometries
+    (minx, miny, maxx, maxy) = gdf_das.total_bounds
+    minx = int(minx // 1000 * 1000)
+    miny = int(miny // 1000 * 1000)
+
+    output_cells = []
+    for x in range(xmin, xmax, 1000):
+        print(x)
+        for y in range(ymin, ymax, 1000):
+
+            # get dasymetric indexes using spatial index
+            das = list(das_index.intersection(g.bounds))
+
+            if len(das) == 0: continue
+
+            # make cell geometry
+            cell = shapely.geometry.box(x, y, x + 1000, y + 1000)
+
+            cell_pop = 0
+            for id in das:
+                # get dasymetric feature
+                das_f = gdf_das[id]
+
+                # get population
+                das_pop = 1 if pop_att==None else das_f[pop_att]
+                if das_pop is None or das_pop <= 0: continue
+
+                # check if geometry type of das_f.geometry is a point
+                if das_f.geometry.geom_type == 'Point':
+                    if cell.contains(das_f.geometry): cell_pop += das_pop
+                    continue
+
+                area = das_f.geometry.area
+                if area <= 0: continue
+                inter = cell.intersection(das_f.geometry)
+                if inter.area <= 0: continue
+                cell_pop += das_pop * (inter.area / area)
+
+            # output areas
+            output_cells.append( { "geometry": cell, pop_att:cell_pop } )
 
 
 
@@ -145,6 +189,7 @@ def dasymetric_aggregation(input_das_gpkg, pop_att, output_gpkg):
 
 
 
+'''
 # nearest neighbor resampling
 def nn_resample(src, dst, scale):
     'Nearest neighbor resampling from src to dst with given scale factor.'
@@ -170,6 +215,5 @@ def load_grid_data(tiff_path):
 
         # convert pixels to shapely geometries
         array = np.array(data)
-
-
+'''
 
