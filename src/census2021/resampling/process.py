@@ -89,7 +89,7 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
     gdf_das = gpd.read_file(input_das_gpkg)
     # build spatial index
     das_index = index.Index()
-    for i, f in gdf_das.iterrows(): das_index.insert(f, f['geometry'].bounds)
+    for i, f in gdf_das.iterrows(): das_index.insert(i, f['geometry'].bounds)
 
     # get bounds of all geometries
     (minx, miny, maxx, maxy) = gdf_das.total_bounds
@@ -114,7 +114,7 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
             cell_pop = 0
             for id in das:
                 # get dasymetric feature
-                das_f = gdf_das[id]
+                das_f = gdf_das.iloc[id]
 
                 # get population
                 das_pop = 1 if pop_att==None else das_f[pop_att]
@@ -133,7 +133,8 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
                 cell_pop += das_pop * (inter.area / area)
 
             # output areas
-            output_cells.append( { "geometry": cell, pop_att:cell_pop } )
+            out_pop_att = "population" if pop_att==None else pop_att
+            output_cells.append( { "geometry": cell, out_pop_att: cell_pop } )
 
     # save output cells
     gpd.GeoDataFrame(output_cells, geometry='geometry', crs=gdf_das.crs).to_file(output_gpkg, driver='GPKG')
