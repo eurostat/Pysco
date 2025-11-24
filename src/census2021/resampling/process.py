@@ -5,10 +5,6 @@ import geopandas as gpd
 from rtree import index
 
 
-workspace = '/home/juju/gisco/census_2021_iceland/'
-
-
-
 def make_land_1km_cells():
     'Make 1km grid cells that intersect land area of Iceland and save to geopackage.'
 
@@ -67,7 +63,7 @@ def random_points_within(geometry, n):
 
 
 def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_att, output_gpkg, output_points_gpkg=None):
-    'Generate synthetic population points within grid cells based on population attribute.'
+    'Disaggregate population units to dasymetric areas and optionally generate random points.'
 
     # load dasymetric geometries
     gdf_dasymetric = gpd.read_file(input_dasymetric_gpkg).geometry
@@ -181,6 +177,20 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
 
 
 
+
+
+w = '/home/juju/gisco/census_2021_iceland/'
+
+dasymetric_disaggregation_step_1(
+    w+"pop_test.gpkg",
+    w+"clc_urban.gpkg",
+    "popul",
+    w+"out/disac_area.gpkg",
+    w+"out/disac_point.gpkg",
+)
+
+
+#dasymetric_disaggregation_step_1()
 
 
 
