@@ -1,5 +1,38 @@
 import numpy as np
 import rasterio
+import shapely.geometry
+
+# from a shapely geometry, make n random point geometries within the area
+def random_points_within(geometry, n):
+    'Generate n random points within a given shapely geometry area.'
+    minx, miny, maxx, maxy = geometry.bounds
+    points = []
+    while len(points) < n:
+        random_point = shapely.geometry.Point(
+            np.random.uniform(minx, maxx),
+            np.random.uniform(miny, maxy)
+        )
+        if geometry.contains(random_point):
+            points.append(random_point)
+    return points
+
+
+
+
+
+
+# load a csv file containing grid data
+def load_csv_grid_data(csv_path):
+    'Load grid data from a CSV file and return as a numpy array.'
+    data = np.genfromtxt(csv_path, delimiter=',', skip_header=1)
+    return data
+
+# with a column representing the INSPIRE ID
+
+
+
+# and convert it into a list of features with an area geometry in shapely representing the cell squared geometry.
+
 
 
 
