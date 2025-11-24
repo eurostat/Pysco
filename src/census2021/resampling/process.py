@@ -2,6 +2,10 @@ import numpy as np
 import rasterio
 import shapely.geometry
 
+
+extent = shapely.geometry.box(2300000, 4470000, 3890000, 5440000)
+
+
 # from a shapely geometry, make n random point geometries within the area
 def random_points_within(geometry, n):
     'Generate n random points within a given shapely geometry area.'
@@ -15,8 +19,6 @@ def random_points_within(geometry, n):
         if geometry.contains(random_point):
             points.append(random_point)
     return points
-
-
 
 
 
