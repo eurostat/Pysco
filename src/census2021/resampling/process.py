@@ -150,8 +150,7 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
 
 
 
-def raster_pixels_above_threshold_to_gpkg(
-        tiff_paths, threshold, output_gpkg, layer_name="pixels"):
+def raster_pixels_above_threshold_to_gpkg(tiff_paths, threshold, output_gpkg, layer_name=None):
     """
     Extracts pixels > threshold from one or more GeoTIFF rasters and
     saves each pixel as a polygon feature in a GeoPackage.
@@ -174,34 +173,25 @@ def raster_pixels_above_threshold_to_gpkg(
     for path in tiff_paths:
         with rasterio.open(path) as src:
             data = src.read(1)
-            mask = data > threshold
+            mask = data >= threshold
 
             # shapes() yields (geometry, value) pairs
             for geom, val in shapes(data, mask=mask, transform=src.transform):
                 all_geoms.append(shape(geom))
                 all_vals.append(float(val))
 
-    gdf = gpd.GeoDataFrame(
-        {"value": all_vals},
-        geometry=all_geoms,
-        crs=src.crs
-    )
-
     # Write to GeoPackage
-    gdf.to_file(output_gpkg, layer=layer_name, driver="GPKG")
-
-    return gdf
+    gpd.GeoDataFrame( {"value": all_vals}, geometry=all_geoms, crs=src.crs).to_file(output_gpkg, layer=layer_name, driver="GPKG")
 
 
+w = '/home/juju/gisco/census_2021_iceland/'
 
+'''
 # GHSL to vector
 raster_pixels_above_threshold_to_gpkg(
     ['/home/juju/geodata/IS/GHS_BUILT_S_E2020_GLOBE_R2023A_54009_100_V1_0_R2_C17.tif', '/home/juju/geodata/IS/GHS_BUILT_S_E2020_GLOBE_R2023A_54009_100_V1_0_R2_C18.tif'],
     1, w+'out/ghsl.gpkg')
-
-
 '''
-w = '/home/juju/gisco/census_2021_iceland/'
 
 dasymetric_disaggregation_step_1(
     w+"pop_test.gpkg",
@@ -213,7 +203,6 @@ dasymetric_disaggregation_step_1(
 
 dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "popul", w+"out/ag_area.gpkg")
 dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", None, w+"out/ag_point.gpkg")
-'''
 
 
 
