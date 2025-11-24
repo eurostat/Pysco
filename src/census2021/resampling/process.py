@@ -21,6 +21,10 @@ for x in range(xmin, xmax, 1000):
         if intersection.area <= 0: continue
 
         print(f'Cell at ({x}, {y}) intersects land area with geometry: {intersection.area}')
+        output_cells.append( { "geometry": intersection, "area":intersection.area } )
+# save output cells to geopackage
+output_gdf = gpd.GeoDataFrame(output_cells, geometry='geometry', crs='EPSG:3035')
+output_gdf.to_file('/home/juju/gisco/census_2021_iceland/land_1km_cells.gpkg', driver='GPKG')
 
 
 
