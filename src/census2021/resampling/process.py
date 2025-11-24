@@ -99,8 +99,8 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
     maxy = int(maxy // 1000 * 1000) + 1000
 
     output_cells = []
+    out_pop_att = "population" if pop_att==None else pop_att
     for x in range(minx, maxx, 1000):
-        print(x)
         for y in range(miny, maxy, 1000):
 
             # get dasymetric indexes using spatial index
@@ -132,8 +132,9 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
                 if inter.area <= 0: continue
                 cell_pop += das_pop * (inter.area / area)
 
+            if cell_pop <= 0: continue
+
             # output areas
-            out_pop_att = "population" if pop_att==None else pop_att
             output_cells.append( { "geometry": cell, out_pop_att: cell_pop } )
 
     # save output cells
