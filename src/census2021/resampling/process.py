@@ -152,7 +152,7 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_point.gpkg",
 )
 
-#dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "popul", w+"out/ag_area.gpkg")
+dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "popul", w+"out/ag_area.gpkg")
 dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", None, w+"out/ag_point.gpkg")
 
 
