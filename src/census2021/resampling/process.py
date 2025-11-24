@@ -1,5 +1,5 @@
 import numpy as np
-import rasterio
+#import rasterio
 import shapely.geometry
 import geopandas as gpd
 from rtree import index
@@ -7,14 +7,13 @@ from rtree import index
 
 workspace = '/home/juju/gisco/census_2021_iceland/'
 
-# extent of iceland
-xmin, ymin, xmax, ymax = 2600000, 4700000, 3400000, 5300000
-
-
 
 
 def make_land_1km_cells():
     'Make 1km grid cells that intersect land area of Iceland and save to geopackage.'
+
+    # extent of iceland
+    xmin, ymin, xmax, ymax = 2600000, 4700000, 3400000, 5300000
 
     # load iceland land area geometries from geopackage
     land_geometry = gpd.read_file(workspace + 'land_100k_decomposed.gpkg')
@@ -59,13 +58,11 @@ def random_points_within(geometry, n):
     'Generate n random points within a given shapely geometry area.'
     minx, miny, maxx, maxy = geometry.bounds
     points = []
+    randuni = np.random.uniform
+    pt = shapely.geometry.Point
     while len(points) < n:
-        random_point = shapely.geometry.Point(
-            np.random.uniform(minx, maxx),
-            np.random.uniform(miny, maxy)
-        )
-        if geometry.contains(random_point):
-            points.append(random_point)
+        random_point = pt(randuni(minx, maxx), randuni(miny, maxy))
+        if geometry.contains(random_point): points.append(random_point)
     return points
 
 
