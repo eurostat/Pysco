@@ -9,8 +9,19 @@ xmin, ymin, xmax, ymax = 2300000, 4470000, 3890000, 5440000
 # load iceland land area geometre from geopackage
 land_geometry = gpd.read_file('/home/juju/gisco/census_2021_iceland/land_100k.gpkg')
 land_geometry = land_geometry.geometry.iloc[0]
+#print(land_geometry)
 
-print(land_geometry)
+output_cells = []
+for x in range(xmin, xmax, 1000):
+    for y in range(ymin, ymax, 1000):
+        cell = shapely.geometry.box(x, y, x + 1000, y + 1000)
+        if not land_geometry.intersects(cell): continue
+
+        intersection = land_geometry.intersection(cell)
+        if intersection.area <= 0: continue
+
+        print(f'Cell at ({x}, {y}) intersects land area with geometry: {intersection.area}')
+
 
 
 # from a shapely geometry, make n random point geometries within the area
