@@ -75,7 +75,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
     gdf = gpd.read_file(input_pop_gpkg)
 
     # outputs
-    output_areas = [], output_points = []
+    output_areas = []; output_points = []
 
     # process each population unit
     for _, row in gdf.iterrows():
