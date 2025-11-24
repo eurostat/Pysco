@@ -187,11 +187,12 @@ dasymetric_disaggregation_step_1(
     w+"pop_test.gpkg",
     w+"clc_urban.gpkg", # land_100k_decomposed clc_urban
     "popul",
-    w+"out/disac_area.gpkg",
-    w+"out/disac_point.gpkg",
+    w+"out/disag_area.gpkg",
+    w+"out/disag_point.gpkg",
 )
 
-dasymetric_aggregation_step_2()
+dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "popul", w+"out/ag_area.gpkg")
+dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", "popul", w+"out/ag_point.gpkg")
 
 
 #dasymetric_disaggregation_step_1()
