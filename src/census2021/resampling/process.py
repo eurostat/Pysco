@@ -69,11 +69,8 @@ def random_points_within(geometry, n):
     return points
 
 
-def make_synthetic_population_points(input_pop_gpkg, input_dasymetric_gpkg, pop_att, output_gpkg, output_points_gpkg=None):
+def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_att, output_gpkg, output_points_gpkg=None):
     'Generate synthetic population points within grid cells based on population attribute.'
-
-    # load population units
-    gdf = gpd.read_file(input_pop_gpkg)
 
     # load dasymetric geometries
     gdf_dasymetric = gpd.read_file(input_dasymetric_gpkg).geometry
@@ -81,12 +78,16 @@ def make_synthetic_population_points(input_pop_gpkg, input_dasymetric_gpkg, pop_
     das_index = index.Index()
     for i,g in enumerate(gdf_dasymetric): das_index.insert(i, g.bounds)
 
-    # people points output
-    output_points = []
-    output_areas = []
+    # load population units
+    gdf = gpd.read_file(input_pop_gpkg)
 
+    # outputs
+    output_areas = [], output_points = []
+
+    # process each population unit
     for _, row in gdf.iterrows():
-        # get population unit and area
+
+        # get population and geometry
         pop = int(row[pop_att])
         if pop is None or pop <= 0: continue
         g = row.geometry
@@ -95,7 +96,7 @@ def make_synthetic_population_points(input_pop_gpkg, input_dasymetric_gpkg, pop_
         das = list(das_index.intersection(g.bounds))
 
         if len(das) == 0:
-            print('No dasymetric area found for unit with population:', pop)
+            print('No dasymetric area found for unit with population:', pop, "around point", g.representative_point())
             continue
 
         # make list of dasymetric geometries
@@ -103,12 +104,14 @@ def make_synthetic_population_points(input_pop_gpkg, input_dasymetric_gpkg, pop_
         for id in das: das_g.append(gdf_dasymetric[id])
         # make union
         das_g = shapely.ops.unary_union(das_g)
+        das = None
 
         # compute intersection
-        g = g.intersection(das_g)
-        if g.area <= 0:
-            print('No dasymetric area found for unit with population:', pop)
+        inter = g.intersection(das_g)
+        if inter.area <= 0:
+            print('No dasymetric area found for unit with population:', pop, "around point", g.representative_point())
             continue
+        g = inter
 
         # output areas
         output_areas.append( { "geometry": g, pop_att:pop } )
@@ -129,21 +132,15 @@ def make_synthetic_population_points(input_pop_gpkg, input_dasymetric_gpkg, pop_
 
 
 
+def dasymetric_aggregation(input_das_gpkg, pop_att, output_gpkg):
+    'Aggregate population from dasymetric areas to grid cells.'
+
+    # load dasymetric areas
+    gdf_das = gpd.read_file(input_das_gpkg)
 
 
 
 
-# load a csv file containing grid data
-def load_csv_grid_data(csv_path):
-    'Load grid data from a CSV file and return as a numpy array.'
-    data = np.genfromtxt(csv_path, delimiter=',', skip_header=1)
-    return data
-
-# with a column representing the INSPIRE ID
-
-
-
-# and convert it into a list of features with an area geometry in shapely representing the cell squared geometry.
 
 
 
