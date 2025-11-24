@@ -140,9 +140,9 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
     miny = int(miny // 1000 * 1000)
 
     output_cells = []
-    for x in range(xmin, xmax, 1000):
+    for x in range(minx, maxx+1000, 1000):
         print(x)
-        for y in range(ymin, ymax, 1000):
+        for y in range(miny, maxy+1000, 1000):
 
             # get dasymetric indexes using spatial index
             das = list(das_index.intersection(g.bounds))
@@ -175,6 +175,8 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
             # output areas
             output_cells.append( { "geometry": cell, pop_att:cell_pop } )
 
+    # save output cells
+    gpd.GeoDataFrame(output_cells, geometry='geometry', crs=gdf_das.crs).to_file(output_gpkg, driver='GPKG')
 
 
 
@@ -183,11 +185,13 @@ w = '/home/juju/gisco/census_2021_iceland/'
 
 dasymetric_disaggregation_step_1(
     w+"pop_test.gpkg",
-    w+"clc_urban.gpkg",
+    w+"clc_urban.gpkg", # land_100k_decomposed clc_urban
     "popul",
     w+"out/disac_area.gpkg",
     w+"out/disac_point.gpkg",
 )
+
+dasymetric_aggregation_step_2()
 
 
 #dasymetric_disaggregation_step_1()
