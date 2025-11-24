@@ -121,13 +121,14 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
                 if das_pop is None or das_pop <= 0: continue
 
                 # check if geometry type of das_f.geometry is a point
-                if das_f.geometry.geom_type == 'Point':
-                    if cell.contains(das_f.geometry): cell_pop += das_pop
+                g = das_f.geometry
+                if g.geom_type == 'Point':
+                    if cell.contains(g): cell_pop += das_pop
                     continue
 
-                area = das_f.geometry.area
+                area = g.area
                 if area <= 0: continue
-                inter = cell.intersection(das_f.geometry)
+                inter = cell.intersection(g)
                 if inter.area <= 0: continue
                 cell_pop += das_pop * (inter.area / area)
 
