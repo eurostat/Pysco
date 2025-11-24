@@ -5,49 +5,6 @@ import geopandas as gpd
 from rtree import index
 
 
-def make_land_1km_cells():
-    'Make 1km grid cells that intersect land area of Iceland and save to geopackage.'
-
-    # extent of iceland
-    xmin, ymin, xmax, ymax = 2600000, 4700000, 3400000, 5300000
-
-    # load iceland land area geometries from geopackage
-    land_geometry = gpd.read_file(workspace + 'land_100k_decomposed.gpkg')
-    land_geometry = land_geometry.geometry
-    # build spatial index
-    lg_index = index.Index()
-    for i,g in enumerate(land_geometry): lg_index.insert(i, g.bounds)
-
-
-    output_cells = []
-    for x in range(xmin, xmax, 1000):
-        print(x)
-        for y in range(ymin, ymax, 1000):
-
-            # get items using spatial index
-            land_ = list(lg_index.intersection( (x, y, x + 1000, y + 1000) ))
-            if len(land_) == 0: continue
-
-            # make list of geometries from land_ids
-            land = []
-            for id in land_: land.append(land_geometry[id])
-            # make union of land geometries
-            land = shapely.ops.unary_union(land)
-
-            # make cell geometry
-            cell = shapely.geometry.box(x, y, x + 1000, y + 1000)
-
-            cell = land.intersection(cell)
-            if cell.area <= 0: continue
-
-            inspire_id = f'CRS3035RES1000mN{int(y)}5{int(x)}'
-            #print(f'Cell at ({x}, {y}) intersects land area with geometry: {intersection.area}')
-            output_cells.append( { "geometry": cell, "GRD_ID": inspire_id, } )
-    # save output cells to geopackage
-    output_gdf = gpd.GeoDataFrame(output_cells, geometry='geometry', crs='EPSG:3035')
-    output_gdf.to_file(workspace + 'out/land_1km_cells.gpkg', driver='GPKG')
-
-
 
 # from a shapely geometry, make n random point geometries within the area
 def random_points_within(geometry, n):
@@ -132,20 +89,22 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
     gdf_das = gpd.read_file(input_das_gpkg)
     # build spatial index
     das_index = index.Index()
-    for i,f in enumerate(gdf_das): das_index.insert(i, f.geometry.bounds)
+    for i, row in gdf_das.iterrows(): das_index.insert(i, row['geometry'].bounds)
 
     # get bounds of all geometries
     (minx, miny, maxx, maxy) = gdf_das.total_bounds
     minx = int(minx // 1000 * 1000)
     miny = int(miny // 1000 * 1000)
+    maxx = int(maxx // 1000 * 1000) + 1000
+    maxy = int(maxy // 1000 * 1000) + 1000
 
     output_cells = []
-    for x in range(minx, maxx+1000, 1000):
+    for x in range(minx, maxx, 1000):
         print(x)
-        for y in range(miny, maxy+1000, 1000):
+        for y in range(miny, maxy, 1000):
 
             # get dasymetric indexes using spatial index
-            das = list(das_index.intersection(g.bounds))
+            das = list(das_index.intersection((x, y, x + 1000, y + 1000)))
 
             if len(das) == 0: continue
 
@@ -191,13 +150,65 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_point.gpkg",
 )
 
-dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "popul", w+"out/ag_area.gpkg")
-dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", "popul", w+"out/ag_point.gpkg")
+#dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "popul", w+"out/ag_area.gpkg")
+dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", None, w+"out/ag_point.gpkg")
 
 
-#dasymetric_disaggregation_step_1()
 
 
+
+
+
+
+
+
+
+
+
+
+'''
+def make_land_1km_cells():
+    'Make 1km grid cells that intersect land area of Iceland and save to geopackage.'
+
+    # extent of iceland
+    xmin, ymin, xmax, ymax = 2600000, 4700000, 3400000, 5300000
+
+    # load iceland land area geometries from geopackage
+    land_geometry = gpd.read_file(workspace + 'land_100k_decomposed.gpkg')
+    land_geometry = land_geometry.geometry
+    # build spatial index
+    lg_index = index.Index()
+    for i,g in enumerate(land_geometry): lg_index.insert(i, g.bounds)
+
+
+    output_cells = []
+    for x in range(xmin, xmax, 1000):
+        print(x)
+        for y in range(ymin, ymax, 1000):
+
+            # get items using spatial index
+            land_ = list(lg_index.intersection( (x, y, x + 1000, y + 1000) ))
+            if len(land_) == 0: continue
+
+            # make list of geometries from land_ids
+            land = []
+            for id in land_: land.append(land_geometry[id])
+            # make union of land geometries
+            land = shapely.ops.unary_union(land)
+
+            # make cell geometry
+            cell = shapely.geometry.box(x, y, x + 1000, y + 1000)
+
+            cell = land.intersection(cell)
+            if cell.area <= 0: continue
+
+            inspire_id = f'CRS3035RES1000mN{int(y)}5{int(x)}'
+            #print(f'Cell at ({x}, {y}) intersects land area with geometry: {intersection.area}')
+            output_cells.append( { "geometry": cell, "GRD_ID": inspire_id, } )
+    # save output cells to geopackage
+    output_gdf = gpd.GeoDataFrame(output_cells, geometry='geometry', crs='EPSG:3035')
+    output_gdf.to_file(workspace + 'out/land_1km_cells.gpkg', driver='GPKG')
+'''
 
 
 
