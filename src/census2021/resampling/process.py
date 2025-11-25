@@ -3,8 +3,11 @@ import shapely.geometry
 import geopandas as gpd
 from rtree import index
 
-
+#TODO change attribute codes
+#TODO CSV to gpkg
 #TODO nearest neighbor: input to point, then 2
+#TODO do with total population
+#TODO handle categories
 #TODO GHSL: improve, with probability?
 #TODO OSM buildings ?
 
@@ -158,7 +161,7 @@ raster_pixels_above_threshold_to_gpkg(
 
 dasymetric_disaggregation_step_1(
     w+"pop_test.gpkg",
-    w+"ghsl_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
+    w+"ghsl_land_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
     "popul",
     w+"out/disag_area.gpkg",
     w+"out/disag_point.gpkg",

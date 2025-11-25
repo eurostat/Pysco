@@ -7,8 +7,11 @@ from utils.featureutils import iter_features
 from utils.tomtomutils import weight_function, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun, is_start_blocked, is_end_blocked
 
 #TODO
-# use non accessible nodes
+# POI move LU school
+# educ RO LU health PT-Vigo
+# mask by NUTS code: remove catalonia, aosta, trento
 # education: remove non-primary for those with with type differenciation
+
 
 
 # folders where to find the inputs
