@@ -3,8 +3,7 @@ import shapely.geometry
 import geopandas as gpd
 from rtree import index
 
-#TODO change attribute codes
-#TODO CSV to gpkg
+
 #TODO nearest neighbor: input to point, then 2
 #TODO do with total population
 #TODO handle categories
@@ -51,9 +50,10 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
         # get dasymetric indexes using spatial index
         das = list(das_index.intersection(g.bounds))
 
-        if len(das) == 0:
-            print('No dasymetric area found for unit with population:', pop, "around point", g.representative_point())
-            continue
+        #if len(das) == 0:
+        #    print('No dasymetric area found for unit with population:', pop, "around point", g.representative_point())
+            #TODO use g ?
+        #    continue
 
         # make list of dasymetric geometries
         das_g = []
@@ -66,7 +66,8 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
         inter = g.intersection(das_g)
         if inter.area <= 0:
             print('No dasymetric area found for unit with population:', pop, "around point", g.representative_point())
-            continue
+            inter = g
+            #continue
         g = inter
 
         # output areas
@@ -159,6 +160,7 @@ raster_pixels_above_threshold_to_gpkg(
     1, w+'out/ghsl.gpkg')
 '''
 
+print("Dasymetric disaggregation step 1")
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035.gpkg",
     w+"ghsl_land_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
@@ -167,10 +169,13 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_point.gpkg",
 )
 
+print("Dasymetric aggregation step 2 surface")
 dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "sex_0", w+"out/ag_area.gpkg")
+print("Dasymetric aggregation step 2 point")
 dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", None, w+"out/ag_point.gpkg")
 
-
+#print("Nearest neighbour")
+#dasymetric_aggregation_step_2(w+"out/IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/ag_area.gpkg")
 
 
 
