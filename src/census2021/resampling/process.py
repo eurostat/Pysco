@@ -4,8 +4,7 @@ import geopandas as gpd
 from rtree import index
 
 
-#TODO nearest neighbor: input to point, then 2
-#TODO do with total population
+#TODO do with total population: check outputs !
 #TODO handle categories
 #TODO GHSL: improve, with probability?
 #TODO OSM buildings ?
@@ -52,7 +51,6 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
 
         #if len(das) == 0:
         #    print('No dasymetric area found for unit with population:', pop, "around point", g.representative_point())
-            #TODO use g ?
         #    continue
 
         # make list of dasymetric geometries
@@ -90,7 +88,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
 
 
 def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
-    'Aggregate population from dasymetric areas to grid cells.'
+    'Aggregate population from dasymetric areas or points to grid cells.'
 
     # load dasymetric areas
     gdf_das = gpd.read_file(input_das_gpkg)
@@ -162,7 +160,7 @@ raster_pixels_above_threshold_to_gpkg(
 
 print("Dasymetric disaggregation step 1")
 dasymetric_disaggregation_step_1(
-    w+"IS_pop_grid_surf_3035.gpkg",
+    w+"IS_pop_grid_surf_3035_land.gpkg",
     w+"ghsl_land_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
     "sex_0",
     w+"out/disag_area.gpkg",
@@ -170,12 +168,12 @@ dasymetric_disaggregation_step_1(
 )
 
 print("Dasymetric aggregation step 2 surface")
-dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "sex_0", w+"out/ag_area.gpkg")
+dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "sex_0", w+"out/dasymetric_GHSL_land.gpkg")
 print("Dasymetric aggregation step 2 point")
-dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", None, w+"out/ag_point.gpkg")
+dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", None, w+"out/dasymetric_GHSL_land_rounded.gpkg")
 
-#print("Nearest neighbour")
-#dasymetric_aggregation_step_2(w+"out/IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/ag_area.gpkg")
+print("Nearest neighbour")
+dasymetric_aggregation_step_2(w+"out/IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg")
 
 
 
