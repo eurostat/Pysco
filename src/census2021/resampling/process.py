@@ -167,13 +167,13 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_point.gpkg",
 )
 
-print("Dasymetric aggregation step 2 surface")
+print("Dasymetric aggregation step 2")
 dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "sex_0", w+"out/dasymetric_GHSL_land.gpkg")
-print("Dasymetric aggregation step 2 point")
+print("Dasymetric aggregation step 2 from points")
 dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", None, w+"out/dasymetric_GHSL_land_rounded.gpkg")
 
 print("Nearest neighbour")
-dasymetric_aggregation_step_2(w+"out/IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg")
+dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg")
 
 
 
