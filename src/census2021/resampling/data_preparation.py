@@ -57,7 +57,6 @@ raster_pixels_above_threshold_to_gpkg(
 df = pd.read_csv(w+'ice_grid_cells.csv', sep=";")
 def myfunc(id):
     id = "CRS3057RES" + id.replace("1km", "1000m").replace("E", "000E") + "000"
-    print(id)
     return id
 
 # 3. Apply the function to a column
