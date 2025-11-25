@@ -4,7 +4,7 @@ import geopandas as gpd
 from rtree import index
 
 
-# use strandlina_flakar for land area
+#TODO use strandlina_flakar for land area
 #TODO nearest neighbor: input to point, then 2
 #TODO GHSL: improve, with probability?
 #TODO OSM buildings ?
