@@ -2,6 +2,7 @@ import geopandas as gpd
 import rasterio
 from rasterio.features import shapes
 from shapely.geometry import shape
+import pandas as pd
 
 
 
@@ -44,7 +45,24 @@ def raster_pixels_above_threshold_to_gpkg(tiff_paths, threshold, output_gpkg, la
 w = '/home/juju/gisco/census_2021_iceland/'
 
 # GHSL to vector
+'''
 raster_pixels_above_threshold_to_gpkg(
     ['/home/juju/geodata/IS/GHS_BUILT_S_E2020_GLOBE_R2023A_54009_100_V1_0_R2_C17.tif', '/home/juju/geodata/IS/GHS_BUILT_S_E2020_GLOBE_R2023A_54009_100_V1_0_R2_C18.tif'],
     1, w+'out/ghsl.gpkg')
+'''
+
+
+
+
+df = pd.read_csv(w+'ice_grid_cells.csv')
+def myfunc(id):
+    print(id)
+    return id
+
+# 3. Apply the function to a column
+df["GRD_ID"] = df["ice_cell_name"].apply(myfunc)
+df = df.drop(columns=["id", "ice_cell_name"])
+
+# 4. Save back to CSV
+df.to_csv(w+'ice_grid_cells_2.csv', index=False)
 
