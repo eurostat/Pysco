@@ -57,22 +57,15 @@ raster_pixels_above_threshold_to_gpkg(
 '''
 
 
-'''
 # restructure IS CSV file
 df = pd.read_csv(w+'ice_grid_cells.csv', sep=";")
+df = df[df["sex_0"] > 0]
 def myfunc(id): return "CRS3057RES" + id.replace("1km", "1000m").replace("E", "000E") + "000"
-
-# 3. Apply the function to a column
 df["GRD_ID"] = df["ice_cell_name"].apply(myfunc)
 df = df.drop(columns=["id", "ice_cell_name"])
-
-# 4. Save back to CSV
 df.to_csv(w+'ice_grid_cells_2.csv', index=False)
-'''
-
-# CSV to parquet to GPKG
-#pd.read_csv(w+'ice_grid_cells_2.csv').to_parquet(w+'ice_grid_cells_2.parquet')
-
+df.to_parquet(w+'ice_grid_cells_2.parquet')
+# parquet to GPKG
 parquet_grid_to_gpkg(w+'ice_grid_cells_2.parquet', w+'IS_pop_grid_surf.gpkg', geometry_type="polygon")
 parquet_grid_to_gpkg(w+'ice_grid_cells_2.parquet', w+'IS_pop_grid_point.gpkg', geometry_type="point")
 
