@@ -4,6 +4,8 @@ from rasterio.features import shapes
 from shapely.geometry import shape
 import pandas as pd
 
+from utils.convert import parquet_grid_to_gpkg
+
 
 
 def raster_pixels_above_threshold_to_gpkg(tiff_paths, threshold, output_gpkg, layer_name=None):
@@ -68,3 +70,5 @@ df.to_csv(w+'ice_grid_cells_2.csv', index=False)
 # CSV to parquet to GPKG
 pd.read_csv(w+'ice_grid_cells_2.csv').to_parquet(w+'ice_grid_cells_2.parquet')
 
+parquet_grid_to_gpkg(w+'ice_grid_cells_2.parquet', w+'IS_pop_grid_surf.gpkg', geometry_type="polygon")
+parquet_grid_to_gpkg(w+'ice_grid_cells_2.parquet', w+'IS_pop_grid_point.gpkg', geometry_type="point")
