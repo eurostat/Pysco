@@ -48,5 +48,3 @@ raster_pixels_above_threshold_to_gpkg(
     ['/home/juju/geodata/IS/GHS_BUILT_S_E2020_GLOBE_R2023A_54009_100_V1_0_R2_C17.tif', '/home/juju/geodata/IS/GHS_BUILT_S_E2020_GLOBE_R2023A_54009_100_V1_0_R2_C18.tif'],
     1, w+'out/ghsl.gpkg')
 
-#TODO keep only land area
-
