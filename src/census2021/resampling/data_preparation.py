@@ -4,6 +4,9 @@ from rasterio.features import shapes
 from shapely.geometry import shape
 import pandas as pd
 
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.convert import parquet_grid_to_gpkg
 
 
