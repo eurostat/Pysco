@@ -71,8 +71,8 @@ df.to_csv(w+'ice_grid_cells_2.csv', index=False)
 '''
 
 # CSV to parquet to GPKG
-pd.read_csv(w+'ice_grid_cells_2.csv').to_parquet(w+'ice_grid_cells_2.parquet')
+#pd.read_csv(w+'ice_grid_cells_2.csv').to_parquet(w+'ice_grid_cells_2.parquet')
 
-#parquet_grid_to_gpkg(w+'ice_grid_cells_2.parquet', w+'IS_pop_grid_surf.gpkg', geometry_type="polygon")
-#parquet_grid_to_gpkg(w+'ice_grid_cells_2.parquet', w+'IS_pop_grid_point.gpkg', geometry_type="point")
+parquet_grid_to_gpkg(w+'ice_grid_cells_2.parquet', w+'IS_pop_grid_surf.gpkg', geometry_type="polygon")
+parquet_grid_to_gpkg(w+'ice_grid_cells_2.parquet', w+'IS_pop_grid_point.gpkg', geometry_type="point")
 
