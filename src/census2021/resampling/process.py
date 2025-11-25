@@ -178,8 +178,6 @@ dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", None, w+"out/ag_point.gp
 
 
 
-
-
 '''
 def make_land_1km_cells():
     'Make 1km grid cells that intersect land area of Iceland and save to geopackage.'
