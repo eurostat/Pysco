@@ -160,7 +160,7 @@ raster_pixels_above_threshold_to_gpkg(
 '''
 
 dasymetric_disaggregation_step_1(
-    w+"IS_pop_grid_point_3035.gpkg",
+    w+"IS_pop_grid_surf_3035.gpkg",
     w+"ghsl_land_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
     "sex_0",
     w+"out/disag_area.gpkg",
