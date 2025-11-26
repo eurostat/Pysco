@@ -9,6 +9,7 @@ from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
 # where to store the outputs
 out_folder = '/home/juju/gisco/accessibility/'
 country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
+nuts_gpkg = '/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg'
 
 services = ["education"] #education healthcare
 years = ["2020"] #"2023" 2020
@@ -73,6 +74,19 @@ for resolution in [100]:
                 values = cnts,
                 compress="deflate"
             )
+
+            print(resolution, service, year, "apply mask to force some nuts regions to nodata")
+            nuts = [] #TODO
+            geotiff_mask_by_countries(
+                geotiff,
+                geotiff,
+                gpkg = nuts_gpkg,
+                gpkg_column = 'NUTS_ID',
+                values = nuts,
+                compress="deflate",
+                invert=True
+            )
+
 
             print(resolution, service, year, "rename tiff bands")
             rename_geotiff_bands(geotiff, [service + "_" + year + "_1", service + "_" + year + "_a3"])
