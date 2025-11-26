@@ -104,7 +104,7 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg):
     maxy = int(maxy // 1000 * 1000) + 1000
 
     output_cells = []
-    out_pop_att = "population" if pop_att==None else pop_att
+    out_pop_att = "sex_0" if pop_att==None else pop_att
     for x in range(minx, maxx, 1000):
         for y in range(miny, maxy, 1000):
 
@@ -160,8 +160,8 @@ raster_pixels_above_threshold_to_gpkg(
 
 print("Dasymetric disaggregation step 1")
 dasymetric_disaggregation_step_1(
-    w+"IS_pop_grid_surf_3035_land.gpkg",
-    w+"IS_pop_grid_surf_3035_land.gpkg", # strandlina_flakar_3035_decomposed clc_urban
+    w+"IS_pop_grid_surf_3035.gpkg",
+    w+"IS_pop_grid_surf_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
     "sex_0",
     w+"out/disag_area.gpkg",
     w+"out/disag_point.gpkg",
