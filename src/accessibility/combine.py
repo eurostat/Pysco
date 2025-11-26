@@ -75,17 +75,17 @@ for resolution in [100]:
                 compress="deflate"
             )
 
-            print(resolution, service, year, "apply mask to force some nuts regions to nodata")
-            nuts = [] #TODO
-            geotiff_mask_by_countries(
-                geotiff,
-                geotiff,
-                gpkg = nuts_gpkg,
-                gpkg_column = 'NUTS_ID',
-                values = nuts,
-                compress="deflate",
-                invert=True
-            )
+            if service == "education":
+                print(resolution, service, year, "apply mask to force some nuts regions to nodata")
+                geotiff_mask_by_countries(
+                    geotiff,
+                    geotiff,
+                    gpkg = nuts_gpkg,
+                    gpkg_column = 'NUTS_ID',
+                    values = ["ES51", "ITC2", "ITH1", "ITH2"],
+                    compress="deflate",
+                    invert=True
+                )
 
 
             print(resolution, service, year, "rename tiff bands")
