@@ -161,16 +161,35 @@ raster_pixels_above_threshold_to_gpkg(
 print("Dasymetric disaggregation step 1")
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035_land.gpkg",
-    w+"ghsl_land_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
+    w+"IS_pop_grid_surf_3035_land.gpkg", # strandlina_flakar_3035_decomposed clc_urban
     "sex_0",
     w+"out/disag_area.gpkg",
     w+"out/disag_point.gpkg",
 )
+dasymetric_disaggregation_step_1(
+    w+"IS_pop_grid_surf_3035_land.gpkg",
+    w+"strandlina_flakar_3035_decomposed.gpkg", # strandlina_flakar_3035_decomposed clc_urban
+    "sex_0",
+    w+"out/disag_area_land.gpkg",
+    w+"out/disag_point_land.gpkg",
+)
+dasymetric_disaggregation_step_1(
+    w+"IS_pop_grid_surf_3035_land.gpkg",
+    w+"ghsl_land_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
+    "sex_0",
+    w+"out/disag_area_ghsl_land.gpkg",
+    w+"out/disag_point_ghsl_land.gpkg",
+)
 
 print("Dasymetric aggregation step 2")
-dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "sex_0", w+"out/dasymetric_GHSL_land.gpkg")
+dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "sex_0", w+"out/area_weighted.gpkg")
+dasymetric_aggregation_step_2(w+"out/disag_area_land.gpkg", "sex_0", w+"out/dasymetric_land.gpkg")
+dasymetric_aggregation_step_2(w+"out/disag_area_ghsl_land.gpkg", "sex_0", w+"out/dasymetric_GHSL_land.gpkg")
+
 print("Dasymetric aggregation step 2 from points")
-dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", None, w+"out/dasymetric_GHSL_land_rounded.gpkg")
+dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", None, w+"out/area_weighted_rounded.gpkg")
+dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", None, w+"out/dasymetric_land_rounded.gpkg")
+dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", None, w+"out/dasymetric_GHSL_land_rounded.gpkg")
 
 print("Nearest neighbour")
 dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg")
