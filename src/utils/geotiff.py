@@ -233,7 +233,8 @@ def geotiff_mask_by_countries(
             gpkg_column,
             values, # the ones to keep
             compress=None,
-            all_touched=True
+            all_touched=True,
+            invert=False, # if True, mask the ones in values
     ):
     # read input raster
     with rasterio.open(in_tiff_path) as src:
@@ -265,7 +266,7 @@ def geotiff_mask_by_countries(
         fill=0,  # pixels with no intersection
         all_touched= all_touched,  # any intersection with pixel => burn value
         dtype='uint8'
-    ) == 0  # True where no intersection
+    ) == 1 if invert else 0  # True where no intersection
 
     # apply mask to every band: set pixels outside geometries to nodata
     data[:, mask] = nodata_value
