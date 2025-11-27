@@ -146,17 +146,15 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
 
         # generate random points within geometry
         if output_synthetic_population_gpkg is not None:
+            output_synthetic_population = []
             # make synthetic population
-            output_synthetic_population = make_synthetic_population(pop, row, check_counts=False)
+            sp = make_synthetic_population(pop, row, check_counts=False)
             # make random locations within geometry
             points = random_points_within(g, pop)
             # put localisation to each person
-            for i in range(pop): output_synthetic_population[i]['geometry'] = points[i]
-
-            print(len(output_synthetic_population))
-            #print(output_synthetic_population)
-            aaa = count_categories(output_synthetic_population, ["sex", "age_g", "pob_l", "roy"])
-            print(aaa)
+            for i in range(pop): sp[i]['geometry'] = points[i]
+            #
+            output_synthetic_population.extend(sp)
 
     # save output areas
     gpd.GeoDataFrame(output_areas, geometry='geometry', crs=gdf.crs).to_file(output_gpkg, driver='GPKG')
