@@ -69,7 +69,8 @@ def make_synthetic_population(n, data, check_counts=False):
     out = []
     for i in range(n):
         person = {}
-        for cat in ["sex", "age_g", "pob_l", "roy"]: person[cat] = lists[cat][i]
+        for cat in ["sex", "age_g", "pob_l", "roy"]:
+            person[cat] = lists[cat][i]
         out.append(person)
 
     #print(data)
