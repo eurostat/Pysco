@@ -76,7 +76,7 @@ def make_synthetic_population(n, data, check_counts=True):
     return population
 
 
-def count_categories(population, categories, sorted=True):
+def count_categories(population, categories, sort=True):
     """
     population : list of dicts produced by your synthetic generator
     categories     : list of category names to count
@@ -95,7 +95,7 @@ def count_categories(population, categories, sorted=True):
             if mode in stats: stats[mode] = stats[mode] + 1
             else: stats[mode] = 1
     # sort
-    if sorted: stats = { k: stats[k] for k in sorted(stats.keys()) }
+    if sort: return { k: stats[k] for k in sorted(stats) }
     return stats
 
 
