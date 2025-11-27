@@ -2,6 +2,8 @@ import numpy as np
 import shapely.geometry
 import geopandas as gpd
 from rtree import index
+import random
+from collections import Counter, defaultdict
 
 
 #TODO do with total population: check outputs !
@@ -23,13 +25,59 @@ def random_points_within(geometry, n):
     return points
 
 # make a synthetic population of n persons (empty for now)
-def make_synthetic_population(n):
+# sex_0
+# sex_1;sex_2
+# age_g_1;age_g_2;age_g_3
+# cas_l_1_1
+# pob_l_1;pob_l_2_1;pob_l_2_2
+# roy_1;roy_2_1;roy_2_2
+def make_synthetic_population(n, data):
+
+    # build sex list
+    sex = (
+        ["sex_1"] * data.get("sex_1", 0) +
+        ["sex_2"] * data.get("sex_2", 0)
+    )
+
+    # build age group list
+    age_g = (
+        ["age_g_1"] * data.get("age_g_1", 0) +
+        ["age_g_2"] * data.get("age_g_2", 0) +
+        ["age_g_3"] * data.get("age_g_3", 0)
+    )
+
+    # check totals
+    if len(sex) != n or len(age_g) != n:
+        raise ValueError("Counts in data do not sum to n")
+
+    # shuffle
+    random.shuffle(sex)
+    random.shuffle(age_g)
+
+    # make persons
     out = []
     for i in range(n):
-        person = {}
-        #TODO
+        person = { "sex": sex[i], "age_g": age_g[i] }
         out.append(person)
+
     return out
+
+
+def count_categories(population, fields):
+    """
+    population : list of dicts produced by your synthetic generator
+    fields     : list of field names to count (e.g. ["sex", "group"])
+
+    Returns a dictionary: { field_name: Counter(...) }
+    """
+    counts = {field: Counter() for field in fields}
+
+    for person in population:
+        for field in fields:
+            value = person.get(field)
+            if value is not None: counts[field][value] += 1
+
+    return counts
 
 
 def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_att, output_gpkg, output_synthetic_population_gpkg=None):
@@ -82,7 +130,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
         # generate random points within geometry
         if output_synthetic_population_gpkg is not None:
             # make synthetic population
-            output_synthetic_population = make_synthetic_population(pop)
+            output_synthetic_population = make_synthetic_population(pop, row)
             # make random locations within geometry
             points = random_points_within(g, pop)
             # put localisation to each person
