@@ -14,7 +14,7 @@ nuts_gpkg = '/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg'
 services = ["education", "healthcare"] #education healthcare
 years = ["2020", "2023"] #"2023" 2020
 version_tag = "2025_11"
-do_combination = True
+do_combination = False
 
 # whole europe
 bbox = [ 900000, 900000, 6600000, 5500000 ]
@@ -66,8 +66,6 @@ for resolution in [100]:
             #exclude: ["CH", "RS", "BA", "MK", "AL", "ME", "MD"],
             if service == "healthcare": cnts.append("CH")
             if year == "2023": cnts.append("AL")
-            print(cnts)
-            print(country_gpkg)
             geotiff_mask_by_countries(
                 geotiff,
                 geotiff,

@@ -264,7 +264,7 @@ def geotiff_mask_by_countries(
         [(geom, 1) for geom in gdf.geometry],
         out_shape=(height, width),
         transform=transform,
-        fill=1-v,  # pixels with no intersection
+        fill=v,
         all_touched= all_touched,  # any intersection with pixel => burn value
         dtype='uint8'
     ) == v  # True where no intersection
