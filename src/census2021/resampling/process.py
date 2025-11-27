@@ -269,6 +269,7 @@ w = '/home/juju/gisco/census_2021_iceland/'
 categories = ["sex", "age_g", "pob_l", "roy"]
 pop_atts = ["sex_1", "sex_2", "age_g_1", "age_g_2", "age_g_3", "cas_l_1_1", "pob_l_1", "pob_l_2_1", "pob_l_2_2", "roy_1", "roy_2_1", "roy_2_2"]
 
+'''
 print("Dasymetric disaggregation step 1")
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035.gpkg",
@@ -294,6 +295,7 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_point_ghsl_land.gpkg",
     pop_atts=pop_atts,
 )
+'''
 
 '''
 print("Dasymetric aggregation step 2")
