@@ -197,8 +197,10 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
 
             if len(das) == 0: continue
 
-            # make cell geometry
+            # make cell
             cell_g = shapely.geometry.box(x, y, x + resolution, y + resolution)
+            cell = { "geometry": cell_g, pop_att: 0 }
+            for att in pop_atts: cell[att] = 0
 
             if geom_type == 'Point':
                 # get population
@@ -208,18 +210,17 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
                     if cell_g.contains(person["geometry"]): population.append(person)
 
                 # get population counts
-                cell = count_categories(population, categories=categories, tot=pop_att, sort=True)
-                print(cell)
+                stats = count_categories(population, categories=categories, tot=pop_att, sort=True)
 
                 # do not store empty cells
-                if cell[pop_att] <= 0: continue
+                if stats[pop_att] <= 0: continue
 
-                cell['geometry'] = cell_g
-                output_cells.append(cell)
+                # set cell statistics
+                cell[pop_att] = stats[pop_att]
+                for att in pop_atts:
+                    if att in stats: cell[att] = cell[att]
+
             else:
-
-                cell = { "geometry": cell_g, pop_att: 0 }
-                for att in pop_atts: cell[att] = 0
 
                 for id in das:
                     # get dasymetric feature
@@ -244,8 +245,8 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
                     # do not store empty cells
                     if cell[pop_att] <= 0: continue
 
-                    # output cells
-                    output_cells.append(cell)
+            # output cells
+            output_cells.append(cell)
 
     # save output cells
     gpd.GeoDataFrame(output_cells, geometry='geometry', crs=gdf_das.crs).to_file(output_gpkg, driver='GPKG')
