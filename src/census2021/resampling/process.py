@@ -6,7 +6,7 @@ import random
 from collections import Counter, defaultdict
 
 
-#TODO handle categories
+#TODO handle categories - nearest neighbour
 #TODO handle categories - generic
 #TODO cas_l_1_1
 #TODO validate
@@ -252,9 +252,6 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
                         if das_att is None or das_att <= 0: continue
                         cell[att] += das_att * share
 
-                # do not store empty cells
-                if cell[pop_att] <= 0: continue
-
             # output cells
             output_cells.append(cell)
 
@@ -303,10 +300,11 @@ dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "sex_0", w+"out/area_weig
 dasymetric_aggregation_step_2(w+"out/disag_area_land.gpkg", "sex_0", w+"out/dasymetric_land.gpkg", pop_atts=pop_atts)
 dasymetric_aggregation_step_2(w+"out/disag_area_ghsl_land.gpkg", "sex_0", w+"out/dasymetric_GHSL_land.gpkg", pop_atts=pop_atts)
 '''
+
 print("Dasymetric aggregation step 2 from points")
-#dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", "sex_0", w+"out/area_weighted_rounded.gpkg", geom_type='Point', pop_atts=pop_atts)
-#dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", "sex_0", w+"out/dasymetric_land_rounded.gpkg", geom_type='Point', pop_atts=pop_atts)
-#dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", "sex_0", w+"out/dasymetric_GHSL_land_rounded.gpkg", geom_type='Point', pop_atts=pop_atts, categories=categories)
+dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", "sex_0", w+"out/area_weighted_rounded.gpkg", geom_type='Point', pop_atts=pop_atts, categories=categories)
+dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", "sex_0", w+"out/dasymetric_land_rounded.gpkg", geom_type='Point', pop_atts=pop_atts, categories=categories)
+dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", "sex_0", w+"out/dasymetric_GHSL_land_rounded.gpkg", geom_type='Point', pop_atts=pop_atts, categories=categories)
 
 #print("Nearest neighbour")
 #dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg")
