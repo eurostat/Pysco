@@ -9,6 +9,8 @@ from collections import Counter, defaultdict
 #TODO handle categories
 #TODO handle categories - generic
 #TODO cas_l_1_1
+#TODO validate
+
 #TODO GHSL: improve, with probability?
 #TODO OSM buildings ?
 
@@ -102,7 +104,7 @@ def count_categories(population, categories, tot="count", sort=True):
 
 
 
-def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_att, output_gpkg, output_synthetic_population_gpkg=None):
+def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_att, output_gpkg, output_synthetic_population_gpkg=None, pop_atts=[]):
     'Disaggregate population units to dasymetric areas and optionally generate random points.'
 
     # load dasymetric geometries
@@ -128,10 +130,6 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
         # get dasymetric indexes using spatial index
         das = list(das_index.intersection(g.bounds))
 
-        #if len(das) == 0:
-        #    print('No dasymetric area found for unit with population:', pop, "around point", g.representative_point())
-        #    continue
-
         # make list of dasymetric geometries
         das_g = []
         for id in das: das_g.append(gdf_dasymetric[id])
@@ -148,7 +146,9 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
         g = inter
 
         # output areas
-        output_areas.append( { "geometry": g, pop_att:pop } )
+        f = { "geometry": g, pop_att: pop }
+        for att in pop_atts: f[att] = row.get(att)
+        output_areas.append(f)
 
         # generate random points within geometry
         if output_synthetic_population_gpkg is not None:
