@@ -165,6 +165,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
 
     if output_synthetic_population_gpkg is not None:
         a = count_categories(output_synthetic_population, ["sex", "age_g", "pob_l", "roy"])
+        print(a)
         # save output points
         gpd.GeoDataFrame(output_synthetic_population, geometry='geometry', crs=gdf.crs).to_file(output_synthetic_population_gpkg, driver='GPKG')
 
