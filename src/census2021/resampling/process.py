@@ -76,7 +76,7 @@ def make_synthetic_population(n, data, check_counts=True):
     return population
 
 
-def count_categories(population, categories):
+def count_categories(population, categories, sorted=True):
     """
     population : list of dicts produced by your synthetic generator
     categories     : list of category names to count
@@ -84,13 +84,18 @@ def count_categories(population, categories):
     Returns a dictionary: { field_name: count }
     """
 
-    stats = { cat: {} for cat in categories }
+    #stats = { cat: {} for cat in categories }
+    stats = {}
     for person in population:
         for cat in categories:
             mode = person.get(cat)
             if mode is None: continue
-            if mode in stats[cat]: stats[cat][mode] = stats[cat][mode] + 1
-            else: stats[cat][mode] = 1
+            #if mode in stats[cat]: stats[cat][mode] = stats[cat][mode] + 1
+            #else: stats[cat][mode] = 1
+            if mode in stats: stats[mode] = stats[mode] + 1
+            else: stats[mode] = 1
+    # sort
+    if sorted: stats = { k: stats[k] for k in sorted(stats.keys()) }
     return stats
 
 
@@ -159,6 +164,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
     gpd.GeoDataFrame(output_areas, geometry='geometry', crs=gdf.crs).to_file(output_gpkg, driver='GPKG')
 
     if output_synthetic_population_gpkg is not None:
+        a = count_categories(output_synthetic_population, ["sex", "age_g", "pob_l", "roy"])
         # save output points
         gpd.GeoDataFrame(output_synthetic_population, geometry='geometry', crs=gdf.crs).to_file(output_synthetic_population_gpkg, driver='GPKG')
 
