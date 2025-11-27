@@ -14,7 +14,7 @@ nuts_gpkg = '/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg'
 services = ["education", "healthcare"] #education healthcare
 years = ["2020", "2023"] #"2023" 2020
 version_tag = "2025_11"
-skip_combination = False
+skip_combination = True
 
 # whole europe
 bbox = [ 900000, 900000, 6600000, 5500000 ]

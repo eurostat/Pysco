@@ -7,11 +7,8 @@ from utils.featureutils import iter_features
 from utils.tomtomutils import weight_function, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun, is_start_blocked, is_end_blocked
 
 #TODO
-# mask by NUTS code: remove catalonia, aosta, trento
-# regenerate tiffs and check removals of:
-# educ RO LU
-# health PT-Vigo
 # relaunch
+# check removals: cnts, nuts
 
 
 # folders where to find the inputs
