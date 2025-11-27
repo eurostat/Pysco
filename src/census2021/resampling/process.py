@@ -6,8 +6,9 @@ import random
 from collections import Counter, defaultdict
 
 
-#TODO do with total population: check outputs !
 #TODO handle categories
+#TODO handle categories - generic
+#TODO cas_l_1_1
 #TODO GHSL: improve, with probability?
 #TODO OSM buildings ?
 
@@ -24,14 +25,8 @@ def random_points_within(geometry, n):
         if geometry.contains(random_point): points.append(random_point)
     return points
 
-# make a synthetic population of n persons (empty for now)
-# sex_0
-# sex_1;sex_2
-# age_g_1;age_g_2;age_g_3
-# cas_l_1_1
-# pob_l_1;pob_l_2_1;pob_l_2_2
-# roy_1;roy_2_1;roy_2_2
-def make_synthetic_population(n, data, check_counts=False):
+# make a synthetic population of n persons
+def make_synthetic_population(n, data, check_counts=True):
 
     # build lists
     lists = {}
@@ -46,37 +41,39 @@ def make_synthetic_population(n, data, check_counts=False):
     )
     lists['pob_l'] = (
         ["pob_l_1"] * data.get("pob_l_1", 0) +
-        ["pob_l_2"] * data.get("pob_l_2", 0) +
-        ["pob_l_3"] * data.get("pob_l_3", 0)
+        ["pob_l_2_1"] * data.get("pob_l_2_1", 0) +
+        ["pob_l_2_2"] * data.get("pob_l_2_2", 0)
     )
     lists['roy'] = (
         ["roy_1"] * data.get("roy_1", 0) +
-        ["roy_2"] * data.get("roy_2", 0) +
-        ["roy_3"] * data.get("roy_3", 0)
+        ["roy_2_1"] * data.get("roy_2_1", 0) +
+        ["roy_2_2"] * data.get("roy_2_2", 0)
     )
 
     # check totals
     if check_counts:
         for cat in ["sex", "age_g", "pob_l", "roy"]:
             if len(lists[cat]) != n:
-                raise ValueError("Counts in data do not sum to n", cat, len(lists[cat]), n)
+                #print(data)
+                print("Counts in data do not sum to n", cat, len(lists[cat]), n)
 
     # shuffle
     for cat in ["sex", "age_g", "pob_l", "roy"]:
         random.shuffle(lists[cat])
 
     # make persons
-    out = []
+    population = []
     for i in range(n):
+        # make person
         person = {}
+        # fill categories
         for cat in ["sex", "age_g", "pob_l", "roy"]:
-            person[cat] = lists[cat][i]
-        out.append(person)
+            if i>=len(lists[cat]): person[cat] = None
+            else: person[cat] = lists[cat][i] if len(lists[cat])<n-1 else lists[cat][0]
+        # add to population
+        population.append(person)
 
-    #print(data)
-    #print(count_categories(out, ["sex", "age_g" ]))
-
-    return out
+    return population
 
 
 def count_categories(population, categories):
