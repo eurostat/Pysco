@@ -146,7 +146,6 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
 
         # generate random points within geometry
         if output_synthetic_population_gpkg is not None:
-            output_synthetic_population = []
             # make synthetic population
             sp = make_synthetic_population(pop, row, check_counts=False)
             # make random locations within geometry
