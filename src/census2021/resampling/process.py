@@ -33,51 +33,68 @@ def random_points_within(geometry, n):
 # roy_1;roy_2_1;roy_2_2
 def make_synthetic_population(n, data):
 
-    # build sex list
-    sex = (
+    # build lists
+    lists = {}
+    lists['sex'] = (
         ["sex_1"] * data.get("sex_1", 0) +
         ["sex_2"] * data.get("sex_2", 0)
     )
-
-    # build age group list
-    age_g = (
+    lists['age_g'] = (
         ["age_g_1"] * data.get("age_g_1", 0) +
         ["age_g_2"] * data.get("age_g_2", 0) +
         ["age_g_3"] * data.get("age_g_3", 0)
     )
+    lists['pob_l'] = (
+        ["pob_l_1"] * data.get("pob_l_1", 0) +
+        ["pob_l_2"] * data.get("pob_l_2", 0) +
+        ["pob_l_3"] * data.get("pob_l_3", 0)
+    )
+    lists['roy'] = (
+        ["roy_1"] * data.get("roy_1", 0) +
+        ["roy_2"] * data.get("roy_2", 0) +
+        ["roy_3"] * data.get("roy_3", 0)
+    )
 
     # check totals
-    if len(sex) != n or len(age_g) != n:
-        raise ValueError("Counts in data do not sum to n")
+    for cat in ["sex", "age_g", "pob_l", "roy"]:
+        if len(lists[cat]) != n:
+            raise ValueError("Counts in data do not sum to n", cat, len(lists[cat]), n)
 
     # shuffle
-    random.shuffle(sex)
-    random.shuffle(age_g)
+    for cat in ["sex", "age_g", "pob_l", "roy"]:
+        random.shuffle(lists[cat])
 
     # make persons
     out = []
     for i in range(n):
-        person = { "sex": sex[i], "age_g": age_g[i] }
+        person = {}
+        for cat in ["sex", "age_g", "pob_l", "roy"]: person[cat] = lists[cat][i]
         out.append(person)
+
+    #print(data)
+    #aaa = count_categories(out, ["sex", "age_g" ])
+    #print(aaa)
 
     return out
 
 
-def count_categories(population, fields):
+def count_categories(population, categories):
     """
     population : list of dicts produced by your synthetic generator
-    fields     : list of field names to count (e.g. ["sex", "group"])
+    categories     : list of category names to count
 
-    Returns a dictionary: { field_name: Counter(...) }
+    Returns a dictionary: { field_name: count }
     """
-    counts = {field: Counter() for field in fields}
 
+    stats = { cat: {} for cat in categories }
     for person in population:
-        for field in fields:
-            value = person.get(field)
-            if value is not None: counts[field][value] += 1
+        for cat in categories:
+            mode = person.get(cat)
+            if mode in stats[cat]: stats[cat][mode] += 1
+            else: stats[cat][mode] = 1
+    return stats
 
-    return counts
+
 
 
 def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_att, output_gpkg, output_synthetic_population_gpkg=None):
@@ -251,7 +268,7 @@ dasymetric_aggregation_step_2(w+"out/disag_area_ghsl_land.gpkg", "sex_0", w+"out
 print("Dasymetric aggregation step 2 from points")
 #dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", None, w+"out/area_weighted_rounded.gpkg")
 #dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", None, w+"out/dasymetric_land_rounded.gpkg")
-dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", None, w+"out/dasymetric_GHSL_land_rounded.gpkg")
+#dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", None, w+"out/dasymetric_GHSL_land_rounded.gpkg")
 
 #print("Nearest neighbour")
 #dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg")
