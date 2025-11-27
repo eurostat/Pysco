@@ -11,6 +11,7 @@ from collections import Counter, defaultdict
 #TODO cas_l_1_1
 #TODO validate
 #TODO test with 100m
+#TODO when number is low, put all at the same place, in the center of the area
 
 #TODO GHSL: improve, with probability?
 #TODO OSM buildings ?
@@ -203,6 +204,7 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
             for att in pop_atts: cell[att] = 0
 
             if geom_type == 'Point':
+
                 # get population
                 population = []
                 for id in das:
@@ -218,32 +220,40 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
                 # set cell statistics
                 cell[pop_att] = stats[pop_att]
                 for att in pop_atts:
-                    if att in stats: cell[att] = cell[att]
+                    if att in stats: cell[att] = stats[att]
 
             else:
+                # polygon case
 
                 for id in das:
                     # get dasymetric feature
                     das_f = gdf_das.iloc[id]
 
-                    # get population
-                    das_pop = 1 if pop_att==None else das_f[pop_att]
+                    # get its population
+                    das_pop = das_f[pop_att]
                     if das_pop is None or das_pop <= 0: continue
 
-                    # check if geometry type of das_f.geometry is a point
+                    # get geometry
                     g = das_f.geometry
-                    if g.geom_type == 'Point':
-                        if cell_g.contains(g): cell_pop += das_pop
-                        continue
-
                     area = g.area
                     if area <= 0: continue
+
+                    # compute intersection
                     inter = cell_g.intersection(g)
                     if inter.area <= 0: continue
-                    cell_pop += das_pop * (inter.area / area)
 
-                    # do not store empty cells
-                    if cell[pop_att] <= 0: continue
+                    # compute share
+                    share = inter.area / area
+
+                    # compute population to assign
+                    cell[pop_att] += das_pop * share
+                    for att in pop_atts:
+                        das_att = das_f.get(att)
+                        if das_att is None or das_att <= 0: continue
+                        cell[att] += das_att * share
+
+                # do not store empty cells
+                if cell[pop_att] <= 0: continue
 
             # output cells
             output_cells.append(cell)
@@ -260,13 +270,13 @@ categories = ["sex", "age_g", "pob_l", "roy"]
 pop_atts = ["sex_1", "sex_2", "age_g_1", "age_g_2", "age_g_3", "cas_l_1_1", "pob_l_1", "pob_l_2_1", "pob_l_2_2", "roy_1", "roy_2_1", "roy_2_2"]
 
 print("Dasymetric disaggregation step 1")
-'''
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035.gpkg",
     w+"IS_pop_grid_surf_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
     "sex_0",
     w+"out/disag_area.gpkg",
     w+"out/disag_point.gpkg",
+    pop_atts=pop_atts,
 )
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035_land.gpkg",
@@ -274,6 +284,7 @@ dasymetric_disaggregation_step_1(
     "sex_0",
     w+"out/disag_area_land.gpkg",
     w+"out/disag_point_land.gpkg",
+    pop_atts=pop_atts,
 )
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035_land.gpkg",
@@ -283,9 +294,6 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_point_ghsl_land.gpkg",
     pop_atts=pop_atts,
 )
-'''
-
-
 
 '''
 print("Dasymetric aggregation step 2")
@@ -296,7 +304,7 @@ dasymetric_aggregation_step_2(w+"out/disag_area_ghsl_land.gpkg", "sex_0", w+"out
 print("Dasymetric aggregation step 2 from points")
 #dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", "sex_0", w+"out/area_weighted_rounded.gpkg", geom_type='Point', pop_atts=pop_atts)
 #dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", "sex_0", w+"out/dasymetric_land_rounded.gpkg", geom_type='Point', pop_atts=pop_atts)
-dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", "sex_0", w+"out/dasymetric_GHSL_land_rounded.gpkg", geom_type='Point', pop_atts=pop_atts, categories=categories)
+#dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", "sex_0", w+"out/dasymetric_GHSL_land_rounded.gpkg", geom_type='Point', pop_atts=pop_atts, categories=categories)
 
 #print("Nearest neighbour")
 #dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg")
