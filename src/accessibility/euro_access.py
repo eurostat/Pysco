@@ -7,8 +7,6 @@ from utils.featureutils import iter_features
 from utils.tomtomutils import weight_function, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun, is_start_blocked, is_end_blocked
 
 #TODO
-# relaunch
-# check removals: cnts, nuts
 
 
 # folders where to find the inputs
