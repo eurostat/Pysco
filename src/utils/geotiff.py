@@ -259,14 +259,15 @@ def geotiff_mask_by_countries(
         profile.update(nodata=nodata_value)
 
     # mask based on pixel square intersection (any overlap)
+    v = 1 if invert else 0
     mask = rasterize(
         [(geom, 1) for geom in gdf.geometry],
         out_shape=(height, width),
         transform=transform,
-        fill=0,  # pixels with no intersection
+        fill=1-v,  # pixels with no intersection
         all_touched= all_touched,  # any intersection with pixel => burn value
         dtype='uint8'
-    ) == 1 if invert else 0  # True where no intersection
+    ) == v  # True where no intersection
 
     # apply mask to every band: set pixels outside geometries to nodata
     data[:, mask] = nodata_value

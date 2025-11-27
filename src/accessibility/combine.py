@@ -66,15 +66,18 @@ for resolution in [100]:
             #exclude: ["CH", "RS", "BA", "MK", "AL", "ME", "MD"],
             if service == "healthcare": cnts.append("CH")
             if year == "2023": cnts.append("AL")
+            print(cnts)
+            print(country_gpkg)
             geotiff_mask_by_countries(
                 geotiff,
                 geotiff,
                 gpkg = country_gpkg,
                 gpkg_column = 'CNTR_ID',
                 values = cnts,
-                compress="deflate"
+                compress="deflate",
+                #invert=True,
             )
-
+            exit()
             if service == "education":
                 print(resolution, service, year, "apply mask to force some nuts regions to nodata")
                 geotiff_mask_by_countries(
@@ -84,7 +87,7 @@ for resolution in [100]:
                     gpkg_column = 'NUTS_ID',
                     values = ["ES51", "ITC2", "ITH1", "ITH2"],
                     compress="deflate",
-                    invert=True
+                    invert=True,
                 )
 
 
