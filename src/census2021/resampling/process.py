@@ -69,7 +69,7 @@ def make_synthetic_population(n, data, check_counts=True):
         # fill categories
         for cat in ["sex", "age_g", "pob_l", "roy"]:
             if i>=len(lists[cat]): person[cat] = None
-            else: person[cat] = lists[cat][i] if len(lists[cat])<n-1 else lists[cat][0]
+            else: person[cat] = lists[cat][i]
         # add to population
         population.append(person)
 
@@ -88,7 +88,8 @@ def count_categories(population, categories):
     for person in population:
         for cat in categories:
             mode = person.get(cat)
-            if mode in stats[cat]: stats[cat][mode] += 1
+            if mode is None: continue
+            if mode in stats[cat]: stats[cat][mode] = stats[cat][mode] + 1
             else: stats[cat][mode] = 1
     return stats
 
@@ -135,7 +136,8 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
         # compute intersection
         inter = g.intersection(das_g)
         if inter.area <= 0:
-            print('No dasymetric area found for unit with population:', pop, "around point", g.representative_point())
+            #print('No dasymetric area found for unit with population:', pop, "around point", g.representative_point())
+            # use entire origin geometry
             inter = g
         g = inter
 
@@ -151,10 +153,13 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
             # put localisation to each person
             for i in range(pop): output_synthetic_population[i]['geometry'] = points[i]
 
+            print(len(output_synthetic_population))
+            #print(output_synthetic_population)
+            aaa = count_categories(output_synthetic_population, ["sex", "age_g", "pob_l", "roy"])
+            print(aaa)
+
     # save output areas
     gpd.GeoDataFrame(output_areas, geometry='geometry', crs=gdf.crs).to_file(output_gpkg, driver='GPKG')
-
-    print(output_synthetic_population)
 
     if output_synthetic_population_gpkg is not None:
         # save output points
