@@ -22,8 +22,17 @@ def random_points_within(geometry, n):
         if geometry.contains(random_point): points.append(random_point)
     return points
 
+# make a synthetic population of n persons (empty for now)
+def make_synthetic_population(n):
+    out = []
+    for i in range(n):
+        person = {}
+        #TODO
+        out.append(person)
+    return out
 
-def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_att, output_gpkg, output_points_gpkg=None):
+
+def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_att, output_gpkg, output_synthetic_population_gpkg=None):
     'Disaggregate population units to dasymetric areas and optionally generate random points.'
 
     # load dasymetric geometries
@@ -36,7 +45,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
     gdf = gpd.read_file(input_pop_gpkg)
 
     # outputs
-    output_areas = []; output_points = []
+    output_areas = []; output_synthetic_population = []
 
     # process each population unit
     for _, row in gdf.iterrows():
@@ -65,24 +74,26 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
         if inter.area <= 0:
             print('No dasymetric area found for unit with population:', pop, "around point", g.representative_point())
             inter = g
-            #continue
         g = inter
 
         # output areas
         output_areas.append( { "geometry": g, pop_att:pop } )
 
         # generate random points within geometry
-        if output_points_gpkg is not None:
+        if output_synthetic_population_gpkg is not None:
+            # make synthetic population
+            output_synthetic_population = make_synthetic_population(pop)
+            # make random locations within geometry
             points = random_points_within(g, pop)
-            for point in points:
-                output_points.append( { "geometry": point } )
+            # put localisation to each person
+            for i in range(pop): output_synthetic_population[i]['geometry'] = points[i]
 
     # save output areas
     gpd.GeoDataFrame(output_areas, geometry='geometry', crs=gdf.crs).to_file(output_gpkg, driver='GPKG')
 
-    if output_points_gpkg is not None:
+    if output_synthetic_population_gpkg is not None:
         # save output points
-        gpd.GeoDataFrame(output_points, geometry='geometry', crs=gdf.crs).to_file(output_points_gpkg, driver='GPKG')
+        gpd.GeoDataFrame(output_synthetic_population, geometry='geometry', crs=gdf.crs).to_file(output_synthetic_population_gpkg, driver='GPKG')
 
 
 
