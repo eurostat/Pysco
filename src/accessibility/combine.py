@@ -11,10 +11,10 @@ out_folder = '/home/juju/gisco/accessibility/'
 country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 nuts_gpkg = '/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg'
 
-services = ["healthcare"] #education healthcare
+services = ["education", "healthcare"] #education healthcare
 years = ["2020", "2023"] #"2023" 2020
 version_tag = "2025_11"
-do_combination = False
+do_combination = True
 
 # whole europe
 bbox = [ 900000, 900000, 6600000, 5500000 ]
