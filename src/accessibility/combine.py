@@ -34,7 +34,7 @@ for resolution in [100]:
             geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(resolution) + "m_"+version_tag+".tif"
 
             # check if tiff file was already produced
-            if os.path.isfile(geotiff) and not skip_combination:
+            if os.path.isfile(geotiff) and do_combination:
                 print("Combined file already produced")
                 continue
 
