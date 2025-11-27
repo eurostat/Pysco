@@ -14,7 +14,7 @@ nuts_gpkg = '/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg'
 services = ["education", "healthcare"] #education healthcare
 years = ["2020", "2023"] #"2023" 2020
 version_tag = "2025_11"
-skip_combination = True
+do_combination = True
 
 # whole europe
 bbox = [ 900000, 900000, 6600000, 5500000 ]
@@ -38,7 +38,7 @@ for resolution in [100]:
                 print("Combined file already produced")
                 continue
 
-            if not skip_combination:
+            if do_combination:
                 # get all parquet files in the output folder
                 files = [os.path.join(out_folder_service_year, f) for f in os.listdir(out_folder_service_year) if f.endswith('.parquet')]
                 if len(files)==0:
@@ -75,9 +75,8 @@ for resolution in [100]:
                 gpkg_column = 'CNTR_ID',
                 values = cnts,
                 compress="deflate",
-                #invert=True,
             )
-            exit()
+
             if service == "education":
                 print(resolution, service, year, "apply mask to force some nuts regions to nodata")
                 geotiff_mask_by_countries(
