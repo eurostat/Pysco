@@ -31,7 +31,7 @@ def random_points_within(geometry, n):
 # cas_l_1_1
 # pob_l_1;pob_l_2_1;pob_l_2_2
 # roy_1;roy_2_1;roy_2_2
-def make_synthetic_population(n, data):
+def make_synthetic_population(n, data, check_counts=False):
 
     # build lists
     lists = {}
@@ -56,9 +56,10 @@ def make_synthetic_population(n, data):
     )
 
     # check totals
-    for cat in ["sex", "age_g", "pob_l", "roy"]:
-        if len(lists[cat]) != n:
-            raise ValueError("Counts in data do not sum to n", cat, len(lists[cat]), n)
+    if check_counts:
+        for cat in ["sex", "age_g", "pob_l", "roy"]:
+            if len(lists[cat]) != n:
+                raise ValueError("Counts in data do not sum to n", cat, len(lists[cat]), n)
 
     # shuffle
     for cat in ["sex", "age_g", "pob_l", "roy"]:
@@ -72,8 +73,7 @@ def make_synthetic_population(n, data):
         out.append(person)
 
     #print(data)
-    #aaa = count_categories(out, ["sex", "age_g" ])
-    #print(aaa)
+    #print(count_categories(out, ["sex", "age_g" ]))
 
     return out
 
