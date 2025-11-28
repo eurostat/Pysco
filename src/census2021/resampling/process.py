@@ -3,7 +3,7 @@ import shapely.geometry
 import geopandas as gpd
 from rtree import index
 import random
-from shapely.geometry import Polygon, MultiPolygon
+from shapely.geometry import Polygon
 from shapely.ops import unary_union
 
 
@@ -11,6 +11,8 @@ from shapely.ops import unary_union
 #TODO cas_l_1_1
 #TODO validate
 #TODO test with 100m
+#TODO constrain synthetic population - cas_l_1_1 and age_g_2, others?
+#TODO organise library
 
 #TODO GHSL: improve, with probability?
 #TODO OSM buildings ?
@@ -41,17 +43,17 @@ def centroid_of_largest_hull(geom):
 
 # make a synthetic population of n persons
 #structure = { "sex" : ["sex_1", "sex_2"], "age_g" : ["age_g_1","age_g_2","age_g_3"], "pob_l" : ["pob_l_1","pob_l_2_1","pob_l_2_2"], "roy" : ["roy_1","roy_2_1","roy_2_2"] }
-def make_synthetic_population(n, data, structure, check_counts=True):
+def make_synthetic_population(n, data, pop_structure, check_counts=True):
 
     # build list of values
     lists = {}
-    for key, labels in structure.items():
+    for key, labels in pop_structure.items():
         result = []
         for label in labels: result.extend([label] * data.get(label, 0))
         lists[key] = result
 
     #
-    categories = structure.keys()
+    categories = pop_structure.keys()
 
     # check totals
     if check_counts:
@@ -105,7 +107,7 @@ def count_categories(population, categories=[], tot_pop_att="TOT_POP", sort=True
 
 
 
-def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, output_gpkg, output_synthetic_population_gpkg=None, tot_pop_att = "TOT_POP", structure = {}, pop_grouping_threshold=6):
+def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, output_gpkg, output_synthetic_population_gpkg=None, tot_pop_att = "TOT_POP", pop_structure = {}, pop_grouping_threshold=6):
     'Disaggregate population units to dasymetric areas and optionally generate random points.'
 
     # load dasymetric geometries
@@ -149,7 +151,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, outp
         # output areas
         f = { "geometry": g, tot_pop_att: pop }
 
-        for atts in structure.values():
+        for atts in pop_structure.values():
             for att in atts: f[att] = row.get(att)
         output_areas.append(f)
 
@@ -157,7 +159,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, outp
         if output_synthetic_population_gpkg is not None:
 
             # make synthetic population
-            sp = make_synthetic_population(pop, row, structure, check_counts=False)
+            sp = make_synthetic_population(pop, row, pop_structure, check_counts=False)
 
             # move persons to random locations
             if pop <= pop_grouping_threshold:
@@ -183,7 +185,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, outp
 
 
 
-def dasymetric_aggregation_step_2(input_das_gpkg, output_gpkg, tot_pop_att = "TOT_POP", structure = {}, pop_atts=[], type='area', resolution=1000):
+def dasymetric_aggregation_step_2(input_das_gpkg, output_gpkg, tot_pop_att = "TOT_POP", pop_structure = {}, type='area', resolution=1000):
     'Aggregate population from dasymetric areas or points to grid cells.'
     'type: "area" or "point" or "population"'
 
@@ -199,6 +201,10 @@ def dasymetric_aggregation_step_2(input_das_gpkg, output_gpkg, tot_pop_att = "TO
     miny = int(miny // resolution * resolution)
     maxx = int(maxx // resolution * resolution) + resolution
     maxy = int(maxy // resolution * resolution) + resolution
+
+    # list of population attribute
+    pop_atts = []
+    for atts in pop_structure.values(): pop_atts.extend(atts)
 
     output_cells = []
     for x in range(minx, maxx, resolution):
@@ -223,7 +229,7 @@ def dasymetric_aggregation_step_2(input_das_gpkg, output_gpkg, tot_pop_att = "TO
                     if cell_g.contains(person["geometry"]): population.append(person)
 
                 # get population counts
-                stats = count_categories(population, categories=structure.keys(), tot_pop_att=tot_pop_att, sort=True)
+                stats = count_categories(population, categories=pop_structure.keys(), tot_pop_att=tot_pop_att, sort=True)
 
                 # do not store empty cells
                 if stats[tot_pop_att] <= 0: continue
@@ -276,10 +282,7 @@ def dasymetric_aggregation_step_2(input_das_gpkg, output_gpkg, tot_pop_att = "TO
 
 
 w = '/home/juju/gisco/census_2021_iceland/'
-#TODO use only structure
-structure = { "sex" : ["sex_1", "sex_2"], "age_g" : ["age_g_1","age_g_2","age_g_3"], "pob_l" : ["pob_l_1","pob_l_2_1","pob_l_2_2"], "roy" : ["roy_1","roy_2_1","roy_2_2"] }
-pop_atts = ["sex_1", "sex_2", "age_g_1", "age_g_2", "age_g_3", "pob_l_1", "pob_l_2_1", "pob_l_2_2", "roy_1", "roy_2_1", "roy_2_2"]
-#"cas_l_1_1",
+pop_structure = { "sex" : ["sex_1", "sex_2"], "age_g" : ["age_g_1","age_g_2","age_g_3"], "pob_l" : ["pob_l_1","pob_l_2_1","pob_l_2_2"], "roy" : ["roy_1","roy_2_1","roy_2_2"] }
 
 print("Dasymetric disaggregation step 1")
 '''
@@ -308,20 +311,20 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_area_ghsl_land.gpkg",
     output_synthetic_population_gpkg= w+"out/disag_point_ghsl_land.gpkg",
     tot_pop_att= "sex_0",
-    structure= structure,
+    pop_structure= pop_structure,
     pop_grouping_threshold= 10,
 )
 
 
 print("Dasymetric aggregation step 2")
-#dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", w+"out/area_weighted.gpkg", tot_pop_att = "sex_0", structure=structure, pop_atts=pop_atts)
-#dasymetric_aggregation_step_2(w+"out/disag_area_land.gpkg", w+"out/dasymetric_land.gpkg", tot_pop_att = "sex_0", structure=structure, pop_atts=pop_atts)
-dasymetric_aggregation_step_2(w+"out/disag_area_ghsl_land.gpkg", w+"out/dasymetric_GHSL_land.gpkg", tot_pop_att = "sex_0", structure=structure, pop_atts=pop_atts)
+#dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", w+"out/area_weighted.gpkg", tot_pop_att = "sex_0", structure=structure)
+#dasymetric_aggregation_step_2(w+"out/disag_area_land.gpkg", w+"out/dasymetric_land.gpkg", tot_pop_att = "sex_0", structure=structure)
+dasymetric_aggregation_step_2(w+"out/disag_area_ghsl_land.gpkg", w+"out/dasymetric_GHSL_land.gpkg", tot_pop_att = "sex_0", pop_structure=pop_structure)
 
 print("Dasymetric aggregation step 2 from points")
-#dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", w+"out/area_weighted_rounded.gpkg", tot_pop_att = "sex_0", structure=structure, type='population', pop_atts=pop_atts, categories=categories)
-#dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", w+"out/dasymetric_land_rounded.gpkg", tot_pop_att = "sex_0", structure=structure, type='population', pop_atts=pop_atts, categories=categories)
-dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", w+"out/dasymetric_GHSL_land_rounded.gpkg", tot_pop_att = "sex_0", structure=structure, type='population', pop_atts=pop_atts )
+#dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", w+"out/area_weighted_rounded.gpkg", tot_pop_att = "sex_0", structure=structure, type='population')
+#dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", w+"out/dasymetric_land_rounded.gpkg", tot_pop_att = "sex_0", structure=structure, type='population')
+dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", w+"out/dasymetric_GHSL_land_rounded.gpkg", tot_pop_att = "sex_0", pop_structure=pop_structure, type='population')
 
 #print("Nearest neighbour")
 #dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg", type='point', pop_atts=pop_atts)
