@@ -108,9 +108,6 @@ def count_categories(population, categories=[], tot="count", sort=True):
 def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, output_gpkg, output_synthetic_population_gpkg=None, tot_pop_att = "TOT_POP", structure = {}, pop_grouping_threshold=6):
     'Disaggregate population units to dasymetric areas and optionally generate random points.'
 
-    pop_atts = []
-    for atts in structure.values(): pop_atts.extend(atts)
-
     # load dasymetric geometries
     gdf_dasymetric = gpd.read_file(input_dasymetric_gpkg).geometry
     # build spatial index
@@ -151,7 +148,9 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, outp
 
         # output areas
         f = { "geometry": g, tot_pop_att: pop }
-        for att in pop_atts: f[att] = row.get(att)
+
+        for atts in structure.values():
+            for att in atts: f[att] = row.get(att)
         output_areas.append(f)
 
         # generate random points within geometry
