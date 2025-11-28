@@ -291,7 +291,7 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_area.gpkg",
     output_synthetic_population_gpkg= w+"out/disag_point.gpkg",
     tot_pop_att= "sex_0",
-    structure= structure,
+    pop_structure= pop_structure,
     pop_grouping_threshold= 10,
 )
 dasymetric_disaggregation_step_1(
@@ -300,7 +300,7 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_area_land.gpkg",
     output_synthetic_population_gpkg= w+"out/disag_point_land.gpkg",
     tot_pop_att= "sex_0",
-    structure= structure,
+    pop_structure= pop_structure,
     pop_grouping_threshold= 10,
 )
 dasymetric_disaggregation_step_1(
