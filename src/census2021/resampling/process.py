@@ -79,7 +79,7 @@ def make_synthetic_population(n, data, structure, check_counts=True):
     return population
 
 
-def count_categories(population, categories=[], tot="count", sort=True):
+def count_categories(population, categories=[], tot_pop_att="TOT_POP", sort=True):
     """
     population : list of dicts produced by your synthetic generator
     categories     : list of category names to count
@@ -99,7 +99,7 @@ def count_categories(population, categories=[], tot="count", sort=True):
             else: stats[mode] = 1
     # sort
     if sort: stats = { k: stats[k] for k in sorted(stats) }
-    stats[tot] = len(population)
+    stats[tot_pop_att] = len(population)
     return stats
 
 
@@ -183,7 +183,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, outp
 
 
 
-def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categories=[], pop_atts=[], type='area', resolution=1000):
+def dasymetric_aggregation_step_2(input_das_gpkg, output_gpkg, tot_pop_att = "TOT_POP", structure = {}, pop_atts=[], type='area', resolution=1000):
     'Aggregate population from dasymetric areas or points to grid cells.'
     'type: "area" or "point" or "population"'
 
@@ -211,7 +211,7 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
 
             # make cell
             cell_g = shapely.geometry.box(x, y, x + resolution, y + resolution)
-            cell = { "geometry": cell_g, pop_att: 0 }
+            cell = { "geometry": cell_g, tot_pop_att: 0 }
             for att in pop_atts: cell[att] = 0
 
             if type == 'population':
@@ -223,13 +223,13 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
                     if cell_g.contains(person["geometry"]): population.append(person)
 
                 # get population counts
-                stats = count_categories(population, categories=categories, tot=pop_att, sort=True)
+                stats = count_categories(population, categories=structure.keys(), tot_pop_att=tot_pop_att, sort=True)
 
                 # do not store empty cells
-                if stats[pop_att] <= 0: continue
+                if stats[tot_pop_att] <= 0: continue
 
                 # set cell statistics
-                cell[pop_att] = stats[pop_att]
+                cell[tot_pop_att] = stats[tot_pop_att]
                 for att in pop_atts:
                     if att in stats: cell[att] = stats[att]
 
@@ -241,7 +241,7 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
                     das_f = gdf_das.iloc[id]
 
                     # get its population
-                    das_pop = das_f[pop_att]
+                    das_pop = das_f[tot_pop_att]
                     if das_pop is None or das_pop <= 0: continue
 
                     # get geometry
@@ -259,7 +259,7 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
                     if share <= 0: continue
 
                     # compute population to assign
-                    cell[pop_att] += das_pop * share
+                    cell[tot_pop_att] += das_pop * share
                     for att in pop_atts:
                         das_att = das_f.get(att)
                         if das_att is None or das_att <= 0: continue
@@ -278,7 +278,6 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
 w = '/home/juju/gisco/census_2021_iceland/'
 #TODO use only structure
 structure = { "sex" : ["sex_1", "sex_2"], "age_g" : ["age_g_1","age_g_2","age_g_3"], "pob_l" : ["pob_l_1","pob_l_2_1","pob_l_2_2"], "roy" : ["roy_1","roy_2_1","roy_2_2"] }
-categories = ["sex", "age_g", "pob_l", "roy"]
 pop_atts = ["sex_1", "sex_2", "age_g_1", "age_g_2", "age_g_3", "pob_l_1", "pob_l_2_1", "pob_l_2_2", "roy_1", "roy_2_1", "roy_2_2"]
 #"cas_l_1_1",
 
@@ -315,14 +314,14 @@ dasymetric_disaggregation_step_1(
 
 
 print("Dasymetric aggregation step 2")
-#dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "sex_0", w+"out/area_weighted.gpkg", pop_atts=pop_atts)
-#dasymetric_aggregation_step_2(w+"out/disag_area_land.gpkg", "sex_0", w+"out/dasymetric_land.gpkg", pop_atts=pop_atts)
-dasymetric_aggregation_step_2(w+"out/disag_area_ghsl_land.gpkg", "sex_0", w+"out/dasymetric_GHSL_land.gpkg", pop_atts=pop_atts)
+#dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", w+"out/area_weighted.gpkg", tot_pop_att = "sex_0", structure=structure, pop_atts=pop_atts)
+#dasymetric_aggregation_step_2(w+"out/disag_area_land.gpkg", w+"out/dasymetric_land.gpkg", tot_pop_att = "sex_0", structure=structure, pop_atts=pop_atts)
+dasymetric_aggregation_step_2(w+"out/disag_area_ghsl_land.gpkg", w+"out/dasymetric_GHSL_land.gpkg", tot_pop_att = "sex_0", structure=structure, pop_atts=pop_atts)
 
 print("Dasymetric aggregation step 2 from points")
-#dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", "sex_0", w+"out/area_weighted_rounded.gpkg", type='population', pop_atts=pop_atts, categories=categories)
-#dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", "sex_0", w+"out/dasymetric_land_rounded.gpkg", type='population', pop_atts=pop_atts, categories=categories)
-dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", "sex_0", w+"out/dasymetric_GHSL_land_rounded.gpkg", type='population', pop_atts=pop_atts, categories=categories)
+#dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", w+"out/area_weighted_rounded.gpkg", tot_pop_att = "sex_0", structure=structure, type='population', pop_atts=pop_atts, categories=categories)
+#dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", w+"out/dasymetric_land_rounded.gpkg", tot_pop_att = "sex_0", structure=structure, type='population', pop_atts=pop_atts, categories=categories)
+dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", w+"out/dasymetric_GHSL_land_rounded.gpkg", tot_pop_att = "sex_0", structure=structure, type='population', pop_atts=pop_atts )
 
 #print("Nearest neighbour")
 #dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg", type='point', pop_atts=pop_atts)
