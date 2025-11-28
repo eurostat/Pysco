@@ -325,4 +325,4 @@ dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", w+"out/dasymetric_l
 dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", w+"out/dasymetric_GHSL_land_rounded.gpkg", tot_pop_att = "sex_0", pop_structure=pop_structure, type='population')
 '''
 print("Nearest neighbour")
-dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg", type='point', pop_structure=pop_structure)
+dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", w+"out/nearest_neighbour.gpkg", tot_pop_att = "sex_0", pop_structure=pop_structure, type='point')
