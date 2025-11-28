@@ -172,10 +172,11 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
 
 
 
-def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categories=[], pop_atts=[], geom_type='Polygon', resolution=1000):
+def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categories=[], pop_atts=[], type='area', resolution=1000):
     'Aggregate population from dasymetric areas or points to grid cells.'
+    'type: "area" or "point" or "population"'
 
-    # load dasymetric areas
+    # load dasymetric features
     gdf_das = gpd.read_file(input_das_gpkg)
     # build spatial index
     das_index = index.Index()
@@ -189,7 +190,6 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
     maxy = int(maxy // resolution * resolution) + resolution
 
     output_cells = []
-    #out_pop_att = "sex_0" if pop_att==None else pop_att
     for x in range(minx, maxx, resolution):
         for y in range(miny, maxy, resolution):
 
@@ -203,7 +203,7 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
             cell = { "geometry": cell_g, pop_att: 0 }
             for att in pop_atts: cell[att] = 0
 
-            if geom_type == 'Point':
+            if type == 'population':
 
                 # get population
                 population = []
@@ -223,7 +223,7 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
                     if att in stats: cell[att] = stats[att]
 
             else:
-                # polygon case
+                # area or point case
 
                 for id in das:
                     # get dasymetric feature
@@ -235,15 +235,17 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
 
                     # get geometry
                     g = das_f.geometry
-                    area = g.area
-                    if area <= 0: continue
-
-                    # compute intersection
-                    inter = cell_g.intersection(g)
-                    if inter.area <= 0: continue
 
                     # compute share
-                    share = inter.area / area
+                    if type == 'area':
+                        area = g.area
+                        if area <= 0: continue
+                        share = cell_g.intersection(g).area / area
+                    elif type == 'point':
+                        share = 1 if cell_g.contains(g) else 0
+                    else: raise Exception("Unknown type: "+str(type))
+
+                    if share <= 0: continue
 
                     # compute population to assign
                     cell[pop_att] += das_pop * share
@@ -294,18 +296,16 @@ dasymetric_disaggregation_step_1(
 )
 '''
 
-'''
 print("Dasymetric aggregation step 2")
 dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "sex_0", w+"out/area_weighted.gpkg", pop_atts=pop_atts)
 dasymetric_aggregation_step_2(w+"out/disag_area_land.gpkg", "sex_0", w+"out/dasymetric_land.gpkg", pop_atts=pop_atts)
 dasymetric_aggregation_step_2(w+"out/disag_area_ghsl_land.gpkg", "sex_0", w+"out/dasymetric_GHSL_land.gpkg", pop_atts=pop_atts)
-'''
 
 print("Dasymetric aggregation step 2 from points")
-dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", "sex_0", w+"out/area_weighted_rounded.gpkg", geom_type='Point', pop_atts=pop_atts, categories=categories)
-dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", "sex_0", w+"out/dasymetric_land_rounded.gpkg", geom_type='Point', pop_atts=pop_atts, categories=categories)
-dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", "sex_0", w+"out/dasymetric_GHSL_land_rounded.gpkg", geom_type='Point', pop_atts=pop_atts, categories=categories)
+dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", "sex_0", w+"out/area_weighted_rounded.gpkg", type='population', pop_atts=pop_atts, categories=categories)
+dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", "sex_0", w+"out/dasymetric_land_rounded.gpkg", type='population', pop_atts=pop_atts, categories=categories)
+dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", "sex_0", w+"out/dasymetric_GHSL_land_rounded.gpkg", type='population', pop_atts=pop_atts, categories=categories)
 
-#print("Nearest neighbour")
-#dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg")
+print("Nearest neighbour")
+dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg", type='point', pop_atts=pop_atts)
 
