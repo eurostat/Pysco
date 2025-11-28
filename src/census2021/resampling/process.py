@@ -40,31 +40,18 @@ def centroid_of_largest_hull(geom):
 
 
 # make a synthetic population of n persons
-def make_synthetic_population(n, data, check_counts=True):
+#structure = { "sex" : ["sex_1", "sex_2"], "age_g" : ["age_g_1","age_g_2","age_g_3"], "pob_l" : ["pob_l_1","pob_l_2_1","pob_l_2_2"], "roy" : ["roy_1","roy_2_1","roy_2_2"] }
+def make_synthetic_population(n, data, structure, check_counts=True):
 
-    categories = ["sex", "age_g", "pob_l", "roy"]
-
-    # build lists
+    # build list of values
     lists = {}
-    lists['sex'] = (
-        ["sex_1"] * data.get("sex_1", 0) +
-        ["sex_2"] * data.get("sex_2", 0)
-    )
-    lists['age_g'] = (
-        ["age_g_1"] * data.get("age_g_1", 0) +
-        ["age_g_2"] * data.get("age_g_2", 0) +
-        ["age_g_3"] * data.get("age_g_3", 0)
-    )
-    lists['pob_l'] = (
-        ["pob_l_1"] * data.get("pob_l_1", 0) +
-        ["pob_l_2_1"] * data.get("pob_l_2_1", 0) +
-        ["pob_l_2_2"] * data.get("pob_l_2_2", 0)
-    )
-    lists['roy'] = (
-        ["roy_1"] * data.get("roy_1", 0) +
-        ["roy_2_1"] * data.get("roy_2_1", 0) +
-        ["roy_2_2"] * data.get("roy_2_2", 0)
-    )
+    for key, labels in structure.items():
+        result = []
+        for label in labels: result.extend([label] * data.get(label, 0))
+        lists[key] = result
+
+    #
+    categories = structure.keys()
 
     # check totals
     if check_counts:
@@ -118,8 +105,11 @@ def count_categories(population, categories=[], tot="count", sort=True):
 
 
 
-def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_att, output_gpkg, output_synthetic_population_gpkg=None, pop_atts=[], pop_grouping_threshold=6):
+def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, output_gpkg, output_synthetic_population_gpkg=None, tot_pop_att = "TOT_POP", structure = {}, pop_grouping_threshold=6):
     'Disaggregate population units to dasymetric areas and optionally generate random points.'
+
+    pop_atts = []
+    for atts in structure.values(): pop_atts.extend(atts)
 
     # load dasymetric geometries
     gdf_dasymetric = gpd.read_file(input_dasymetric_gpkg).geometry
@@ -137,7 +127,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
     for _, row in gdf.iterrows():
 
         # get population and geometry
-        pop = int(row[pop_att])
+        pop = int(row[tot_pop_att])
         if pop is None or pop <= 0: continue
         g = row.geometry
 
@@ -160,7 +150,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
         g = inter
 
         # output areas
-        f = { "geometry": g, pop_att: pop }
+        f = { "geometry": g, tot_pop_att: pop }
         for att in pop_atts: f[att] = row.get(att)
         output_areas.append(f)
 
@@ -168,7 +158,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
         if output_synthetic_population_gpkg is not None:
 
             # make synthetic population
-            sp = make_synthetic_population(pop, row, check_counts=False)
+            sp = make_synthetic_population(pop, row, structure, check_counts=False)
 
             # move persons to random locations
             if pop <= pop_grouping_threshold:
@@ -287,36 +277,39 @@ def dasymetric_aggregation_step_2(input_das_gpkg, pop_att, output_gpkg, categori
 
 
 w = '/home/juju/gisco/census_2021_iceland/'
+#TODO use only structure
+structure = { "sex" : ["sex_1", "sex_2"], "age_g" : ["age_g_1","age_g_2","age_g_3"], "pob_l" : ["pob_l_1","pob_l_2_1","pob_l_2_2"], "roy" : ["roy_1","roy_2_1","roy_2_2"] }
 categories = ["sex", "age_g", "pob_l", "roy"]
-pop_atts = ["sex_1", "sex_2", "age_g_1", "age_g_2", "age_g_3", "cas_l_1_1", "pob_l_1", "pob_l_2_1", "pob_l_2_2", "roy_1", "roy_2_1", "roy_2_2"]
+pop_atts = ["sex_1", "sex_2", "age_g_1", "age_g_2", "age_g_3", "pob_l_1", "pob_l_2_1", "pob_l_2_2", "roy_1", "roy_2_1", "roy_2_2"]
+#"cas_l_1_1",
 
 print("Dasymetric disaggregation step 1")
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035.gpkg",
     w+"IS_pop_grid_surf_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
-    "sex_0",
     w+"out/disag_area.gpkg",
-    w+"out/disag_point.gpkg",
-    pop_atts=pop_atts,
-    pop_grouping_threshold=10,
+    output_synthetic_population_gpkg= w+"out/disag_point.gpkg",
+    tot_pop_att= "sex_0",
+    structure= structure,
+    pop_grouping_threshold= 10,
 )
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035_land.gpkg",
     w+"strandlina_flakar_3035_decomposed.gpkg", # strandlina_flakar_3035_decomposed clc_urban
-    "sex_0",
     w+"out/disag_area_land.gpkg",
-    w+"out/disag_point_land.gpkg",
-    pop_atts=pop_atts,
-    pop_grouping_threshold=10,
+    output_synthetic_population_gpkg= w+"out/disag_point_land.gpkg",
+    tot_pop_att= "sex_0",
+    structure= structure,
+    pop_grouping_threshold= 10,
 )
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035_land.gpkg",
     w+"ghsl_land_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
-    "sex_0",
     w+"out/disag_area_ghsl_land.gpkg",
-    w+"out/disag_point_ghsl_land.gpkg",
-    pop_atts=pop_atts,
-    pop_grouping_threshold=10,
+    output_synthetic_population_gpkg= w+"out/disag_point_ghsl_land.gpkg",
+    tot_pop_att= "sex_0",
+    structure= structure,
+    pop_grouping_threshold= 10,
 )
 
 
