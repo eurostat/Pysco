@@ -6,7 +6,7 @@ import random
 from shapely.geometry import Polygon, MultiPolygon
 from shapely.ops import unary_union
 
-#TODO when number is low, put all at the same place, in the center of the area
+
 #TODO handle categories - generic
 #TODO cas_l_1_1
 #TODO validate
@@ -42,6 +42,8 @@ def centroid_of_largest_hull(geom):
 # make a synthetic population of n persons
 def make_synthetic_population(n, data, check_counts=True):
 
+    categories = ["sex", "age_g", "pob_l", "roy"]
+
     # build lists
     lists = {}
     lists['sex'] = (
@@ -66,13 +68,13 @@ def make_synthetic_population(n, data, check_counts=True):
 
     # check totals
     if check_counts:
-        for cat in ["sex", "age_g", "pob_l", "roy"]:
+        for cat in categories:
             if len(lists[cat]) != n:
                 #print(data)
                 print("Counts in data do not sum to n", cat, len(lists[cat]), n)
 
     # shuffle
-    for cat in ["sex", "age_g", "pob_l", "roy"]:
+    for cat in categories:
         random.shuffle(lists[cat])
 
     # make population
@@ -81,7 +83,7 @@ def make_synthetic_population(n, data, check_counts=True):
         # make person
         person = {}
         # fill categories
-        for cat in ["sex", "age_g", "pob_l", "roy"]:
+        for cat in categories:
             if i>=len(lists[cat]): person[cat] = None
             else: person[cat] = lists[cat][i]
         # add to population
@@ -296,6 +298,7 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_area.gpkg",
     w+"out/disag_point.gpkg",
     pop_atts=pop_atts,
+    pop_grouping_threshold=10,
 )
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035_land.gpkg",
@@ -304,6 +307,7 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_area_land.gpkg",
     w+"out/disag_point_land.gpkg",
     pop_atts=pop_atts,
+    pop_grouping_threshold=10,
 )
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035_land.gpkg",
