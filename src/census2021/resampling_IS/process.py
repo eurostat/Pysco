@@ -4,7 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from utils.dasymetric_mapping import dasymetric_disaggregation_step_1, dasymetric_aggregation_step_2
 
 
-#TODO cas_l_1_1
+#TODO test cas_l_1_1
 #TODO constrain synthetic population - cas_l_1_1 and age_g_2, others?
 #TODO better structure, comment and document library
 
