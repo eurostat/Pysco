@@ -5,7 +5,7 @@ from utils.dasymetric_mapping import dasymetric_disaggregation_step_1, dasymetri
 
 
 #TODO better structure, comment and document library
-#TODO constrain synthetic population - cas_l_1_1 and age_g_2, others?
+#TODO forbid cas_l_1_1 age_g_1 age_g_1 and cas_l_1_1 age_g_3
 
 #TODO GHSL: improve, with probability?
 #TODO OSM buildings ?
