@@ -289,7 +289,6 @@ categories = ["sex", "age_g", "pob_l", "roy"]
 pop_atts = ["sex_1", "sex_2", "age_g_1", "age_g_2", "age_g_3", "cas_l_1_1", "pob_l_1", "pob_l_2_1", "pob_l_2_2", "roy_1", "roy_2_1", "roy_2_2"]
 
 print("Dasymetric disaggregation step 1")
-'''
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035.gpkg",
     w+"IS_pop_grid_surf_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
@@ -306,7 +305,6 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_point_land.gpkg",
     pop_atts=pop_atts,
 )
-'''
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035_land.gpkg",
     w+"ghsl_land_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
@@ -317,7 +315,7 @@ dasymetric_disaggregation_step_1(
     pop_grouping_threshold=10,
 )
 
-'''
+
 print("Dasymetric aggregation step 2")
 dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "sex_0", w+"out/area_weighted.gpkg", pop_atts=pop_atts)
 dasymetric_aggregation_step_2(w+"out/disag_area_land.gpkg", "sex_0", w+"out/dasymetric_land.gpkg", pop_atts=pop_atts)
@@ -326,9 +324,8 @@ dasymetric_aggregation_step_2(w+"out/disag_area_ghsl_land.gpkg", "sex_0", w+"out
 print("Dasymetric aggregation step 2 from points")
 dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", "sex_0", w+"out/area_weighted_rounded.gpkg", type='population', pop_atts=pop_atts, categories=categories)
 dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", "sex_0", w+"out/dasymetric_land_rounded.gpkg", type='population', pop_atts=pop_atts, categories=categories)
-'''
 dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", "sex_0", w+"out/dasymetric_GHSL_land_rounded.gpkg", type='population', pop_atts=pop_atts, categories=categories)
 
-#print("Nearest neighbour")
-#dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg", type='point', pop_atts=pop_atts)
+print("Nearest neighbour")
+dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg", type='point', pop_atts=pop_atts)
 
