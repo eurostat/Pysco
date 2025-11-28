@@ -3,8 +3,8 @@ import shapely.geometry
 import geopandas as gpd
 from rtree import index
 import random
-from collections import Counter, defaultdict
-
+from shapely.geometry import Polygon, MultiPolygon
+from shapely.ops import unary_union
 
 #TODO when number is low, put all at the same place, in the center of the area
 #TODO handle categories - generic
@@ -27,6 +27,17 @@ def random_points_within(geometry, n):
         random_point = pt(randuni(minx, maxx), randuni(miny, maxy))
         if geometry.contains(random_point): points.append(random_point)
     return points
+
+
+def centroid_of_largest_hull(geom):
+    """
+    Return the centroid of the convex hull of the largest polygon contained in a Polygon or MultiPolygon geometry.
+    """
+    if geom.is_empty: return None
+    if isinstance(geom, Polygon): return geom.convex_hull.centroid
+    poly = max(list(geom.geoms), key=lambda p: p.area)
+    return poly.convex_hull.centroid
+
 
 # make a synthetic population of n persons
 def make_synthetic_population(n, data, check_counts=True):
@@ -160,8 +171,9 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
             # move persons to random locations
             if pop <= pop_grouping_threshold:
                 # small population, put all at the centroid
-                # TODO
-                for i in range(pop): sp[i]['geometry'] = g.representative_point()
+                # pt = g.representative_point()
+                pt = centroid_of_largest_hull(g)
+                for i in range(pop): sp[i]['geometry'] = pt
             else:
                 # make random locations within geometry
                 points = random_points_within(g, pop)
@@ -276,8 +288,8 @@ w = '/home/juju/gisco/census_2021_iceland/'
 categories = ["sex", "age_g", "pob_l", "roy"]
 pop_atts = ["sex_1", "sex_2", "age_g_1", "age_g_2", "age_g_3", "cas_l_1_1", "pob_l_1", "pob_l_2_1", "pob_l_2_2", "roy_1", "roy_2_1", "roy_2_2"]
 
-'''
 print("Dasymetric disaggregation step 1")
+'''
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035.gpkg",
     w+"IS_pop_grid_surf_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
@@ -302,6 +314,7 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_area_ghsl_land.gpkg",
     w+"out/disag_point_ghsl_land.gpkg",
     pop_atts=pop_atts,
+    pop_grouping_threshold=10,
 )
 
 '''
