@@ -7,12 +7,11 @@ from shapely.geometry import Polygon
 from shapely.ops import unary_union
 
 
-#TODO handle categories - generic
-#TODO cas_l_1_1
 #TODO validate
 #TODO test with 100m
-#TODO constrain synthetic population - cas_l_1_1 and age_g_2, others?
 #TODO organise library
+#TODO cas_l_1_1
+#TODO constrain synthetic population - cas_l_1_1 and age_g_2, others?
 
 #TODO GHSL: improve, with probability?
 #TODO OSM buildings ?
