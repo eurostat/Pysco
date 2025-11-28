@@ -259,6 +259,8 @@ def dasymetric_aggregation_step_2(input_das_gpkg, output_gpkg, tot_pop_att = "TO
                         if das_att is None or das_att <= 0: continue
                         cell[att] += das_att * share
 
+            if cell[tot_pop_att]<=0: continue
+
             # output cells
             output_cells.append(cell)
 
