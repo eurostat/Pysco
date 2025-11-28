@@ -315,14 +315,14 @@ dasymetric_disaggregation_step_1(
 
 
 print("Dasymetric aggregation step 2")
-dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", w+"out/area_weighted.gpkg", tot_pop_att = "sex_0", structure=structure)
-dasymetric_aggregation_step_2(w+"out/disag_area_land.gpkg", w+"out/dasymetric_land.gpkg", tot_pop_att = "sex_0", structure=structure)
+dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", w+"out/area_weighted.gpkg", tot_pop_att = "sex_0", pop_structure=pop_structure)
+dasymetric_aggregation_step_2(w+"out/disag_area_land.gpkg", w+"out/dasymetric_land.gpkg", tot_pop_att = "sex_0", pop_structure=pop_structure)
 dasymetric_aggregation_step_2(w+"out/disag_area_ghsl_land.gpkg", w+"out/dasymetric_GHSL_land.gpkg", tot_pop_att = "sex_0", pop_structure=pop_structure)
 
 print("Dasymetric aggregation step 2 from points")
-dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", w+"out/area_weighted_rounded.gpkg", tot_pop_att = "sex_0", structure=structure, type='population')
-dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", w+"out/dasymetric_land_rounded.gpkg", tot_pop_att = "sex_0", structure=structure, type='population')
+dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", w+"out/area_weighted_rounded.gpkg", tot_pop_att = "sex_0", pop_structure=pop_structure, type='population')
+dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", w+"out/dasymetric_land_rounded.gpkg", tot_pop_att = "sex_0", pop_structure=pop_structure, type='population')
 dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", w+"out/dasymetric_GHSL_land_rounded.gpkg", tot_pop_att = "sex_0", pop_structure=pop_structure, type='population')
 
 print("Nearest neighbour")
-dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg", type='point', pop_atts=pop_atts)
+dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg", type='point', pop_structure=pop_structure)
