@@ -5,10 +5,9 @@ from utils.dasymetric_mapping import dasymetric_disaggregation_step_1, dasymetri
 
 
 #TODO organise library
-#TODO test with 100m
 #TODO cas_l_1_1
 #TODO constrain synthetic population - cas_l_1_1 and age_g_2, others?
-#TODO better structure and document library
+#TODO better structure, comment and document library
 
 #TODO GHSL: improve, with probability?
 #TODO OSM buildings ?
@@ -18,12 +17,12 @@ from utils.dasymetric_mapping import dasymetric_disaggregation_step_1, dasymetri
 
 w = '/home/juju/gisco/census_2021_iceland/'
 pop_structure = { "sex" : ["sex_1", "sex_2"], "age_g" : ["age_g_1","age_g_2","age_g_3"], "pob_l" : ["pob_l_1","pob_l_2_1","pob_l_2_2"], "roy" : ["roy_1","roy_2_1","roy_2_2"] }
-resolution = 100
+resolution = 1000
 
 print("Dasymetric disaggregation step 1")
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035.gpkg",
-    w+"IS_pop_grid_surf_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
+    w+"IS_pop_grid_surf_3035.gpkg",
     w+"out/disag_area.gpkg",
     output_synthetic_population_gpkg= w+"out/disag_point.gpkg",
     tot_pop_att= "sex_0",
@@ -32,7 +31,7 @@ dasymetric_disaggregation_step_1(
 )
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035_land.gpkg",
-    w+"strandlina_flakar_3035_decomposed.gpkg", # strandlina_flakar_3035_decomposed clc_urban
+    w+"strandlina_flakar_3035_decomposed.gpkg",
     w+"out/disag_area_land.gpkg",
     output_synthetic_population_gpkg= w+"out/disag_point_land.gpkg",
     tot_pop_att= "sex_0",
@@ -41,7 +40,7 @@ dasymetric_disaggregation_step_1(
 )
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035_land.gpkg",
-    w+"ghsl_land_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
+    w+"ghsl_land_3035.gpkg",
     w+"out/disag_area_ghsl_land.gpkg",
     output_synthetic_population_gpkg= w+"out/disag_point_ghsl_land.gpkg",
     tot_pop_att= "sex_0",
