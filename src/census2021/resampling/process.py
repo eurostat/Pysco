@@ -6,12 +6,11 @@ import random
 from collections import Counter, defaultdict
 
 
-#TODO handle categories - nearest neighbour
+#TODO when number is low, put all at the same place, in the center of the area
 #TODO handle categories - generic
 #TODO cas_l_1_1
 #TODO validate
 #TODO test with 100m
-#TODO when number is low, put all at the same place, in the center of the area
 
 #TODO GHSL: improve, with probability?
 #TODO OSM buildings ?
@@ -106,7 +105,7 @@ def count_categories(population, categories=[], tot="count", sort=True):
 
 
 
-def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_att, output_gpkg, output_synthetic_population_gpkg=None, pop_atts=[]):
+def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_att, output_gpkg, output_synthetic_population_gpkg=None, pop_atts=[], pop_grouping_threshold=6):
     'Disaggregate population units to dasymetric areas and optionally generate random points.'
 
     # load dasymetric geometries
@@ -154,12 +153,21 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, pop_
 
         # generate random points within geometry
         if output_synthetic_population_gpkg is not None:
+
             # make synthetic population
             sp = make_synthetic_population(pop, row, check_counts=False)
-            # make random locations within geometry
-            points = random_points_within(g, pop)
-            # put localisation to each person
-            for i in range(pop): sp[i]['geometry'] = points[i]
+
+            # move persons to random locations
+            if pop <= pop_grouping_threshold:
+                # small population, put all at the centroid
+                # TODO
+                for i in range(pop): sp[i]['geometry'] = g.representative_point()
+            else:
+                # make random locations within geometry
+                points = random_points_within(g, pop)
+
+                # put localisation to each person
+                for i in range(pop): sp[i]['geometry'] = points[i]
             #
             output_synthetic_population.extend(sp)
 
@@ -286,6 +294,7 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_point_land.gpkg",
     pop_atts=pop_atts,
 )
+'''
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035_land.gpkg",
     w+"ghsl_land_3035.gpkg", # strandlina_flakar_3035_decomposed clc_urban
@@ -294,8 +303,8 @@ dasymetric_disaggregation_step_1(
     w+"out/disag_point_ghsl_land.gpkg",
     pop_atts=pop_atts,
 )
-'''
 
+'''
 print("Dasymetric aggregation step 2")
 dasymetric_aggregation_step_2(w+"out/disag_area.gpkg", "sex_0", w+"out/area_weighted.gpkg", pop_atts=pop_atts)
 dasymetric_aggregation_step_2(w+"out/disag_area_land.gpkg", "sex_0", w+"out/dasymetric_land.gpkg", pop_atts=pop_atts)
@@ -304,8 +313,9 @@ dasymetric_aggregation_step_2(w+"out/disag_area_ghsl_land.gpkg", "sex_0", w+"out
 print("Dasymetric aggregation step 2 from points")
 dasymetric_aggregation_step_2(w+"out/disag_point.gpkg", "sex_0", w+"out/area_weighted_rounded.gpkg", type='population', pop_atts=pop_atts, categories=categories)
 dasymetric_aggregation_step_2(w+"out/disag_point_land.gpkg", "sex_0", w+"out/dasymetric_land_rounded.gpkg", type='population', pop_atts=pop_atts, categories=categories)
+'''
 dasymetric_aggregation_step_2(w+"out/disag_point_ghsl_land.gpkg", "sex_0", w+"out/dasymetric_GHSL_land_rounded.gpkg", type='population', pop_atts=pop_atts, categories=categories)
 
-print("Nearest neighbour")
-dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg", type='point', pop_atts=pop_atts)
+#print("Nearest neighbour")
+#dasymetric_aggregation_step_2(w+"IS_pop_grid_point_3035.gpkg", "sex_0", w+"out/nearest_neighbour.gpkg", type='point', pop_atts=pop_atts)
 
