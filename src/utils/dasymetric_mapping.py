@@ -7,25 +7,27 @@ from shapely.geometry import Polygon
 
 
 # from a shapely geometry, make n random point geometries within the area
-def random_points_within(geometry, n):
-    'Generate n random points within a given shapely geometry area.'
+def random_points_within(geometry, nb):
+    """
+    Generate nb random points within a shapely geometry area.
+    """
     minx, miny, maxx, maxy = geometry.bounds
     points = []
     randuni = np.random.uniform
     pt = shapely.geometry.Point
-    while len(points) < n:
+    while len(points) < nb:
         random_point = pt(randuni(minx, maxx), randuni(miny, maxy))
         if geometry.contains(random_point): points.append(random_point)
     return points
 
 
-def centroid_of_largest_hull(geom):
+def centroid_of_largest_hull(geometry):
     """
     Return the centroid of the convex hull of the largest polygon contained in a Polygon or MultiPolygon geometry.
     """
-    if geom.is_empty: return None
-    if isinstance(geom, Polygon): return geom.convex_hull.centroid
-    poly = max(list(geom.geoms), key=lambda p: p.area)
+    if geometry.is_empty: return None
+    if isinstance(geometry, Polygon): return geometry.convex_hull.centroid
+    poly = max(list(geometry.geoms), key=lambda p: p.area)
     return poly.convex_hull.centroid
 
 
