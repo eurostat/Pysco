@@ -32,9 +32,20 @@ def centroid_of_largest_hull(geometry):
     return poly.convex_hull.centroid
 
 
-# make a synthetic population of n persons
+def make_synthetic_population(nb, data, pop_structure, check_counts=True):
+    """ Make a synthetic population of n persons
+
 #structure = { "sex" : ["sex_1", "sex_2"], "age_g" : ["age_g_1","age_g_2","age_g_3"], "pob_l" : ["pob_l_1","pob_l_2_1","pob_l_2_2"], "roy" : ["roy_1","roy_2_1","roy_2_2"] }
-def make_synthetic_population(n, data, pop_structure, check_counts=True):
+
+    Args:
+        nb (int): _description_
+        data (_type_): _description_
+        pop_structure (_type_): _description_
+        check_counts (bool, optional): _description_. Defaults to True.
+
+    Returns:
+        _type_: _description_
+    """
 
     # build list of values
     lists = {}
@@ -49,9 +60,9 @@ def make_synthetic_population(n, data, pop_structure, check_counts=True):
     # check totals
     if check_counts:
         for cat in categories:
-            if len(lists[cat]) != n:
+            if len(lists[cat]) != nb:
                 #print(data)
-                print("Counts in data do not sum to n", cat, len(lists[cat]), n)
+                print("Counts in data do not sum to n", cat, len(lists[cat]), nb)
 
     # shuffle
     for cat in categories:
@@ -59,7 +70,7 @@ def make_synthetic_population(n, data, pop_structure, check_counts=True):
 
     # make population
     population = []
-    for i in range(n):
+    for i in range(nb):
         # make person
         person = {}
         # fill categories
