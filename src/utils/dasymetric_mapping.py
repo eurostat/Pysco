@@ -132,6 +132,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg,
 
     # load dasymetric geometries
     gdf_dasymetric = gpd.read_file(input_dasymetric_gpkg).geometry
+
     # build spatial index
     das_index = index.Index()
     for i,g in enumerate(gdf_dasymetric): das_index.insert(i, g.bounds)
@@ -143,25 +144,27 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg,
     output_areas = []; output_synthetic_population = []
 
     # process each population unit
-    for _, row in gdf.iterrows():
+    for _, punit in gdf.iterrows():
 
         # get population and geometry
-        pop = int(row[tot_pop_att])
-        if pop is None or pop <= 0: continue
-        g = row.geometry
+        tot_pop = int(punit[tot_pop_att])
+        if tot_pop is None or tot_pop <= 0: continue
+        g = punit.geometry
 
         # get dasymetric indexes using spatial index
-        das = list(das_index.intersection(g.bounds))
+        das_i = list(das_index.intersection(g.bounds))
 
         # make list of dasymetric geometries
         das_g = []
-        for id in das: das_g.append(gdf_dasymetric[id])
+        for id in das_i: das_g.append(gdf_dasymetric[id])
+        das_i = None
+
         # make union
         das_g = shapely.ops.unary_union(das_g)
-        das = None
-
+ 
         # compute intersection
         inter = g.intersection(das_g)
+
         if inter.area <= 0:
             #print('No dasymetric area found for unit with population:', pop, "around point", g.representative_point())
             # use entire origin geometry
@@ -169,30 +172,30 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg,
         g = inter
 
         # output areas
-        f = { "geometry": g, tot_pop_att: pop }
+        f = { "geometry": g, tot_pop_att: tot_pop }
 
         for atts in pop_structure.values():
-            for att in atts: f[att] = row.get(att)
+            for att in atts: f[att] = punit.get(att)
         output_areas.append(f)
 
         # generate random points within geometry
         if output_synthetic_population_gpkg is not None:
 
             # make synthetic population
-            sp = stats_to_synthetic_population(row, pop, pop_structure, check_counts=False)
+            sp = stats_to_synthetic_population(punit, tot_pop, pop_structure, check_counts=False)
 
             # move persons to random locations
-            if pop <= pop_grouping_threshold:
+            if tot_pop <= pop_grouping_threshold:
                 # small population, put all at the centroid
                 # pt = g.representative_point()
                 pt = centroid_of_largest_hull(g)
-                for i in range(pop): sp[i]['geometry'] = pt
+                for i in range(tot_pop): sp[i]['geometry'] = pt
             else:
                 # make random locations within geometry
-                points = random_points_within(g, pop)
+                points = random_points_within(g, tot_pop)
 
                 # put localisation to each person
-                for i in range(pop): sp[i]['geometry'] = points[i]
+                for i in range(tot_pop): sp[i]['geometry'] = points[i]
             #
             output_synthetic_population.extend(sp)
 
