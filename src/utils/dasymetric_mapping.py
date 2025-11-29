@@ -118,7 +118,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg,
                                      tot_pop_att = "TOT_POP",
                                      pop_structure = {},
                                      pop_grouping_threshold = 6):
-    """ Disaggregate population units to dasymetric areas and optionally generate synthetic population.
+    """ Disaggregate population units to either dasymetric areas or optionally generate synthetic population or both.
 
     Args:
         input_pop_gpkg (_type_): The input statistical units, with population figures.
