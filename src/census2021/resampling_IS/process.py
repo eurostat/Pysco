@@ -23,7 +23,7 @@ resolution = 1000
 print("Dasymetric disaggregation step 1")
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035.gpkg",
-    w+"IS_pop_grid_surf_3035.gpkg",
+    input_dasymetric_gpkg = None,
     output_gpkg= w+"out/disag_area.gpkg",
     output_synthetic_population_gpkg= w+"out/disag_point.gpkg",
     tot_pop_att= "sex_0",
@@ -32,7 +32,7 @@ dasymetric_disaggregation_step_1(
 )
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035_land.gpkg",
-    w+"strandlina_flakar_3035_decomposed.gpkg",
+    input_dasymetric_gpkg = w+"strandlina_flakar_3035_decomposed.gpkg",
     output_gpkg= w+"out/disag_area_land.gpkg",
     output_synthetic_population_gpkg= w+"out/disag_point_land.gpkg",
     tot_pop_att= "sex_0",
@@ -41,7 +41,7 @@ dasymetric_disaggregation_step_1(
 )
 dasymetric_disaggregation_step_1(
     w+"IS_pop_grid_surf_3035_land.gpkg",
-    w+"ghsl_land_3035.gpkg",
+    input_dasymetric_gpkg = w+"ghsl_land_3035.gpkg",
     output_gpkg= w+"out/disag_area_ghsl_land.gpkg",
     output_synthetic_population_gpkg= w+"out/disag_point_ghsl_land.gpkg",
     tot_pop_att= "sex_0",

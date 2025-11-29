@@ -112,7 +112,7 @@ def synthetic_population_to_stats(population, categories=[], tot_pop_att=None, s
 
 
 def dasymetric_disaggregation_step_1(input_pop_gpkg,
-                                     input_dasymetric_gpkg,
+                                     input_dasymetric_gpkg = None,
                                      output_gpkg = None,
                                      output_synthetic_population_gpkg = None,
                                      tot_pop_att = "TOT_POP",
@@ -130,12 +130,13 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg,
         pop_grouping_threshold (int, optional): _description_. Defaults to 6. For synthetic population, the synthetic people belonging to a unit with a population below this threshol are distributed at the same location - a being located at the same place.
     """
 
-    # load dasymetric geometries
-    gdf_dasymetric = gpd.read_file(input_dasymetric_gpkg).geometry
+    if input_dasymetric_gpkg is not None:
+        # load dasymetric geometries
+        gdf_dasymetric = gpd.read_file(input_dasymetric_gpkg).geometry
 
-    # build spatial index
-    das_index = index.Index()
-    for i,g in enumerate(gdf_dasymetric): das_index.insert(i, g.bounds)
+        # build spatial index
+        das_index = index.Index()
+        for i,g in enumerate(gdf_dasymetric): das_index.insert(i, g.bounds)
 
     # load population units
     gdf = gpd.read_file(input_pop_gpkg)
@@ -146,30 +147,32 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg,
     # process each population unit
     for _, punit in gdf.iterrows():
 
-        # get population and geometry
+        # get unit population and geometry
         tot_pop = int(punit[tot_pop_att])
         if tot_pop is None or tot_pop <= 0: continue
         g = punit.geometry
 
-        # get dasymetric indexes using spatial index
-        das_i = list(das_index.intersection(g.bounds))
+        if das_index is not None:
 
-        # make list of dasymetric geometries
-        das_g = []
-        for id in das_i: das_g.append(gdf_dasymetric[id])
-        das_i = None
+            # get dasymetric indexes using spatial index
+            das_i = list(das_index.intersection(g.bounds))
 
-        # make union
-        das_g = shapely.ops.unary_union(das_g)
- 
-        # compute intersection
-        inter = g.intersection(das_g)
+            # make list of dasymetric geometries
+            das_g = []
+            for id in das_i: das_g.append(gdf_dasymetric[id])
+            das_i = None
 
-        if inter.area <= 0:
-            #print('No dasymetric area found for unit with population:', pop, "around point", g.representative_point())
-            # use entire origin geometry
-            inter = g
-        g = inter
+            # make union
+            das_g = shapely.ops.unary_union(das_g)
+    
+            # compute intersection
+            inter = g.intersection(das_g)
+
+            if inter.area <= 0:
+                #print('No dasymetric area found for unit with population:', pop, "around point", g.representative_point())
+                # use entire origin geometry
+                inter = g
+            g = inter
 
         if output_gpkg is not None:
 
