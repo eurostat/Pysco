@@ -113,11 +113,11 @@ def synthetic_population_to_stats(population, categories=[], tot_pop_att=None, s
 
 def dasymetric_disaggregation_step_1(input_pop_gpkg,
                                      input_dasymetric_gpkg,
-                                     output_gpkg,
-                                     output_synthetic_population_gpkg=None,
+                                     output_gpkg = None,
+                                     output_synthetic_population_gpkg = None,
                                      tot_pop_att = "TOT_POP",
                                      pop_structure = {},
-                                     pop_grouping_threshold=6):
+                                     pop_grouping_threshold = 6):
     """ Disaggregate population units to dasymetric areas and optionally generate synthetic population.
 
     Args:
@@ -171,14 +171,16 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg,
             inter = g
         g = inter
 
-        # output areas
-        f = { "geometry": g, tot_pop_att: tot_pop }
+        if output_gpkg is not None:
 
-        # copy attributes
-        for atts in pop_structure.values():
-            for att in atts: f[att] = punit.get(att)
+            # output areas
+            f = { "geometry": g, tot_pop_att: tot_pop }
 
-        output_areas.append(f)
+            # copy attributes
+            for atts in pop_structure.values():
+                for att in atts: f[att] = punit.get(att)
+
+            output_areas.append(f)
 
         # generate synthetic population within geometry
         if output_synthetic_population_gpkg is not None:
@@ -187,7 +189,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg,
             sp = stats_to_synthetic_population(punit, tot_pop, pop_structure, check_counts=False)
 
             # move persons to random locations
-            if tot_pop <= pop_grouping_threshold:
+            if pop_grouping_threshold is not None and tot_pop <= pop_grouping_threshold:
                 # small population, put all at the centroid
                 # pt = g.representative_point()
                 pt = centroid_of_largest_hull(g)
@@ -202,7 +204,8 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg,
             output_synthetic_population.extend(sp)
 
     # save output areas
-    gpd.GeoDataFrame(output_areas, geometry='geometry', crs=gdf.crs).to_file(output_gpkg, driver='GPKG')
+    if output_gpkg is not None:
+        gpd.GeoDataFrame(output_areas, geometry='geometry', crs=gdf.crs).to_file(output_gpkg, driver='GPKG')
 
     if output_synthetic_population_gpkg is not None:
         # save output points
