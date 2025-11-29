@@ -32,19 +32,17 @@ def centroid_of_largest_hull(geometry):
     return poly.convex_hull.centroid
 
 
-def make_synthetic_population(nb, data, pop_structure, check_counts=True):
-    """ Make a synthetic population of n persons
-
-#structure = { "sex" : ["sex_1", "sex_2"], "age_g" : ["age_g_1","age_g_2","age_g_3"], "pob_l" : ["pob_l_1","pob_l_2_1","pob_l_2_2"], "roy" : ["roy_1","roy_2_1","roy_2_2"] }
+def make_synthetic_population(nb, data, pop_structure, check_counts=False):
+    """ Make a synthetic population of nn persons
 
     Args:
-        nb (int): _description_
-        data (_type_): _description_
-        pop_structure (_type_): _description_
-        check_counts (bool, optional): _description_. Defaults to True.
+        nb (int): Number or persons in the population
+        data (): Data on the population distribution by group
+        pop_structure (dict): population structure. Example: { "sex" : ["sex_1", "sex_2"], "age_g" : ["age_g_1","age_g_2","age_g_3"], "pob_l" : ["pob_l_1","pob_l_2_1","pob_l_2_2"], "roy" : ["roy_1","roy_2_1","roy_2_2"] }
+        check_counts (bool, optional): Check if the sum of the categories equals to the total population. Defaults to False.
 
     Returns:
-        _type_: _description_
+        Array: An array of nb persons.
     """
 
     # build list of values
