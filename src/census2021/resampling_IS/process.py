@@ -5,6 +5,7 @@ from utils.dasymetric_mapping import dasymetric_disaggregation_step_1, dasymetri
 
 
 #TODO better structure, comment and document library
+#TODO re-test
 #TODO forbid cas_l_1_1 age_g_1 age_g_1 and cas_l_1_1 age_g_3
 
 #TODO GHSL: improve, with probability?
