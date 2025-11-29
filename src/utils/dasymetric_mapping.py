@@ -32,12 +32,12 @@ def centroid_of_largest_hull(geometry):
     return poly.convex_hull.centroid
 
 
-def make_synthetic_population(nb, data, pop_structure, check_counts=False):
+def stats_to_synthetic_population(stats, nb, pop_structure, check_counts=False):
     """ Make a synthetic population of nn persons
 
     Args:
+        stats (): Data on the population distribution by group
         nb (int): Number or persons in the population
-        data (): Data on the population distribution by group
         pop_structure (dict): population structure. Example: { "sex" : ["sex_1", "sex_2"], "age_g" : ["age_g_1","age_g_2","age_g_3"], "pob_l" : ["pob_l_1","pob_l_2_1","pob_l_2_2"], "roy" : ["roy_1","roy_2_1","roy_2_2"] }
         check_counts (bool, optional): Check if the sum of the categories equals to the total population. Defaults to False.
 
@@ -45,11 +45,11 @@ def make_synthetic_population(nb, data, pop_structure, check_counts=False):
         Array: An array of nb persons.
     """
 
-    # build list of values
+    # build lists of values
     lists = {}
     for key, labels in pop_structure.items():
         result = []
-        for label in labels: result.extend([label] * data.get(label, 0))
+        for label in labels: result.extend([label] * stats.get(label, 0))
         lists[key] = result
 
     #
@@ -69,46 +69,66 @@ def make_synthetic_population(nb, data, pop_structure, check_counts=False):
     # make population
     population = []
     for i in range(nb):
+
         # make person
         person = {}
+
         # fill categories
         for cat in categories:
             if i>=len(lists[cat]): person[cat] = None
             else: person[cat] = lists[cat][i]
+
         # add to population
         population.append(person)
 
     return population
 
 
-def count_categories(population, categories=[], tot_pop_att="TOT_POP", sort=True):
+def synthetic_population_to_stats(population, categories=[], tot_pop_att=None, sort=True):
     """
-    population : list of dicts produced by your synthetic generator
+    population : population of people
     categories     : list of category names to count
+    tot_pop_att : The total population attribute
 
     Returns a dictionary: { field_name: count }
     """
 
-    #stats = { cat: {} for cat in categories }
     stats = {}
     for person in population:
         for cat in categories:
             mode = person.get(cat)
             if mode is None: continue
-            #if mode in stats[cat]: stats[cat][mode] = stats[cat][mode] + 1
-            #else: stats[cat][mode] = 1
             if mode in stats: stats[mode] = stats[mode] + 1
             else: stats[mode] = 1
+
     # sort
     if sort: stats = { k: stats[k] for k in sorted(stats) }
-    stats[tot_pop_att] = len(population)
+
+    # store population
+    if tot_pop_att is not None: stats[tot_pop_att] = len(population)
     return stats
 
 
 
 
-def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, output_gpkg, output_synthetic_population_gpkg=None, tot_pop_att = "TOT_POP", pop_structure = {}, pop_grouping_threshold=6):
-    'Disaggregate population units to dasymetric areas and optionally generate random points.'
+def dasymetric_disaggregation_step_1(input_pop_gpkg,
+                                     input_dasymetric_gpkg,
+                                     output_gpkg,
+                                     output_synthetic_population_gpkg=None,
+                                     tot_pop_att = "TOT_POP",
+                                     pop_structure = {},
+                                     pop_grouping_threshold=6):
+    """ Disaggregate population units to dasymetric areas and optionally generate synthetic population.
+
+    Args:
+        input_pop_gpkg (_type_): The input statistical units, with population figures.
+        input_dasymetric_gpkg (_type_): The input dasymetric features, that is those used to distribute the population over.
+        output_gpkg (_type_): The output dasymetric features, with population figures attached to it.
+        output_synthetic_population_gpkg (_type_, optional): _description_. Defaults to None. The output synthetic population.
+        tot_pop_att (str, optional): _description_. Defaults to "TOT_POP". The total population attribute name, in the input_pop_gpkg file.
+        pop_structure (dict, optional): _description_. Defaults to {}. A dictionnary describing the population structure, by categories.
+        pop_grouping_threshold (int, optional): _description_. Defaults to 6. For synthetic population, the synthetic people belonging to a unit with a population below this threshol are distributed at the same location - a being located at the same place.
+    """
 
     # load dasymetric geometries
     gdf_dasymetric = gpd.read_file(input_dasymetric_gpkg).geometry
@@ -159,7 +179,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg, input_dasymetric_gpkg, outp
         if output_synthetic_population_gpkg is not None:
 
             # make synthetic population
-            sp = make_synthetic_population(pop, row, pop_structure, check_counts=False)
+            sp = stats_to_synthetic_population(row, pop, pop_structure, check_counts=False)
 
             # move persons to random locations
             if pop <= pop_grouping_threshold:
@@ -229,7 +249,7 @@ def dasymetric_aggregation_step_2(input_das_gpkg, output_gpkg, tot_pop_att = "TO
                     if cell_g.contains(person["geometry"]): population.append(person)
 
                 # get population counts
-                stats = count_categories(population, categories=pop_structure.keys(), tot_pop_att=tot_pop_att, sort=True)
+                stats = synthetic_population_to_stats(population, categories=pop_structure.keys(), tot_pop_att=tot_pop_att, sort=True)
 
                 # do not store empty cells
                 if stats[tot_pop_att] <= 0: continue
