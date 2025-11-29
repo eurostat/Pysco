@@ -174,11 +174,13 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg,
         # output areas
         f = { "geometry": g, tot_pop_att: tot_pop }
 
+        # copy attributes
         for atts in pop_structure.values():
             for att in atts: f[att] = punit.get(att)
+
         output_areas.append(f)
 
-        # generate random points within geometry
+        # generate synthetic population within geometry
         if output_synthetic_population_gpkg is not None:
 
             # make synthetic population
