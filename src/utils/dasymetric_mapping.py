@@ -1,9 +1,8 @@
 import numpy as np
+import random
 import shapely.geometry
 import geopandas as gpd
 from rtree import index
-import random
-from shapely.geometry import Polygon
 
 
 # from a shapely geometry, make n random point geometries within the area
@@ -26,7 +25,7 @@ def centroid_of_largest_hull(geometry):
     Return the centroid of the convex hull of the largest polygon contained in a Polygon or MultiPolygon geometry.
     """
     if geometry.is_empty: return None
-    if isinstance(geometry, Polygon): return geometry.convex_hull.centroid
+    if isinstance(geometry, geometry.Polygon): return geometry.convex_hull.centroid
     poly = max(list(geometry.geoms), key=lambda p: p.area)
     return poly.convex_hull.centroid
 
