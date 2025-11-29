@@ -216,7 +216,12 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg,
 
 
 
-def dasymetric_aggregation_step_2(input_das_gpkg, output_gpkg, tot_pop_att = "TOT_POP", pop_structure = {}, type='area', resolution=1000):
+def dasymetric_aggregation_step_2(input_das_gpkg,
+                                  output_gpkg,
+                                  tot_pop_att = "TOT_POP",
+                                  pop_structure = {},
+                                  type= 'area',
+                                  resolution= 1000):
     'Aggregate population from dasymetric areas or points to grid cells.'
     'type: "area" or "point" or "population"'
 
