@@ -1,10 +1,18 @@
+"""
+Dasymetric mapping utilities.
+
+Author: Julien Gaffuri
+Date: 2025-11-24
+Description:
+    Dasymetric mapping utilities. Some function to disaggregate statistics on auxilary geometries and reaggregate it on a grid.
+"""
+
 import numpy as np
 import geopandas as gpd
 import shapely.geometry
 from shapely.geometry import Polygon
 from rtree import index
 import random
-
 
 # from a shapely geometry, make n random point geometries within the area
 def random_points_within(geometry, nb):
