@@ -4,7 +4,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from utils.dasymetric_mapping import dasymetric_disaggregation_step_1, dasymetric_aggregation_step_2
 
 
-#TODO re-test
 #TODO forbid cas_l_1_1 age_g_1 age_g_1 and cas_l_1_1 age_g_3
 
 #TODO GHSL: improve, with probability?
