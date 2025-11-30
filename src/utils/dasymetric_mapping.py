@@ -1,6 +1,7 @@
 import numpy as np
 import geopandas as gpd
 import shapely.geometry
+from shapely.geometry import Polygon
 from rtree import index
 import random
 
@@ -26,7 +27,7 @@ def centroid_of_largest_hull(geometry):
     """
     if geometry.is_empty: return None
     # simple polygon case
-    if isinstance(geometry, geometry.Polygon): return geometry.convex_hull.centroid
+    if isinstance(geometry, Polygon): return geometry.convex_hull.centroid
     # multipolygon case
     poly = max(list(geometry.geoms), key=lambda p: p.area)
     return poly.convex_hull.centroid
@@ -152,7 +153,7 @@ def dasymetric_disaggregation_step_1(input_pop_gpkg,
         if tot_pop is None or tot_pop <= 0: continue
         g = punit.geometry
 
-        if das_index is not None:
+        if input_dasymetric_gpkg is not None:
 
             # get dasymetric indexes using spatial index
             das_i = list(das_index.intersection(g.bounds))
