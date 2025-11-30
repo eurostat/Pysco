@@ -222,11 +222,23 @@ def dasymetric_aggregation_step_2(input_das_gpkg,
                                   pop_structure = {},
                                   type= 'area',
                                   resolution= 1000):
-    'Aggregate population from dasymetric areas or points to grid cells.'
-    'type: "area" or "point" or "population"'
+    """ Aggregate statistics on a grid from dasymetric features or syntetic population to grid cells.
+
+    Args:
+        input_das_gpkg (str): The dasymetric features or synthetic population
+        output_gpkg (str): The output grid
+        tot_pop_att (str, optional): The total population attribute. Defaults to "TOT_POP".
+        pop_structure (dict, optional): The population structure. Defaults to {}.
+        type (str, optional): The type of dasymetric features "area" or "point", or "population" for syntetic population. Defaults to 'area'.
+        resolution (int, optional): The output grid resolution. Defaults to 1000.
+
+    Raises:
+        Exception: _description_
+    """
 
     # load dasymetric features
     gdf_das = gpd.read_file(input_das_gpkg)
+
     # build spatial index
     das_index = index.Index()
     for i, f in gdf_das.iterrows(): das_index.insert(i, f['geometry'].bounds)
@@ -247,9 +259,10 @@ def dasymetric_aggregation_step_2(input_das_gpkg,
         for y in range(miny, maxy, resolution):
 
             # get dasymetric indexes using spatial index
-            das = list(das_index.intersection((x, y, x + resolution, y + resolution)))
+            das_id = list(das_index.intersection((x, y, x + resolution, y + resolution)))
 
-            if len(das) == 0: continue
+            # nothing to count
+            if len(das_id) == 0: continue
 
             # make cell
             cell_g = shapely.geometry.box(x, y, x + resolution, y + resolution)
@@ -257,15 +270,20 @@ def dasymetric_aggregation_step_2(input_das_gpkg,
             for att in pop_atts: cell[att] = 0
 
             if type == 'population':
+                # aggregate from synthetic population
 
                 # get population
                 population = []
-                for id in das:
+                for id in das_id:
                     person = gdf_das.iloc[id]
                     if cell_g.contains(person["geometry"]): population.append(person)
+                das_id = None
 
-                # get population counts
-                stats = synthetic_population_to_stats(population, categories=pop_structure.keys(), tot_pop_att=tot_pop_att, sort=True)
+                # get population statistics
+                stats = synthetic_population_to_stats(population,
+                                                      categories= pop_structure.keys(),
+                                                      tot_pop_att= tot_pop_att,
+                                                      sort= True)
 
                 # do not store empty cells
                 if stats[tot_pop_att] <= 0: continue
@@ -276,9 +294,9 @@ def dasymetric_aggregation_step_2(input_das_gpkg,
                     if att in stats: cell[att] = stats[att]
 
             else:
-                # area or point case
+                # aggregate stats on area or point features
 
-                for id in das:
+                for id in das_id:
                     # get dasymetric feature
                     das_f = gdf_das.iloc[id]
 
@@ -294,11 +312,11 @@ def dasymetric_aggregation_step_2(input_das_gpkg,
                         area = g.area
                         if area <= 0: continue
                         share = cell_g.intersection(g).area / area
+                        if share <= 0: continue
                     elif type == 'point':
-                        share = 1 if cell_g.contains(g) else 0
+                        if not cell_g.contains(g): continue
+                        share = 1
                     else: raise Exception("Unknown type: "+str(type))
-
-                    if share <= 0: continue
 
                     # compute population to assign
                     cell[tot_pop_att] += das_pop * share
