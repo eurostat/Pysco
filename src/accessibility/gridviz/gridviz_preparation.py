@@ -31,7 +31,7 @@ if aggregate:
             # it is better to resample all resolution from 100m one. Otherwise, we do averages of averages which may create some biais around places with many nodata pixels
             for resolution in resolutions:
                 print(datetime.now(), service, year, resolution)
-                resample_geotiff_aligned(f0 + "euro_access_"+service+"_"+year+"_100m_"+version_tag+".tif", folder+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m.tif", resolution, Resampling.med)
+                resample_geotiff_aligned(f0 + "euro_access_"+service+"_"+year+"_100m_"+version_tag+".tif", folder+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m_"+version_tag+".tif", resolution, Resampling.med)
 
             '''
             print(service, year, 1000)
@@ -60,8 +60,8 @@ if tiling:
             # prepare dict for geotiff bands
             dict = {}
             for year in ["2020", "2023"]:
-                dict["dt_1_" + year] = {"file":folder+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m.tif", "band":1}
-                dict["dt_a3_" + year] = {"file":folder+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m.tif", "band":2}
+                dict["dt_1_" + year] = {"file":folder+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+version_tag+".tif", "band":1}
+                dict["dt_a3_" + year] = {"file":folder+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+version_tag+".tif", "band":2}
                 dict["POP_2021"] = { "file":folder_pop_tiff+"pop_2021_"+str(resolution)+".tif", "band":1 }
 
             # launch tiling
