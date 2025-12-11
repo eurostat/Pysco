@@ -27,7 +27,7 @@ if tiling:
 
         # prepare dict for geotiff bands
         dict = {
-            "POP_2021": { "file":folder_pop_tiff+"pop_2021_"+str(resolution)+".tif", "band":1 }
+            "POP_2021": { "file":folder_pop_tiff+"pop_2021_"+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] }
         }
 
         # launch tiling
