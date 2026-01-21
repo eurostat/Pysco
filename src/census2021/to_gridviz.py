@@ -67,7 +67,7 @@ def transform_fun(c):
     #    v = c[p]
     #    if v == "0": c[p] = ""
 
-    print(c)
+    #print(c)
 
 
 #apply transform
