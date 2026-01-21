@@ -84,6 +84,7 @@ if aggregation:
 
     #aggregation function
     def aggFun(values, _):
+        print(values)
         return 0
 
     af = {}
