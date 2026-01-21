@@ -6,10 +6,12 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import get_cell_xy_from_id
 
-prepare = True
-aggregation = True
-decomposition = True
-tiling = False
+
+prepare = False
+aggregation = False
+decomposition = False
+tiling = True
+# True False
 
 input_file = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.csv"
 tmp = "tmp/census2021_tiling/"
@@ -131,14 +133,14 @@ if tiling:
             print("decomposition", part, resolution)
 
             #create output folder
-            out_folder = tmp + 'out/' + str(resolution)
-            if not os.path.exists(folder): os.makedirs(folder)
+            out_folder = tmp + 'tiles_'+part+'/' + str(resolution) + '/'
+            os.makedirs(out_folder, exist_ok=True)
 
             gridtiler.grid_tiling(
-                folder+"out/ESTAT_Census_2021_V2_"+str(resolution)+'.csv',
+                tmp+str(resolution)+"_"+part+".csv",
                 out_folder,
                 resolution,
-                tile_size_cell = 256,
+                tile_size_cell = 512 if part=="total" else 256,
                 x_origin = 0,
                 y_origin = 0,
                 crs = "EPSG:3035",
