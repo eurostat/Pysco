@@ -15,21 +15,35 @@ transform = True
 aggregation = False
 tiling = False
 
-input_file = "/home/juju/geodata/census/ESTAT_Census_2021_V2_csv_export.csv"
+input_file = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.csv"
 tmp = "tmp/census2021_tiling/"
 os.makedirs(tmp, exist_ok=True)
 
 
 def transform_fun(c):
-    print(c)
-    pass
-    #GRD_ID,T,M,F,Y_LT15,Y_1564,Y_GE65,EMP,NAT,EU_OTH,OTH,SAME,CHG_IN,CHG_OUT
+    #print(c.keys())
+    #['fid', 'GRD_ID',
+    # 'T',
+    # 'M', 'F',
+    # 'Y_LT15', 'Y_1564', 'Y_GE65',
+    # 'EMP',
+    # 'NAT', 'EU_OTH', 'OTH',
+    # 'SAME', 'CHG_IN', 'CHG_OUT',
+    # 'LAND_SURFACE', 'POPULATED',
+    # 'T_CI',
+    # 'M_CI', 'F_CI',
+    # 'Y_LT15_CI', 'Y_1564_CI', 'Y_GE65_CI',
+    # 'EMP_CI',
+    # 'NAT_CI', 'EU_OTH_CI', 'OTH_CI',
+    # 'SAME_CI', 'CHG_IN_CI', 'CHG_OUT_CI'])
 
-    #filter out cells with no population
+    # filter out cells with no population
     t = c["T"]
     if t=="0" or t=="" or t == None: return False
 
-    #del c["fid"]
+    del c["fid"]
+    del c["POPULATED"]
+    del c["LAND_SURFACE"]
 
     #get x and y
     [x, y] = get_cell_xy_from_id(c['GRD_ID'])
@@ -37,16 +51,23 @@ def transform_fun(c):
     c["y"] = y
     del c['GRD_ID']
 
-    #remove zeros
+    # address confidentiality. Encode it at value level: -1
     for p in "T","M","F","Y_LT15","Y_1564","Y_GE65","EMP","NAT","EU_OTH","OTH","SAME","CHG_IN","CHG_OUT":
-        v = c[p]
-        if v == "0": c[p] = ""
+        pci = c[p+"_CI"]
+        if pci == "-9999" or pci == "-9986" or pci == "0":
+            c[p] = -1
+        elif pci != "": print(p, pci)
+        del c[p+"_CI"]
 
     c["NB"] = 1
-    #del c['CONFIDENTIALSTATUS']
-    #del c['POPULATED']
-    #del c['LAND_SURFACE']
-    #print(c)
+
+    # necessary ?
+    #remove zeros
+    #for p in "T","M","F","Y_LT15","Y_1564","Y_GE65","EMP","NAT","EU_OTH","OTH","SAME","CHG_IN","CHG_OUT":
+    #    v = c[p]
+    #    if v == "0": c[p] = ""
+
+    print(c)
 
 
 #apply transform
@@ -61,10 +82,10 @@ if transform:
 if aggregation:
     for a in [2,5,10]:
         print(datetime.now(), "aggregation to", a*1000, "m")
-        gridtiler.grid_aggregation(input_file=folder+"out/ESTAT_Census_2021_V2_1000.csv", resolution=1000, output_file=folder+"out/ESTAT_Census_2021_V2_"+str(a*1000)+".csv", a=a)
+        gridtiler.grid_aggregation(input_file=tmp+"prepared.csv", resolution=1000, output_file=tmp+str(a*1000)+".csv", a=a)
     for a in [2,5,10]:
         print(datetime.now(), "aggregation to", a*10000, "m")
-        gridtiler.grid_aggregation(input_file=folder+"out/ESTAT_Census_2021_V2_10000.csv", resolution=10000, output_file=folder+"out/ESTAT_Census_2021_V2_"+str(a*10000)+".csv", a=a)
+        gridtiler.grid_aggregation(input_file=tmp+"10000.csv", resolution=10000, output_file=tmp+str(a*10000)+".csv", a=a)
 
 
 
