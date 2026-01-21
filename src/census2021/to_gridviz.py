@@ -83,7 +83,7 @@ if transform:
 if aggregation:
 
     #aggregation function
-    def aggFun(vals):
+    def aggFun(values, _):
         return 0
 
     af = {}
@@ -93,7 +93,7 @@ if aggregation:
     #launch aggregation
     for a in [2,5,10]:
         print(datetime.now(), "aggregation to", a*1000, "m")
-        gridtiler.grid_aggregation(input_file=tmp+"prepared.csv", resolution=1000, output_file=tmp+str(a*1000)+".csv", a=a, aggregation_fun = af)
+        gridtiler.grid_aggregation(input_file=tmp+"1000.csv", resolution=1000, output_file=tmp+str(a*1000)+".csv", a=a, aggregation_fun = af)
     for a in [2,5,10]:
         print(datetime.now(), "aggregation to", a*10000, "m")
         gridtiler.grid_aggregation(input_file=tmp+"10000.csv", resolution=10000, output_file=tmp+str(a*10000)+".csv", a=a, aggregation_fun = af)
