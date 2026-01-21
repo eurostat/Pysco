@@ -1,8 +1,3 @@
-
-#TODO
-#rely on csv
-#
-
 from pygridmap import gridtiler
 from datetime import datetime
 
@@ -11,7 +6,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import get_cell_xy_from_id
 
-transform = False
+transform = True
 aggregation = True
 tiling = False
 
