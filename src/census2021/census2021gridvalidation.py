@@ -40,7 +40,7 @@ print(datetime.now(), len(cells), "cells loaded")
 
 
 #function to check the categories sum up to the total population
-def check_categrories_total(cell, categories, categories_label, err_codes):
+def check_categories_total(cell, categories, categories_label, err_codes):
     t = cell["T"]
 
     #check if any value of the categories is confidential
@@ -143,13 +143,13 @@ def validation(cells, rules, file_name):
 
         #check categories sum up to total
         if "cat_sum_sex" in rules:
-            check_categrories_total(c, ['M', 'F'], "SEX", err_codes)
+            check_categories_total(c, ['M', 'F'], "SEX", err_codes)
         if "cat_sum_age" in rules:
-            check_categrories_total(c, ['Y_LT15', 'Y_1564', 'Y_GE65'], "AGE", err_codes)
+            check_categories_total(c, ['Y_LT15', 'Y_1564', 'Y_GE65'], "AGE", err_codes)
         if "cat_sum_cntbirth" in rules:
-            check_categrories_total(c, ['NAT', 'EU_OTH', 'OTH'], "CNTBIRTH", err_codes)
+            check_categories_total(c, ['NAT', 'EU_OTH', 'OTH'], "CNTBIRTH", err_codes)
         if "cat_sum_reschange" in rules:
-            check_categrories_total(c, ['SAME', 'CHG_IN', 'CHG_OUT'], "RESCHANGE", err_codes)
+            check_categories_total(c, ['SAME', 'CHG_IN', 'CHG_OUT'], "RESCHANGE", err_codes)
 
         #errors detected
         if len(err_codes) > 0:
