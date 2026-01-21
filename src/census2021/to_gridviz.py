@@ -14,8 +14,8 @@ f0 = "/home/juju/geodata/census/2021/"
 tmp = "tmp/census2021_tiling/"
 resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000 ]
 
-aggregate = True
-tiling = False
+aggregate = False
+tiling = True
 
 
 os.makedirs(tmp, exist_ok=True)
@@ -29,6 +29,43 @@ if aggregate:
             resample_geotiff_aligned(f0 + "ESTAT_OBS-VALUE-"+p+"_2021_V2.tiff", tmp+str(resolution)+"_"+p+".tif", resolution, Resampling.sum)
 
 
+parts = {
+    "total" : ["T"],
+    "sex" : ["T", "M", "F"],
+    "age" : ["T", "Y_LT15","Y_1564","Y_GE65"],
+    "emp" : ["T", "EMP"],
+    "mob" : ["T","SAME","CHG_IN","CHG_OUT"],
+    "pob" : ["T", "NAT","EU_OTH","OTH"],
+    "all" : ["T","M","F","Y_LT15","Y_1564","Y_GE65","EMP","NAT","EU_OTH","OTH","SAME","CHG_IN","CHG_OUT"]
+}
+
+
+if tiling:
+    print(datetime.now(), "tiling")
+    for resolution in resolutions:
+        for part in parts:
+            ps = parts[part]
+            print(datetime.now(), "Tiling", resolution, part)
+
+            # make folder for resolution
+            folder_ = tmp+"tiles_"+part+"/"+str(resolution)+"/"
+            os.makedirs(folder_, exist_ok=True)
+
+            # prepare dict for geotiff bands
+            dict = {}
+            for p in ps:
+                dict[p] = {"file":tmp+str(resolution)+"_"+p+".tif", "band":1}
+
+            # launch tiling
+            gridtiler_raster.tiling_raster(
+                dict,
+                folder_,
+                crs="EPSG:3035",
+                tile_size_cell = 256 if p=="all" else 512,
+                format="parquet",
+                num_processors_to_use = 10,
+                #modif_fun = round,
+                )
 
 
 
