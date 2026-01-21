@@ -1,3 +1,39 @@
+from pygridmap import gridtiler_raster
+import sys
+import os
+from rasterio.enums import Resampling
+from datetime import datetime
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+from utils.geotiff import resample_geotiff_aligned
+
+#TODO
+#rely on tiff
+#
+
+input_data = "/home/juju/geodata/census/2021/" #ESTAT_OBS-VALUE-F_2021_V2.tiff"
+tmp = "tmp/census2021_tiling/"
+resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000 ]
+
+aggregate = True
+tiling = False
+
+
+os.makedirs(tmp, exist_ok=True)
+
+# aggregate at various resolutions - sum
+if aggregate:
+    print(datetime.now(), "aggregate")
+    for prop in ["T", "M", "F", "EMP", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]:
+        for resolution in resolutions:
+            print(datetime.now(), prop, resolution)
+            #resample_geotiff_aligned(f0 + "euro_access_"+service+"_"+year+"_100m_"+version_tag+".tif", folder+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m_"+version_tag+".tif", resolution, Resampling.med)
+
+
+
+
+
+
+"""
 from pygridmap import gridtiler
 from datetime import datetime
 
@@ -79,3 +115,4 @@ if tiling:
             crs = "EPSG:3035",
             format = "parquet"
         )
+"""
