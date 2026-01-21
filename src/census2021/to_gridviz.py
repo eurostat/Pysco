@@ -91,7 +91,7 @@ if aggregation:
         # check if all confidential, that is all "-1"
         values = list(filter(lambda v:v!='-1', values))
         if len(values)==0:
-            print("here!")
+            #print("here!")
             return -1
 
         return sum(map(int, values))
