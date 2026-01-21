@@ -11,15 +11,18 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import get_cell_xy_from_id
 
-transform = False
-aggregation = True
+transform = True
+aggregation = False
 tiling = False
 
-folder = "/home/juju/geodata/census/"
-input_file = folder + "ESTAT_Census_2021_V2_csv_export.csv"
+input_file = "/home/juju/geodata/census/ESTAT_Census_2021_V2_csv_export.csv"
+tmp = "tmp/census2021_tiling/"
+os.makedirs(tmp, exist_ok=True)
 
 
 def transform_fun(c):
+    print(c)
+    pass
     #GRD_ID,T,M,F,Y_LT15,Y_1564,Y_GE65,EMP,NAT,EU_OTH,OTH,SAME,CHG_IN,CHG_OUT
 
     #filter out cells with no population
@@ -49,7 +52,7 @@ def transform_fun(c):
 #apply transform
 if transform:
     print("transform")
-    gridtiler.grid_transformation(input_file=input_file, output_file=folder+"out/ESTAT_Census_2021_V2_1000.csv", function=transform_fun)
+    gridtiler.grid_transformation(input_file=input_file, output_file=tmp+"prepared.csv", function=transform_fun)
 
 
 
