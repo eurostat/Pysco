@@ -22,7 +22,7 @@ if tiling:
         print(datetime.now(), "Tiling", resolution)
 
         # make folder for resolution
-        folder_ = "tmp/JRC_100m/tiles_"+str(resolution)+"/"
+        folder_ = "tmp/JRC_100m/"+str(resolution)+"/"
         if not os.path.exists(folder_): os.makedirs(folder_)
 
         # prepare dict for geotiff bands
