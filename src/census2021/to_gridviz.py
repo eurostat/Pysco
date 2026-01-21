@@ -6,8 +6,8 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import get_cell_xy_from_id
 
-prepare = False
-aggregation = False
+prepare = True
+aggregation = True
 decomposition = True
 tiling = False
 
@@ -67,7 +67,7 @@ if prepare:
             elif pci != "": print(p, pci)
             del c[p+"_CI"]
 
-        c["NB"] = 1
+        #c["NB"] = 1
 
         # necessary ?
         #remove zeros
@@ -125,23 +125,25 @@ if decomposition:
 
 
 if tiling:
-    for resolution in resolutions:
-        print("tiling for resolution", resolution)
+    for part in parts:
+        ps = parts[part]
+        for resolution in resolutions:
+            print("decomposition", part, resolution)
 
-        #create output folder
-        out_folder = tmp + 'out/' + str(resolution)
-        if not os.path.exists(folder): os.makedirs(folder)
+            #create output folder
+            out_folder = tmp + 'out/' + str(resolution)
+            if not os.path.exists(folder): os.makedirs(folder)
 
-        gridtiler.grid_tiling(
-            folder+"out/ESTAT_Census_2021_V2_"+str(resolution)+'.csv',
-            out_folder,
-            resolution,
-            tile_size_cell = 256,
-            x_origin = 0,
-            y_origin = 0,
-            crs = "EPSG:3035",
-            format = "parquet"
-        )
+            gridtiler.grid_tiling(
+                folder+"out/ESTAT_Census_2021_V2_"+str(resolution)+'.csv',
+                out_folder,
+                resolution,
+                tile_size_cell = 256,
+                x_origin = 0,
+                y_origin = 0,
+                crs = "EPSG:3035",
+                format = "parquet"
+            )
 
 
 
