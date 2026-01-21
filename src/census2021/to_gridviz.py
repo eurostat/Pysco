@@ -26,7 +26,7 @@ if aggregate:
     for p in "T","M","F","Y_LT15","Y_1564","Y_GE65","EMP","NAT","EU_OTH","OTH","SAME","CHG_IN","CHG_OUT":
         for resolution in resolutions:
             print(datetime.now(), p, resolution)
-            resample_geotiff_aligned(f0 + "ESTAT_OBS-VALUE-"+p+"_2021_V2.tiff", tmp+resolution+"_"p+".tif", resolution, Resampling.sum)
+            resample_geotiff_aligned(f0 + "ESTAT_OBS-VALUE-"+p+"_2021_V2.tiff", tmp+str(resolution)+"_"+p+".tif", resolution, Resampling.sum)
 
 
 
