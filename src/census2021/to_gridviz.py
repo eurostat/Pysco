@@ -84,8 +84,17 @@ if aggregation:
 
     #aggregation function
     def aggFun(values, _):
-        print(values)
-        return 0
+        # keep only non-null values
+        values = list(filter(lambda v:v!='0', values))
+        if len(values)==0: return 0
+
+        # check if all confidential, that is all "-1"
+        values = list(filter(lambda v:v!='-1', values))
+        if len(values)==0:
+            print("here!")
+            return -1
+
+        return sum(values)
 
     af = {}
     for p in "T","M","F","Y_LT15","Y_1564","Y_GE65","EMP","NAT","EU_OTH","OTH","SAME","CHG_IN","CHG_OUT":
