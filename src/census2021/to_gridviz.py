@@ -3,14 +3,14 @@ import sys
 import os
 from rasterio.enums import Resampling
 from datetime import datetime
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.geotiff import resample_geotiff_aligned
 
 #TODO
 #rely on tiff
 #
 
-input_data = "/home/juju/geodata/census/2021/" #ESTAT_OBS-VALUE-F_2021_V2.tiff"
+f0 = "/home/juju/geodata/census/2021/"
 tmp = "tmp/census2021_tiling/"
 resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000 ]
 
@@ -23,10 +23,10 @@ os.makedirs(tmp, exist_ok=True)
 # aggregate at various resolutions - sum
 if aggregate:
     print(datetime.now(), "aggregate")
-    for prop in ["T", "M", "F", "EMP", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", ""]:
+    for p in "T","M","F","Y_LT15","Y_1564","Y_GE65","EMP","NAT","EU_OTH","OTH","SAME","CHG_IN","CHG_OUT":
         for resolution in resolutions:
-            print(datetime.now(), prop, resolution)
-            #resample_geotiff_aligned(f0 + "euro_access_"+service+"_"+year+"_100m_"+version_tag+".tif", folder+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m_"+version_tag+".tif", resolution, Resampling.med)
+            print(datetime.now(), p, resolution)
+            resample_geotiff_aligned(f0 + "ESTAT_OBS-VALUE-"+p+"_2021_V2.tiff", tmp+resolution+"_"p+".tif", resolution, Resampling.sum)
 
 
 
