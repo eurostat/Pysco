@@ -130,7 +130,7 @@ if tiling:
     for part in parts:
         ps = parts[part]
         for resolution in resolutions:
-            print("decomposition", part, resolution)
+            print("tiling", part, resolution)
 
             #create output folder
             out_folder = tmp + 'tiles_'+part+'/' + str(resolution) + '/'
