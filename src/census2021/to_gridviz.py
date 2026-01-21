@@ -11,8 +11,8 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import get_cell_xy_from_id
 
-transform = True
-aggregation = False
+transform = False
+aggregation = True
 tiling = False
 
 input_file = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.csv"
@@ -73,19 +73,30 @@ def transform_fun(c):
 #apply transform
 if transform:
     print("transform")
-    gridtiler.grid_transformation(input_file=input_file, output_file=tmp+"prepared.csv", function=transform_fun)
+    gridtiler.grid_transformation(input_file=input_file, output_file=tmp+"1000.csv", function=transform_fun)
+
 
 
 
 
 #aggregation
 if aggregation:
+
+    #aggregation function
+    def aggFun(vals):
+        return 0
+
+    af = {}
+    for p in "T","M","F","Y_LT15","Y_1564","Y_GE65","EMP","NAT","EU_OTH","OTH","SAME","CHG_IN","CHG_OUT":
+        af[p] = aggFun
+
+    #launch aggregation
     for a in [2,5,10]:
         print(datetime.now(), "aggregation to", a*1000, "m")
-        gridtiler.grid_aggregation(input_file=tmp+"prepared.csv", resolution=1000, output_file=tmp+str(a*1000)+".csv", a=a)
+        gridtiler.grid_aggregation(input_file=tmp+"prepared.csv", resolution=1000, output_file=tmp+str(a*1000)+".csv", a=a, aggregation_fun = af)
     for a in [2,5,10]:
         print(datetime.now(), "aggregation to", a*10000, "m")
-        gridtiler.grid_aggregation(input_file=tmp+"10000.csv", resolution=10000, output_file=tmp+str(a*10000)+".csv", a=a)
+        gridtiler.grid_aggregation(input_file=tmp+"10000.csv", resolution=10000, output_file=tmp+str(a*10000)+".csv", a=a, aggregation_fun = af)
 
 
 
