@@ -7,6 +7,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import get_cell_xy_from_id
 
 
+# age pyramid issue: if value is -9999, set as -1
+# estonia issue: if CI==-9999 and v>=0, keep value
+
+
 prepare = False
 aggregation = False
 decomposition = False
