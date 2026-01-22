@@ -69,10 +69,15 @@ if prepare:
         for p in "T","M","F","Y_LT15","Y_1564","Y_GE65","EMP","NAT","EU_OTH","OTH","SAME","CHG_IN","CHG_OUT":
             pci = c[p+"_CI"]
             v = c[p]
-            if (pci == "-9999" or pci == "-9986" or pci == "0") and v == "-9999":
-                c[p] = -1
-            elif v<0: print(p,pci,v)
+            # typical confidantial case: both properties are set to -9999.
+            if (pci == "-9999" or pci == "-9986" or pci == "0") and (v == "-9999" or v == "" or v is None): c[p] = -1
+            # deal with other unexpected cases...
+            elif pci == "-9999" and int(v)>=0: pci="" # make it a valid case: ignore CI and keep value
+            elif pci == "0" and int(v)>=0: pci="" # make it a valid case: ignore CI and keep value
+            # check that
             elif pci != "": print(p, pci,v)
+            # check that
+            elif (v=="" or int(v) <0 or v is None) and not(v=="" and pci==""): print(p, pci, v)
             del c[p+"_CI"]
 
 
