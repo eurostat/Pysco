@@ -73,12 +73,11 @@ if prepare:
             # typical confidential case: both properties are set to -9999.
             if pci == "-9999" and v == "-9999": c[p] = -1
 
-            # deal with other unexpected cases...
+            # deal with other unexpected cases... which should not happen is the input dataset had been validated with a bit of professionalism :-)
             elif pci == "-9999" and int(v)>=0: pci="" # make it a valid case: ignore CI and keep value
             elif pci == "0" and int(v)>=0: pci="" # make it a valid case: ignore CI and keep value
             elif pci == "" and v=="-9999": c[p] = -1 # make it a CI case
             elif pci == "-9986": c[p] = -1 # make it a CI case
-            #elif pci == "0" and int(v)>=0: pci="" # make it a valid case: ignore CI and keep value
 
             # check that
             elif pci != "": print("p=",p, "pci=", pci, "v=", v)
