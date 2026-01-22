@@ -11,10 +11,10 @@ from utils.gridutils import get_cell_xy_from_id
 # estonia issue: if CI==-9999 and v>=0, keep value
 
 
-prepare = False
+prepare = True
 aggregation = False
 decomposition = False
-tiling = True
+tiling = False
 # True False
 
 input_file = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.csv"
@@ -68,10 +68,17 @@ if prepare:
         # address confidentiality. Encode it at value level: -1
         for p in "T","M","F","Y_LT15","Y_1564","Y_GE65","EMP","NAT","EU_OTH","OTH","SAME","CHG_IN","CHG_OUT":
             pci = c[p+"_CI"]
-            if pci == "-9999" or pci == "-9986" or pci == "0":
+            v = c[p]
+            if (pci == "-9999" or pci == "-9986" or pci == "0") and v == "-9999":
                 c[p] = -1
-            elif pci != "": print(p, pci)
+            elif v<0: print(p,pci,v)
+            elif pci != "": print(p, pci,v)
             del c[p+"_CI"]
+
+
+# age pyramid issue: if value is -9999, set as -1
+# estonia issue: if CI==-9999 and v>=0, keep value
+
 
         #c["NB"] = 1
 
