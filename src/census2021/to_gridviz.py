@@ -7,10 +7,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import get_cell_xy_from_id
 
 
-prepare = False
+prepare = True
 aggregation = True
-decomposition = False
-tiling = False
+decomposition = True
+tiling = True
 # True False
 
 input_file = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.csv"
@@ -106,7 +106,7 @@ if aggregation:
 
     #aggregation function
     def aggFun(values, _):
-        # check case where all values are ''
+        # check case when all values are ''
         if len(values)>0 and len(list(filter(lambda v : v=='', values)))>0: return None
 
         # keep only non-null values
