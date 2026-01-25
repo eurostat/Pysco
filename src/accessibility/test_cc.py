@@ -13,6 +13,7 @@ tomtom_data_folder = "/home/juju/geodata/tomtom/"
 pois_data_folder = "/home/juju/geodata/gisco/basic_services/"
 # folders where to store the outputs
 out_folder = '/home/juju/Bureau/test_cc/'
+out_file = out_folder + "100m_3930000_2250000.parquet"
 if not os.path.exists(out_folder): os.makedirs(out_folder)
 
 # define output bounding box
@@ -31,6 +32,9 @@ def pois_loader(bbox): return iter_features(pois_data_folder+"healthcare_"+year+
 
 # build accessibility grid
 if True:
+
+    if os.path.exists(out_file): os.remove(out_file)
+
     accessiblity_grid_k_nearest_dijkstra_parallel(
         pois_loader = pois_loader,
         road_network_loader = road_network_loader,
@@ -59,7 +63,7 @@ if True:
 if True:
     print("to_geotiff")
     parquet_grid_to_geotiff(
-        [out_folder + "100m_3930000_2250000.parquet"],
+        [out_file],
         out_folder + "out.tiff",
         bbox = bbox,
         attributes=["duration_s_1", "duration_average_s_3"],
