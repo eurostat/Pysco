@@ -223,20 +223,20 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     averages = []
     for i in range(len(data['GRD_ID'])):
         # compute average
-        sum = 0
+        sum_ = 0
         for kk in range(k):
             dur = data['duration_s_'+str(kk+1)][i]
-            if dur<0: sum = -1; break
-            sum += dur
+            if dur<0: sum_ = -1; break
+            sum_ += dur
             # simplify duration values
             if duration_simplification_fun != None: data['duration_s_'+str(kk+1)][i] = duration_simplification_fun(dur)
         # store average value, simplified if necessary
-        if sum <0:
-            sum = -1
+        if sum_ <0:
+            sum_ = -1
         else:
-            sum = sum/k
-            if duration_simplification_fun != None: sum = duration_simplification_fun(sum)
-        averages.append(sum)
+            sum_ = sum_/k
+            if duration_simplification_fun != None: sum_ = duration_simplification_fun(sum_)
+        averages.append(sum_)
     data['duration_average_s_'+str(k)] = averages
 
     # save output
