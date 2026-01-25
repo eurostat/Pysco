@@ -131,6 +131,10 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     del gb_, roads
     if show_detailled_messages: print(datetime.now(), x_part, y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
 
+
+    # TODO insert connex component logic here
+
+
     if(len(snappable_nodes)==0):
         pd.DataFrame({}).to_parquet(out_file)
         print(datetime.now(), x_part, y_part, "0 cells saved")
