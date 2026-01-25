@@ -11,33 +11,26 @@ tomtom_data_folder = "/home/juju/geodata/tomtom/"
 pois_data_folder = "/home/juju/geodata/gisco/basic_services/"
 # folders where to store the outputs
 out_folder = '/home/juju/Bureau/test_cc/'
+if not os.path.exists(out_folder): os.makedirs(out_folder)
 
 # define output bounding box
 bbox = [ 3900000, 2200000,  4000000, 2300000 ]
 grid_resolution = 100
 year = "2023"
-service = "healthcare"
 
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 def duration_simplification_fun(x): return int(round(x))
 
-# define and create ouput folder, depending on year, service, resolution
-out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(grid_resolution) + "m/"
-if not os.path.exists(out_folder_service_year): os.makedirs(out_folder_service_year)
-
-# define tomtom year
-tomtom_year = "2019" if year == "2020" else year
-
 # define tomtom and POI loaders
-def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom"+tomtom_year+"12.gpkg", bbox=bbox) #, where="FOW!='20'"
-def pois_loader(bbox): return iter_features(pois_data_folder+service+"_"+year+"_3035"+".gpkg", bbox=bbox) #, where="levels IS NULL or levels!='0'" if service=="education" else "")
+def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom"+year+"12.gpkg", bbox=bbox) #, where="FOW!='20'"
+def pois_loader(bbox): return iter_features(pois_data_folder+"healthcare_"+year+"_3035"+".gpkg", bbox=bbox) #, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
 # build accessibility grid
 accessiblity_grid_k_nearest_dijkstra_parallel(
     pois_loader = pois_loader,
     road_network_loader = road_network_loader,
     bbox = bbox,
-    out_folder = out_folder_service_year,
+    out_folder = out_folder,
     k = 3,
     weight_function = weight_function,
     is_not_snappable_fun = is_not_snappable_fun,
