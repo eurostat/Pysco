@@ -83,7 +83,7 @@ for grid_resolution in [100]: # 1000
                 cell_id_fun = cell_id_fun,
                 grid_resolution= grid_resolution,
                 cell_network_max_distance= 1000,
-                to_network_speed_ms= 20 /3.6, # 20km/h by car
+                to_network_speed_ms= 15 /3.6, # 15km/h by car
                 file_size = file_size,
                 extention_buffer = extention_buffer,
                 detailled = detailled_network_decomposition,
