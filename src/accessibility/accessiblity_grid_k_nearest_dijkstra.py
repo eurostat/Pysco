@@ -180,7 +180,9 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
             # get costs
             cs = result[n]
 
-            # TODO add some cost for dtn travel ?
+            # add some cost for dtn travel
+            #to_network_speed_ms = 5 * 10/36
+            #if to_network_speed_ms: cs += dtn/to_network_speed_ms
 
             # store costs
             for kk in range(k):
