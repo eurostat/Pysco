@@ -146,10 +146,8 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     # remove secondary ccs
     for cc in ccs:
         if cc==ccs[0] : continue
-        for n in cc:
-            del graph[n]
-            try: snappable_nodes.remove(n)
-            except ValueError: pass
+        #for n in cc: del graph[n]
+        snappable_nodes = [x for x in snappable_nodes if x not in set(cc)]
 
     print("graph:" + len(graph))
     print("snap:" + len(snappable_nodes))
