@@ -180,6 +180,8 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
             # get costs
             cs = result[n]
 
+            # TODO add some cost for dtn travel ?
+
             # store costs
             for kk in range(k):
                 if kk>=len(cs): costs[kk].append(-1)
