@@ -4,6 +4,8 @@ from datetime import datetime
 import heapq
 from multiprocessing import Pool
 from math import floor
+from itertools import chain
+
 
 import sys
 import os
@@ -137,17 +139,22 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     # compute connected components
     ccs = connected_components_directed(graph)
     assert( len(graph) == sum(len(cc) for cc in ccs) )
-    ccs.sort(key=lambda a:-len(a))
 
+    # keep only small components
+    ccs.sort(key=lambda a:-len(a))
+    ccs.pop(0)
+
+    print("nb=", len(ccs))
     print("lcc:" , len(ccs[0]))
     print("graph:" , len(graph))
     print("snap:" , len(snappable_nodes))
 
-    # remove secondary ccs
-    for cc in ccs:
-        if cc==ccs[0] : continue
-        #for n in cc: del graph[n]
-        snappable_nodes = [x for x in snappable_nodes if x not in set(cc)]
+    # combine
+    ccs = set(chain.from_iterable(ccs))
+    print("flat=", len(ccs))
+
+    # remove
+    snappable_nodes = [x for x in snappable_nodes if x not in ccs]
 
     print("graph:" + len(graph))
     print("snap:" + len(snappable_nodes))
