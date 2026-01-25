@@ -9,7 +9,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.utils import cartesian_product_comp
-from utils.netutils import nodes_spatial_index_adjacendy_list, distance_to_node, ___graph_adjacency_list_from_geodataframe
+from utils.netutils import nodes_spatial_index_adjacendy_list, distance_to_node, ___graph_adjacency_list_from_geodataframe, connected_components_directed
 
 
 def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=False):
@@ -134,6 +134,9 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
 
 
     # TODO insert connex component logic here
+    ccs = connected_components_directed(graph)
+    for cc in ccs:
+        print(len(cc))
     #print(graph["3943424_2258404_0_0"])
 
 

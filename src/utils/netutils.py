@@ -1,5 +1,6 @@
 import math
 from rtree import index
+
 from shapely.geometry import shape,LineString
 
 from utils.geomutils import densify_line
@@ -194,3 +195,51 @@ def a_star_speed(distance_function, speed_kmh):
 
 
 
+
+
+
+
+def connected_components_directed(adj):
+    """
+    Find weakly connected components in a directed weighted graph.
+
+    adj: dict[str, list[tuple(str, weight)]]
+
+    Returns: list[list[str]]
+    """
+
+    # Build undirected adjacency (ignore weights)
+    undirected = defaultdict(set)
+
+    # Ensure all nodes appear (even those with no outgoing edges)
+    for u in adj:
+        undirected[u]
+
+        for v, _ in adj[u]:
+            undirected[u].add(v)
+            undirected[v].add(u)
+
+    visited = set()
+    components = []
+
+    for start in undirected:
+        if start in visited:
+            continue
+
+        # BFS (or DFS)
+        comp = []
+        stack = [start]
+        visited.add(start)
+
+        while stack:
+            u = stack.pop()
+            comp.append(u)
+
+            for v in undirected[u]:
+                if v not in visited:
+                    visited.add(v)
+                    stack.append(v)
+
+        components.append(comp)
+
+    return components
