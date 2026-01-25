@@ -202,9 +202,7 @@ def a_star_speed(distance_function, speed_kmh):
 def connected_components_directed(adj):
     """
     Find weakly connected components in a directed weighted graph.
-
     adj: dict[str, list[tuple(str, weight)]]
-
     Returns: list[list[str]]
     """
 
@@ -220,25 +218,25 @@ def connected_components_directed(adj):
             undirected[v].add(u)
 
     visited = set()
-    components = []
+    ccs = []
 
     for start in undirected:
         if start in visited: continue
 
         # BFS (or DFS)
-        comp = []
+        cc = []
         stack = [start]
         visited.add(start)
 
         while stack:
             u = stack.pop()
-            comp.append(u)
+            cc.append(u)
 
             for v in undirected[u]:
                 if v not in visited:
                     visited.add(v)
                     stack.append(v)
 
-        components.append(comp)
+        ccs.append(cc)
 
-    return components
+    return ccs
