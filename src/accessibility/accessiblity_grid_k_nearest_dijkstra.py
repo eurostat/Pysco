@@ -133,17 +133,26 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     if show_detailled_messages: print(datetime.now(), x_part, y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
 
 
+
     # compute connected components
     ccs = connected_components_directed(graph)
-
-    # check
-    nbttt = sum(len(cc) for cc in ccs)
-    print(len(graph), nbttt)
-
-    # get largets component
+    assert( len(graph) == sum(len(cc) for cc in ccs) )
     ccs.sort(key=lambda a:-len(a))
-    largest_cc = ccs[0]
 
+    print("lcc:" , len(ccs[0]))
+    print("graph:" , len(graph))
+    print("snap:" , len(snappable_nodes))
+
+    # remove secondary ccs
+    for cc in ccs:
+        if cc==ccs[0] : continue
+        for n in cc:
+            del graph[n]
+            try: snappable_nodes.remove(n)
+            except ValueError: pass
+
+    print("graph:" + len(graph))
+    print("snap:" + len(snappable_nodes))
 
 
     if(len(snappable_nodes)==0):
