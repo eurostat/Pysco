@@ -16,7 +16,9 @@ out_folder = '/home/juju/Bureau/test_cc/'
 if not os.path.exists(out_folder): os.makedirs(out_folder)
 
 # define output bounding box
-bbox = [ 3900000, 2200000,  4000000, 2300000 ]
+bbox = [ 3930000, 2240000,  3960000, 2270000 ]
+ 
+
 grid_resolution = 100
 year = "2023"
 
@@ -28,7 +30,7 @@ def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom
 def pois_loader(bbox): return iter_features(pois_data_folder+"healthcare_"+year+"_3035"+".gpkg", bbox=bbox) #, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
 # build accessibility grid
-if False:
+if True:
     accessiblity_grid_k_nearest_dijkstra_parallel(
         pois_loader = pois_loader,
         road_network_loader = road_network_loader,
@@ -44,7 +46,7 @@ if False:
         cell_id_fun = cell_id_fun,
         grid_resolution= grid_resolution,
         cell_network_max_distance= 200,
-        file_size = 100000,
+        file_size = 30000,
         extention_buffer = 0,
         detailled = True,
         densification_distance=100,
@@ -66,3 +68,4 @@ if True:
         value_fun= lambda v:v if v<32767 else 32767, # np.int16(v),
         compress='deflate'
     )
+
