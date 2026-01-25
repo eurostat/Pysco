@@ -16,7 +16,7 @@ out_folder = '/home/juju/Bureau/test_cc/'
 if not os.path.exists(out_folder): os.makedirs(out_folder)
 
 # define output bounding box
-bbox = [ 3930000, 2240000,  3960000, 2270000 ]
+bbox = [ 3930000, 2250000,  3960000, 2280000 ]
  
 
 grid_resolution = 100
@@ -45,7 +45,7 @@ if True:
         final_node_level_fun = final_node_level_fun,
         cell_id_fun = cell_id_fun,
         grid_resolution= grid_resolution,
-        cell_network_max_distance= 200,
+        cell_network_max_distance= 1000,
         file_size = 30000,
         extention_buffer = 0,
         detailled = True,
@@ -59,7 +59,7 @@ if True:
 if True:
     print("to_geotiff")
     parquet_grid_to_geotiff(
-        [out_folder + "100m_3930000_2220000.parquet"],
+        [out_folder + "100m_3930000_2250000.parquet"],
         out_folder + "out.tiff",
         bbox = bbox,
         attributes=["duration_s_1", "duration_average_s_3"],
