@@ -153,6 +153,7 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     for n in ccs: del graph[n]
 
 
+
     if(len(snappable_nodes)==0):
         pd.DataFrame({}).to_parquet(out_file)
         print(datetime.now(), x_part, y_part, "0 cells saved")
