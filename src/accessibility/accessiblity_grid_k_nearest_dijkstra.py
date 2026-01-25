@@ -135,8 +135,11 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
 
     # TODO insert connex component logic here
     ccs = connected_components_directed(graph)
-    for cc in ccs:
-        print(len(cc))
+    ccs = [len(cc) for cc in ccs]
+    ccs.sort()
+    print(ccs)
+    print(len(graph))
+    #for cc in ccs:        print(cc)
     #print(graph["3943424_2258404_0_0"])
 
 
