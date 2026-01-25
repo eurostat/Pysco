@@ -8,32 +8,41 @@ from datetime import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.geotiff import resample_geotiff_aligned
 
-tiling = True
+aggregate = True
+tiling = False
+#resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
+resolutions = [ 500, 200, 100 ]
 
-resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
+# make folder
+folder_out = "tmp/JRC_100m/"
+os.makedirs(folder_out, exist_ok=True)
 
-folder_pop_tiff = "/home/juju/geodata/census/2021/aggregated_tiff/"
+
+if aggregate:
+    for resolution in resolutions:
+        print(datetime.now(), "Aggregate", resolution)
+
+        #TODO
 
 
 if tiling:
-    print(datetime.now(), "tiling")
     for resolution in resolutions:
 
         print(datetime.now(), "Tiling", resolution)
 
         # make folder for resolution
-        folder_ = "tmp/JRC_100m/"+str(resolution)+"/"
-        if not os.path.exists(folder_): os.makedirs(folder_)
+        folder_res = folder_out + str(resolution) + "/"
+        os.makedirs(folder_res, exist_ok=True)
 
         # prepare dict for geotiff bands
         dict = {
-            "POP_2021": { "file":folder_pop_tiff+"pop_2021_"+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] }
+            "T": { folder_out+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] }
         }
 
         # launch tiling
         gridtiler_raster.tiling_raster(
             dict,
-            folder_,
+            folder_res,
             crs="EPSG:3035",
             tile_size_cell = 256,
             format="parquet",
