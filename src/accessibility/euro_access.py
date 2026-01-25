@@ -7,13 +7,11 @@ from utils.featureutils import iter_features
 from utils.tomtomutils import weight_function, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun, is_start_blocked, is_end_blocked
 
 #TODO
-# distance: set to 1000m instead of 200
-# take into account some delay depending on snapping distance
 # connex component issue:
 # detect connex components
 # either remove the CCs, OR reconnect them, OR ensure it is not deconnected
 # secondary services accessibility
-
+# accessibility walking, cycling ?
 
 
 # folders where to find the inputs
