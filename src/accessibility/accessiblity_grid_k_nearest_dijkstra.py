@@ -86,6 +86,7 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
             cell_id_fun,
             grid_resolution,
             cell_network_max_distance,
+            to_network_speed_ms,
             detailled,
             densification_distance,
             duration_simplification_fun,
@@ -162,7 +163,6 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     for _ in range(k): costs.append([])
     distances_to_node = [] #the cell center distance to its graph node
 
-
     # go through cells
     r2 = grid_resolution / 2
     for x in range(x_part, x_part+file_size, grid_resolution):
@@ -180,8 +180,6 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
             # get costs
             cs = result[n]
 
-
-            to_network_speed_ms = 5 * 10/36
             # add some cost for dtn travel
             ttn = 0
             if to_network_speed_ms is not None and to_network_speed_ms >0:
@@ -256,6 +254,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         cell_id_fun=lambda x,y:str(x)+"_"+str(y),
         grid_resolution=1000,
         cell_network_max_distance=-1,
+        to_network_speed_ms = None,
         file_size = 100000,
         extention_buffer = 30000,
         detailled = False,
@@ -283,6 +282,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         cell_id_fun (_type_, optional): a function returning the output grid cell code. Defaults to lambda x+y.
         grid_resolution (int, optional): the output grid resolution. Defaults to 1000.
         cell_network_max_distance (int, optional): the maximum distance from a cell centre to a network node. cells too far away from the network are ignored. Defaults to -1.
+        to_network_speed_ms (int, optional): The speed to take into account to travel from cell centre to nearest network node. Set to None if the speed is infinite (exact snapping).
         file_size (int, optional): the size of each tile file. the larger, the fewer file but the more intensive. Defaults to 100000.
         extention_buffer (int, optional): the buffer distance around the tile area. The network and pois within the tile extended by this distance is loaded. Data only for the cell within the tile are stored. Defaults to 30000.
         detailled (bool, optional): Set to true to create a network node for each network section geometry vertice. Set to false to create nodes only for the initial and final nodes. Defaults to False.
@@ -322,6 +322,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
             cell_id_fun,
             grid_resolution,
             cell_network_max_distance,
+            to_network_speed_ms,
             detailled,
             densification_distance,
             duration_simplification_fun,
