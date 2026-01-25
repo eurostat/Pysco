@@ -223,8 +223,7 @@ def connected_components_directed(adj):
     components = []
 
     for start in undirected:
-        if start in visited:
-            continue
+        if start in visited: continue
 
         # BFS (or DFS)
         comp = []
