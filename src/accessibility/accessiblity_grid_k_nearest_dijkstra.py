@@ -134,6 +134,7 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
 
 
     # TODO insert connex component logic here
+    print(graph)
 
 
     if(len(snappable_nodes)==0):
