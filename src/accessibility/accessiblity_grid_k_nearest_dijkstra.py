@@ -134,6 +134,10 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     del gb_, roads
     if show_detailled_messages: print(datetime.now(), x_part, y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
 
+    if(len(snappable_nodes)==0):
+        pd.DataFrame({}).to_parquet(out_file)
+        print(datetime.now(), x_part, y_part, "0 cells saved")
+        return
 
     # keep only main connected component
 
@@ -153,11 +157,11 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     for n in ccs: del graph[n]
 
 
-
     if(len(snappable_nodes)==0):
         pd.DataFrame({}).to_parquet(out_file)
         print(datetime.now(), x_part, y_part, "0 cells saved")
         return
+
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
