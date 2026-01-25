@@ -90,4 +90,3 @@ for resolution in [100]:
 
             print(resolution, service, year, "rename tiff bands")
             rename_geotiff_bands(geotiff, [service + "_" + year + "_n1", service + "_" + year + "_n3"])
-
