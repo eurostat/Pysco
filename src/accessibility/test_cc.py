@@ -59,7 +59,7 @@ if True:
 if True:
     print("to_geotiff")
     parquet_grid_to_geotiff(
-        [out_folder + "100m_3900000_2200000.parquet"],
+        [out_folder + "100m_3930000_2220000.parquet"],
         out_folder + "out.tiff",
         bbox = bbox,
         attributes=["duration_s_1", "duration_average_s_3"],
