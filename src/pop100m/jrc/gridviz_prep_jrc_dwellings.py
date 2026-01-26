@@ -16,7 +16,7 @@ input_file = "/home/juju/geodata/jrc/JRC-CENSUS_DWELLINGS_2021_1km./JRC-CENSUS_D
 folder_out = "tmp/JRC_dwellings/"
 os.makedirs(folder_out, exist_ok=True)
 
-if True:
+if False:
     for resolution in resolutions:
         print(datetime.now(), "Aggregate", resolution)
         resample_geotiff_aligned(input_file, folder_out+str(resolution)+".tif", resolution, Resampling.med)
@@ -33,7 +33,7 @@ if True:
         # prepare dict for geotiff bands
         dict = {
             "D": { "file":folder_out+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] },
-            "T": { "file":"/home/juju/geodata/census/2021/aggregated_tiff/pop_2021_"+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] }
+            #"T": { "file":"/home/juju/geodata/census/2021/aggregated_tiff/pop_2021_"+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] }
         }
 
         # launch tiling
