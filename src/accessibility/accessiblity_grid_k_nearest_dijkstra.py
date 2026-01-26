@@ -72,7 +72,7 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=False):
 
 
 
-def accessiblity_grid_k_nearest_dijkstra(xy,
+def accessiblity_grid_k_nearest_dijkstra_xy(xy,
             extention_buffer,
             file_size,
             out_folder,
@@ -94,6 +94,7 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
             duration_simplification_fun,
             keep_distance_to_node,
             show_detailled_messages = False,
+            threshold_connected_component_node_nb = 5000,
             ):
     """ see accessiblity_grid_k_nearest_dijkstra_parallel below """
 
@@ -145,9 +146,9 @@ def accessiblity_grid_k_nearest_dijkstra(xy,
     ccs = connected_components_directed(graph)
     assert( len(graph) == sum(len(cc) for cc in ccs) )
 
-    # keep only small components (remove the largest one)
+    # keep only small components (remove the largest ones)
     ccs.sort(key=lambda a:-len(a))
-    ccs.pop(0)
+    while(len(ccs[0]) > threshold_connected_component_node_nb): ccs.pop(0)
 
     # combine list of nodes of all connected components to remove
     ccs = set(chain.from_iterable(ccs))
@@ -286,6 +287,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         num_processors = 1,
         show_detailled_messages = False,
         shuffle = False,
+        threshold_connected_component_node_nb = 5000,
         ):
     """
     Compute accessiblity grid using k-nearest dijkstra algorithm.
@@ -350,9 +352,10 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
             duration_simplification_fun,
             keep_distance_to_node,
             show_detailled_messages,
+            threshold_connected_component_node_nb,
         ) for xy in processes_params ]
 
     # launch parallel processes
     print(datetime.now(), "launch", len(processes_params), "process(es) on", num_processors, "processor(s)")
-    Pool(num_processors).starmap(accessiblity_grid_k_nearest_dijkstra, processes_params)
+    Pool(num_processors).starmap(accessiblity_grid_k_nearest_dijkstra_xy, processes_params)
 
