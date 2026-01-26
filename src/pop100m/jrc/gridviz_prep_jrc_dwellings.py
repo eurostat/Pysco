@@ -8,8 +8,8 @@ from datetime import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.geotiff import resample_geotiff_aligned
 
-aggregate = False
-tiling = True
+aggregate = True
+tiling = False
 resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000 ]
 
 input_file = "/home/juju/geodata/jrc/JRC-CENSUS_DWELLINGS_2021_1km./JRC-CENSUS_DWELLINGS_2021_1km.tif"
@@ -36,7 +36,8 @@ if tiling:
 
         # prepare dict for geotiff bands
         dict = {
-            "T": { "file":folder_out+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] }
+            "D": { "file":folder_out+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] },
+            "T": { "file":"/home/juju/geodata/census/2021/aggregated_tiff/pop_2021_"+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] }
         }
 
         # launch tiling
