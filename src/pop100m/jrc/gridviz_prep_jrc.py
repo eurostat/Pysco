@@ -13,7 +13,9 @@ tiling = False
 #resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
 resolutions = [ 500, 200, 100 ]
 
-# make folder
+input_file = "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m.tif"
+
+# output folder
 folder_out = "tmp/JRC_100m/"
 os.makedirs(folder_out, exist_ok=True)
 
@@ -21,8 +23,7 @@ os.makedirs(folder_out, exist_ok=True)
 if aggregate:
     for resolution in resolutions:
         print(datetime.now(), "Aggregate", resolution)
-
-        #TODO
+        resample_geotiff_aligned(input_file, folder_out+str(resolution)+".tif", resolution, Resampling.med)
 
 
 if tiling:
