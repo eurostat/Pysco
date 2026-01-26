@@ -94,7 +94,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
             duration_simplification_fun,
             keep_distance_to_node,
             show_detailled_messages = False,
-            threshold_connected_component_node_nb = 5000,
+            threshold_connected_component_node_nb = 100,
             ):
     """ see accessiblity_grid_k_nearest_dijkstra_parallel below """
 
@@ -148,7 +148,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
 
     # keep only small components (remove the largest ones)
     ccs.sort(key=lambda a:-len(a))
-    while(len(ccs[0]) > threshold_connected_component_node_nb): ccs.pop(0)
+    while(len(ccs[0]) >= threshold_connected_component_node_nb): ccs.pop(0)
 
     # combine list of nodes of all connected components to remove
     ccs = set(chain.from_iterable(ccs))
@@ -287,7 +287,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         num_processors = 1,
         show_detailled_messages = False,
         shuffle = False,
-        threshold_connected_component_node_nb = 5000,
+        threshold_connected_component_node_nb = 100,
         ):
     """
     Compute accessiblity grid using k-nearest dijkstra algorithm.
