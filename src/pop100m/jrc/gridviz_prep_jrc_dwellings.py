@@ -16,7 +16,7 @@ input_file = "/home/juju/geodata/jrc/JRC-CENSUS_DWELLINGS_2021_1km./JRC-CENSUS_D
 folder_out = "tmp/JRC_dwellings/"
 os.makedirs(folder_out, exist_ok=True)
 
-if False:
+if True:
     for resolution in resolutions:
         print(datetime.now(), "Aggregate", resolution)
         resample_geotiff_aligned(input_file, folder_out+str(resolution)+".tif", resolution, Resampling.med)
