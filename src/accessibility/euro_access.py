@@ -31,8 +31,8 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for grid_resolution in [100]: # 1000
 
-    for service in ["education", "healthcare"]:
-        for year in ["2023", "2020"]: #"2023"
+    for year in ["2023", "2020"]: #"2023"
+        for service in ["education", "healthcare"]:
 
             # detailled network decomposition only when resolution to 100m
             detailled_network_decomposition = grid_resolution == 100
