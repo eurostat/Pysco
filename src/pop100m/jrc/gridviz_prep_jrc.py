@@ -37,7 +37,7 @@ if tiling:
 
         # prepare dict for geotiff bands
         dict = {
-            "T": { folder_out+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] }
+            "T": { "file":folder_out+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] }
         }
 
         # launch tiling
