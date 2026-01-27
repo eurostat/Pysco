@@ -180,10 +180,10 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
     result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
     del graph, sources
 
-    print(datetime.now(), x_part, y_part, "keep only nodes with data on it")
+    if show_detailled_messages: print(datetime.now(), x_part, y_part, "keep only nodes with data on it")
     snappable_nodes = [n for n in snappable_nodes if result[n]]
 
-    print(datetime.now(), x_part, y_part, "build new nodes spatial index")
+    if show_detailled_messages: print(datetime.now(), x_part, y_part, "build new nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "extract cell accessibility data")
