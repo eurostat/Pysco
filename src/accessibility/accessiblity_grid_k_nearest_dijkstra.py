@@ -94,7 +94,6 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
             duration_simplification_fun,
             keep_distance_to_node,
             show_detailled_messages = False,
-            threshold_connected_component_node_nb = 100,
             ):
     """ see accessiblity_grid_k_nearest_dijkstra_parallel below """
 
@@ -149,7 +148,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
 
     # keep only small components (remove the largest ones)
     ccs.sort(key=lambda a:-len(a))
-    while(len(ccs)>0 and len(ccs[0]) >= threshold_connected_component_node_nb): ccs.pop(0)
+    while(len(ccs)>0 and len(ccs[0]) >= 100): ccs.pop(0)
 
     # combine list of nodes of all connected components to remove
     ccs = set(chain.from_iterable(ccs))
@@ -181,16 +180,8 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
     result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
     del graph, sources
 
-    # keep only the ones with data on it
-    #snappable_nodes = list(result.keys())
-    print(datetime.now(), x_part, y_part, "nb 1=", len(snappable_nodes))
-    def fil_fun(n):
-        print(n, len(result[n]))
-        return result[n] is not None
-    try: snappable_nodes = list(filter(fil_fun, snappable_nodes))
-    except: pass
-    #[x for x in original_list if x > 3]
-    print(datetime.now(), x_part, y_part, "nb 2=", len(snappable_nodes))
+    print(datetime.now(), x_part, y_part, "keep only nodes with data on it")
+    snappable_nodes = [n for n in snappable_nodes if result[n]]
 
     print(datetime.now(), x_part, y_part, "build new nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
@@ -302,7 +293,6 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         num_processors = 1,
         show_detailled_messages = False,
         shuffle = False,
-        threshold_connected_component_node_nb = 100,
         ):
     """
     Compute accessiblity grid using k-nearest dijkstra algorithm.
@@ -367,7 +357,6 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
             duration_simplification_fun,
             keep_distance_to_node,
             show_detailled_messages,
-            threshold_connected_component_node_nb,
         ) for xy in processes_params ]
 
     # launch parallel processes
