@@ -184,7 +184,12 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
     # keep only the ones with data on it
     #snappable_nodes = list(result.keys())
     print(datetime.now(), x_part, y_part, "nb 1=", len(snappable_nodes))
-    snappable_nodes = filter(lambda n : result[n] is not None, snappable_nodes)
+    def fil_fun(n):
+        print(n, len(result[n]))
+        return result[n] is not None
+    try: snappable_nodes = list(filter(fil_fun, snappable_nodes))
+    except: pass
+    #[x for x in original_list if x > 3]
     print(datetime.now(), x_part, y_part, "nb 2=", len(snappable_nodes))
 
     print(datetime.now(), x_part, y_part, "build new nodes spatial index")
