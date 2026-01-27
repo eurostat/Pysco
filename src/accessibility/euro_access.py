@@ -32,7 +32,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 for grid_resolution in [100]: # 1000
 
     for service in ["healthcare", "education"]:
-        for year in ["2023", "2020"]: #"2023"
+        for year in ["2020", "2023"]: #"2023"
 
             def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
             def duration_simplification_fun(x): return int(round(x))
