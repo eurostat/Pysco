@@ -140,6 +140,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
         print(datetime.now(), x_part, y_part, "0 cells saved")
         return
 
+    '''
     # keep only main connected component
 
     # compute connected components
@@ -162,7 +163,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
         pd.DataFrame({}).to_parquet(out_file)
         print(datetime.now(), x_part, y_part, "0 cells saved")
         return
-
+    '''
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
@@ -179,6 +180,15 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "compute accessiblity")
     result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
     del graph, sources
+
+    # keep only the ones with data on it
+    #snappable_nodes = list(result.keys())
+    print(datetime.now(), x_part, y_part, "nb 1=", len(snappable_nodes))
+    snappable_nodes = filter(lambda n : result[n] is not None, snappable_nodes)
+    print(datetime.now(), x_part, y_part, "nb 2=", len(snappable_nodes))
+
+    print(datetime.now(), x_part, y_part, "build new nodes spatial index")
+    idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "extract cell accessibility data")
     grd_ids = [] #the cell identifiers
