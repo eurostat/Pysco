@@ -139,7 +139,8 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
         print(datetime.now(), x_part, y_part, "0 cells saved")
         return
 
-    '''
+
+
     # keep only main connected component
 
     # compute connected components
@@ -148,7 +149,8 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
 
     # keep only small components (remove the largest ones)
     ccs.sort(key=lambda a:-len(a))
-    while(len(ccs)>0 and len(ccs[0]) >= 100): ccs.pop(0)
+    threshold_connected_component_to_remove_node_nb = 20 #2000 = 2km
+    while(len(ccs)>0 and len(ccs[0]) >= threshold_connected_component_to_remove_node_nb): ccs.pop(0)
 
     # combine list of nodes of all connected components to remove
     ccs = set(chain.from_iterable(ccs))
@@ -162,7 +164,8 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
         pd.DataFrame({}).to_parquet(out_file)
         print(datetime.now(), x_part, y_part, "0 cells saved")
         return
-    '''
+
+
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
