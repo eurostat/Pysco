@@ -39,7 +39,7 @@ for grid_resolution in [100]: # 1000
 
             # choose number of processors, depending on service type and resolution
             if grid_resolution == 100:
-                num_processors_to_use = 6 if service == "education" else 2 #2
+                num_processors_to_use = 6 if service == "education" else 3 #2
             else: num_processors_to_use = 10
 
             # define and create ouput folder, depending on year, service, resolution
