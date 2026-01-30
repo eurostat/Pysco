@@ -36,6 +36,7 @@ for grid_resolution in [100]: # 1000
 
             # define tomtom year
             tomtom_year = "2019" if year == "2020" else year
+            if service == "evcs": tomtom_year = "2023"
 
             def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
             def duration_simplification_fun(x): return int(round(x))
