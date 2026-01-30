@@ -15,7 +15,6 @@ from utils.tomtomutils import weight_function, is_not_snappable_fun, initial_nod
 
 # folders where to find the inputs
 tomtom_data_folder = "/home/juju/geodata/tomtom/"
-pois_data_folder = "/home/juju/geodata/gisco/basic_services/"
 # folders where to store the outputs
 out_folder = '/home/juju/gisco/accessibility/'
 
@@ -30,8 +29,10 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for grid_resolution in [100]: # 1000
 
-    for service in ["healthcare", "education"]:
-        for year in ["2023", "2020"]: #"2023"
+    for service in ["healthcare", "education", "evcs"]:
+        years = ["2025", "2023"] if service == "evcs" else ["2023", "2020"]
+
+        for year in years:
 
             # define tomtom year
             tomtom_year = "2019" if year == "2020" else year
@@ -45,6 +46,8 @@ for grid_resolution in [100]: # 1000
 
             # define tomtom and POI loaders
             def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom"+tomtom_year+"12.gpkg", bbox=bbox) #, where="FOW!='20'"
+
+            pois_data_folder = "/home/juju/geodata/gisco/charging_stations/" if service == "evcs" else "/home/juju/geodata/gisco/basic_services/"
             def pois_loader(bbox): return iter_features(pois_data_folder+service+"_"+year+"_3035"+".gpkg", bbox=bbox) #, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
             # build accessibility grid
@@ -65,11 +68,11 @@ for grid_resolution in [100]: # 1000
                 cell_network_max_distance= 1500,
                 to_network_speed_ms= 15 /3.6,
                 file_size = 200000 if grid_resolution == 100 else 500000,
-                extention_buffer = 20000 if service=="education" else 60000,
+                extention_buffer = 20000 if service in ["education", "evcs"] else 60000,
                 detailled = True,
                 densification_distance = grid_resolution,
                 duration_simplification_fun = duration_simplification_fun,
-                num_processors = 5 if service == "education" else 2,
+                num_processors = 5 if service in ["education", "evcs"] else 2,
                 shuffle=True,
                 show_detailled_messages = False
             )
