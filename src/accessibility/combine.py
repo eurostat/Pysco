@@ -11,8 +11,6 @@ out_folder = '/home/juju/gisco/accessibility/'
 country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 nuts_gpkg = '/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg'
 
-services = ["education", "healthcare"] #education healthcare
-years = ["2020", "2023"] #"2023" 2020
 version_tag = "v2026_01"
 do_combination = True
 
@@ -21,7 +19,9 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for resolution in [100]:
 
-    for service in services:
+    for service in ["education", "healthcare", "evcs"]: #education healthcare:
+
+        years = ["2025", "2023"] if service == "evcs" else ["2023", "2020"]
 
         for year in years:
             print(resolution, service, year)
@@ -66,14 +66,15 @@ for resolution in [100]:
             #exclude: ["CH", "RS", "BA", "MK", "AL", "ME", "MD"],
             if service == "healthcare": cnts.append("CH")
             if year == "2023": cnts.append("AL")
-            geotiff_mask_by_countries(
-                geotiff,
-                geotiff,
-                gpkg = country_gpkg,
-                gpkg_column = 'CNTR_ID',
-                values = cnts,
-                compress="deflate",
-            )
+            if service != "evcs":
+                geotiff_mask_by_countries(
+                    geotiff,
+                    geotiff,
+                    gpkg = country_gpkg,
+                    gpkg_column = 'CNTR_ID',
+                    values = cnts,
+                    compress="deflate",
+                )
 
             if service == "education":
                 print(resolution, service, year, "apply mask to force some nuts regions to nodata")
