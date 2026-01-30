@@ -12,7 +12,8 @@ aggregate = True
 tiling = True
 
 version_tag = "v2026_01"
-services = ["healthcare"]  # healthcare
+# evcs: deal with other indicator
+services = ["healthcare", "education"]  # healthcare education evcs
 resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
 
 f0 = "/home/juju/gisco/accessibility/"
@@ -31,7 +32,9 @@ if aggregate:
             # it is better to resample all resolution from 100m one. Otherwise, we do averages of averages which may create some biais around places with many nodata pixels
             for resolution in resolutions:
                 print(datetime.now(), service, year, resolution)
-                resample_geotiff_aligned(f0 + "euro_access_"+service+"_"+year+"_100m_"+version_tag+".tif", folder+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m_"+version_tag+".tif", resolution, Resampling.med)
+                resample_geotiff_aligned(f0 + "euro_access_"+service+"_"+year+"_100m_"+version_tag+".tif",
+                                         folder+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m_"+version_tag+".tif",
+                                         resolution, Resampling.med)
 
             '''
             print(service, year, 1000)
@@ -59,9 +62,10 @@ if tiling:
 
             # prepare dict for geotiff bands
             dict = {}
+            k = 3
             for year in ["2020", "2023"]:
                 dict["dt_1_" + year] = {"file":folder+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+version_tag+".tif", "band":1}
-                dict["dt_a3_" + year] = {"file":folder+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+version_tag+".tif", "band":2}
+                dict["dt_a"+str(k)+"_" + year] = {"file":folder+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+version_tag+".tif", "band":2}
                 dict["POP_2021"] = { "file":folder_pop_tiff+"pop_2021_"+str(resolution)+".tif", "band":1 }
 
             # launch tiling
