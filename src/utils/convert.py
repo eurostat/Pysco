@@ -86,7 +86,8 @@ def parquet_grid_to_geotiff(
     tiff_nodata_value=-9999,
     dtype=np.int16,
     value_fun=None,
-    compress='none'
+    compress='none',
+    verbose=False,
 ):
     """
     Convert vector grid cells from one or several parquet grid files into a multi-band GeoTIFF.
@@ -132,9 +133,9 @@ def parquet_grid_to_geotiff(
 
         # no need to continue, assuming all parquet files have the same structure
         break
-    print(f"Grid resolution: {resolution}")
-    print(f"Grid CRS: {crs}")
-    print(f"Attributes to export: {attributes}")
+    if verbose: print(f"Grid resolution: {resolution}")
+    if verbose: print(f"Grid CRS: {crs}")
+    if verbose: print(f"Attributes to export: {attributes}")
 
     # Determine the bounding box
     if bbox is None:
@@ -156,7 +157,7 @@ def parquet_grid_to_geotiff(
                     if maxy is None or y_>maxy: maxy = y_
                 except: continue
         bbox = [minx, miny, maxx, maxy]
-        print(f"Extent: {bbox}")
+        if verbose: print(f"Extent: {bbox}")
 
     # Compute raster dimensions
     [minx, miny, maxx, maxy] = bbox
@@ -169,7 +170,7 @@ def parquet_grid_to_geotiff(
         for attr in attributes
     }
 
-    print("Populate raster bands")
+    if verbose: print("Populate raster bands")
 
     nb = len(input_parquet_files)
     i=1
@@ -208,7 +209,7 @@ def parquet_grid_to_geotiff(
                 band_arrays[a][row, col] = value
 
     # Write to GeoTIFF
-    print(datetime.now(), f"Writing GeoTIFF to {output_tiff}")
+    if verbose: print(datetime.now(), f"Writing GeoTIFF to {output_tiff}")
     with rasterio.open(
         output_tiff,
         'w',
@@ -270,7 +271,7 @@ def gpkg_grid_to_geotiff(
                 resolution = int(id)
                 break
         if resolution is not None: break
-    print(f"Grid resolution: {resolution}")
+    #print(f"Grid resolution: {resolution}")
 
     # Determine attributes to export
     # It is assumed all GPKG files have the same structure
