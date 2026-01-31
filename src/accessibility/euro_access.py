@@ -73,7 +73,7 @@ for grid_resolution in [100]: # 1000
                 detailled = True,
                 densification_distance = grid_resolution,
                 duration_simplification_fun = duration_simplification_fun,
-                num_processors = 5 if service in ["education", "evcs"] else 2,
+                num_processors = 4 if service in ["education", "evcs"] else 2,
                 shuffle=True,
                 show_detailled_messages = False
             )
