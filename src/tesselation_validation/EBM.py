@@ -16,6 +16,7 @@ os.makedirs(out_folder, exist_ok=True)
 for case in ["NUTS_1", "NUTS_2", "NUTS_3", "LAU", "A"]:
     print(datetime.now(), "*******", case)
 
+    '''
     print(datetime.now(), "check_ogc_validity")
     validate_polygonal_tesselation(
                 folder + "EBM_"+case+"_"+version+".gpkg",
@@ -45,6 +46,7 @@ for case in ["NUTS_1", "NUTS_2", "NUTS_3", "LAU", "A"]:
                 check_noding_issues=True,
                 node_to_segment_distance_threshold=0.5,
                 )
+    '''
 
     print(datetime.now(), "check_thin_parts")
     validate_polygonal_tesselation(
@@ -61,4 +63,3 @@ for case in ["NUTS_1", "NUTS_2", "NUTS_3", "LAU", "A"]:
                 check_polygonisation=True,
                 polygonation_check_distance_threshold=1,
                 )
-
