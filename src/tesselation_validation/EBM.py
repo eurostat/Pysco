@@ -13,7 +13,7 @@ out_folder = "/home/juju/Bureau/EBM_"+version+"_validation/"
 os.makedirs(out_folder, exist_ok=True)
 
 
-for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
+for case in ["NUTS_1", "NUTS_2", "NUTS_3", "LAU", "A"]:
     print(datetime.now(), "*******", case)
 
     print(datetime.now(), "check_ogc_validity")
@@ -61,3 +61,4 @@ for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
                 check_polygonisation=True,
                 polygonation_check_distance_threshold=1,
                 )
+
