@@ -13,7 +13,8 @@ out_folder = "/home/juju/Bureau/EBM_"+version+"_validation/"
 os.makedirs(out_folder, exist_ok=True)
 
 
-for case in ["NUTS_1", "NUTS_2", "NUTS_3", "LAU", "A"]:
+#for case in ["NUTS_1", "NUTS_2", "NUTS_3", "LAU", "A"]:
+for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
     print(datetime.now(), "*******", case)
 
     '''
