@@ -7,8 +7,11 @@ from tesselation_validation.validation import validate_polygonal_tesselation
 
 
 folder = "/home/juju/geodata/eurogeographics/EBM/"
-out_folder = "/home/juju/Bureau/EBM_2025_2_validation/"
-version = "2025_2"
+version = "2026"
+out_folder = "/home/juju/Bureau/EBM_"+version+"_validation/"
+os.makedirs(out_folder, exist_ok=True)
+
+
 for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
     print("*******", case)
 
@@ -54,5 +57,3 @@ for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
                 check_polygonisation=True,
                 polygonation_check_distance_threshold=1,
                 )
-
-
