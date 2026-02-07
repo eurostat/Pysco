@@ -4,7 +4,6 @@ from shapely.geometry import Point, LineString
 from shapely.ops import polygonize, unary_union, nearest_points
 
 
-
 def validate_polygonal_tesselation(gpkg_path, output_gpkg, bbox=None,
              check_ogc_validity=False,
              check_thin_parts=False,
@@ -260,4 +259,22 @@ def count_vertices(geometry):
         return num_vertices
     else:
         raise ValueError(f"Unsupported geometry type: {geometry.geom_type}")
+
+
+
+
+def check_geometry_type(gpkg_path, bbox=None):
+
+    print("load features")
+    gdf = gpd.read_file(gpkg_path, bbox=bbox)
+
+    # check OGC validity
+    print("get feature geometries")
+    gs = gdf["geometry"].geometry.tolist()
+    print(len(gs), "feature geometries")
+
+    print("check geometry type")
+    for g in gs:
+        print(g.geom_type)
+        #if g.geom_type != "Polygon" and g.geom_type != "MultiPolygon":
 
