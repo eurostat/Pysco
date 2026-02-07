@@ -265,15 +265,14 @@ def count_vertices(geometry):
 
 def check_geometry_type(gpkg_path, expected_type=None,bbox=None):
 
-    print("load features")
+    #print("load features")
     gdf = gpd.read_file(gpkg_path, bbox=bbox)
 
-    # check OGC validity
-    print("get feature geometries")
+    #print("get feature geometries")
     gs = gdf["geometry"].geometry.tolist()
-    print(len(gs), "feature geometries")
+    #print(len(gs), "feature geometries")
 
-    print("check geometry type")
+    #print("check geometry type")
     for g in gs:
         if expected_type is None:
             print(g.geom_type)
