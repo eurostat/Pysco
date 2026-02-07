@@ -263,7 +263,7 @@ def count_vertices(geometry):
 
 
 
-def check_geometry_type(gpkg_path, bbox=None):
+def check_geometry_type(gpkg_path, expected_type=None,bbox=None):
 
     print("load features")
     gdf = gpd.read_file(gpkg_path, bbox=bbox)
@@ -275,6 +275,10 @@ def check_geometry_type(gpkg_path, bbox=None):
 
     print("check geometry type")
     for g in gs:
-        print(g.geom_type)
-        #if g.geom_type != "Polygon" and g.geom_type != "MultiPolygon":
+        if expected_type is None:
+            print(g.geom_type)
+        else:
+            if g.geom_type != expected_type:
+                print("Unexpected geometry type:", g.geom_type, "expected:", expected_type)
+                break
 

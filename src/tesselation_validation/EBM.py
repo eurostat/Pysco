@@ -14,6 +14,7 @@ os.makedirs(out_folder, exist_ok=True)
 
 if True:
     for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
+        print(datetime.now(), "*******", case)
         check_geometry_type(folder + "EBM_"+case+"_"+version+".gpkg")
 
 
