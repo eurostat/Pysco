@@ -95,7 +95,20 @@ def validation(cells, rules, file_name):
             for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
                 v = c[att]
                 ci = c[att+"_CI"]
-                #confidencial
+                #confidential
+                if ci==-9999 and v==-9999: continue
+                #non confidential
+                if ci==None and v!=-9999: continue
+                #EMP special case, for FR and DE
+                #if att=="EMP" and ci==None and v==None: continue
+                err_codes.append(att+"_CI_inconsistency_ci="+str(ci)+"_value="+str(v))
+
+        #check consitency CI_XXX and XXX - no value provided for confidential figures
+        if "ci_consis_1" in rules:
+            for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
+                v = c[att]
+                ci = c[att+"_CI"]
+                #confidential
                 if ci==-9999 and v==-9999: continue
                 #non confidential
                 if ci==None and v!=-9999: continue
@@ -176,7 +189,7 @@ def validation(cells, rules, file_name):
 print(datetime.now(), "Run validation cell by cell...")
 
 #list of rules
-rules = ["ci_val", "ci_consis", "populated_val", "populated_consis", "pop_values_none", "pop_values_non_neg",
+rules = ["ci_val", "ci_consis", "ci_consis_1", "populated_val", "populated_consis", "pop_values_none", "pop_values_non_neg",
          "emp_smaller_than_pop", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
 
 #one file per validation rule
