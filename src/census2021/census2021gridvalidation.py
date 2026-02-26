@@ -108,13 +108,8 @@ def validation(cells, rules, file_name):
             for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
                 v = c[att]
                 ci = c[att+"_CI"]
-                #confidential
-                if ci==-9999 and v==-9999: continue
-                #non confidential
-                if ci==None and v!=-9999: continue
-                #EMP special case, for FR and DE
-                #if att=="EMP" and ci==None and v==None: continue
-                err_codes.append(att+"_CI_inconsistency_ci="+str(ci)+"_value="+str(v))
+                if ci==-9999 and v>0: 
+                    err_codes.append(att+"_CI_inconsistency_1_ci="+str(ci)+"_value="+str(v))
 
         #check POPULATED values
         if "populated_val" in rules:
