@@ -53,8 +53,8 @@ for resolution in [100]:
                     bbox = bbox,
                     attributes=["duration_s_1", "duration_average_s_" + str(k)],
                     parquet_nodata_values=[-1],
-                    dtype=np.int16,
-                    value_fun= lambda v:v if v<32767 else 32767, # np.int16(v),
+                    dtype = np.int32 if service=="evcs" else np.int16,
+                    value_fun= lambda v:v if service=="evcs" else lambda v:v if v<32767 else 32767, # np.int16(v),
                     compress='deflate'
                 )
                 files.clear()
