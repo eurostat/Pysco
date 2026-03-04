@@ -4,7 +4,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
-from utils.tomtomutils import weight_function, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun, is_start_blocked, is_end_blocked
+from utils.tomtomutils import weight_function, weight_function_length, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun, is_start_blocked, is_end_blocked
 
 #TODO
 # ensures all POIs are connected to a large cc when going out
@@ -58,7 +58,7 @@ for grid_resolution in [100]: # 1000
                 bbox = bbox,
                 out_folder = out_folder_service_year,
                 k = 5 if service == "evcs" else 3,
-                weight_function = weight_function,
+                weight_function = weight_function_length if service == "evcs" else weight_function,
                 is_not_snappable_fun = is_not_snappable_fun,
                 initial_node_level_fun = initial_node_level_fun,
                 is_start_blocked = is_start_blocked,
