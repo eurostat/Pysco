@@ -59,6 +59,31 @@ def weight_function(feature, length):
         return [ w_pos, w_neg ]
 
 
+def weight_function_length(feature, length):
+    p = feature['properties']
+    fow = p['FOW']
+
+    # ferry case: force 20 kph
+    if fow==-1 and p['FEATTYP']==4130: return [length,length]
+    # very slow cases, for pedestrian areas
+    if fow in [14,15,17,18]: return [length,length]
+    # stairs
+    if fow==19: return [None,None]
+    # road for authorities
+    if fow==20: return [None,None]
+
+    # get average speed
+    kph_pos = p['AVERAGE_SPEED_POS']
+    kph_neg = p['AVERAGE_SPEED_NEG']
+
+    if kph_pos == None and kph_neg == None: return [length, length]
+    else:
+        w_pos = None if kph_pos == None else length
+        w_neg = None if kph_neg == None else length
+        return [ w_pos, w_neg ]
+
+
+
 # return wether a section cannot be used as access point. Residential roads can, highways and ferry lines cannot.
 blocked = [1,2,11,12,21,22]
 def is_not_snappable_fun(f):
