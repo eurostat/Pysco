@@ -66,8 +66,11 @@ if tiling:
 
             # prepare dict for geotiff bands
             dict = {}
-            k = 3
-            for year in ["2020", "2023"]:
+
+            years = ["2025", "2023"] if service == "evcs" else ["2023", "2020"]
+            k = 5 if service == "evcs" else 3
+
+            for year in years:
                 dict["dt_1_" + year] = {"file":folder+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+version_tag+".tif", "band":1}
                 dict["dt_a"+str(k)+"_" + year] = {"file":folder+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+version_tag+".tif", "band":2}
                 dict["POP_2021"] = { "file":folder_pop_tiff+"pop_2021_"+str(resolution)+".tif", "band":1 }
