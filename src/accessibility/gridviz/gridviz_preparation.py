@@ -11,9 +11,9 @@ from utils.geotiff import resample_geotiff_aligned
 aggregate = True
 tiling = True
 
-version_tag = "v2026_01"
+version_tag = "v2026_03"
 # evcs: deal with other indicator
-services = ["healthcare", "education"]  # healthcare education evcs
+services = ["evcs"]  # healthcare education 
 resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
 
 f0 = "/home/juju/gisco/accessibility/"
