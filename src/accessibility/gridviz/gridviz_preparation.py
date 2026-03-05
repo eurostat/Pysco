@@ -26,8 +26,12 @@ folder_pop_tiff = "/home/juju/geodata/census/2021/aggregated_tiff/"
 # aggregate at various resolutions - average
 if aggregate:
     print(datetime.now(), "aggregate")
-    for year in ["2023", "2020"]:
-        for service in services:
+    for service in services:
+
+        years = ["2025", "2023"] if service == "evcs" else ["2023", "2020"]
+        k = 5 if service == "evcs" else 3
+
+        for year in years:
 
             # it is better to resample all resolution from 100m one. Otherwise, we do averages of averages which may create some biais around places with many nodata pixels
             for resolution in resolutions:
