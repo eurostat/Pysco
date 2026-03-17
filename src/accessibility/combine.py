@@ -54,7 +54,7 @@ for resolution in [100]:
                     attributes=["duration_s_1", "duration_average_s_" + str(k)],
                     parquet_nodata_values=[-1],
                     dtype = np.int32 if service=="evcp" else np.int16,
-                    value_fun= lambda v:v if service=="evcp" else lambda v:v if v<32767 else 32767, # np.int16(v),
+                    value_fun= (lambda v:v) if service=="evcp" else (lambda v: (v if v<32767 else 32767)), # np.int16(v),
                     compress='deflate'
                 )
                 files.clear()

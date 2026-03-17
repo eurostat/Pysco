@@ -200,10 +200,17 @@ def parquet_grid_to_geotiff(
             if row <0 or row > height: continue
 
             # set raster values at pixel position
+            print(attributes)
             for a in attributes:
+                print(a)
+                print(cell)
                 value = getattr(cell, a)
+                print(value)
+                print(value_fun)
                 if value_fun: value = value_fun(value)
+                print(value)
                 if value is None: continue
+                print(value)
                 if isnan(value): continue
                 if parquet_nodata_values is not None and value in parquet_nodata_values: continue
                 band_arrays[a][row, col] = value
