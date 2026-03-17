@@ -13,7 +13,7 @@ tiling = True
 
 version_tag = "v2026_03"
 # evcp: deal with other indicator
-services = ["evcp"]  # healthcare education 
+services = ["healthcare"]  # healthcare education evcp
 resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
 
 f0 = "/home/juju/gisco/accessibility/"
