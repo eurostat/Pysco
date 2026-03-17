@@ -33,6 +33,7 @@ for grid_resolution in [100]: # 1000
         years = ["2025", "2023"] if service == "evcs" else ["2023", "2020"]
 
         for year in years:
+            print(grid_resolution, service, year)
 
             # define tomtom year
             tomtom_year = "2019" if year == "2020" else year
