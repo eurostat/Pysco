@@ -19,10 +19,10 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for resolution in [100]:
 
-    for service in ["evcs"]: #education healthcare evcs
+    for service in ["evcp"]: #education healthcare evcp
 
-        years = ["2025", "2023"] if service == "evcs" else ["2023", "2020"]
-        k = 5 if service == "evcs" else 3
+        years = ["2025", "2023"] if service == "evcp" else ["2023", "2020"]
+        k = 5 if service == "evcp" else 3
 
         for year in years:
             print(resolution, service, year)
@@ -53,8 +53,8 @@ for resolution in [100]:
                     bbox = bbox,
                     attributes=["duration_s_1", "duration_average_s_" + str(k)],
                     parquet_nodata_values=[-1],
-                    dtype = np.int32 if service=="evcs" else np.int16,
-                    value_fun= lambda v:v if service=="evcs" else lambda v:v if v<32767 else 32767, # np.int16(v),
+                    dtype = np.int32 if service=="evcp" else np.int16,
+                    value_fun= lambda v:v if service=="evcp" else lambda v:v if v<32767 else 32767, # np.int16(v),
                     compress='deflate'
                 )
                 files.clear()
@@ -67,7 +67,7 @@ for resolution in [100]:
             #exclude: ["CH", "RS", "BA", "MK", "AL", "ME", "MD"],
             if service == "healthcare": cnts.append("CH")
             if year == "2023": cnts.append("AL")
-            if service != "evcs":
+            if service != "evcp":
                 geotiff_mask_by_countries(
                     geotiff,
                     geotiff,

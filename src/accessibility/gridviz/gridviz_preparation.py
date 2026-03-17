@@ -12,8 +12,8 @@ aggregate = True
 tiling = True
 
 version_tag = "v2026_03"
-# evcs: deal with other indicator
-services = ["evcs"]  # healthcare education 
+# evcp: deal with other indicator
+services = ["evcp"]  # healthcare education 
 resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
 
 f0 = "/home/juju/gisco/accessibility/"
@@ -28,8 +28,8 @@ if aggregate:
     print(datetime.now(), "aggregate")
     for service in services:
 
-        years = ["2025", "2023"] if service == "evcs" else ["2023", "2020"]
-        k = 5 if service == "evcs" else 3
+        years = ["2025", "2023"] if service == "evcp" else ["2023", "2020"]
+        k = 5 if service == "evcp" else 3
 
         for year in years:
 
@@ -67,8 +67,8 @@ if tiling:
             # prepare dict for geotiff bands
             dict = {}
 
-            years = ["2025", "2023"] if service == "evcs" else ["2023", "2020"]
-            k = 5 if service == "evcs" else 3
+            years = ["2025", "2023"] if service == "evcp" else ["2023", "2020"]
+            k = 5 if service == "evcp" else 3
 
             for year in years:
                 dict["dt_1_" + year] = {"file":folder+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+version_tag+".tif", "band":1}

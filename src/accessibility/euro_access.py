@@ -29,15 +29,15 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for grid_resolution in [100]: # 1000
 
-    for service in ["healthcare", "education", "evcs"]:
-        years = ["2025", "2023"] if service == "evcs" else ["2023", "2020"]
+    for service in ["healthcare", "education", "evcp"]:
+        years = ["2025", "2023"] if service == "evcp" else ["2023", "2020"]
 
         for year in years:
             print(grid_resolution, service, year)
 
             # define tomtom year
             tomtom_year = "2019" if year == "2020" else year
-            if service == "evcs": tomtom_year = "2023"
+            if service == "evcp": tomtom_year = "2023"
 
             def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
             def duration_simplification_fun(x): return int(round(x))
@@ -49,7 +49,7 @@ for grid_resolution in [100]: # 1000
             # define tomtom and POI loaders
             def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom"+tomtom_year+"12.gpkg", bbox=bbox) #, where="FOW!='20'"
 
-            pois_data_folder = "/home/juju/geodata/gisco/charging_stations/" if service == "evcs" else "/home/juju/geodata/gisco/basic_services/"
+            pois_data_folder = "/home/juju/geodata/gisco/charging_points/" if service == "evcp" else "/home/juju/geodata/gisco/basic_services/"
             pois_data_version = "20260227" if service == "healthcare" else ""
             def pois_loader(bbox): return iter_features(pois_data_folder+service+"_"+year+"_3035_"+pois_data_version+".gpkg", bbox=bbox) #, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
@@ -59,8 +59,8 @@ for grid_resolution in [100]: # 1000
                 road_network_loader = road_network_loader,
                 bbox = bbox,
                 out_folder = out_folder_service_year,
-                k = 5 if service == "evcs" else 3,
-                weight_function = weight_function_length if service == "evcs" else weight_function,
+                k = 5 if service == "evcp" else 3,
+                weight_function = weight_function_length if service == "evcp" else weight_function,
                 is_not_snappable_fun = is_not_snappable_fun,
                 initial_node_level_fun = initial_node_level_fun,
                 is_start_blocked = is_start_blocked,
@@ -69,13 +69,13 @@ for grid_resolution in [100]: # 1000
                 cell_id_fun = cell_id_fun,
                 grid_resolution= grid_resolution,
                 cell_network_max_distance= 1500,
-                to_network_speed_ms= 1 if service == "evcs" else 15 / 3.6,
+                to_network_speed_ms= 1 if service == "evcp" else 15 / 3.6,
                 file_size = 200000 if grid_resolution == 100 else 500000,
-                extention_buffer = 20000 if service in ["education", "evcs"] else 60000,
+                extention_buffer = 20000 if service in ["education", "evcp"] else 60000,
                 detailled = True,
                 densification_distance = grid_resolution,
                 duration_simplification_fun = duration_simplification_fun,
-                num_processors = 3 if service in ["education", "evcs"] else 2,
+                num_processors = 3 if service in ["education", "evcp"] else 2,
                 shuffle=True,
                 show_detailled_messages = False
             )
