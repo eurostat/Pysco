@@ -94,6 +94,6 @@ grid2stat("/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
           #"/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
           "NUTS_ID",
           "/home/juju/Bureau/out.csv",
-          band=1, out_col="popu_2018", aggegation_func=lambda arr: arr.max()
+          band=1, out_col="popu_2018", aggegation_func=None
           )
 
