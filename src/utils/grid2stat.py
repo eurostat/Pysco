@@ -70,8 +70,8 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, agge
             if grid.nodata is not None:
                 masked_values = masked_values[masked_values != grid.nodata]  
 
-            #print(type(masked_values))
-            #print(masked_values)
+            print(type(masked_values))
+            print(masked_values)
 
             # Calculate aggregates value
             agg_value = aggegation_func(masked_values)
