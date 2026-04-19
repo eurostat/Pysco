@@ -120,9 +120,12 @@ def save_features_to_gpkg(fs, out_gpkg_file, crs_epsg="3035"):
 
 def iter_features(filepath, layername=None, bbox=None, where=None):
     """
-    :param bbox: Tuple (minx, miny, maxx, maxy) pour filtrer géographiquement
-    :param where: Clause SQL WHERE (ex : "population > 1000")
-    :return: Itérateur sur les features filtrées
+    Returns an iterator that yields features from a GeoPackage file, with optional filtering by bounding box and SQL WHERE clause.
+    :param filepath: Path to the GeoPackage file.
+    :param layername: Name of the layer to read from the GeoPackage (optional).
+    :param bbox: Tuple (minx, miny, maxx, maxy) to filter geographically (optional).
+    :param where: Clause SQL WHERE (ex : "population > 1000") (optional).
+    :return: Iterator yielding features as dictionaries.
     """
     with fiona.open(filepath, layer=layername) as src:
         for _, feature in src.items(bbox=bbox, where=where):

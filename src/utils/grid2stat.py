@@ -1,16 +1,16 @@
 # functions to aggregate statistics from grid to statistical units.
 
 import rasterio
-import pandas as pd
-from rasterio.features import geometry_mask
 import fiona
 from shapely.geometry import shape
+from rasterio.features import geometry_mask
+import pandas as pd
 
 #TODO
 # use generic iterator instead of gpkg file
 # test with aggregation based on several bands, from separate tiffs ?
 # check how pixel centres are handled in the geometry mask - what happens when a pixel is partially covered by the geometry ? when centre exactly on the limit - counted twice ?
-
+# export as parquet
 
 def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, aggegation_func=None):
     """
@@ -70,8 +70,8 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, agge
             if grid.nodata is not None:
                 masked_values = masked_values[masked_values != grid.nodata]  
 
-            print(type(masked_values))
-            print(masked_values)
+            #print(type(masked_values))
+            #print(masked_values)
 
             # Calculate aggregates value
             agg_value = aggegation_func(masked_values)
