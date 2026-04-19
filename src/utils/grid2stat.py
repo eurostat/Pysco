@@ -6,6 +6,13 @@ import pandas as pd
 from rasterio.features import geometry_mask
 
 
+#TODO
+# test simple example
+# test with custom aggregation function
+# test with aggregation based on several bands, from separate tiffs ?
+# read gpkg with fiona
+# use generic iterator instead of gpkg file
+
 
 def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None):
     """
