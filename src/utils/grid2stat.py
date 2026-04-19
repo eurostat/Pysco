@@ -5,6 +5,7 @@ import fiona
 from shapely.geometry import shape
 from rasterio.features import geometry_mask
 import pandas as pd
+import numpy as np
 
 #TODO
 # use generic iterator instead of gpkg file
@@ -66,6 +67,10 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, agge
 
             # Extract values from the grid that fall within the mask
             masked_values = grid_data[mask]
+
+            masked = np.where(mask, grid_data, np.nan)
+            #rows, cols = np.where(mask)
+            #values = grid_data[rows, cols]
 
             # filter to remove no_data values
             if grid.nodata is not None:
