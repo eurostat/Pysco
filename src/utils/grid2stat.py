@@ -9,7 +9,8 @@ import pandas as pd
 #TODO
 # use generic iterator instead of gpkg file
 # test with aggregation based on several bands, from separate tiffs ?
-# check how pixel centres are handled in the geometry mask - what happens when a pixel is partially covered by the geometry ? when centre exactly on the limit - counted twice ?
+# check what happens when centre exactly on the limit - counted twice ?
+# handle intersection proportion count
 # export as parquet
 
 def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, aggegation_func=None):
