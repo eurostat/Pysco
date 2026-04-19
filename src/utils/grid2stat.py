@@ -7,7 +7,7 @@ from rasterio.features import geometry_mask
 
 
 
-def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv):
+def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1):
     """
     Aggregate statistics from grid to statistical units.
 
@@ -28,9 +28,9 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv):
         The function saves the aggregated statistics to a CSV file.
     """
 
-    # Read the grid TIFF file
+    # Open the grid TIFF file
     with rasterio.open(grid_tiff) as src:
-        grid_data = src.read(1)
+        grid_data = src.read(band)
         grid_transform = src.transform
 
     # Read the statistical units GeoPackage file
