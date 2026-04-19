@@ -7,8 +7,8 @@ import fiona
 from shapely.geometry import shape
 
 #TODO
-# test with aggregation based on several bands, from separate tiffs ?
 # use generic iterator instead of gpkg file
+# test with aggregation based on several bands, from separate tiffs ?
 # check how pixel centres are handled in the geometry mask - what happens when a pixel is partially covered by the geometry ? when centre exactly on the limit - counted twice ?
 
 
@@ -40,9 +40,9 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, agge
     """
 
     # Open the grid TIFF file
-    with rasterio.open(grid_tiff) as src:
-        grid_data = src.read(band)
-        grid_transform = src.transform
+    with rasterio.open(grid_tiff) as grid:
+        grid_data = grid.read(band)
+        grid_transform = grid.transform
 
     # Set the aggregation function
     if aggegation_func is None:
@@ -67,8 +67,8 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, agge
             masked_values = grid_data[mask]
 
             # filter to remove no_data values
-            if src.nodata is not None:
-                masked_values = masked_values[masked_values != src.nodata]  
+            if grid.nodata is not None:
+                masked_values = masked_values[masked_values != grid.nodata]  
 
             #print(type(masked_values))
             #print(masked_values)
