@@ -10,7 +10,7 @@ import pandas as pd
 # use generic iterator instead of gpkg file
 # test with aggregation based on several bands, from separate tiffs ?
 # check what happens when centre exactly on the limit - counted twice ?
-# handle intersection proportion count
+# handle intersection-area weighted case - with exact intersection computation or 10*resampling ?
 # export as parquet
 
 def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, aggegation_func=None):
