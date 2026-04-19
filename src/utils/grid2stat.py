@@ -75,7 +75,7 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, agge
         #print(masked_values)
 
         # Calculate aggregates value
-        agg_value = masked_values.sum()
+        agg_value = aggegation_func(masked_values)
 
         # Make output result
         result = { stat_id: str(row[stat_id]) }
@@ -96,5 +96,6 @@ grid2stat("/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
           #"/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
           "NUTS_ID",
           "/home/juju/Bureau/out.csv",
-          band=1, out_col="popu_2018")
+          band=1, out_col="popu_2018", aggegation_func=lambda arr: arr.max()
+          )
 
