@@ -50,6 +50,7 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None):
 
     # Loop through each statistical unit and aggregate statistics from the grid
     for index, row in stat_units.iterrows():
+        print(row[stat_id])
 
         # Create a mask for the current statistical unit
         mask = geometry_mask([row['geometry']], transform=grid_transform, invert=True, out_shape=grid_data.shape)
