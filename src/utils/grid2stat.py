@@ -1,13 +1,12 @@
 # functions to aggregate statistics from grid to statistical units.
 
 import rasterio
-import geopandas as gpd
 import pandas as pd
 from rasterio.features import geometry_mask
-
+import fiona
+from shapely.geometry import shape
 
 #TODO
-# read gpkg with fiona
 # test with aggregation based on several bands, from separate tiffs ?
 # use generic iterator instead of gpkg file
 # check how pixel centres are handled in the geometry mask - what happens when a pixel is partially covered by the geometry ? when centre exactly on the limit - counted twice ?
@@ -45,9 +44,6 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, agge
         grid_data = src.read(band)
         grid_transform = src.transform
 
-    # Read the statistical units GeoPackage file
-    stat_units = gpd.read_file(stat_gpkg)
-
     # Set the aggregation function
     if aggegation_func is None:
         aggegation_func = lambda arr: arr.sum()  # Default to sum if no custom function is provided
@@ -56,31 +52,36 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, agge
     results = []
 
     # Loop through each statistical unit and aggregate statistics from the grid
-    for index, row in stat_units.iterrows():
-        print(row[stat_id])
-        geom = row['geometry']
+    with fiona.open(stat_gpkg) as fs:
+        for f in fs:
+            sid = f["properties"][stat_id]
+            print(sid)
 
-        # Create a mask for the current statistical unit - True for pixels whose centres fall within the geometry, False otherwise
-        mask = geometry_mask([geom], transform=grid_transform, invert=True, out_shape=grid_data.shape, all_touched=False)
+            # Make geometry from the feature
+            g = shape(f["geometry"])
 
-        # Extract values from the grid that fall within the mask
-        masked_values = grid_data[mask]
+            # Create a mask for the current statistical unit - True for pixels whose centres fall within the geometry, False otherwise
+            mask = geometry_mask([g], transform=grid_transform, invert=True, out_shape=grid_data.shape, all_touched=False)
 
-        # filter to remove no_data values
-        masked_values = masked_values[masked_values != src.nodata]  
+            # Extract values from the grid that fall within the mask
+            masked_values = grid_data[mask]
 
-        #print(type(masked_values))
-        #print(masked_values)
+            # filter to remove no_data values
+            if src.nodata is not None:
+                masked_values = masked_values[masked_values != src.nodata]  
 
-        # Calculate aggregates value
-        agg_value = aggegation_func(masked_values)
+            #print(type(masked_values))
+            #print(masked_values)
 
-        # Make output result
-        result = { stat_id: str(row[stat_id]) }
-        result[out_col] = agg_value
+            # Calculate aggregates value
+            agg_value = aggegation_func(masked_values)
 
-        # Append results to the list
-        results.append(result)
+            # Make output result
+            result = { stat_id: str(id) }
+            result[out_col] = agg_value
+
+            # Append results to the list
+            results.append(result)
 
     # Convert results to a DataFrame and save to CSV
     results_df = pd.DataFrame(results)
