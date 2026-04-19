@@ -51,12 +51,14 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None):
     # Loop through each statistical unit and aggregate statistics from the grid
     for index, row in stat_units.iterrows():
         print(row[stat_id])
+        geom = row['geometry']
 
-        # Create a mask for the current statistical unit
-        mask = geometry_mask([row['geometry']], transform=grid_transform, invert=True, out_shape=grid_data.shape)
+        # Create a mask for the current statistical unit - True for pixels whose centres fall within the geometry, False otherwise
+        mask = geometry_mask([geom], transform=grid_transform, invert=True, out_shape=grid_data.shape, all_touched=False)
 
         # Extract values from the grid that fall within the mask
         masked_values = grid_data[mask]
+
         # filter to remove no_data values
         masked_values = masked_values[masked_values != src.nodata]  
 
