@@ -57,6 +57,11 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None):
 
         # Extract values from the grid that fall within the mask
         masked_values = grid_data[mask]
+        # filter to remove no_data values
+        masked_values = masked_values[masked_values != src.nodata]  
+
+        #print(type(masked_values))
+        #print(masked_values)
 
         # Calculate aggregates value
         agg_value = masked_values.sum()
@@ -76,7 +81,8 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None):
 
 # test
 grid2stat("/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
-          "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
+          "/home/juju/Bureau/test.gpkg",
+          #"/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
           "NUTS_ID",
           "/home/juju/Bureau/out.csv",
           band=1, out_col="popu_2018")
