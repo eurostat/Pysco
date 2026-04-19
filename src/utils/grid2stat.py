@@ -77,7 +77,7 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, agge
             agg_value = aggegation_func(masked_values)
 
             # Make output result
-            result = { stat_id: str(id) }
+            result = { stat_id: str(sid) }
             result[out_col] = agg_value
 
             # Append results to the list
