@@ -7,7 +7,6 @@ from rasterio.features import geometry_mask
 
 
 #TODO
-# test simple example
 # test with custom aggregation function
 # test with aggregation based on several bands, from separate tiffs ?
 # read gpkg with fiona
@@ -16,7 +15,7 @@ from rasterio.features import geometry_mask
 # check how pixel centres are handled in the geometry mask - what happens when a pixel is partially covered by the geometry ? when centre exactly on the limit - counted twice ?
 
 
-def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None):
+def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, aggegation_func=None):
     """
     Aggregate statistics from grid to statistical units.
 
@@ -30,6 +29,12 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None):
         Name of the identifier column in the statistical units GeoPackage.
     out_csv : str
         Path to the output CSV file where aggregated statistics will be saved.
+    band : int, optional
+        Band number to read from the grid TIFF file (default is 1).
+    out_col : str, optional
+        Name of the output column in the CSV file for the aggregated statistic (default is None, which will use the name of the input band).
+    aggegation_func : function, optional
+        Custom aggregation function to apply to the masked values (default is None, which will use sum).
 
     Returns
     -------
@@ -44,6 +49,10 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None):
 
     # Read the statistical units GeoPackage file
     stat_units = gpd.read_file(stat_gpkg)
+
+    # Set the aggregation function
+    if aggegation_func is None:
+        aggegation_func = lambda arr: arr.sum()  # Default to sum if no custom function is provided
 
     # Initialize a list to store results
     results = []
