@@ -62,7 +62,6 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, agge
 
             # Create a mask for the current statistical unit - True for pixels whose centres fall within the geometry, False otherwise
             mask = geometry_mask([g], transform=grid_transform, invert=True, out_shape=grid_data.shape, all_touched=False)
-            print(mask)
 
             # Extract values from the grid that fall within the mask
             masked_values = grid_data[mask]
