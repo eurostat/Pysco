@@ -80,15 +80,13 @@ def grid2stat(tiff_dict, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=Fal
             #print(masked)
 
             rows, cols = np.where(mask)
-            values = grid_data[0][rows, cols]
-            #print(len(rows))
-            #print(len(cols))
-            #print(len(values))
-
-            # filter to remove no_data values
-            if grid.nodata is not None:
-                #masked_values = masked_values[masked_values != grid.nodata]  
-                values = values[values != grid.nodata]  
+            values = []
+            for i in range(len(grid_data)):
+                v = grid_data[0][rows, cols]
+                # filter to remove no_data values
+                nd = grid_nodata[i]
+                if nd is not None: v = v[v != nd]  
+                values.append(v)
 
             #print(type(masked_values))
             #print(masked_values)
@@ -100,7 +98,7 @@ def grid2stat(tiff_dict, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=Fal
             for out_col, aggegation_func in out_dict.items():
                 if aggegation_func is None: aggegation_func = aggegation_func_default
                 #agg_value = aggegation_func(masked_values)
-                agg_value = aggegation_func(values)
+                agg_value = aggegation_func(values[0]) #TODO - handle several bands
                 result[out_col] = agg_value
             #print(result)
 
