@@ -8,7 +8,6 @@ import pandas as pd
 import numpy as np
 
 #TODO
-# make several agg indicators
 # get mask values with indices
 # test with aggregation based on several bands, from separate tiffs ?
 # use generic iterator instead of gpkg file
@@ -95,13 +94,13 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_dict=None):
                 if aggegation_func is None: aggegation_func = aggegation_func_default
                 agg_value = aggegation_func(masked_values)
                 result[out_col] = agg_value
+            #print(result)
 
             # Append results to the list
             results.append(result)
 
-    # Convert results to a DataFrame and save to CSV
-    results_df = pd.DataFrame(results)
-    results_df.to_csv(out_csv, index=False)
+    # Save to CSV
+    pd.DataFrame(results).to_csv(out_csv, index=False)
 
 
 
@@ -112,6 +111,12 @@ grid2stat("/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
           "NUTS_ID",
           "/home/juju/Bureau/out.csv",
           band=1,
-          out_col="popu_2018", aggegation_func=None
+          out_dict={
+            "sum": lambda arr: arr.sum(),
+            "mean": lambda arr: arr.mean(),
+            "max": lambda arr: arr.max(),
+            "min": lambda arr: arr.min(),
+            "count": lambda arr: len(arr)
+          }
           )
 
