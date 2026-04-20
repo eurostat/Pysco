@@ -83,7 +83,7 @@ def grid2stat(tiff_dict, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=Fal
                 # filter to remove no_data values
                 # TODO - replace nodata with NaN or None !
                 nd = grid_nodata[i]
-                if nd is not None: v = v[v != nd]  
+                if nd is not None: v[v == nd] = None  #v = v[v != nd]  
 
                 values.append(v)
 
