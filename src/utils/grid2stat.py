@@ -8,13 +8,15 @@ import pandas as pd
 import numpy as np
 
 #TODO
-# use generic iterator instead of gpkg file
+# make several agg indicators
+# get mask values with indices
 # test with aggregation based on several bands, from separate tiffs ?
+# use generic iterator instead of gpkg file
 # check what happens when centre exactly on the limit - counted twice ?
 # handle intersection-area weighted case - with exact intersection computation or 10*resampling ?
 # export as parquet
 
-def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, aggegation_func=None):
+def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_dict=None):
     """
     Aggregate statistics from grid to statistical units.
 
@@ -30,11 +32,9 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, agge
         Path to the output CSV file where aggregated statistics will be saved.
     band : int, optional
         Band number to read from the grid TIFF file (default is 1).
-    out_col : str, optional
-        Name of the output column in the CSV file for the aggregated statistic (default is None, which will use the name of the input band).
-    aggegation_func : function, optional
-        Custom aggregation function to apply to the masked values (default is None, which will use sum).
-
+    out_dict : dict, optional
+        A dictionnary describing the output data. One entry per aggregated indicator. The key is the column name. The value is the aggregation function to use to compute the aggregated value from the cell values.
+        Default is None, in which case it will be the sum of the cell values.
     Returns
     -------
     None
@@ -46,9 +46,11 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, agge
         grid_data = grid.read(band)
         grid_transform = grid.transform
 
-    # Set the aggregation function
-    if aggegation_func is None:
-        aggegation_func = lambda arr: arr.sum()  # Default to sum if no custom function is provided
+    # Prepare default aggregation function
+    aggegation_func_default = lambda arr: arr.sum()  # Default to sum if no custom function is provided
+
+    # Default to a single column with default aggregation function if no custom dict is provided
+    if out_dict is None: out_dict = { "sum": aggegation_func_default }
 
     # Initialize a list to store results
     results = []
@@ -67,10 +69,16 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, agge
 
             # Extract values from the grid that fall within the mask
             masked_values = grid_data[mask]
+            #print(masked_values)
 
-            masked = np.where(mask, grid_data, np.nan)
-            #rows, cols = np.where(mask)
-            #values = grid_data[rows, cols]
+            #masked = np.where(mask, grid_data, np.nan)
+            #print(masked)
+
+            rows, cols = np.where(mask)
+            values = grid_data[rows, cols]
+            #print(len(rows))
+            #print(len(cols))
+            #print(len(values))
 
             # filter to remove no_data values
             if grid.nodata is not None:
@@ -79,12 +87,14 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_col=None, agge
             #print(type(masked_values))
             #print(masked_values)
 
-            # Calculate aggregates value
-            agg_value = aggegation_func(masked_values)
-
             # Make output result
             result = { stat_id: str(sid) }
-            result[out_col] = agg_value
+
+            # Calculate aggregates value
+            for out_col, aggegation_func in out_dict.items():
+                if aggegation_func is None: aggegation_func = aggegation_func_default
+                agg_value = aggegation_func(masked_values)
+                result[out_col] = agg_value
 
             # Append results to the list
             results.append(result)
@@ -101,6 +111,7 @@ grid2stat("/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
           #"/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
           "NUTS_ID",
           "/home/juju/Bureau/out.csv",
-          band=1, out_col="popu_2018", aggegation_func=None
+          band=1,
+          out_col="popu_2018", aggegation_func=None
           )
 
