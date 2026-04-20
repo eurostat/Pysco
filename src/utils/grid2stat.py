@@ -6,6 +6,7 @@ from shapely.geometry import shape
 from rasterio.features import geometry_mask
 import pandas as pd
 import numpy as np
+from datetime import datetime
 
 #TODO
 # get mask values with indices
@@ -15,7 +16,7 @@ import numpy as np
 # handle intersection-area weighted case - with exact intersection computation or 10*resampling ?
 # export as parquet
 
-def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_dict=None):
+def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_dict=None, verbose=False):
     """
     Aggregate statistics from grid to statistical units.
 
@@ -58,7 +59,7 @@ def grid2stat(grid_tiff, stat_gpkg, stat_id, out_csv, band=1, out_dict=None):
     with fiona.open(stat_gpkg) as fs:
         for f in fs:
             sid = f["properties"][stat_id]
-            print(sid)
+            if verbose: print(datetime.now(), sid)
 
             # Make geometry from the feature
             g = shape(f["geometry"])
@@ -117,6 +118,7 @@ grid2stat("/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif",
             "max": lambda arr: arr.max(),
             "min": lambda arr: arr.min(),
             "count": lambda arr: len(arr)
-          }
+          },
+          verbose=True
           )
 
