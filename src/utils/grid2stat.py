@@ -18,15 +18,15 @@ from datetime import datetime
 # handle intersection-area weighted case - with exact intersection computation or 10*resampling ?
 # export as parquet
 
-def grid2stat(tiff_dict, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=False):
+def grid2stat(tiffs, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=False):
     """
     Aggregate statistics from grid to statistical units.
 
     Parameters
     ----------
-    tiff_dict : dict
-        A dictionnary describing the input grid TIFF files. One entry per input tiff. The key is the tiff file path. The value is the tiff band (default is 1).
-        NB: all tiff files must have the same resolution, geotransform and extent.
+    tiffs : arr
+        An array with the input grid TIFF files. One element per input tiff. Each element is a pair of the tiff file path and the tiff band number.
+        NB: all tiff files must have the same resolution, geotransform and extent. TODO check
     stat_gpkg : str
         Path to the input statistical units GeoPackage file.
     stat_id : str
@@ -46,7 +46,7 @@ def grid2stat(tiff_dict, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=Fal
     grid_data = []
     grid_transform = []
     grid_nodata = []
-    for grid_tiff, band in tiff_dict.items():
+    for grid_tiff, band in tiffs:
         with rasterio.open(grid_tiff) as grid:
             grid_data.append(grid.read(band))
             grid_transform.append(grid.transform)
@@ -112,18 +112,21 @@ def grid2stat(tiff_dict, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=Fal
 
 
 # test
-grid2stat( {"/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif" : 1},
-          "/home/juju/Bureau/test.gpkg",
-          #"/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
-          "NUTS_ID",
-          "/home/juju/Bureau/out.csv",
-          out_dict={
+grid2stat(
+        [
+            [ "/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif" , 1 ]
+        ],
+        "/home/juju/Bureau/test.gpkg",
+        #"/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
+        "NUTS_ID",
+        "/home/juju/Bureau/out.csv",
+        out_dict={
             "sum": lambda arr: np.sum([x for x in arr if x is not None]),
             "mean": lambda arr: np.mean([x for x in arr if x is not None]),
             "max": lambda arr: np.max([x for x in arr if x is not None]),
             "min": lambda arr: np.min([x for x in arr if x is not None]),
             "count": lambda arr: len(arr)
-          },
-          verbose=True
-          )
+        },
+        verbose=True
+)
 
