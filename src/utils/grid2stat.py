@@ -11,10 +11,11 @@ from datetime import datetime
 #TODO
 # get mask values with indices
 # test with aggregation based on several bands, from separate tiffs ?
+
+# array of input geopackages ?
 # use generic iterator instead of gpkg file
 # check what happens when centre exactly on the limit - counted twice ?
 # handle intersection-area weighted case - with exact intersection computation or 10*resampling ?
-# array of input geopackages ?
 # export as parquet
 
 def grid2stat(tiff_dict, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=False):
@@ -66,25 +67,27 @@ def grid2stat(tiff_dict, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=Fal
             sid = f["properties"][stat_id]
             if verbose: print(datetime.now(), sid)
 
-            # Make geometry from the feature
+            # Make geometry from the feature, for masking the grids
             g = shape(f["geometry"])
 
             values = []
             for i in range(len(grid_data)):
-                # Create a mask for the current statistical unit - True for pixels whose centres fall within the geometry, False otherwise
+                # Create mask - True for pixels whose centres fall within the geometry, False otherwise
                 mask = geometry_mask([g], transform=grid_transform[i], invert=True, out_shape=grid_data[i].shape, all_touched=False)
 
                 # get masked values, with indices
                 rows, cols = np.where(mask)
                 v = grid_data[i][rows, cols]
+                #print(rows, cols)
 
                 # filter to remove no_data values
+                # TODO - replace nodata with NaN or None !
                 nd = grid_nodata[i]
                 if nd is not None: v = v[v != nd]  
 
                 values.append(v)
 
-            # Structure values as array of arrays, one per band
+            # Structure values as array of arrays, one per band. One element is a list of band values for a pixel.
             #TODO
 
             # Make output result
