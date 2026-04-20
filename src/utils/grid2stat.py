@@ -69,27 +69,23 @@ def grid2stat(tiff_dict, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=Fal
             # Make geometry from the feature
             g = shape(f["geometry"])
 
-            # Create a mask for the current statistical unit - True for pixels whose centres fall within the geometry, False otherwise
-            mask = geometry_mask([g], transform=grid_transform[0], invert=True, out_shape=grid_data[0].shape, all_touched=False)
-
-            # Extract values from the grid that fall within the mask
-            #masked_values = grid_data[mask]
-            #print(masked_values)
-
-            #masked = np.where(mask, grid_data, np.nan)
-            #print(masked)
-
-            rows, cols = np.where(mask)
             values = []
             for i in range(len(grid_data)):
-                v = grid_data[0][rows, cols]
+                # Create a mask for the current statistical unit - True for pixels whose centres fall within the geometry, False otherwise
+                mask = geometry_mask([g], transform=grid_transform[i], invert=True, out_shape=grid_data[i].shape, all_touched=False)
+
+                # get masked values, with indices
+                rows, cols = np.where(mask)
+                v = grid_data[i][rows, cols]
+
                 # filter to remove no_data values
                 nd = grid_nodata[i]
                 if nd is not None: v = v[v != nd]  
+
                 values.append(v)
 
-            #print(type(masked_values))
-            #print(masked_values)
+            # Structure values as array of arrays, one per band
+            #TODO
 
             # Make output result
             result = { stat_id: str(sid) }
