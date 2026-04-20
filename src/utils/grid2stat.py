@@ -113,12 +113,11 @@ def grid2stat(tiff_dict, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=Fal
 
 
 # test
-grid2stat( {"/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif":1},
+grid2stat( {"/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif" : 1},
           "/home/juju/Bureau/test.gpkg",
           #"/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
           "NUTS_ID",
           "/home/juju/Bureau/out.csv",
-          band=1,
           out_dict={
             "sum": lambda arr: arr.sum(),
             "mean": lambda arr: arr.mean(),
