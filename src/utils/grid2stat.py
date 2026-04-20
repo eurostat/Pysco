@@ -53,7 +53,7 @@ def grid2stat(tiff_dict, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=Fal
             grid_nodata.append(grid.nodata)
 
     # Prepare default aggregation function
-    aggegation_func_default = lambda arr: arr.sum()  # Default to sum if no custom function is provided
+    aggegation_func_default = lambda arr: np.sum([x for x in arr if x is not None])  # Default to sum if no custom function is provided
 
     # If not specified, set default to a single column with default aggregation function if no custom dict is provided
     if out_dict is None: out_dict = { "sum": aggegation_func_default }
@@ -81,9 +81,11 @@ def grid2stat(tiff_dict, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=Fal
                 #print(rows, cols)
 
                 # filter to remove no_data values
-                # TODO - replace nodata with NaN or None !
                 nd = grid_nodata[i]
-                if nd is not None: v[v == nd] = None  #v = v[v != nd]  
+                if nd is not None:
+                    v = np.array(v, dtype=object)
+                    v[v == nd] = None
+                    #v = v[v != nd]  
 
                 values.append(v)
 
@@ -116,10 +118,10 @@ grid2stat( {"/home/juju/geodata/census/2018/JRC_1K_POP_2018_clean.tif" : 1},
           "NUTS_ID",
           "/home/juju/Bureau/out.csv",
           out_dict={
-            "sum": lambda arr: arr.sum(),
-            "mean": lambda arr: arr.mean(),
-            "max": lambda arr: arr.max(),
-            "min": lambda arr: arr.min(),
+            "sum": lambda arr: np.sum([x for x in arr if x is not None]),
+            "mean": lambda arr: np.mean([x for x in arr if x is not None]),
+            "max": lambda arr: np.max([x for x in arr if x is not None]),
+            "min": lambda arr: np.min([x for x in arr if x is not None]),
             "count": lambda arr: len(arr)
           },
           verbose=True
