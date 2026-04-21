@@ -9,12 +9,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from utils.geotiff import resample_geotiff_aligned
 
 aggregate = True
-tiling = True
+tiling = False
 
 version_tag = "v2026_03"
 # evcp: deal with other indicator
-services = ["healthcare"]  # healthcare education evcp
-resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
+services = ["evcp"]  # healthcare education evcp
+resolutions = [1000]  #[ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
 
 f0 = "/home/juju/gisco/accessibility/"
 folder = f0 + "gridviz/"
