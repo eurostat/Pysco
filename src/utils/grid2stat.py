@@ -9,7 +9,7 @@ import numpy as np
 from datetime import datetime
 
 #TODO
-# real test, with accessibility grid
+# real test, with accessibility grid - with population
 # get mask values with indices
 # test with aggregation based on several bands, from separate tiffs ?
 
@@ -116,7 +116,7 @@ def grid2stat(tiffs, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=False):
 # test
 grid2stat(
         [
-            [ "/home/juju/gisco/accessibility/gridviz/euro_access_evcp_2025_1000m_v2026_03.tif", 1 ],
+            [ "/home/juju/geodata/census/2021/aggregated_tiff/pop_2021_1000.tif", 1 ],
             [ "/home/juju/gisco/accessibility/gridviz/euro_access_evcp_2025_1000m_v2026_03.tif", 2 ],
             #[ "/home/juju/gisco/accessibility/euro_access_evcp_2025_1000m_v2026_03.tif" , 1 ],
             #[ "/home/juju/gisco/accessibility/euro_access_evcp_2025_1000m_v2026_03.tif" , 2 ]
