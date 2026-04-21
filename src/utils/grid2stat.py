@@ -117,6 +117,7 @@ def grid2stat(tiffs, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=False):
 grid2stat(
         [
             [ "/home/juju/gisco/accessibility/gridviz/euro_access_evcp_2025_1000m_v2026_03.tif", 1 ],
+            [ "/home/juju/gisco/accessibility/gridviz/euro_access_evcp_2025_1000m_v2026_03.tif", 2 ],
             #[ "/home/juju/gisco/accessibility/euro_access_evcp_2025_1000m_v2026_03.tif" , 1 ],
             #[ "/home/juju/gisco/accessibility/euro_access_evcp_2025_1000m_v2026_03.tif" , 2 ]
         ],
