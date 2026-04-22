@@ -9,7 +9,7 @@ import numpy as np
 from datetime import datetime
 
 #TODO
-# real test, with accessibility grid - with population
+# real test, with accessibility grid - with population. share within short walk/drive (500m,5km). pop weighted average distance (1, 5)
 # get mask values with indices
 # test with aggregation based on several bands, from separate tiffs ?
 
@@ -80,7 +80,7 @@ def grid2stat(tiffs, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=False):
                 # get masked values, with indices
                 rows, cols = np.where(mask)
                 v = grid_data[i][rows, cols]
-                #print(rows, cols)
+                #print(len(rows), len(cols))
 
                 # filter to remove no_data values
                 nd = grid_nodata[i]
@@ -93,6 +93,10 @@ def grid2stat(tiffs, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=False):
 
             # Structure values as array of arrays, one per band. One element is a list of band values for a pixel.
             #TODO
+            print(len(values))
+            values2 = []
+            for i in range(len(values[0])):
+                pass
 
             # Make output result
             result = { stat_id: str(sid) }
@@ -117,7 +121,7 @@ def grid2stat(tiffs, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=False):
 grid2stat(
         [
             [ "/home/juju/geodata/census/2021/aggregated_tiff/pop_2021_1000.tif", 1 ],
-            [ "/home/juju/gisco/accessibility/gridviz/euro_access_evcp_2025_1000m_v2026_03.tif", 2 ],
+            [ "/home/juju/gisco/accessibility/gridviz/euro_access_evcp_2025_1000m_v2026_03.tif", 1 ],
             #[ "/home/juju/gisco/accessibility/euro_access_evcp_2025_1000m_v2026_03.tif" , 1 ],
             #[ "/home/juju/gisco/accessibility/euro_access_evcp_2025_1000m_v2026_03.tif" , 2 ]
         ],
