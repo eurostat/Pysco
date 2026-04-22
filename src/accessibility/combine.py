@@ -11,7 +11,7 @@ out_folder = '/home/juju/gisco/accessibility/'
 country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 nuts_gpkg = '/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg'
 
-version_tag = "v2026_03"
+version_tag = "v2026_04"
 do_combination = True
 
 # whole europe
@@ -19,7 +19,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for resolution in [100]:
 
-    for service in ["healthcare"]: #education healthcare evcp
+    for service in ["healthcare", "education"]: # healthcare evcp
 
         years = ["2025", "2023"] if service == "evcp" else ["2023", "2020"]
         k = 5 if service == "evcp" else 3
