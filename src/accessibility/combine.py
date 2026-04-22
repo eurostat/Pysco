@@ -19,7 +19,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for resolution in [100]:
 
-    for service in ["healthcare", "education"]: # healthcare evcp
+    for service in ["healthcare", "education"]: # healthcare education evcp
 
         years = ["2025", "2023"] if service == "evcp" else ["2023", "2020"]
         k = 5 if service == "evcp" else 3
