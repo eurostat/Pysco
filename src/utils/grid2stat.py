@@ -18,6 +18,7 @@ from datetime import datetime
 # check what happens when centre exactly on the limit - counted twice ?
 # handle intersection-area weighted case - with exact intersection computation or 10*resampling ?
 # export as parquet
+# export as GPKG ?
 
 def grid2stat(tiffs, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=False):
     """
