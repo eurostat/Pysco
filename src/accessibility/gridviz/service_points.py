@@ -6,9 +6,9 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.gridutils import gpkg_point_to_csv
 
-prepare_csv = True
-aggregate = True
-tiling = False
+prepare_csv = False
+aggregate = False
+tiling = True
 
 #
 services_path = "/home/juju/geodata/gisco/basic_services/"
@@ -54,7 +54,7 @@ for service in ["healthcare", "education"]:
                     aggregation_fun = { "name": aggregation_single_value },
                 )
 
-                
+
             if tiling:
                 print("tiling",service, year, a)
                 resolution = a*10
