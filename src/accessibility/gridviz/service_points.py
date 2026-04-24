@@ -39,12 +39,13 @@ for service in ["healthcare", "education"]:
 
 
         for a in [2, 5, 10, 20, 50, 100, 200, 500, 1000]:
+            csva = "tmp/" + service + "_" + year + "_" + str(a*10) + "_" + version_tag + ".csv"
+
             if aggregate:
                 print("aggregate",service, year, a)
 
                 def aggregation_single_value(values, _): return values[0]
 
-                csva = "tmp/" + service + "_" + year + "_" + str(a*10) + "_3035_" + version_tag + ".csv"
                 gridtiler.grid_aggregation(
                     csv_file,
                     10,
