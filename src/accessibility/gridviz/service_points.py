@@ -8,8 +8,7 @@ from utils.gridutils import gpkg_point_to_csv
 
 #
 services_path = "/home/juju/geodata/gisco/basic_services/"
-version_tag = "v20260421"
-
+version_tag = "20260421"
 
 
 if not os.path.exists("tmp/"): os.makedirs("tmp/")
