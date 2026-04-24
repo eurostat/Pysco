@@ -6,13 +6,15 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.gridutils import gpkg_point_to_csv
 
-prepare_csv = False
-aggregate = False
+prepare_csv = True
+aggregate = True
 tiling = True
 
 #
 services_path = "/home/juju/geodata/gisco/basic_services/"
 version_tag = "20260421"
+out_folder = "/home/juju/gisco/accessibility/gridviz/pois"
+
 
 if not os.path.exists("tmp/"): os.makedirs("tmp/")
 
@@ -61,8 +63,8 @@ for service in ["healthcare", "education"]:
             if tiling:
                 print("tiling", service, year, resolution)
 
-                #create output folder
-                folder = 'tmp/tiles_'+service+'_'+year+'/' + str(resolution)
+                # Create output folder
+                folder = out_folder + '/tiles_'+service+'_'+year+'/' + str(resolution)
                 if not os.path.exists(folder): os.makedirs(folder)
 
                 gridtiler.grid_tiling(
