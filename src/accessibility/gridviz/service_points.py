@@ -28,9 +28,15 @@ for service in ["healthcare", "education"]:
                             attributes_to_keep=["name" if service == "education" else "hospital_name"],
                             rounding_precision=-1)
             
+            #
+            pd.read_csv(csv_file).dropna(subset=['x']).dropna(subset=['y']).to_csv(csv_file, index=False)
+
             #rename column for hospitals
             if service == "healthcare":
                 pd.read_csv(csv_file).rename(columns={"hospital_name": "name"}).to_csv(csv_file, index=False)
+
+
+
 
         for a in [2, 5, 10, 20, 50, 100, 200, 500, 1000]:
             if aggregate:
