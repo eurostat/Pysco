@@ -11,6 +11,7 @@ services_path = "/home/juju/geodata/gisco/basic_services/"
 version_tag = "20260421"
 
 
+# prepare csvs
 if not os.path.exists("tmp/"): os.makedirs("tmp/")
 for service in ["healthcare", "education"]:
     for year in ["2020", "2023"]:
@@ -19,5 +20,5 @@ for service in ["healthcare", "education"]:
         gpkg_point_to_csv(services_path + service + "_" + year + "_3035_" + version_tag + ".gpkg",
                           "tmp/" + service + "_" + year + "_3035_" + version_tag + ".csv",
                           attributes_to_keep=["name" if service == "education" else "hospital_name"],
-                          rounding_precision=0)
+                          rounding_precision=-1)
 
