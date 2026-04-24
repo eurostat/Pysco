@@ -6,8 +6,9 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.gridutils import gpkg_point_to_csv
 
-prepare_csv = True
-tiling = True
+prepare_csv = False
+aggregate = True
+tiling = False
 
 #
 services_path = "/home/juju/geodata/gisco/basic_services/"
@@ -31,9 +32,9 @@ for service in ["healthcare", "education"]:
             if service == "healthcare":
                 pd.read_csv(csv_file).rename(columns={"hospital_name": "name"}).to_csv(csv_file, index=False)
 
-        if tiling:
-            for a in [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]:
-                print("tiling",service, year, a)
+        for a in [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]:
+            if aggregate:
+                print("aggregate",service, year, a)
 
                 def aggregation_single_value(values, _):
                     return values[0]
@@ -48,6 +49,9 @@ for service in ["healthcare", "education"]:
                 )
 
                 '''
+            if tiling:
+                print("tiling",service, year, a)
+
                 #create output folder
                 out_folder = 'pub/gridviz/leg2024/T1_bv/' + str(resolution)
                 if not os.path.exists(folder): os.makedirs(folder)
