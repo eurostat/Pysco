@@ -6,9 +6,9 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.gridutils import gpkg_point_to_csv
 
-prepare_csv = False
-aggregate = False
-tiling = True
+prepare_csv = True
+aggregate = True
+tiling = False
 
 #
 services_path = "/home/juju/geodata/gisco/basic_services/"
@@ -38,7 +38,7 @@ for service in ["healthcare", "education"]:
 
 
 
-        for a in [2, 5, 10, 20, 50, 100, 200, 500, 1000]:
+        for a in [2, 5, 10, 20, 50, 100, 200]:
             csva = "tmp/" + service + "_" + year + "_" + str(a*10) + "_" + version_tag + ".csv"
 
             if aggregate:
