@@ -90,3 +90,22 @@ def gridify_gpkg(input_gpkg_path, grid_spacing, output_gpkg_path, explode_multi=
     # Save the result to the output GeoPackage file
     out.to_file(output_gpkg_path, driver='GPKG')
 
+
+def gpkg_point_to_csv(gpkg_path, csv_path, attributes_to_keep=None):
+    # Load the input GeoPackage file
+    gdf = gpd.read_file(gpkg_path)
+
+    # convert geometry to x,y columns
+    gdf['x'] = gdf.geometry.x
+    gdf['y'] = gdf.geometry.y
+
+    if attributes_to_keep is not None:
+        # Keep only the specified attributes and geometry
+        gdf = gdf[attributes_to_keep + ['x', 'y']]
+    else:
+        # Drop the geometry column if no specific attributes are specified
+        gdf = gdf.drop(columns=['geometry'])
+
+    # Save to CSV
+    gdf.to_csv(csv_path, index=False)
+
