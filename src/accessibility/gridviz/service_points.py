@@ -6,19 +6,24 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.gridutils import gpkg_point_to_csv
 
+prepare_csv = False
+tiling = True
+
 #
 services_path = "/home/juju/geodata/gisco/basic_services/"
 version_tag = "20260421"
 
-
-# prepare csvs
 if not os.path.exists("tmp/"): os.makedirs("tmp/")
+
 for service in ["healthcare", "education"]:
     for year in ["2020", "2023"]:
         print(service, year)
 
-        gpkg_point_to_csv(services_path + service + "_" + year + "_3035_" + version_tag + ".gpkg",
-                          "tmp/" + service + "_" + year + "_3035_" + version_tag + ".csv",
-                          attributes_to_keep=["name" if service == "education" else "hospital_name"],
-                          rounding_precision=-1)
+        if prepare_csv:
+            gpkg_point_to_csv(services_path + service + "_" + year + "_3035_" + version_tag + ".gpkg",
+                            "tmp/" + service + "_" + year + "_3035_" + version_tag + ".csv",
+                            attributes_to_keep=["name" if service == "education" else "hospital_name"],
+                            rounding_precision=-1)
 
+        if tiling:
+            pass
