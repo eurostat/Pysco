@@ -28,7 +28,7 @@ for service in ["healthcare", "education"]:
                             attributes_to_keep=["name" if service == "education" else "hospital_name"],
                             rounding_precision=-1)
             
-            #
+            # remove rows without coordinates
             pd.read_csv(csv_file).dropna(subset=['x']).dropna(subset=['y']).to_csv(csv_file, index=False)
 
             #rename column for hospitals
@@ -42,8 +42,7 @@ for service in ["healthcare", "education"]:
             if aggregate:
                 print("aggregate",service, year, a)
 
-                def aggregation_single_value(values, _):
-                    return values[0]
+                def aggregation_single_value(values, _): return values[0]
 
                 csva = "tmp/" + service + "_" + year + "_" + str(a*10) + "_3035_" + version_tag + ".csv"
                 gridtiler.grid_aggregation(
@@ -54,23 +53,23 @@ for service in ["healthcare", "education"]:
                     aggregation_fun = { "name": aggregation_single_value },
                 )
 
-                '''
+                
             if tiling:
                 print("tiling",service, year, a)
+                resolution = a*10
 
                 #create output folder
-                out_folder = 'pub/gridviz/leg2024/T1_bv/' + str(resolution)
+                folder = 'tmp/tiles_'+service+'_'+year+'/' + str(resolution)
                 if not os.path.exists(folder): os.makedirs(folder)
 
                 gridtiler.grid_tiling(
-                    folder+str(resolution)+".csv",
-                    out_folder,
+                    csva,
+                    folder,
                     resolution,
                     tile_size_cell = 256,
                     x_origin = 0,
                     y_origin = 0,
-                    #crs = "EPSG:3035",
+                    crs = "EPSG:3035",
                     format = "parquet"
                 )
-'''
 
