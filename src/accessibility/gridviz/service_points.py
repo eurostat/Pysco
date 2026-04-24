@@ -56,7 +56,7 @@ for service in ["healthcare", "education"]:
 
 
             if tiling:
-                print("tiling",service, year, a)
+                print("tiling", service, year, a)
                 resolution = a*10
 
                 #create output folder
