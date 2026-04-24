@@ -1,6 +1,5 @@
-
-
 import os
+from pygridmap import gridtiler,grid_aggregation
 
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -18,13 +17,45 @@ if not os.path.exists("tmp/"): os.makedirs("tmp/")
 for service in ["healthcare", "education"]:
     for year in ["2020", "2023"]:
         print(service, year)
+        csv_file = "tmp/" + service + "_" + year + "_3035_" + version_tag + ".csv"
 
         if prepare_csv:
+            print("prepare csv")
             gpkg_point_to_csv(services_path + service + "_" + year + "_3035_" + version_tag + ".gpkg",
-                            "tmp/" + service + "_" + year + "_3035_" + version_tag + ".csv",
+                            csv_file,
                             attributes_to_keep=["name" if service == "education" else "hospital_name"],
                             rounding_precision=-1)
 
         if tiling:
-            pass
+            for a in [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]:
+                print("tiling",service, year, a)
+
+                def aggregation_single_value(values, _):
+                    return values[0]
+
+                csva = "tmp/" + service + "_" + year + "_" + str(a*10) + "_3035_" + version_tag + ".csv"
+                grid_aggregation(
+                    csv_file,
+                    10,
+                    csva,
+                    a,
+                    aggregation_fun = { "name": aggregation_single_value, "hospital_name": aggregation_single_value },
+                )
+
+                '''
+                #create output folder
+                out_folder = 'pub/gridviz/leg2024/T1_bv/' + str(resolution)
+                if not os.path.exists(folder): os.makedirs(folder)
+
+                gridtiler.grid_tiling(
+                    folder+str(resolution)+".csv",
+                    out_folder,
+                    resolution,
+                    tile_size_cell = 256,
+                    x_origin = 0,
+                    y_origin = 0,
+                    #crs = "EPSG:3035",
+                    format = "parquet"
+                )
+'''
 
