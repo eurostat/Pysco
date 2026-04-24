@@ -38,10 +38,12 @@ for service in ["healthcare", "education"]:
 
 
 
-        for a in [2, 5, 10, 20, 50, 100, 200]:
+        for a in [1, 2, 5, 10, 20, 50, 100, 200]:
             csva = "tmp/" + service + "_" + year + "_" + str(a*10) + "_" + version_tag + ".csv"
 
             if aggregate:
+                if a==1: continue
+
                 print("aggregate",service, year, a)
 
                 def aggregation_single_value(values, _): return values[0]
