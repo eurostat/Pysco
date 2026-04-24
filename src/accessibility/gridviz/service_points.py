@@ -12,7 +12,7 @@ version_tag = "20260421"
 
 
 if not os.path.exists("tmp/"): os.makedirs("tmp/")
-for service in ["education","healthcare"]:
+for service in ["healthcare", "education"]:
     for year in ["2020", "2023"]:
         print(service, year)
 
