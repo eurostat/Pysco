@@ -1,11 +1,12 @@
 import os
+from turtle import pd
 from pygridmap import gridtiler,grid_aggregation
 
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.gridutils import gpkg_point_to_csv
 
-prepare_csv = False
+prepare_csv = True
 tiling = True
 
 #
@@ -25,6 +26,10 @@ for service in ["healthcare", "education"]:
                             csv_file,
                             attributes_to_keep=["name" if service == "education" else "hospital_name"],
                             rounding_precision=-1)
+            
+            #rename column for hospitals
+            if service == "healthcare":
+                pd.read_csv(csv_file).rename(columns={"hospital_name": "name"}).to_csv(csv_file, index=False)
 
         if tiling:
             for a in [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]:
@@ -39,7 +44,7 @@ for service in ["healthcare", "education"]:
                     10,
                     csva,
                     a,
-                    aggregation_fun = { "name": aggregation_single_value, "hospital_name": aggregation_single_value },
+                    aggregation_fun = { "name": aggregation_single_value },
                 )
 
                 '''
