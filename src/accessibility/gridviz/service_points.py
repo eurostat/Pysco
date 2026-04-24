@@ -68,9 +68,10 @@ for service in ["healthcare", "education"]:
                     folder,
                     resolution,
                     tile_size_cell = 256,
-                    x_origin = 0,
-                    y_origin = 0,
+                    x_origin = -4100000,
+                    y_origin = -3300000,
                     crs = "EPSG:3035",
                     format = "parquet"
                 )
 
+ 
