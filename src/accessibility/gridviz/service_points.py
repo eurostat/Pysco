@@ -19,15 +19,15 @@ if not os.path.exists("tmp/"): os.makedirs("tmp/")
 for service in ["healthcare", "education"]:
     for year in ["2020", "2023"]:
         print(service, year)
-        csv_file = "tmp/" + service + "_" + year + "_10_" + version_tag + ".csv"
+        csv_file = "tmp/" + service + "_" + year + "_100_" + version_tag + ".csv"
 
         if prepare_csv:
             print("prepare csv")
             gpkg_point_to_csv(services_path + service + "_" + year + "_3035_" + version_tag + ".gpkg",
                             csv_file,
                             attributes_to_keep=["name" if service == "education" else "hospital_name"],
-                            rounding_precision=-1)
-            
+                            rounding_precision=-2)
+
             # remove rows without coordinates
             pd.read_csv(csv_file).dropna(subset=['x']).dropna(subset=['y']).to_csv(csv_file, index=False)
 
@@ -38,19 +38,20 @@ for service in ["healthcare", "education"]:
 
 
 
-        for a in [1, 2, 5, 10, 20, 50, 100, 200]:
-            csva = "tmp/" + service + "_" + year + "_" + str(a*10) + "_" + version_tag + ".csv"
+        for a in [1, 2, 5, 10, 20, 50, 100]:
+            csva = "tmp/" + service + "_" + year + "_" + str(a*100) + "_" + version_tag + ".csv"
+            resolution = a*100
 
             if aggregate:
                 if a==1: continue
 
-                print("aggregate",service, year, a)
+                print("aggregate",service, year, resolution)
 
                 def aggregation_single_value(values, _): return values[0]
 
                 gridtiler.grid_aggregation(
                     csv_file,
-                    10,
+                    100,
                     csva,
                     a,
                     aggregation_fun = { "name": aggregation_single_value },
@@ -58,8 +59,7 @@ for service in ["healthcare", "education"]:
 
 
             if tiling:
-                print("tiling", service, year, a)
-                resolution = a*10
+                print("tiling", service, year, resolution)
 
                 #create output folder
                 folder = 'tmp/tiles_'+service+'_'+year+'/' + str(resolution)
