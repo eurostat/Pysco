@@ -6,8 +6,8 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.gridutils import gpkg_point_to_csv
 
-prepare_csv = False
-aggregate = True
+prepare_csv = True
+aggregate = False
 tiling = False
 
 #
@@ -19,7 +19,7 @@ if not os.path.exists("tmp/"): os.makedirs("tmp/")
 for service in ["healthcare", "education"]:
     for year in ["2020", "2023"]:
         print(service, year)
-        csv_file = "tmp/" + service + "_" + year + "_3035_" + version_tag + ".csv"
+        csv_file = "tmp/" + service + "_" + year + "_10_" + version_tag + ".csv"
 
         if prepare_csv:
             print("prepare csv")
@@ -32,7 +32,7 @@ for service in ["healthcare", "education"]:
             if service == "healthcare":
                 pd.read_csv(csv_file).rename(columns={"hospital_name": "name"}).to_csv(csv_file, index=False)
 
-        for a in [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]:
+        for a in [2, 5, 10, 20, 50, 100, 200, 500, 1000]:
             if aggregate:
                 print("aggregate",service, year, a)
 
