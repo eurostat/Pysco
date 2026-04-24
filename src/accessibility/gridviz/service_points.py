@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from utils.gridutils import gpkg_point_to_csv
 
 prepare_csv = True
-aggregate = False
+aggregate = True
 tiling = False
 
 #
