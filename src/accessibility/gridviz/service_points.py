@@ -18,6 +18,6 @@ for service in ["education","healthcare"]:
 
         gpkg_point_to_csv(services_path + service + "_" + year + "_3035_" + version_tag + ".gpkg",
                           "tmp/" + service + "_" + year + "_3035_" + version_tag + ".csv",
-                          attributes_to_keep=["name"],
+                          attributes_to_keep=["name" if service == "education" else "hospital_name"],
                           rounding_precision=0)
 
