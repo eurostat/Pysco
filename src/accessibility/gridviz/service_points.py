@@ -1,6 +1,6 @@
 import os
-from turtle import pd
-from pygridmap import gridtiler,grid_aggregation
+import pandas as pd
+from pygridmap import gridtiler
 
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -39,7 +39,7 @@ for service in ["healthcare", "education"]:
                     return values[0]
 
                 csva = "tmp/" + service + "_" + year + "_" + str(a*10) + "_3035_" + version_tag + ".csv"
-                grid_aggregation(
+                gridtiler.grid_aggregation(
                     csv_file,
                     10,
                     csva,
