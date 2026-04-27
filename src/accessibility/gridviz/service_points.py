@@ -69,7 +69,7 @@ for service in ["healthcare", "education"]:
                     csva,
                     folder,
                     resolution,
-                    tile_size_cell = 512,
+                    tile_size_cell = 1024,
                     x_origin = -4100000,
                     y_origin = -3300000,
                     crs = "EPSG:3035",
