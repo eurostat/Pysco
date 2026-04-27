@@ -40,7 +40,7 @@ for service in ["healthcare", "education"]:
 
 
 
-        for a in [1, 2, 5, 10, 20, 50, 100]:
+        for a in [1, 2, 5, 10, 20]:
             csva = "tmp/" + service + "_" + year + "_" + str(a*100) + "_" + version_tag + ".csv"
             resolution = a*100
 
