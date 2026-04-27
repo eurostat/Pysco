@@ -44,9 +44,7 @@ for service in ["healthcare", "education"]:
             csva = "tmp/" + service + "_" + year + "_" + str(a*100) + "_" + version_tag + ".csv"
             resolution = a*100
 
-            if aggregate:
-                if a==1: continue
-
+            if aggregate and a>1:
                 print("aggregate",service, year, resolution)
 
                 def aggregation_single_value(values, _): return values[0]
