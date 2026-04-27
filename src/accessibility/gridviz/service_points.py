@@ -11,7 +11,7 @@ aggregate = True
 tiling = True
 
 #
-services_path = "/home/juju/geodata/gisco/basic_services/"
+services_path = "/home/juju/geodata/gisco/basic_services/from_website/"
 version_tag = "20260421"
 out_folder = "/home/juju/gisco/accessibility/gridviz/pois"
 
@@ -25,7 +25,7 @@ for service in ["healthcare", "education"]:
 
         if prepare_csv:
             print("prepare csv")
-            gpkg_point_to_csv(services_path + service + "_" + year + "_3035_" + version_tag + ".gpkg",
+            gpkg_point_to_csv(services_path + service + "_" + year + ".gpkg",
                             csv_file,
                             attributes_to_keep=["name" if service == "education" else "hospital_name"],
                             rounding_precision=-2)
