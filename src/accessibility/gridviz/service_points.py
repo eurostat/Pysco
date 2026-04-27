@@ -27,15 +27,15 @@ for service in ["healthcare", "education"]:
             print("prepare csv")
             gpkg_point_to_csv(services_path + service + "_" + year + ".gpkg",
                             csv_file,
-                            attributes_to_keep=["name" if service == "education" else "hospital_name"],
+                            attributes_to_keep=[], #["name" if service == "education" else "hospital_name"],
                             rounding_precision=-2)
 
             # remove rows without coordinates
             pd.read_csv(csv_file).dropna(subset=['x']).dropna(subset=['y']).to_csv(csv_file, index=False)
 
             #rename column for hospitals
-            if service == "healthcare":
-                pd.read_csv(csv_file).rename(columns={"hospital_name": "name"}).to_csv(csv_file, index=False)
+            #if service == "healthcare":
+            #    pd.read_csv(csv_file).rename(columns={"hospital_name": "name"}).to_csv(csv_file, index=False)
 
 
 
@@ -56,7 +56,7 @@ for service in ["healthcare", "education"]:
                     100,
                     csva,
                     a,
-                    aggregation_fun = { "name": aggregation_single_value },
+                    #aggregation_fun = { "name": aggregation_single_value },
                 )
 
 
@@ -71,7 +71,7 @@ for service in ["healthcare", "education"]:
                     csva,
                     folder,
                     resolution,
-                    tile_size_cell = 256,
+                    tile_size_cell = 512,
                     x_origin = -4100000,
                     y_origin = -3300000,
                     crs = "EPSG:3035",
