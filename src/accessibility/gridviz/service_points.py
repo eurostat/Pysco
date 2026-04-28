@@ -12,7 +12,6 @@ tiling = True
 
 #
 services_path = "/home/juju/geodata/gisco/basic_services/from_website/"
-version_tag = "20260421"
 out_folder = "/home/juju/gisco/accessibility/gridviz/pois"
 
 
@@ -21,14 +20,14 @@ if not os.path.exists("tmp/"): os.makedirs("tmp/")
 for service in ["healthcare", "education"]:
     for year in ["2020", "2023"]:
         print(service, year)
-        csv_file = "tmp/" + service + "_" + year + "_100_" + version_tag + ".csv"
+        csv_file = "tmp/" + service + "_" + year + "_10" + ".csv"
 
         if prepare_csv:
             print("prepare csv")
             gpkg_point_to_csv(services_path + service + "_" + year + "_3035.gpkg",
                             csv_file,
                             attributes_to_keep=[], #["name" if service == "education" else "hospital_name"],
-                            rounding_precision=-2)
+                            rounding_precision=-1)
 
             # remove rows without coordinates
             pd.read_csv(csv_file).dropna(subset=['x']).dropna(subset=['y']).to_csv(csv_file, index=False)
@@ -40,9 +39,9 @@ for service in ["healthcare", "education"]:
 
 
 
-        for a in [1, 2, 5, 10, 20]:
-            csva = "tmp/" + service + "_" + year + "_" + str(a*100) + "_" + version_tag + ".csv"
-            resolution = a*100
+        for a in [1, 2, 5, 10, 20, 50, 100, 200]:
+            resolution = a*10
+            csva = "tmp/" + service + "_" + year + "_" + str(resolution) + ".csv"
 
             if aggregate and a>1:
                 print("aggregate",service, year, resolution)
@@ -51,7 +50,7 @@ for service in ["healthcare", "education"]:
 
                 gridtiler.grid_aggregation(
                     csv_file,
-                    100,
+                    10,
                     csva,
                     a,
                     #aggregation_fun = { "name": aggregation_single_value },
