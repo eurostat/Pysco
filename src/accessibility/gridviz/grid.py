@@ -28,7 +28,7 @@ if aggregate:
     print(datetime.now(), "aggregate")
     for service in services:
 
-        years = ["2025", "2023"] if service == "evcp" else ["2023", "2020"]
+        years = ["2024", "2023"] if service == "evcp" else ["2023", "2020"]
         k = 5 if service == "evcp" else 3
 
         for year in years:
@@ -67,7 +67,7 @@ if tiling:
             # prepare dict for geotiff bands
             dict = {}
 
-            years = ["2025", "2023"] if service == "evcp" else ["2023", "2020"]
+            years = ["2024", "2023"] if service == "evcp" else ["2023", "2020"]
             k = 5 if service == "evcp" else 3
 
             for year in years:

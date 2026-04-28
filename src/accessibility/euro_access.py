@@ -30,7 +30,7 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 for grid_resolution in [100]: # 1000
 
     for service in ["healthcare", "education", "evcp"]:
-        years = ["2025", "2023"] if service == "evcp" else ["2023", "2020"]
+        years = ["2024", "2023"] if service == "evcp" else ["2023", "2020"]
 
         for year in years:
             print(grid_resolution, service, year)
