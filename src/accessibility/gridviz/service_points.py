@@ -39,7 +39,7 @@ for service in ["healthcare", "education"]:
 
 
 
-        for a in [1, 2, 5, 10, 20, 50, 100, 200]:
+        for a in [2, 5, 10, 20, 50, 100, 200]:
             resolution = a*10
             csva = "tmp/" + service + "_" + year + "_" + str(resolution) + ".csv"
 
@@ -68,7 +68,7 @@ for service in ["healthcare", "education"]:
                     csva,
                     folder,
                     resolution,
-                    tile_size_cell = 1024,
+                    tile_size_cell = 2048,
                     x_origin = -4100000,
                     y_origin = -3300000,
                     crs = "EPSG:3035",
