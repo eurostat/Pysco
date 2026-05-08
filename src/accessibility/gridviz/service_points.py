@@ -6,8 +6,8 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.gridutils import gpkg_point_to_csv
 
-prepare_csv = True
-aggregate = True
+prepare_csv = False
+aggregate = False
 tiling = True
 
 #
@@ -67,7 +67,7 @@ for service in ["healthcare", "education"]:
                     csva,
                     folder,
                     resolution,
-                    tile_size_cell = 512,
+                    tile_size_cell = 1024 if a>10 else 2048,
                     x_origin = -4100000,
                     y_origin = -3300000,
                     crs = "EPSG:3035",
