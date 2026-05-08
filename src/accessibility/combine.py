@@ -11,7 +11,7 @@ out_folder = '/home/juju/gisco/accessibility/'
 country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 nuts_gpkg = '/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg'
 
-version_tag = "v2026_03"
+version_tag = "v2026_05"
 do_combination = False
 
 # whole europe
@@ -91,5 +91,5 @@ for resolution in [100]:
 
 
             print(resolution, service, year, "rename tiff bands")
-            rename_geotiff_bands(geotiff, [service + "_" + year + "_n1", service + "_" + year + "_n" + str(k)])
+            rename_geotiff_bands(geotiff, [year + "n1", "n" + str(k)])
 

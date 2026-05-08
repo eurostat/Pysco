@@ -11,7 +11,7 @@ from utils.geotiff import resample_geotiff_aligned
 aggregate = True
 tiling = True
 
-version_tag = "v2026_03"
+version_tag = "v2026_05"
 # evrp: deal with other indicator
 services = ["evrp"]  # healthcare education evrp
 resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
@@ -61,7 +61,7 @@ if tiling:
             print(datetime.now(), "Tiling", service, resolution)
 
             # make folder for resolution
-            folder_ = folder+"tiles_"+service+"_"+version_tag+"/"+str(resolution)+"/"
+            folder_ = folder + service + "/" + str(resolution) + "/"
             if not os.path.exists(folder_): os.makedirs(folder_)
 
             # prepare dict for geotiff bands
