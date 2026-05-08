@@ -12,7 +12,7 @@ tiling = True
 
 #
 services_path = "/home/juju/geodata/gisco/basic_services/from_website/"
-out_folder = "/home/juju/gisco/accessibility/gridviz/pois"
+out_folder = "/home/juju/gisco/accessibility/gridviz/pois/"
 
 
 if not os.path.exists("tmp/"): os.makedirs("tmp/")
@@ -60,7 +60,7 @@ for service in ["healthcare", "education"]:
                 print("tiling", service, year, resolution)
 
                 # Create output folder
-                folder = out_folder + '/tiles_'+service+'_'+year+'/' + str(resolution)
+                folder = out_folder + service + '/' + year + '/' + str(resolution)
                 if not os.path.exists(folder): os.makedirs(folder)
 
                 gridtiler.grid_tiling(
