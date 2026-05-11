@@ -173,6 +173,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "get source nodes")
     sources = []
     for poi in pois:
+        # TODO: check if geometry is a multipoint ?
         coo = poi['geometry']['coordinates']
         x = coo[0], y = coo[1]
         n = snappable_nodes[next(idx.nearest((x, y, x, y), 1))]
