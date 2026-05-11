@@ -49,7 +49,7 @@ for grid_resolution in [100]: # 1000
             # define tomtom and POI loaders
             def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom"+tomtom_year+"12.gpkg", bbox=bbox) #, where="FOW!='20'"
 
-            pois_data_folder = "/home/juju/geodata/gisco/charging_points/" if service == "evrp" else "/home/juju/geodata/gisco/basic_services/"
+            pois_data_folder = "/home/juju/geodata/gisco/recharging_points/" if service == "evrp" else "/home/juju/geodata/gisco/basic_services/"
             pois_data_version = "_20260421" if service == "healthcare" else "_20260421" if service == "education" else ""
             def pois_loader(bbox): return iter_features(pois_data_folder+service+"_"+year+"_3035"+pois_data_version+".gpkg", bbox=bbox) #, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
