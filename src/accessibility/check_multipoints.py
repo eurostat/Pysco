@@ -1,8 +1,6 @@
-import sys
 from pathlib import Path
 import fiona
 import geopandas as gpd
-from shapely.geometry import MultiPoint
 
 
 def check_multipoint_components(path: str | Path) -> None:
@@ -64,5 +62,5 @@ def multipoint_to_point(src_path: str | Path, dst_path: str | Path) -> None:
 
 
 #check_multipoint_components("/home/juju/geodata/gisco/recharging_points/evrp_2024_3035.gpkg")
-multipoint_to_point("/home/juju/geodata/gisco/recharging_points/evrp_2024_3035___.gpkg", "/home/juju/geodata/gisco/recharging_points/evrp_2024_3035.gpkg")
+#multipoint_to_point("/home/juju/geodata/gisco/recharging_points/evrp_2024_3035___.gpkg", "/home/juju/geodata/gisco/recharging_points/evrp_2024_3035.gpkg")
 
