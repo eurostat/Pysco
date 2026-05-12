@@ -75,7 +75,7 @@ if zip_move:
     for service in services:
 
         # zip and move tiles
-        shutil.make_archive(folder_gridviz + service + ".zip", "zip", folder_gridviz + service + "/")
+        shutil.make_archive(folder_gridviz + service, "zip", folder_gridviz + service + "/")
         shutil.move(folder_gridviz + service + ".zip", target_folder)
 
         for year in get_years(service):
