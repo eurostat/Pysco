@@ -13,8 +13,8 @@ folder = "/home/juju/gisco/accessibility/"
 folder_pop_tiff = "/home/juju/geodata/census/2021/aggregated_tiff/"
 target_folder = "/home/juju/pCloudDrive"
 
-aggregate = True
-tiling = True
+aggregate = False
+tiling = False
 zip_move = True
 
 version_tag = "v2026_05"
@@ -71,12 +71,13 @@ if tiling:
                 )
             
 if zip_move:
-    # zip and move tiles
-    shutil.make_archive(folder_gridviz + service + ".zip", "zip", folder_gridviz + service + "/")
-    shutil.move(folder_gridviz + service + ".zip", target_folder)
-
     # move/copy tiffs
     for service in services:
+
+        # zip and move tiles
+        shutil.make_archive(folder_gridviz + service + ".zip", "zip", folder_gridviz + service + "/")
+        shutil.move(folder_gridviz + service + ".zip", target_folder)
+
         for year in get_years(service):
             # 100m
             shutil.copy(folder+"euro_access_"+service+"_"+year+"_100m_"+version_tag+".tif", target_folder)
