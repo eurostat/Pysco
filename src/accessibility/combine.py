@@ -1,3 +1,5 @@
+import shutil
+
 import numpy as np
 
 import sys
@@ -12,7 +14,7 @@ country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 nuts_gpkg = '/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg'
 
 version_tag = "v2026_05"
-do_combination = False
+do_combination = True
 
 # whole europe
 bbox = [ 900000, 900000, 6600000, 5500000 ]
@@ -91,5 +93,4 @@ for resolution in [100]:
 
 
             print(resolution, service, year, "rename tiff bands")
-            rename_geotiff_bands(geotiff, [year + "n1", "n" + str(k)])
-
+            rename_geotiff_bands(geotiff, ["n1", "n" + str(k)])
