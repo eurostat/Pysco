@@ -75,10 +75,14 @@ if zip_move:
     for service in services:
 
         # zip and move tiles
+        print(datetime.now(), "Zip tiles", service)
         shutil.make_archive(folder_gridviz + service, "zip", folder_gridviz + service + "/")
+        print(datetime.now(), "Move zip file", service)
         shutil.move(folder_gridviz + service + ".zip", target_folder)
 
         for year in get_years(service):
+            print(datetime.now(), "Copy tiff files", service, year)
+
             # 100m
             shutil.copy(folder+"euro_access_"+service+"_"+year+"_100m_"+version_tag+".tif", target_folder)
             # 1000m
