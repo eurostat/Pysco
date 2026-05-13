@@ -158,5 +158,3 @@ for rule in rules:
 # all combined
 validation(cells, rules, "errors")
 
-
-

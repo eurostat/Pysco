@@ -2,7 +2,7 @@ import sys
 import os
 from datetime import datetime
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.featureutils import loadFeatures
 from utils.csvutils import save_as_csv
 from utils.gridutils import grid_to_geopackage
