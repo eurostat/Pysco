@@ -25,6 +25,9 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # get cell id
             id = row["SPATIAL"][3:]
 
+            #
+            if id == "unallocated": continue
+
             # get cell
             cell = cells.get(id)
 
