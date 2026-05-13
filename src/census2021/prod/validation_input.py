@@ -72,7 +72,9 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # and (c) data items on total population with an observed value ‘0’ shall not be marked with the flag ‘populated’. 
             # The flag ‘populated’ shall be applicable only to ‘total population’
             if stat == "T":
-                popu = int(cell.get("POPULATED"))
+                popu = cell.get("POPULATED")
+                if popu is None or popu == "": popu = 0
+                popu = int(popu)
 
                 # must be 0 or 1
                 if popu != 0 and popu != 1:
