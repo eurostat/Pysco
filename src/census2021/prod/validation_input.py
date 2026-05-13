@@ -63,25 +63,29 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
                 cell["ERROR_TYPE"].append("invalid_land_surface_value")
                 cell["ERROR_MSG"].append("invalid land surface value " + id +" "+cc+ ": " + str(lsu))
 
+            #TODO check that for all rows of a cell/cnt, lsu values are the same
 
-            # check populated value
-            '''
-            popu = cell.get("POPULATED")
-            if popu is None or popu == "": popu = 0
-            popu = float(popu)
-            if popu != 0 and popu != 1:
-                cell["ERROR_TYPE"].append("unexpected_populated_value")
-                cell["ERROR_MSG"].append("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
-            '''
 
-            '''
-            elif(value > 0 and popu == 0):
-                cell["ERROR_TYPE"].append("non_zero_value_for_populated_cell")
-                cell["ERROR_MSG"].append("non zero value for cell with POPULATED == 0" + id +" "+cc+ ": " + stat + " = " + str(value))
-            elif(value == 0 and popu == 1):
-                cell["ERROR_TYPE"].append("zero_value_for_populated_cell")
-                cell["ERROR_MSG"].append("zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + str(value))
-            '''
+            # populated
+
+            # data items on total population with an observed value other than ‘0’ shall be marked with the flag ‘populated’;
+            # and (c) data items on total population with an observed value ‘0’ shall not be marked with the flag ‘populated’. 
+            # The flag ‘populated’ shall be applicable only to ‘total population’
+            if stat == "T":
+                popu = int(cell.get("POPULATED"))
+
+                # must be 0 or 1
+                if popu != 0 and popu != 1:
+                    cell["ERROR_TYPE"].append("unexpected_populated_value")
+                    cell["ERROR_MSG"].append("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
+                if(value > 0 and popu != 1):
+                    cell["ERROR_TYPE"].append("non_zero_value_for_populated_cell")
+                    cell["ERROR_MSG"].append("non zero value for cell with POPULATED == 0" + id +" "+cc+ ": " + stat + " = " + str(value))
+                if(value == 0 and popu != 0):
+                    cell["ERROR_TYPE"].append("zero_value_for_populated_cell")
+                    cell["ERROR_MSG"].append("zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + str(value))
+
+
 
             # check consitency populated/value
             '''

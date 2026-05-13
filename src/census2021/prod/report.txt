@@ -2,7 +2,6 @@
 Issue with land_area.
 one value reported for each stat value, while it should be sufficient to report it once
 wrong model. land_area should have been considered as a 'stat' value.
-cases where land_value specified are different
 
 cell_id: no need for CC_ before grid_id
 
@@ -10,29 +9,27 @@ unalocated population: it is now kept in the disseminated data. For GPKG, featur
 
 EL reported confidential value (column SPECIAL_VALUE) as "notApplicable" while other country leave it blank.
 
-
 script runs in around 10 minutes.
 
-added a new column called 'cntr_id' with reproting countries
+added a new column called 'cntr_id' with reporting countries
 
 cases of values provided for confidential flag: LU, SK (other ?)
 in such case, value not disseminated. Maybe it could and the confidential value is a mistake (for LU (high values) but not for SK).
 
 
-
 issues that could be detected previously:
 - data on unalocated cells
-- inconsistencies in LAND_AREA values
+
 
 POPULATED attribute is problematic in input data. Should be O or 1. Sometimes decimal. Sometimes not compliant with the rule "insert"
-Rule: set to 1 as soon as an observed value is positive or confidential
+Rule chosen: provided value ignored and set to 1 as soon as an observed value is positive or confidential
 
 
 remaining issues:
 in the cat sum only (due to NDC)
 and EMP>T
-+ check validation_input
 
 
 
 Compare both GPKG files. Use Geodiff ?
+
