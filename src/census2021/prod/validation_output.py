@@ -155,7 +155,7 @@ print(datetime.now(), "Run validation cell by cell...")
 
 # list of rules
 rules = ["ci_val", "pop_values_none", "pop_values_non_neg",
-         "emp_smaller_than_pop", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
+         "emp_smaller_than_pop", "invalid_land_surface_value", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
 
 # one file per validation rule
 for rule in rules:
