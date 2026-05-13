@@ -45,10 +45,24 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             if value is None or value == "": value = 0
             value = int(value)
 
+            # check confidential values
+            if stat_ci != "confidential" and stat_ci != "" and stat_ci != "notApplicable":
+                cell["ERROR_TYPE"].append("confidential_value")
+                cell["ERROR_MSG"].append("confidential value found: " + stat_ci + " for " + id + " in " + cc)
+
             # check no value is provided for confidential cells
             if stat_ci == "confidential" and value > 0:
                 cell["ERROR_TYPE"].append("non_zero_value_for_confidential")
                 cell["ERROR_MSG"].append("non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + str(value))
+
+            # check land surface is within [0,1]
+            lsu = row["LAND_SURFACE"]
+            if lsu == None or lsu == "": lsu = 0
+            lsu = float(lsu)
+            if lsu < 0 or lsu > 1:
+                cell["ERROR_TYPE"].append("invalid_land_surface_value")
+                cell["ERROR_MSG"].append("invalid land surface value " + id +" "+cc+ ": " + str(lsu))
+
 
             # check populated value
             '''
@@ -77,12 +91,6 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
                 cell["ERROR_MSG"].append("inconsistent POPULATED value " + id +" "+cc+ ": " + str(popu) + " vs " + str(value) + " for stat " + stat)
             cell["POPULATED"] = v
             '''
-
-
-            # check confidential values
-            if stat_ci != "confidential" and stat_ci != "" and stat_ci != "notApplicable":
-                cell["ERROR_TYPE"].append("confidential_value")
-                cell["ERROR_MSG"].append("confidential value found: " + stat_ci + " for " + id + " in " + cc)
 
 
 

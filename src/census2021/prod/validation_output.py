@@ -112,7 +112,11 @@ def validation(cells, rules, file_name):
             if(emp > t):
                 err_codes.append("EMP_T_inconsistency_EMP="+str(emp)+"_T="+str(t))
 
-        # TODO check land_surface is within [0,1]
+        # check land_surface is within [0,1]
+        if "invalid_land_surface_value" in rules:
+            lsu = float(c["LAND_SURFACE"])
+            if lsu < 0 or lsu > 1:
+                err_codes.append("LAND_SURFACE_invalid_value="+str(lsu))
 
 
         # check categories sum up to total

@@ -95,6 +95,8 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
 
             # land surface
             v = row["LAND_SURFACE"]
+            if v is None or v == "": v = 0
+            v = float(v)
             lsu = cell.get("LAND_SURFACE")
             if lsu is None:
                 cell["LAND_SURFACE"] = v
@@ -110,11 +112,11 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             value = int(value)
 
             # populated
-            # as soon as an OBS_VALUE > 0 is found for a cell, we consider it as populated, even if the POPULATED column value is missing or 0.
+            # as soon as an OBS_VALUE > 0 or confidential is found for a cell, we consider it as populated, even if the POPULATED column value is missing or 0.
             popu = cell.get("POPULATED")
             if popu is None or popu == "": popu = 0
             popu = int(popu)
-            if popu > 0 or value > 0: cell["POPULATED"] = 1
+            if popu > 0 or value > 0 or stat_ci == "confidential": cell["POPULATED"] = 1
 
             # get previous cell value for that stat
             prv_value = cell.get(stat)
