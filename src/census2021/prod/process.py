@@ -41,7 +41,6 @@ PS,0,,0,
 LU,
 
 
-
 ESTAT:DF_CENSUS_GRID_2021(2.0),A10,
 CHG_IN,
 LU_CRS3035RES1000mN2977000E4014000,2021,
@@ -55,13 +54,11 @@ PS,0,,1,
 LU,
 
 
-
 stat indic: STAT
 grid cell: SPATIAL
 value: OBS_VALUE
 confidential: SPECIAL_VALUE
 '''
-
 
 
 # output cells, as dict indexed by cell_id
