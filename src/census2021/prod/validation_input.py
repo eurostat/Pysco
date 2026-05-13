@@ -14,7 +14,8 @@ os.makedirs(output_folder, exist_ok=True)
 # output cells, as dict indexed by cell_id
 cells = {}
 
-for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR","HU","IE","IT","LI","LT","LU","LV","MT","NL","NO","PL","PT","RO","SE","SI","SK"]:
+for cc in ["AT","BE","BG","CH"]:
+#for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR","HU","IE","IT","LI","LT","LU","LV","MT","NL","NO","PL","PT","RO","SE","SI","SK"]:
 
     print(datetime.now(), cc)
 
@@ -58,8 +59,9 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
 
             # check populated value
             popu = cell.get("POPULATED")
-            if popu is None or popu== "": popu = 0
-            if popu not in [0,1,"0","1"]:
+            if popu is None or popu == "": popu = 0
+            popu = float(popu)
+            if popu != 0 and popu != 1:
                 cell["ERROR_TYPE"].append("unexpected_populated_value")
                 cell["ERROR_MSG"].append("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
 
@@ -73,9 +75,10 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             '''
 
             # check consitency populated/value
-            if ( stat == 'T' and popu == 1 and value == 0 ) or ( popu == 0 and value > 0 ):
+            #if ( stat == 'T' and popu == 1 and value == 0 ) or ( popu == 0 and value > 0 ):
+            if ( popu == 0 and value > 0 ):
                 cell["ERROR_TYPE"].append("populated_mismatch")
-                cell["ERROR_MSG"].append("wrong POPULATED value " + id +" "+cc+ ": " + str(popu) + " vs " + str(value) + " for stat " + stat)
+                cell["ERROR_MSG"].append("inconsitant POPULATED value " + id +" "+cc+ ": " + str(popu) + " vs " + str(value) + " for stat " + stat)
             cell["POPULATED"] = v
 
 
@@ -86,10 +89,14 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
 
 
 
-print(datetime.now(), "post process cells. Nb=", len(cells))
-
 # cells dict to values list
 cells = list(cells.values())
+
+# keep only cells with errors
+cells = [ cell for cell in cells if len(cell["ERROR_TYPE"]) > 0 ]
+
+print(datetime.now(), "post process cells. Nb=", len(cells))
+
 
 for cell in cells:
     cell["ERROR_TYPE"] = "-".join(cell["ERROR_TYPE"])
@@ -101,9 +108,10 @@ for cell in cells:
 print(datetime.now(), "store as geopackage")
 grid_to_geopackage(cells, output_folder + "validation_input.gpkg", grid_resolution=1000, layer_name="validation_input")
 
+'''
 print(datetime.now(), "store as csv")
 with open(output_folder + "validation_input.csv", "w") as f:
     writer = csv.DictWriter(f, fieldnames=cells[0].keys())
     writer.writeheader()
     writer.writerows(cells)
-
+'''
