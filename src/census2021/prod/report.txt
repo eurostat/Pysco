@@ -17,3 +17,7 @@ EL reported confidential value (column SPECIAL_VALUE) as "notApplicable" while o
 script runs in around 10 minutes.
 
 add a new column called 'cntr_id' with reproting countries
+
+cases of values provided for confidential flag: LU, SK
+in such case, value not disseminated. Maybe it could and the confidential value is a mistake (for LU (high values) but not for SK).
+

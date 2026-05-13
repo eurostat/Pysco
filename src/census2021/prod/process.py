@@ -112,6 +112,10 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             if value is None or value == "": value = 0
             value = int(value)
 
+            # check no value is provided for confidential cells
+            if stat_ci == "confidential" and value > 0:
+                print("unexpected non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + str(value))
+
             # check populated
             '''
             popu = cell.get("POPULATED")
@@ -130,7 +134,8 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             if prv_value == confidential_value: continue
 
             # if new cell value confidential, set cell value to confidential
-            if stat_ci == "confidential": cell[stat] = confidential_value
+            if stat_ci == "confidential":
+                cell[stat] = confidential_value
             # new cell value not confidential
             elif stat_ci == "" or stat_ci == "notApplicable":
                 if prv_value is None:
