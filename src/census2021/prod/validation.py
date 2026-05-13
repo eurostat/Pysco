@@ -50,7 +50,7 @@ def check_categories_total(cell, categories, categories_label, err_codes):
     # check if any value of the categories is confidential
     ci = False
     for cat in categories:
-        if cell[cat] == confidential_value: continue
+        if cell[cat] != confidential_value: continue
         ci = True
         break
 
