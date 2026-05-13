@@ -1,4 +1,9 @@
+import sys
+import os
 import csv
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+from utils.dasymetric_mapping import dasymetric_disaggregation_step_1, dasymetric_aggregation_step_2
 from utils.gridutils import grid_to_geopackage
 
 
@@ -95,5 +100,5 @@ for cell in cells:
 
 
 # save cells as geopackage
-grid_to_geopackage(cells, output_path + "census_grid_2021.gpkg")
+grid_to_geopackage(cells, output_path + "census_grid_2021.gpkg", grid_id="id", grid_resolution=1000)
 
