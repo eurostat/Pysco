@@ -9,7 +9,7 @@ from utils.gridutils import grid_to_geopackage
 
 input_path = "/home/juju/geodata/census/2021/input20250123/"
 output_path = "/home/juju/gisco/census_2021_production/"
-
+confidential_value = -9
 
 '''
 DATAFLOW,FREQ,
@@ -74,7 +74,7 @@ for cc in ["LU", "BE"]:
             id = row["SPATIAL"][3:]
 
             if id == "unallocated":
-                # TODO store that somewhere
+                # TODO store that somewhere. cells without geometry ? external file ?
                 print("skipping unallocated", row["STAT"], cc)
                 continue
 
@@ -86,14 +86,31 @@ for cc in ["LU", "BE"]:
                 cell = { "GRD_ID": id, "CNTR_ID": [cc] }
                 cells[id] = cell
 
-            # coutnry code
+            # country code
             cnt = cell["CNTR_ID"]
             if cc not in cnt: cnt.append(cc)
 
-            # set cell value
-            #stat = row["STAT"]
-            #stat_ci = row["SPECIAL_VALUE"]
-            #cell[stat] = row["OBS_VALUE"]
+            # get row info
+            stat = row["STAT"]
+            stat_ci = row["SPECIAL_VALUE"]
+            value = row["OBS_VALUE"]
+
+            # get previous cell value for that stat
+            prv_value = cell.get(stat)
+            # if previous cell value is confidential, keep it confidential, even if new value is not confidential
+            if prv_value == confidential_value: continue
+
+            # if new cell value confidential, set cell value to confidential
+            if stat_ci == "confidential": cell[stat] = confidential_value
+            # new cell value not confidential
+            elif stat_ci == "":
+                if prv_value is None:
+                    cell[stat] = value
+                else:
+                    cell[stat] += value
+            else:
+                print("unexpected confidential value found: " + stat_ci)
+
 
 
 # cells dict to values list
@@ -102,6 +119,8 @@ cells = list(cells.values())
 for cell in cells:
     # sort country codes in cell
     cell["CNTR_ID"] = ",".join(sorted(cell["CNTR_ID"]))
+
+    #TODO check all values are provided. Otherwise, set to 'not available'
 
 
 # save cells as geopackage
