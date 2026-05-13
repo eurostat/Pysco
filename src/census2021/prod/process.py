@@ -1,6 +1,7 @@
 import sys
 import os
 import csv
+from datetime import datetime
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.dasymetric_mapping import dasymetric_disaggregation_step_1, dasymetric_aggregation_step_2
@@ -67,7 +68,7 @@ cells = {}
 #for cc in ["LU", "BE", "FR"]:
 for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR","HU","IE","IT","LI","LT","LU","LV","MT","NL","NO","PL","PT","RO","SE","SI","SK"]:
 
-    print("process " + cc)
+    print(datetime.now(), "process " + cc)
 
     with open(input_path + "CENSUS_GRID_N_" + cc + "_2021.csv") as f: #, newline="", encoding="utf-8"
         rows = list(csv.DictReader(f))
@@ -124,7 +125,7 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
 
 
 
-print("post process cells. Nb=", len(cells))
+print(datetime.now(), "post process cells. Nb=", len(cells))
 
 # cells dict to values list
 cells = list(cells.values())
@@ -145,10 +146,10 @@ for cell in cells:
     # sort cell properties
     cell = {k: cell[k] for k in properties if k in cell}
 
-print("store as geopackage")
+print(datetime.now(), "store as geopackage")
 grid_to_geopackage(cells, output_path + "census_grid_2021.gpkg", grid_resolution=1000)
 
-print("store as csv")
+print(datetime.now(), "store as csv")
 with open(output_path + "census_grid_2021.csv", "w") as f: #, newline="", encoding="utf-8"
     writer = csv.DictWriter(f, fieldnames=cells[0].keys())
     writer.writeheader()
