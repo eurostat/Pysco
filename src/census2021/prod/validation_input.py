@@ -59,9 +59,11 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # check populated value
             popu = cell.get("POPULATED")
             if popu is None or popu=="": popu = 0
+            popu = int(popu)
             if popu not in [0,1]:
-                cell["ERROR_TYPE"].append("populated_value")
-                cell["ERROR_MSG"].append("POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
+                cell["ERROR_TYPE"].append("unexpected_populated_value")
+                cell["ERROR_MSG"].append("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
+
             '''
             elif(value > 0 and popu == 0):
                 cell["ERROR_TYPE"].append("non_zero_value_for_populated_cell")
