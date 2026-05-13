@@ -4,7 +4,7 @@ from fiona.crs import CRS
 from rtree import index
 
 
-#load features from a file, as a list of features - each feature is a simple dictionnary
+# load features from a file, as a list of features - each feature is a simple dictionnary. Geometry is a shapely geometry.
 def loadFeatures(file, bbox=None, layer=None, where=None, load_geometry=True):
     features = []
     gpkg = fiona.open(file, 'r')
@@ -78,6 +78,7 @@ def save_features_to_gpkg(fs, out_gpkg_file, crs_epsg="3035"):
     """
     Save a list of features with mixed geometry types (points, lines, etc.) 
     as a GeoPackage file with separate layers for each geometry type.
+    A feature is a dictionary with a "geometry" key (a shapely geometry) and other keys as attributes.
 
     Parameters:
     - fs: List of dictionaries representing the features.

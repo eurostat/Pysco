@@ -35,12 +35,13 @@ def csv_grid_to_geopackage(csv_grid_path, gpkg_grid_path, geom="surf"):
 
 
 
-def grid_to_geopackage(cells, gpkg_grid_path, geom="surf"):
+def grid_to_geopackage(cells, gpkg_grid_path, geom="surf", grid_id="GRD_ID", grid_resolution = 1000):
 
-    #make grid cell geometry
+    # make grid cell geometry
     for c in cells:
-        [x, y] = get_cell_xy_from_id(c['GRD_ID'])
-        grid_resolution = 1000
+        [x, y] = get_cell_xy_from_id(c[grid_id])
+        #TODO if grid_resolution is None, get resolution from each single cell id, and support different resolutions in the same grid
+        #TODO support point geometry
         c['geometry'] = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
 
     #save as gpkg
