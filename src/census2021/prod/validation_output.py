@@ -115,6 +115,7 @@ def validation(cells, rules, file_name):
         # check land_surface within [0,1]
         if "invalid_land_surface_value" in rules:
             lsu = float(c["LAND_SURFACE"])
+            if lsu == na_value: continue
             if lsu < 0 or lsu > 1:
                 err_codes.append("LAND_SURFACE_invalid_value="+str(lsu))
 

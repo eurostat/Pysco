@@ -1,7 +1,9 @@
-
 Issue with land_area.
 one value reported for each stat value, while it should be sufficient to report it once
 wrong model. land_area should have been considered as a 'stat' value.
+For pixels shared between countries, it is assumed each country reports the land_area of its part of the cell. The sum of the land area contributions from the countries sharing a cell should thus in theory remain equal or below 1.
+But when summing these contributions, many shared cells result in values above 1. In such case, the land-surface value is ceiled to 1.
+
 
 cell_id: no need for CC_ before grid_id
 
