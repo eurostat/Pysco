@@ -12,8 +12,8 @@ from utils.gridutils import grid_to_geopackage
 
 input_path = "/home/juju/geodata/census/2021/input20250123/"
 output_path = "/home/juju/gisco/census_2021_production/"
-confidential_value = -1
-na_value = -999
+confidential_value = -8888
+na_value = -9999
 
 '''
 DATAFLOW,FREQ,

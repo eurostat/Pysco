@@ -9,6 +9,9 @@ from utils.gridutils import grid_to_geopackage
 
 # input gpkg file to validate
 grid_path = "/home/juju/gisco/census_2021_production/census_grid_2021.gpkg"
+confidential_value = -8888
+na_value = -9999
+
 
 #output folder where to store the validation reports
 output_folder = "/home/juju/gisco/census_2021_validation_new/"
