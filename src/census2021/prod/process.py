@@ -113,13 +113,16 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             value = int(value)
 
             # check populated
+            '''
             popu = cell.get("POPULATED")
+            if popu is None: popu = 1
             if popu not in [0,1]:
                 print("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
             elif(value > 0 and popu == 0):
                 print("unexpected non zero value for cell with POPULATED == 0" + id +" "+cc+ ": " + stat + " = " + str(value), popu)
             elif(value == 0 and popu == 1):
                 print("unexpected zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + str(value), popu)
+            '''
 
             # get previous cell value for that stat
             prv_value = cell.get(stat)
@@ -144,12 +147,11 @@ print(datetime.now(), "post process cells. Nb=", len(cells))
 # cells dict to values list
 cells = list(cells.values())
 
-properties = ['T', 'F', 'M', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE', 'POPULATED']
+properties = ['T', 'F', 'M', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE']
 for cell in cells:
 
     # check all values are provided. Otherwise, set to 'not available'
     t = cell.get("T")
-    #print(t)
     for stat in properties:
         if stat not in cell:
             cell[stat] = 0 if t==0 else na_value

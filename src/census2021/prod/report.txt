@@ -4,7 +4,8 @@ one value reported for each stat value, while it should be sufficient to report 
 wrong model. land_area should have been considered as a 'stat' value.
 cases where land_value specified are different
 
-POPULATED
+POPULATED field ambigous. countries reports 0, 1 or None. Sometimes related to total population and sometimes to the category population
+this field is useless and can be computed easily.
 
 cell_id: no need for CC_ before grid_id
 
