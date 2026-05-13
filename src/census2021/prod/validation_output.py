@@ -138,7 +138,7 @@ def validation(cells, rules, file_name):
         save_as_csv(output_folder + file_name + ".csv", errors)
 
         print(datetime.now(), "Save to ", output_folder + file_name + ".gpkg")
-        grid_to_geopackage(errors, output_folder + file_name +".gpkg")
+        grid_to_geopackage(errors, output_folder + file_name +".gpkg", layer_name = file_name)
 
 
 

@@ -40,7 +40,7 @@ def csv_grid_to_geopackage(csv_grid_path, gpkg_grid_path, geom="surf"):
 
 
 
-def grid_to_geopackage(cells, gpkg_grid_path, geom="surf", grid_id="GRD_ID", grid_resolution = 1000):
+def grid_to_geopackage(cells, gpkg_grid_path, geom="surf", grid_id="GRD_ID", grid_resolution = 1000, layer_name="grid"):
 
     # make grid cell geometry
     for c in cells:
@@ -50,7 +50,7 @@ def grid_to_geopackage(cells, gpkg_grid_path, geom="surf", grid_id="GRD_ID", gri
         c['geometry'] = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
 
     #save as gpkg
-    save_features_to_gpkg(cells, gpkg_grid_path)
+    save_features_to_gpkg(cells, gpkg_grid_path, layer_name=layer_name)
 
 
 

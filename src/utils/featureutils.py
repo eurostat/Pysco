@@ -74,7 +74,7 @@ def get_schema_from_feature(feature):
 
 
 
-def save_features_to_gpkg(fs, out_gpkg_file, crs_epsg="3035"):
+def save_features_to_gpkg(fs, out_gpkg_file, crs_epsg="3035", layer_name=None):
     """
     Save a list of features with mixed geometry types (points, lines, etc.) 
     as a GeoPackage file with separate layers for each geometry type.
@@ -115,7 +115,8 @@ def save_features_to_gpkg(fs, out_gpkg_file, crs_epsg="3035"):
         }
 
         # write features to layer
-        with fiona.open(out_gpkg_file, 'w', driver='GPKG', schema=schema, crs = crs, layer = geom_type.lower()) as layer:
+        if layer_name is None: layer_name = geom_type.lower()
+        with fiona.open(out_gpkg_file, 'w', driver='GPKG', schema=schema, crs = crs, layer = layer_name) as layer:
             layer.writerecords(features)
 
 

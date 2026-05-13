@@ -21,3 +21,14 @@ add a new column called 'cntr_id' with reproting countries
 cases of values provided for confidential flag: LU, SK
 in such case, value not disseminated. Maybe it could and the confidential value is a mistake (for LU (high values) but not for SK).
 
+
+
+issues that could be detected previously:
+- data on unalocated cells
+- inconsistencies in POPULATED and LAND_AREA values
+
+
+
+remaining issues:
+
+
