@@ -4,9 +4,6 @@ one value reported for each stat value, while it should be sufficient to report 
 wrong model. land_area should have been considered as a 'stat' value.
 cases where land_value specified are different
 
-POPULATED field ambigous. countries reports 0, 1 or None. Sometimes related to total population and sometimes to the category population
-this field is useless and can be computed easily.
-
 cell_id: no need for CC_ before grid_id
 
 unalocated population: should be kept and be disseminated somewhere
@@ -16,20 +13,16 @@ EL reported confidential value (column SPECIAL_VALUE) as "notApplicable" while o
 
 script runs in around 10 minutes.
 
-add a new column called 'cntr_id' with reproting countries
+added a new column called 'cntr_id' with reproting countries
 
-cases of values provided for confidential flag: LU, SK
+cases of values provided for confidential flag: LU, SK (other ?)
 in such case, value not disseminated. Maybe it could and the confidential value is a mistake (for LU (high values) but not for SK).
 
 
 
 issues that could be detected previously:
 - data on unalocated cells
-- inconsistencies in POPULATED and LAND_AREA values
-
-
-Compare both GPKG files. Use Geodiff ?
-
+- inconsistencies in LAND_AREA values
 
 
 
@@ -38,3 +31,6 @@ in the cat sum only (due to NDC)
 and EMP>T
 + check validation_input
 
+
+
+Compare both GPKG files. Use Geodiff ?
