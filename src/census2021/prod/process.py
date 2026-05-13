@@ -99,10 +99,10 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # if cell.get("LAND_SURFACE") is not None and v != cell.get("LAND_SURFACE"): print("unexpected different land surface value found for cell " + id +" "+cc+ ": " + str(cell.get("LAND_SURFACE")) + " vs " + v)
             cell["LAND_SURFACE"] = v
 
-            # populated
-            v = row["POPULATED"]
-            if cell.get("POPULATED") is not None and v != cell.get("POPULATED"): print("unexpected different POPULATED value found for cell " + id +" "+cc+ ": " + str(cell.get("POPULATED")) + " vs " + v)
-            cell["POPULATED"] = v
+            # check populated
+            #v = row["POPULATED"]
+            #if cell.get("POPULATED") is not None and v != cell.get("POPULATED"): print("unexpected different POPULATED value found for cell " + id +" "+cc+ ": " + str(cell.get("POPULATED")) + " vs " + v)
+            #cell["POPULATED"] = v
 
             # get row info
             stat = row["STAT"]
@@ -111,6 +111,15 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             value = row["OBS_VALUE"]
             if value is None or value == "": value = 0
             value = int(value)
+
+            # check populated
+            popu = cell.get("POPULATED")
+            if popu not in [0,1]:
+                print("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
+            elif(value > 0 and popu == 0):
+                print("unexpected non zero value for cell with POPULATED == 0" + id +" "+cc+ ": " + stat + " = " + str(value), popu)
+            elif(value == 0 and popu == 1):
+                print("unexpected zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + str(value), popu)
 
             # get previous cell value for that stat
             prv_value = cell.get(stat)
