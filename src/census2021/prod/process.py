@@ -156,6 +156,8 @@ for cell in cells:
 
     # round land surface to 4 decimals
     cell["LAND_SURFACE"] = round(cell["LAND_SURFACE"], 4)
+    # force below 1
+    if cell["LAND_SURFACE"] >1: cell["LAND_SURFACE"] = 1
 
     # sort cell properties
     cell = {k: cell[k] for k in properties if k in cell}
