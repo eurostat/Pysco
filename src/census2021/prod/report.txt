@@ -6,3 +6,6 @@ cases where land_value specified are different
 
 cell_id: no need for CC_ before grid_id
 
+unalocated population: should be kept and be disseminated somewhere
+
+
