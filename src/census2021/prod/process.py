@@ -147,7 +147,7 @@ print(datetime.now(), "post process cells. Nb=", len(cells))
 # cells dict to values list
 cells = list(cells.values())
 
-properties = ['T', 'F', 'M', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE']
+properties = ['GRD_ID', 'T', 'F', 'M', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE']
 cells_ = []
 for cell in cells:
 
