@@ -8,11 +8,13 @@ from datetime import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.gridutils import grid_to_geopackage
 
-
+# location of the country files
 input_path = "/home/juju/geodata/census/2021/input20250123/"
+
+# location of the output files (geopackage, csv, parquet)
 output_path = "/home/juju/gisco/census_2021_production/"
-confidential_value = -8888
-na_value = -9999
+CONFIDENTIAL_VALUE = -8888
+NA_VALUE = -9999
 
 
 '''
@@ -61,7 +63,7 @@ confidential: SPECIAL_VALUE
 '''
 
 
-# output cells, as dict indexed by cell_id
+# output cells, as a dictionnary indexed by cell_id
 cells = {}
 
 #for cc in ["AT","PT", "BE", "LU"]:
@@ -69,21 +71,17 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
 
     print(datetime.now(), cc)
 
+    # parse country file
     with open(input_path + "CENSUS_GRID_N_" + cc + "_2021.csv") as f:
         rows = list(csv.DictReader(f))
         for row in rows:
 
-            # get cell id
+            # get cell id (get rid of country code prefix, except for unallocated data)
             id = row["SPATIAL"][3:]
+            if id == "unallocated": id = row["SPATIAL"]
 
-            if id == "unallocated":
-                # store as cell without geometry
-                id = row["SPATIAL"]
-
-            # get cell
+            # get cell, create one if it does not exist yet
             cell = cells.get(id)
-
-            # no cell: create one
             if cell is None:
                 cell = { "GRD_ID": id, "CNTR_ID": [cc] }
                 cells[id] = cell
@@ -92,7 +90,7 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             cnt = cell["CNTR_ID"]
             if cc not in cnt: cnt.append(cc)
 
-            # get row info
+            # extract row base data
             stat = row["STAT"]
             if stat == "Y15-64": stat = "Y_1564"
             stat_ci = row["SPECIAL_VALUE"]
@@ -105,17 +103,30 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             popu = cell.get("POPULATED")
             if popu is None or popu == "": popu = 0
             popu = int(popu)
+            # do that, to force compliance with specs
             if popu > 0 or value > 0 or stat_ci == "confidential": cell["POPULATED"] = 1
+
+            # land surface
+            # the value is repeated for all stat positions: use only the one for stat "T"
+            if stat == "T":
+                v = row["LAND_SURFACE"]
+                if v is not None and v != "":
+                    v = float(v)
+                    if cell.get("LAND_SURFACE") is None:
+                        cell["LAND_SURFACE"] = v
+                    else:
+                        cell["LAND_SURFACE"] += v
 
             # get previous cell value for that stat
             prv_value = cell.get(stat)
             # if previous cell value is confidential, keep it confidential, even if new value is not confidential
-            if prv_value == confidential_value: continue
+            # it could happen when 2 countries report data on the same cell and one of them reports confidential values.
+            if prv_value == CONFIDENTIAL_VALUE: continue
 
             # if new cell value confidential, set cell value to confidential
             if stat_ci == "confidential":
-                cell[stat] = confidential_value
-            # new cell value not confidential
+                cell[stat] = CONFIDENTIAL_VALUE
+            # new cell value not confidential: keep or add value
             elif stat_ci == "" or stat_ci == "notApplicable":
                 if prv_value is None:
                     cell[stat] = value
@@ -124,21 +135,10 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             else:
                 print("unexpected confidential value found: " + stat_ci, cc, value)
 
-            # land surface
-            # the value is repeated for all stat positions: use only the one for stat "T"
-            if stat == "T":
-                v = row["LAND_SURFACE"]
-                if v is None or v == "": continue
-                v = float(v)
-                if cell.get("LAND_SURFACE") is None:
-                    cell["LAND_SURFACE"] = v
-                else:
-                    cell["LAND_SURFACE"] += v
 
+print(datetime.now(), "post process cells. Nb cells =", len(cells))
 
-print(datetime.now(), "post process cells. Nb=", len(cells))
-
-# cells dict to values list
+# extract cells from dictionnary
 cells = list(cells.values())
 
 properties = ['GRD_ID', 'T', 'M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE', 'POPULATED', 'CNTR_ID']
@@ -149,7 +149,7 @@ for cell in cells:
     t = cell.get("T")
     for stat in properties:
         if stat not in cell:
-            cell[stat] = 0 if t==0 else na_value
+            cell[stat] = 0 if t==0 else NA_VALUE
 
     # sort country codes in cell
     cell["CNTR_ID"] = "-".join(sorted(cell["CNTR_ID"]))
@@ -160,12 +160,12 @@ for cell in cells:
     if cell["LAND_SURFACE"] >1: cell["LAND_SURFACE"] = 1
 
     # sort cell properties
-    cell = {k: cell[k] for k in properties if k in cell}
+    cell = { k: cell[k] for k in properties if k in cell }
 
     # store new ordered cells
     cells_.append(cell)
 
-#
+# keep new list of cells with ordered properties
 cells = cells_
 
 print(datetime.now(), "store as geopackage")
@@ -180,5 +180,5 @@ with open(output_path + "census_grid_2021.csv", "w") as f:
 print(datetime.now(), "store as parquet")
 pq.write_table(pa.Table.from_pylist(cells), output_path + "census_grid_2021.parquet")
 
-#TODO to geotiff
+#TODO store as geotiff
 
