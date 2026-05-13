@@ -58,7 +58,7 @@ def check_categories_total(cell, categories, categories_label, err_codes):
     sum = 0
     for cat in categories:
         v = cell[cat]
-        if v==None or v==na_value: continue
+        if v==None or v==na_value or v==confidential_value: continue
         sum += v
 
     # if the sum is equal to the total, then OK
