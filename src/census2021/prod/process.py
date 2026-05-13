@@ -9,7 +9,8 @@ from utils.gridutils import grid_to_geopackage
 
 input_path = "/home/juju/geodata/census/2021/input20250123/"
 output_path = "/home/juju/gisco/census_2021_production/"
-confidential_value = -9
+confidential_value = -1
+na_value = -999
 
 '''
 DATAFLOW,FREQ,
@@ -121,6 +122,8 @@ for cell in cells:
     cell["CNTR_ID"] = ",".join(sorted(cell["CNTR_ID"]))
 
     #TODO check all values are provided. Otherwise, set to 'not available'
+    for stat in ['T', 'F', 'M', 'Y_LT15', 'Y15-64', 'Y_GE65', 'EMP', 'NAT', 'CHG_OUT', 'OTH', 'CHG_IN', 'EU_OTH', 'SAME']:
+        if stat not in cell: cell[stat] = na_value
 
 
 # save cells as geopackage
