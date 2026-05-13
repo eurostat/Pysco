@@ -6,13 +6,8 @@ from datetime import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.gridutils import grid_to_geopackage
 
-
 input_path = "/home/juju/geodata/census/2021/input20250123/"
-confidential_value = -8888
-na_value = -9999
-
-# output folder where to store the validation reports
-output_folder = "/home/juju/gisco/census_2021_production/output_validation/"
+output_folder = "/home/juju/gisco/census_2021_production/input_validation/"
 os.makedirs(output_folder, exist_ok=True)
 
 
@@ -78,10 +73,6 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
                 cell["ERROR_TYPE"].append("unexpected_zero_value_for_populated_cell")
                 cell["ERROR_MSG"].append("unexpected zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + str(value))
 
-            # get previous cell value for that stat
-            prv_value = cell.get(stat)
-            # if previous cell value is confidential, keep it confidential, even if new value is not confidential
-            if prv_value == confidential_value: continue
 
             # if new cell value confidential, set cell value to confidential
             if stat_ci != "confidential" and stat_ci != "" and stat_ci != "notApplicable":
