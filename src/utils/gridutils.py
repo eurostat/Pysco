@@ -11,8 +11,13 @@ from utils.featureutils import save_features_to_gpkg, get_schema_from_feature
 
 
 def get_cell_xy_from_id(id):
-    a = id.split("N")[1].split("E")
-    return [int(a[1]), int(a[0])]
+    try:
+        a = id.split("N")[1].split("E")
+        b = [int(a[1]), int(a[0])]
+        return b
+    except:
+        print("Error parsing cell id: " + id)
+    return None
 
 
 #CRS3035RES100mN2951100E4039900
