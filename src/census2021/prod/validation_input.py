@@ -76,7 +76,7 @@ for cc in ["AT","BE","BG","CH"]:
 
             # check consitency populated/value
             #if ( stat == 'T' and popu == 1 and value == 0 ) or ( popu == 0 and value > 0 ):
-            if ( popu == 0 and value > 0 ):
+            if stat == 'T' and popu == 1 and value == 0 :
                 cell["ERROR_TYPE"].append("populated_mismatch")
                 cell["ERROR_MSG"].append("inconsitant POPULATED value " + id +" "+cc+ ": " + str(popu) + " vs " + str(value) + " for stat " + stat)
             cell["POPULATED"] = v
