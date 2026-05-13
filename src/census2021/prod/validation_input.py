@@ -18,7 +18,7 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
 
     print(datetime.now(), cc)
 
-    with open(input_path + "CENSUS_GRID_N_" + cc + "_2021.csv") as f: #, newline="", encoding="utf-8"
+    with open(input_path + "CENSUS_GRID_N_" + cc + "_2021.csv") as f:
         rows = list(csv.DictReader(f))
         for row in rows:
 
@@ -57,24 +57,24 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
 
             # check no value is provided for confidential cells
             if stat_ci == "confidential" and value > 0:
-                cell["ERROR_TYPE"].append("unexpected_non_zero_value_for_confidential")
-                cell["ERROR_MSG"].append("unexpected non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + str(value))
+                cell["ERROR_TYPE"].append("non_zero_value_for_confidential")
+                cell["ERROR_MSG"].append("non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + str(value))
 
             # check populated
             popu = cell.get("POPULATED")
             if popu is None: popu = 1
             if popu not in [0,1]:
-                cell["ERROR_TYPE"].append("unexpected_populated_value")
-                cell["ERROR_MSG"].append("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
+                cell["ERROR_TYPE"].append("populated_value")
+                cell["ERROR_MSG"].append("POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
             elif(value > 0 and popu == 0):
-                cell["ERROR_TYPE"].append("unexpected_non_zero_value_for_populated_cell")
-                cell["ERROR_MSG"].append("unexpected non zero value for cell with POPULATED == 0" + id +" "+cc+ ": " + stat + " = " + str(value))
+                cell["ERROR_TYPE"].append("non_zero_value_for_populated_cell")
+                cell["ERROR_MSG"].append("non zero value for cell with POPULATED == 0" + id +" "+cc+ ": " + stat + " = " + str(value))
             elif(value == 0 and popu == 1):
-                cell["ERROR_TYPE"].append("unexpected_zero_value_for_populated_cell")
-                cell["ERROR_MSG"].append("unexpected zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + str(value))
+                cell["ERROR_TYPE"].append("zero_value_for_populated_cell")
+                cell["ERROR_MSG"].append("zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + str(value))
 
 
-            # if new cell value confidential, set cell value to confidential
+            # check confidential values
             if stat_ci != "confidential" and stat_ci != "" and stat_ci != "notApplicable":
                 cell["ERROR_TYPE"].append("confidential_value")
                 cell["ERROR_MSG"].append("confidential value found: " + stat_ci + " for " + id + " in " + cc)
