@@ -1,0 +1,8 @@
+
+Issue with land_area.
+one value reported for each stat value, while it should be sufficient to report it once
+wrong model. land_area should have been considered as a 'stat' value.
+cases where land_value specified are different
+
+cell_id: no need for CC_ before grid_id
+
