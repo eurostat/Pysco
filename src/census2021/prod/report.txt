@@ -8,4 +8,5 @@ cell_id: no need for CC_ before grid_id
 
 unalocated population: should be kept and be disseminated somewhere
 
+EL reported confidential value (column SPECIAL_VALUE) as "notApplicable" while other country leave it blank.
 

@@ -1,6 +1,8 @@
 import sys
 import os
 import csv
+import pyarrow as pa
+import pyarrow.parquet as pq
 from datetime import datetime
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -65,7 +67,7 @@ confidential: SPECIAL_VALUE
 # output cells, as dict indexed by cell_id
 cells = {}
 
-for cc in ["AT","BE","BG","CH"]:
+for cc in ["EE","EL","ES","FI","FR","HR"]:
 #for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR","HU","IE","IT","LI","LT","LU","LV","MT","NL","NO","PL","PT","RO","SE","SI","SK"]:
 
     print(datetime.now(), "process " + cc)
@@ -115,13 +117,13 @@ for cc in ["AT","BE","BG","CH"]:
             # if new cell value confidential, set cell value to confidential
             if stat_ci == "confidential": cell[stat] = confidential_value
             # new cell value not confidential
-            elif stat_ci == "":
+            elif stat_ci == "" or stat_ci == "notApplicable":
                 if prv_value is None:
                     cell[stat] = value
                 else:
                     cell[stat] += value
             else:
-                print("unexpected confidential value found: " + stat_ci)
+                print("unexpected confidential value found: " + stat_ci, cc, value)
 
 
 
@@ -154,3 +156,7 @@ with open(output_path + "census_grid_2021.csv", "w") as f: #, newline="", encodi
     writer = csv.DictWriter(f, fieldnames=cells[0].keys())
     writer.writeheader()
     writer.writerows(cells)
+
+print(datetime.now(), "store as parquet")
+pq.write_table(pa.Table.from_pylist(cells), output_path + "census_grid_2021.parquet")
+
