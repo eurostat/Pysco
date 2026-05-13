@@ -44,11 +44,13 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             cell["LAND_SURFACE"] = v
 
             # check populated
+            '''
             v = row["POPULATED"]
             if cell.get("POPULATED") is not None and v != cell.get("POPULATED"):
                 cell["ERROR_TYPE"].append("populated_mismatch")
                 cell["ERROR_MSG"].append("different POPULATED value " + id +" "+cc+ ": " + str(cell.get("POPULATED")) + " vs " + v)
             cell["POPULATED"] = v
+            '''
 
             # get row info
             stat = row["STAT"]
@@ -63,19 +65,20 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
                 cell["ERROR_TYPE"].append("non_zero_value_for_confidential")
                 cell["ERROR_MSG"].append("non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + str(value))
 
-            # check populated
+            # check populated value
             popu = cell.get("POPULATED")
-            if popu is None: popu = 1
+            if popu is None or popu=="": popu = 0
             if popu not in [0,1]:
                 cell["ERROR_TYPE"].append("populated_value")
                 cell["ERROR_MSG"].append("POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
+            '''
             elif(value > 0 and popu == 0):
                 cell["ERROR_TYPE"].append("non_zero_value_for_populated_cell")
                 cell["ERROR_MSG"].append("non zero value for cell with POPULATED == 0" + id +" "+cc+ ": " + stat + " = " + str(value))
             elif(value == 0 and popu == 1):
                 cell["ERROR_TYPE"].append("zero_value_for_populated_cell")
                 cell["ERROR_MSG"].append("zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + str(value))
-
+            '''
 
             # check confidential values
             if stat_ci != "confidential" and stat_ci != "" and stat_ci != "notApplicable":

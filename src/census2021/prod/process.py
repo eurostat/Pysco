@@ -105,9 +105,9 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             if value is None or value == "": value = 0
             value = int(value)
 
-            # check no value is provided for confidential cells
-            if stat_ci == "confidential" and value > 0:
-                print("unexpected non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + str(value))
+            # populated
+            # as soon as an OBS_VALUE > 0 is found for a cell, we consider it as populated, even if the POPULATED column value is missing or 0.
+            if row["POPULATED"] > 0 or value > 0: cell["POPULATED"] = 1
 
             # get previous cell value for that stat
             prv_value = cell.get(stat)
@@ -127,13 +127,12 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
                 print("unexpected confidential value found: " + stat_ci, cc, value)
 
 
-
 print(datetime.now(), "post process cells. Nb=", len(cells))
 
 # cells dict to values list
 cells = list(cells.values())
 
-properties = ['GRD_ID', 'T', 'M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE']
+properties = ['GRD_ID', 'T', 'M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE', 'POPULATED']
 cells_ = []
 for cell in cells:
 
