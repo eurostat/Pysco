@@ -107,7 +107,9 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
 
             # populated
             # as soon as an OBS_VALUE > 0 is found for a cell, we consider it as populated, even if the POPULATED column value is missing or 0.
-            if row["POPULATED"] > 0 or value > 0: cell["POPULATED"] = 1
+            popu = cell.get("POPULATED")
+            if popu is None or popu=="": popu = 0
+            if popu > 0 or value > 0: cell["POPULATED"] = 1
 
             # get previous cell value for that stat
             prv_value = cell.get(stat)

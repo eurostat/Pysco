@@ -43,15 +43,6 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
                 cell["ERROR_MSG"].append("different land surface value " + id +" "+cc+ ": " + str(cell.get("LAND_SURFACE")) + " vs " + v)
             cell["LAND_SURFACE"] = v
 
-            # check populated
-            '''
-            v = row["POPULATED"]
-            if cell.get("POPULATED") is not None and v != cell.get("POPULATED"):
-                cell["ERROR_TYPE"].append("populated_mismatch")
-                cell["ERROR_MSG"].append("different POPULATED value " + id +" "+cc+ ": " + str(cell.get("POPULATED")) + " vs " + v)
-            cell["POPULATED"] = v
-            '''
-
             # get row info
             stat = row["STAT"]
             if stat == "Y15-64": stat = "Y_1564"
@@ -79,6 +70,13 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
                 cell["ERROR_TYPE"].append("zero_value_for_populated_cell")
                 cell["ERROR_MSG"].append("zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + str(value))
             '''
+
+            # check consitency populated/value
+            if stat == 'T' and popu == 1 and value == 0 or popu == 0 and value > 0:
+                cell["ERROR_TYPE"].append("populated_mismatch")
+                cell["ERROR_MSG"].append("wrong POPULATED value " + id +" "+cc+ ": " + str(popu) + " vs " + str(value) + " for stat " + stat)
+            cell["POPULATED"] = v
+
 
             # check confidential values
             if stat_ci != "confidential" and stat_ci != "" and stat_ci != "notApplicable":
