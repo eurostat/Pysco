@@ -118,12 +118,13 @@ for cc in ["LU", "BE"]:
 cells = list(cells.values())
 
 for cell in cells:
-    # sort country codes in cell
-    cell["CNTR_ID"] = ",".join(sorted(cell["CNTR_ID"]))
 
-    #TODO check all values are provided. Otherwise, set to 'not available'
+    # check all values are provided. Otherwise, set to 'not available'
     for stat in ['T', 'F', 'M', 'Y_LT15', 'Y15-64', 'Y_GE65', 'EMP', 'NAT', 'CHG_OUT', 'OTH', 'CHG_IN', 'EU_OTH', 'SAME']:
         if stat not in cell: cell[stat] = na_value
+
+    # sort country codes in cell
+    cell["CNTR_ID"] = ",".join(sorted(cell["CNTR_ID"]))
 
 
 # save cells as geopackage
