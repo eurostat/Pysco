@@ -76,7 +76,7 @@ for cc in ["LU", "BE"]:
 
             if id == "unallocated":
                 # TODO store that somewhere. cells without geometry ? external file ?
-                print("skipping unallocated", row["STAT"], cc)
+                print("skipping unallocated", row["STAT"], cc, row["OBS_VALUE"])
                 continue
 
             # get cell
@@ -95,6 +95,8 @@ for cc in ["LU", "BE"]:
             stat = row["STAT"]
             stat_ci = row["SPECIAL_VALUE"]
             value = row["OBS_VALUE"]
+            if value is None or value == "": value = 0
+            value = int(value)
 
             # get previous cell value for that stat
             prv_value = cell.get(stat)
@@ -120,8 +122,11 @@ cells = list(cells.values())
 for cell in cells:
 
     # check all values are provided. Otherwise, set to 'not available'
+    t = cell.get("T")
+    #print(t)
     for stat in ['T', 'F', 'M', 'Y_LT15', 'Y15-64', 'Y_GE65', 'EMP', 'NAT', 'CHG_OUT', 'OTH', 'CHG_IN', 'EU_OTH', 'SAME']:
-        if stat not in cell: cell[stat] = na_value
+        if stat not in cell:
+            cell[stat] = 0 if t==0 else na_value
 
     # sort country codes in cell
     cell["CNTR_ID"] = ",".join(sorted(cell["CNTR_ID"]))
