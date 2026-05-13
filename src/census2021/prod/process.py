@@ -136,7 +136,7 @@ for cell in cells:
             cell[stat] = 0 if t==0 else na_value
 
     # sort country codes in cell
-    cell["CNTR_ID"] = ",".join(sorted(cell["CNTR_ID"]))
+    cell["CNTR_ID"] = "-".join(sorted(cell["CNTR_ID"]))
 
     # sort cell properties
     cell = {k: cell[k] for k in properties if k in cell}
@@ -144,3 +144,8 @@ for cell in cells:
 # save cells as geopackage
 grid_to_geopackage(cells, output_path + "census_grid_2021.gpkg", grid_resolution=1000)
 
+# save cells as csv
+with open(output_path + "census_grid_2021.csv", "w") as f: #, newline="", encoding="utf-8"
+    writer = csv.DictWriter(f, fieldnames=cells[0].keys())
+    writer.writeheader()
+    writer.writerows(cells)
