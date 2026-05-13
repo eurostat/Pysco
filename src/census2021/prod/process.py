@@ -93,7 +93,8 @@ for cc in ["LU", "BE"]:
 
             # land surface
             ls = row["LAND_SURFACE"]
-            if ls != cell.get("LAND_SURFACE"): print("unexpected different land surface value found for cell " + id + ": " + str(cell.get("LAND_SURFACE")) + " vs " + ls)
+            #TODO check that issue !
+            # if cell.get("LAND_SURFACE") is not None and ls != cell.get("LAND_SURFACE"): print("unexpected different land surface value found for cell " + id +" "+cc+ ": " + str(cell.get("LAND_SURFACE")) + " vs " + ls)
             cell["LAND_SURFACE"] = ls
 
             # get row info
