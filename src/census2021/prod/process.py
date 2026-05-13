@@ -91,6 +91,11 @@ for cc in ["LU", "BE"]:
             cnt = cell["CNTR_ID"]
             if cc not in cnt: cnt.append(cc)
 
+            # land surface
+            ls = row["LAND_SURFACE"]
+            if ls != cell.get("LAND_SURFACE"): print("unexpected different land surface value found for cell " + id + ": " + str(cell.get("LAND_SURFACE")) + " vs " + ls)
+            cell["LAND_SURFACE"] = ls
+
             # get row info
             stat = row["STAT"]
             stat_ci = row["SPECIAL_VALUE"]
@@ -119,18 +124,21 @@ for cc in ["LU", "BE"]:
 # cells dict to values list
 cells = list(cells.values())
 
+properties = ['T', 'F', 'M', 'Y_LT15', 'Y15-64', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE']
 for cell in cells:
 
     # check all values are provided. Otherwise, set to 'not available'
     t = cell.get("T")
     #print(t)
-    for stat in ['T', 'F', 'M', 'Y_LT15', 'Y15-64', 'Y_GE65', 'EMP', 'NAT', 'CHG_OUT', 'OTH', 'CHG_IN', 'EU_OTH', 'SAME']:
+    for stat in properties:
         if stat not in cell:
             cell[stat] = 0 if t==0 else na_value
 
     # sort country codes in cell
     cell["CNTR_ID"] = ",".join(sorted(cell["CNTR_ID"]))
 
+    # sort cell properties
+    cell = {k: cell[k] for k in properties if k in cell}
 
 # save cells as geopackage
 grid_to_geopackage(cells, output_path + "census_grid_2021.gpkg", grid_resolution=1000)
