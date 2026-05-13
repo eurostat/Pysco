@@ -73,16 +73,21 @@ for cc in ["LU", "BE"]:
             # get cell id
             id = row["SPATIAL"][3:]
 
+            if id == "unallocated":
+                # TODO store that somewhere
+                print("skipping unallocated", row["STAT"], cc)
+                continue
+
             # get cell
             cell = cells.get(id)
 
             # no cell: create one
             if cell is None:
-                cell = { "id": id, "cnt": [cc] }
+                cell = { "GRD_ID": id, "CNTR_ID": [cc] }
                 cells[id] = cell
 
             # coutnry code
-            cnt = cell["cnt"]
+            cnt = cell["CNTR_ID"]
             if cc not in cnt: cnt.append(cc)
 
             # set cell value
@@ -96,9 +101,9 @@ cells = list(cells.values())
 
 for cell in cells:
     # sort country codes in cell
-    cell["cnt"] = ",".join(sorted(cell["cnt"]))
+    cell["CNTR_ID"] = ",".join(sorted(cell["CNTR_ID"]))
 
 
 # save cells as geopackage
-grid_to_geopackage(cells, output_path + "census_grid_2021.gpkg", grid_id="id", grid_resolution=1000)
+grid_to_geopackage(cells, output_path + "census_grid_2021.gpkg", grid_resolution=1000)
 
