@@ -128,10 +128,9 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # the value is repeated for all stat positions: use only the one for stat "T"
             if stat == "T":
                 v = row["LAND_SURFACE"]
-                if v is None or v == "": v = 0
+                if v is None or v == "": continue
                 v = float(v)
-                lsu = cell.get("LAND_SURFACE")
-                if lsu is None:
+                if cell.get("LAND_SURFACE") is None:
                     cell["LAND_SURFACE"] = v
                 else:
                     cell["LAND_SURFACE"] += v
@@ -154,6 +153,9 @@ for cell in cells:
 
     # sort country codes in cell
     cell["CNTR_ID"] = "-".join(sorted(cell["CNTR_ID"]))
+
+    # round land surface to 4 decimals
+    cell["LAND_SURFACE"] = round(cell["LAND_SURFACE"], 4)
 
     # sort cell properties
     cell = {k: cell[k] for k in properties if k in cell}
