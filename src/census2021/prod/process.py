@@ -95,7 +95,11 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
 
             # land surface
             v = row["LAND_SURFACE"]
-            cell["LAND_SURFACE"] = v
+            lsu = cell.get("LAND_SURFACE")
+            if lsu is None:
+                cell["LAND_SURFACE"] = v
+            else:
+                cell["LAND_SURFACE"] += v
 
             # get row info
             stat = row["STAT"]

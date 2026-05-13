@@ -112,6 +112,9 @@ def validation(cells, rules, file_name):
             if(emp > t):
                 err_codes.append("EMP_T_inconsistency_EMP="+str(emp)+"_T="+str(t))
 
+        # TODO check land_surface is within [0,1]
+
+
         # check categories sum up to total
         if "cat_sum_sex" in rules:
             check_categories_total(c, ['M', 'F'], "SEX", err_codes)

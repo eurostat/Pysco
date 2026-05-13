@@ -24,6 +24,7 @@ issues that could be detected previously:
 - data on unalocated cells
 - inconsistencies in LAND_AREA values
 
+POPULATED attribute is problematic in input data. Should be O or 1. Sometimes decimal
 
 
 remaining issues:

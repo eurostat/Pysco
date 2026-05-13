@@ -37,13 +37,6 @@ for cc in ["AT","BE","BG","CH"]:
                 cell = { "GRD_ID": id, "ERROR_TYPE": [], "ERROR_MSG" : [] }
                 cells[id] = cell
 
-            # land surface
-            v = row["LAND_SURFACE"]
-            if cell.get("LAND_SURFACE") is not None and v != cell.get("LAND_SURFACE"):
-                cell["ERROR_TYPE"].append("land_surface_mismatch")
-                cell["ERROR_MSG"].append("different land surface value " + id +" "+cc+ ": " + str(cell.get("LAND_SURFACE")) + " vs " + v)
-            cell["LAND_SURFACE"] = v
-
             # get row info
             stat = row["STAT"]
             if stat == "Y15-64": stat = "Y_1564"
@@ -58,12 +51,14 @@ for cc in ["AT","BE","BG","CH"]:
                 cell["ERROR_MSG"].append("non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + str(value))
 
             # check populated value
+            '''
             popu = cell.get("POPULATED")
             if popu is None or popu == "": popu = 0
             popu = float(popu)
             if popu != 0 and popu != 1:
                 cell["ERROR_TYPE"].append("unexpected_populated_value")
                 cell["ERROR_MSG"].append("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
+            '''
 
             '''
             elif(value > 0 and popu == 0):
@@ -75,11 +70,13 @@ for cc in ["AT","BE","BG","CH"]:
             '''
 
             # check consitency populated/value
+            '''
             #if ( stat == 'T' and popu == 1 and value == 0 ) or ( popu == 0 and value > 0 ):
             if stat == 'T' and popu == 1 and value == 0 :
                 cell["ERROR_TYPE"].append("populated_mismatch")
-                cell["ERROR_MSG"].append("inconsitant POPULATED value " + id +" "+cc+ ": " + str(popu) + " vs " + str(value) + " for stat " + stat)
+                cell["ERROR_MSG"].append("inconsistent POPULATED value " + id +" "+cc+ ": " + str(popu) + " vs " + str(value) + " for stat " + stat)
             cell["POPULATED"] = v
+            '''
 
 
             # check confidential values
@@ -95,14 +92,14 @@ cells = list(cells.values())
 # keep only cells with errors
 cells = [ cell for cell in cells if len(cell["ERROR_TYPE"]) > 0 ]
 
-print(datetime.now(), "post process cells. Nb=", len(cells))
+print(datetime.now(), "post process cells. Nb cells =", len(cells))
 
 
 for cell in cells:
     cell["ERROR_TYPE"] = "-".join(cell["ERROR_TYPE"])
     cell["ERROR_MSG"] = " - ".join(cell["ERROR_MSG"])
-    del cell["LAND_SURFACE"]
-    del cell["POPULATED"]
+    #del cell["POPULATED"]
+    #cell["GRD_ID"] = cell["GRD_ID_"][3:]
 
 
 print(datetime.now(), "store as geopackage")
