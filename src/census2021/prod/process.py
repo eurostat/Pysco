@@ -64,8 +64,8 @@ confidential: SPECIAL_VALUE
 # output cells, as dict indexed by cell_id
 cells = {}
 
-#for cc in ["NO","PL","PT","RO","SE","SI","SK"]:
-for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR","HU","IE","IT","LI","LT","LU","LV","MT","NL","NO","PL","PT","RO","SE","SI","SK"]:
+for cc in ["AT","PT", "BE", "LU"]:
+#for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR","HU","IE","IT","LI","LT","LU","LV","MT","NL","NO","PL","PT","RO","SE","SI","SK"]:
 
     print(datetime.now(), cc)
 
@@ -77,9 +77,8 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             id = row["SPATIAL"][3:]
 
             if id == "unallocated":
-                # TODO store that somewhere. cells without geometry ? external file ?
-                #print("skipping unallocated", row["STAT"], cc, row["OBS_VALUE"])
-                continue
+                # store as cell without geometry
+                id = row["SPATIAL"]
 
             # get cell
             cell = cells.get(id)
@@ -164,7 +163,7 @@ for cell in cells:
 cells = cells_
 
 print(datetime.now(), "store as geopackage")
-grid_to_geopackage(cells, output_path + "census_grid_2021.gpkg", grid_resolution=1000)
+grid_to_geopackage(cells, output_path + "census_grid_2021.gpkg", grid_resolution=1000, ignore_errors=True, layer_name="census_grid_2021")
 
 print(datetime.now(), "store as csv")
 with open(output_path + "census_grid_2021.csv", "w") as f:

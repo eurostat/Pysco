@@ -1,5 +1,5 @@
 import csv
-from shapely.geometry import Polygon, box
+from shapely.geometry import Polygon, Point, box
 import geopandas as gpd
 import numpy as np
 from math import floor, ceil
@@ -10,13 +10,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import save_features_to_gpkg, get_schema_from_feature
 
 
-def get_cell_xy_from_id(id):
+def get_cell_xy_from_id(id, ignore_errors=False):
     try:
         a = id.split("N")[1].split("E")
         b = [int(a[1]), int(a[0])]
         return b
     except:
-        print("Error parsing cell id: " + id)
+        if not ignore_errors: print("Error parsing cell id: " + id)
     return None
 
 
@@ -40,16 +40,21 @@ def csv_grid_to_geopackage(csv_grid_path, gpkg_grid_path, geom="surf"):
 
 
 
-def grid_to_geopackage(cells, gpkg_grid_path, geom="surf", grid_id="GRD_ID", grid_resolution = 1000, layer_name="grid"):
+def grid_to_geopackage(cells, gpkg_grid_path, geom="surf", grid_id="GRD_ID", grid_resolution = 1000, layer_name="grid", ignore_errors=False):
 
-    # make grid cell geometry
+    # make grid cell geometries from cell ids
     for c in cells:
-        [x, y] = get_cell_xy_from_id(c[grid_id])
-        #TODO if grid_resolution is None, get resolution from each single cell id, and support different resolutions in the same grid
-        #TODO support point geometry
-        c['geometry'] = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
+        try:
+            [x, y] = get_cell_xy_from_id(c[grid_id], ignore_errors)
+            #TODO if grid_resolution is None, get resolution from each single cell id, and support different resolutions in the same grid
+            if geom == "point":
+                c['geometry'] = Point(x+grid_resolution/2, y+grid_resolution/2)
+            elif geom == "surf":
+                c['geometry'] = Polygon([(x, y), (x+grid_resolution, y), (x+grid_resolution, y+grid_resolution), (x, y+grid_resolution)])
+        except:
+            c['geometry'] = Polygon() if geom == "surf" else Point()
 
-    #save as gpkg
+    # save as gpkg
     save_features_to_gpkg(cells, gpkg_grid_path, layer_name=layer_name)
 
 
