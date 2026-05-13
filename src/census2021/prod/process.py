@@ -64,10 +64,12 @@ confidential: SPECIAL_VALUE
 # output cells, as dict indexed by cell_id
 cells = {}
 
-for cc in ["LU", "BE"]:
-    csv_path = input_path + f"CENSUS_GRID_N_{cc}_2021.csv"
+#for cc in ["LU", "BE", "FR"]:
+for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR","HU","IE","IT","LI","LT","LU","LV","MT","NL","NO","PL","PT","RO","SE","SI","SK"]:
 
-    with open(csv_path) as f: #, newline="", encoding="utf-8"
+    print("process " + cc)
+
+    with open(input_path + "CENSUS_GRID_N_" + cc + "_2021.csv") as f: #, newline="", encoding="utf-8"
         rows = list(csv.DictReader(f))
         for row in rows:
 
@@ -76,7 +78,7 @@ for cc in ["LU", "BE"]:
 
             if id == "unallocated":
                 # TODO store that somewhere. cells without geometry ? external file ?
-                print("skipping unallocated", row["STAT"], cc, row["OBS_VALUE"])
+                #print("skipping unallocated", row["STAT"], cc, row["OBS_VALUE"])
                 continue
 
             # get cell
@@ -122,6 +124,8 @@ for cc in ["LU", "BE"]:
 
 
 
+print("post process cells. Nb=", len(cells))
+
 # cells dict to values list
 cells = list(cells.values())
 
@@ -141,10 +145,10 @@ for cell in cells:
     # sort cell properties
     cell = {k: cell[k] for k in properties if k in cell}
 
-# save cells as geopackage
+print("store as geopackage")
 grid_to_geopackage(cells, output_path + "census_grid_2021.gpkg", grid_resolution=1000)
 
-# save cells as csv
+print("store as csv")
 with open(output_path + "census_grid_2021.csv", "w") as f: #, newline="", encoding="utf-8"
     writer = csv.DictWriter(f, fieldnames=cells[0].keys())
     writer.writeheader()
