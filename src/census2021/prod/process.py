@@ -92,16 +92,6 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             cnt = cell["CNTR_ID"]
             if cc not in cnt: cnt.append(cc)
 
-            # land surface
-            v = row["LAND_SURFACE"]
-            if v is None or v == "": v = 0
-            v = float(v)
-            lsu = cell.get("LAND_SURFACE")
-            if lsu is None:
-                cell["LAND_SURFACE"] = v
-            else:
-                cell["LAND_SURFACE"] += v
-
             # get row info
             stat = row["STAT"]
             if stat == "Y15-64": stat = "Y_1564"
@@ -134,13 +124,25 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             else:
                 print("unexpected confidential value found: " + stat_ci, cc, value)
 
+            # land surface
+            # the value is repeated for all stat positions: use only the one for stat "T"
+            if stat == "T":
+                v = row["LAND_SURFACE"]
+                if v is None or v == "": v = 0
+                v = float(v)
+                lsu = cell.get("LAND_SURFACE")
+                if lsu is None:
+                    cell["LAND_SURFACE"] = v
+                else:
+                    cell["LAND_SURFACE"] += v
+
 
 print(datetime.now(), "post process cells. Nb=", len(cells))
 
 # cells dict to values list
 cells = list(cells.values())
 
-properties = ['GRD_ID', 'T', 'M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE', 'POPULATED']
+properties = ['GRD_ID', 'T', 'M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE', 'POPULATED', 'CNTR_ID']
 cells_ = []
 for cell in cells:
 
