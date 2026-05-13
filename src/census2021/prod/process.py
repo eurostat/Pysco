@@ -148,6 +148,7 @@ print(datetime.now(), "post process cells. Nb=", len(cells))
 cells = list(cells.values())
 
 properties = ['T', 'F', 'M', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE']
+cells_ = []
 for cell in cells:
 
     # check all values are provided. Otherwise, set to 'not available'
@@ -161,6 +162,12 @@ for cell in cells:
 
     # sort cell properties
     cell = {k: cell[k] for k in properties if k in cell}
+
+    # store new ordered cells
+    cells_.append(cell)
+
+#
+cells = cells_
 
 print(datetime.now(), "store as geopackage")
 grid_to_geopackage(cells, output_path + "census_grid_2021.gpkg", grid_resolution=1000)

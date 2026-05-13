@@ -13,3 +13,7 @@ unalocated population: should be kept and be disseminated somewhere
 
 EL reported confidential value (column SPECIAL_VALUE) as "notApplicable" while other country leave it blank.
 
+
+script runs in around 10 minutes.
+
+add a new column called 'cntr_id' with reproting countries
