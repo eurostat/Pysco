@@ -14,6 +14,7 @@ output_path = "/home/juju/gisco/census_2021_production/"
 confidential_value = -8888
 na_value = -9999
 
+
 '''
 DATAFLOW,FREQ,
 STAT,
@@ -94,14 +95,7 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
 
             # land surface
             v = row["LAND_SURFACE"]
-            #TODO check that issue !
-            # if cell.get("LAND_SURFACE") is not None and v != cell.get("LAND_SURFACE"): print("unexpected different land surface value found for cell " + id +" "+cc+ ": " + str(cell.get("LAND_SURFACE")) + " vs " + v)
             cell["LAND_SURFACE"] = v
-
-            # check populated
-            #v = row["POPULATED"]
-            #if cell.get("POPULATED") is not None and v != cell.get("POPULATED"): print("unexpected different POPULATED value found for cell " + id +" "+cc+ ": " + str(cell.get("POPULATED")) + " vs " + v)
-            #cell["POPULATED"] = v
 
             # get row info
             stat = row["STAT"]
@@ -114,18 +108,6 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # check no value is provided for confidential cells
             if stat_ci == "confidential" and value > 0:
                 print("unexpected non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + str(value))
-
-            # check populated
-            '''
-            popu = cell.get("POPULATED")
-            if popu is None: popu = 1
-            if popu not in [0,1]:
-                print("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
-            elif(value > 0 and popu == 0):
-                print("unexpected non zero value for cell with POPULATED == 0" + id +" "+cc+ ": " + stat + " = " + str(value), popu)
-            elif(value == 0 and popu == 1):
-                print("unexpected zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + str(value), popu)
-            '''
 
             # get previous cell value for that stat
             prv_value = cell.get(stat)
@@ -151,7 +133,7 @@ print(datetime.now(), "post process cells. Nb=", len(cells))
 # cells dict to values list
 cells = list(cells.values())
 
-properties = ['GRD_ID', 'T', 'F', 'M', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE']
+properties = ['GRD_ID', 'T', 'M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE']
 cells_ = []
 for cell in cells:
 
@@ -177,7 +159,7 @@ print(datetime.now(), "store as geopackage")
 grid_to_geopackage(cells, output_path + "census_grid_2021.gpkg", grid_resolution=1000)
 
 print(datetime.now(), "store as csv")
-with open(output_path + "census_grid_2021.csv", "w") as f: #, newline="", encoding="utf-8"
+with open(output_path + "census_grid_2021.csv", "w") as f:
     writer = csv.DictWriter(f, fieldnames=cells[0].keys())
     writer.writeheader()
     writer.writerows(cells)

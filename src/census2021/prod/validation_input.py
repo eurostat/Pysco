@@ -3,6 +3,10 @@ import os
 import csv
 from datetime import datetime
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+from utils.gridutils import grid_to_geopackage
+
+
 input_path = "/home/juju/geodata/census/2021/input20250123/"
 confidential_value = -8888
 na_value = -9999
@@ -14,8 +18,6 @@ os.makedirs(output_folder, exist_ok=True)
 
 # output cells, as dict indexed by cell_id
 cells = {}
-
-errors = []
 
 for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR","HU","IE","IT","LI","LT","LU","LV","MT","NL","NO","PL","PT","RO","SE","SI","SK"]:
 
@@ -33,23 +35,22 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
 
             # no cell: create one
             if cell is None:
-                cell = { "GRD_ID": id, "CNTR_ID": [cc] }
+                cell = { "GRD_ID": id, "ERROR_TYPE": [], "ERROR_MSG" : [] }
                 cells[id] = cell
-
-            # country code
-            cnt = cell["CNTR_ID"]
-            if cc not in cnt: cnt.append(cc)
 
             # land surface
             v = row["LAND_SURFACE"]
-            #TODO check that issue !
-            # if cell.get("LAND_SURFACE") is not None and v != cell.get("LAND_SURFACE"): print("unexpected different land surface value found for cell " + id +" "+cc+ ": " + str(cell.get("LAND_SURFACE")) + " vs " + v)
+            if cell.get("LAND_SURFACE") is not None and v != cell.get("LAND_SURFACE"):
+                cell["ERROR_TYPE"].append("land_surface_mismatch")
+                cell["ERROR_MSG"].append("different land surface value " + id +" "+cc+ ": " + str(cell.get("LAND_SURFACE")) + " vs " + v)
             cell["LAND_SURFACE"] = v
 
             # check populated
-            #v = row["POPULATED"]
-            #if cell.get("POPULATED") is not None and v != cell.get("POPULATED"): print("unexpected different POPULATED value found for cell " + id +" "+cc+ ": " + str(cell.get("POPULATED")) + " vs " + v)
-            #cell["POPULATED"] = v
+            v = row["POPULATED"]
+            if cell.get("POPULATED") is not None and v != cell.get("POPULATED"):
+                cell["ERROR_TYPE"].append("populated_mismatch")
+                cell["ERROR_MSG"].append("different POPULATED value " + id +" "+cc+ ": " + str(cell.get("POPULATED")) + " vs " + v)
+            cell["POPULATED"] = v
 
             # get row info
             stat = row["STAT"]
@@ -61,19 +62,21 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
 
             # check no value is provided for confidential cells
             if stat_ci == "confidential" and value > 0:
-                print("unexpected non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + str(value))
+                cell["ERROR_TYPE"].append("unexpected_non_zero_value_for_confidential")
+                cell["ERROR_MSG"].append("unexpected non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + str(value))
 
             # check populated
-            '''
             popu = cell.get("POPULATED")
             if popu is None: popu = 1
             if popu not in [0,1]:
-                print("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
+                cell["ERROR_TYPE"].append("unexpected_populated_value")
+                cell["ERROR_MSG"].append("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
             elif(value > 0 and popu == 0):
-                print("unexpected non zero value for cell with POPULATED == 0" + id +" "+cc+ ": " + stat + " = " + str(value), popu)
+                cell["ERROR_TYPE"].append("unexpected_non_zero_value_for_populated_cell")
+                cell["ERROR_MSG"].append("unexpected non zero value for cell with POPULATED == 0" + id +" "+cc+ ": " + stat + " = " + str(value))
             elif(value == 0 and popu == 1):
-                print("unexpected zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + str(value), popu)
-            '''
+                cell["ERROR_TYPE"].append("unexpected_zero_value_for_populated_cell")
+                cell["ERROR_MSG"].append("unexpected zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + str(value))
 
             # get previous cell value for that stat
             prv_value = cell.get(stat)
@@ -81,14 +84,30 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             if prv_value == confidential_value: continue
 
             # if new cell value confidential, set cell value to confidential
-            if stat_ci == "confidential":
-                cell[stat] = confidential_value
-            # new cell value not confidential
-            elif stat_ci == "" or stat_ci == "notApplicable":
-                if prv_value is None:
-                    cell[stat] = value
-                else:
-                    cell[stat] += value
-            else:
-                print("unexpected confidential value found: " + stat_ci, cc, value)
+            if stat_ci != "confidential" and stat_ci != "" and stat_ci != "notApplicable":
+                cell["ERROR_TYPE"].append("confidential_value")
+                cell["ERROR_MSG"].append("confidential value found: " + stat_ci + " for " + id + " in " + cc)
+
+
+
+print(datetime.now(), "post process cells. Nb=", len(cells))
+
+# cells dict to values list
+cells = list(cells.values())
+
+for cell in cells:
+    cell["ERROR_TYPE"] = "-".join(cell["ERROR_TYPE"])
+    cell["ERROR_MSG"] = " - ".join(cell["ERROR_MSG"])
+    del cell["LAND_SURFACE"]
+    del cell["POPULATED"]
+
+
+print(datetime.now(), "store as geopackage")
+grid_to_geopackage(cells, output_folder + "validation_input.gpkg", grid_resolution=1000, layer_name="validation_input")
+
+print(datetime.now(), "store as csv")
+with open(output_folder + "validation_input.csv", "w") as f:
+    writer = csv.DictWriter(f, fieldnames=cells[0].keys())
+    writer.writeheader()
+    writer.writerows(cells)
 

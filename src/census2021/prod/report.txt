@@ -28,7 +28,13 @@ issues that could be detected previously:
 - inconsistencies in POPULATED and LAND_AREA values
 
 
+Compare both GPKG files. Use Geodiff ?
+
+
+
 
 remaining issues:
-
+in the cat sum only (due to NDC)
+and EMP>T
++ check validation_input
 
