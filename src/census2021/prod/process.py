@@ -65,8 +65,8 @@ confidential: SPECIAL_VALUE
 # output cells, as dict indexed by cell_id
 cells = {}
 
-#for cc in ["LU", "BE", "FR"]:
-for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR","HU","IE","IT","LI","LT","LU","LV","MT","NL","NO","PL","PT","RO","SE","SI","SK"]:
+for cc in ["AT","BE","BG","CH"]:
+#for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR","HU","IE","IT","LI","LT","LU","LV","MT","NL","NO","PL","PT","RO","SE","SI","SK"]:
 
     print(datetime.now(), "process " + cc)
 
