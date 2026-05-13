@@ -67,7 +67,7 @@ cells = {}
 #for cc in ["NO","PL","PT","RO","SE","SI","SK"]:
 for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR","HU","IE","IT","LI","LT","LU","LV","MT","NL","NO","PL","PT","RO","SE","SI","SK"]:
 
-    print(datetime.now(), "process " + cc)
+    print(datetime.now(), cc)
 
     with open(input_path + "CENSUS_GRID_N_" + cc + "_2021.csv") as f: #, newline="", encoding="utf-8"
         rows = list(csv.DictReader(f))
@@ -94,13 +94,19 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             if cc not in cnt: cnt.append(cc)
 
             # land surface
-            ls = row["LAND_SURFACE"]
+            v = row["LAND_SURFACE"]
             #TODO check that issue !
-            # if cell.get("LAND_SURFACE") is not None and ls != cell.get("LAND_SURFACE"): print("unexpected different land surface value found for cell " + id +" "+cc+ ": " + str(cell.get("LAND_SURFACE")) + " vs " + ls)
-            cell["LAND_SURFACE"] = ls
+            # if cell.get("LAND_SURFACE") is not None and v != cell.get("LAND_SURFACE"): print("unexpected different land surface value found for cell " + id +" "+cc+ ": " + str(cell.get("LAND_SURFACE")) + " vs " + v)
+            cell["LAND_SURFACE"] = v
+
+            # populated
+            v = row["POPULATED"]
+            if cell.get("POPULATED") is not None and v != cell.get("POPULATED"): print("unexpected different POPULATED value found for cell " + id +" "+cc+ ": " + str(cell.get("POPULATED")) + " vs " + v)
+            cell["POPULATED"] = v
 
             # get row info
             stat = row["STAT"]
+            if stat == "Y15-64": stat = "Y_1564"
             stat_ci = row["SPECIAL_VALUE"]
             value = row["OBS_VALUE"]
             if value is None or value == "": value = 0
@@ -129,7 +135,7 @@ print(datetime.now(), "post process cells. Nb=", len(cells))
 # cells dict to values list
 cells = list(cells.values())
 
-properties = ['T', 'F', 'M', 'Y_LT15', 'Y15-64', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE']
+properties = ['T', 'F', 'M', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'SAME', 'CHG_IN', 'CHG_OUT', 'NAT', 'EU_OTH', 'OTH', 'LAND_SURFACE', 'POPULATED']
 for cell in cells:
 
     # check all values are provided. Otherwise, set to 'not available'

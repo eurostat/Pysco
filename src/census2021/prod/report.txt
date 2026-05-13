@@ -4,6 +4,8 @@ one value reported for each stat value, while it should be sufficient to report 
 wrong model. land_area should have been considered as a 'stat' value.
 cases where land_value specified are different
 
+POPULATED
+
 cell_id: no need for CC_ before grid_id
 
 unalocated population: should be kept and be disseminated somewhere
