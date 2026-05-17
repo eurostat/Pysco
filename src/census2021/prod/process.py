@@ -182,3 +182,4 @@ pq.write_table(pa.Table.from_pylist(cells), output_path + "census_grid_2021.parq
 
 #TODO store as geotiff
 
+
