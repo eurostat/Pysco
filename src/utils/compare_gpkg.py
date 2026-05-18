@@ -43,8 +43,8 @@ def load_layer(path: str, layer: str | None) -> gpd.GeoDataFrame:
     if layer: kwargs["layer"] = layer
     gdf = gpd.read_file(**kwargs)
     return gdf
- 
- 
+
+
 def compare(
     ref: gpd.GeoDataFrame,
     cmp: gpd.GeoDataFrame,
