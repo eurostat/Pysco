@@ -12,6 +12,9 @@ v2_cells = set(v2["cell_id"])
 missing_in_v2 = prod_cells - v2_cells
 missing_in_prod = v2_cells - prod_cells
 
+print(f"Cells missing in V2 but present in production: {len(missing_in_v2)}")
+print(f"Cells missing in production but present in V2: {len(missing_in_prod)}")
+
 
 # save missing cells to gpkg
 missing_in_v2_gdf = prod[prod["cell_id"].isin(missing_in_v2)]
