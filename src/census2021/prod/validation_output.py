@@ -33,25 +33,16 @@ print(datetime.now(), len(cells), "cells loaded")
 # 'SAME', 'CHG_IN', 'CHG_OUT', 
 # 'LAND_SURFACE', 
 
-# no longer:
-# 'POPULATED', 
-# 'T_CI', 
-# 'M_CI', 'F_CI', 
-# 'Y_LT15_CI', 'Y_1564_CI', 'Y_GE65_CI', 
-# 'EMP_CI', 
-# 'NAT_CI', 'EU_OTH_CI', 'OTH_CI', 
-# 'SAME_CI', 'CHG_IN_CI', 'CHG_OUT_CI'
-
 
 # function to check the categories sum up to the total population
 def check_categories_total(cell, categories, categories_label, err_codes):
     t = cell["T"]
 
-    # check if any value of the categories is confidential
-    ci = False
+    # check if any value of the categories is confidential or not available
+    na = False
     for cat in categories:
-        if cell[cat] != confidential_value: continue
-        ci = True
+        if cell[cat] != confidential_value and cell[cat] != na_value: continue
+        na = True
         break
 
     # sum population figures by category
@@ -65,10 +56,10 @@ def check_categories_total(cell, categories, categories_label, err_codes):
     if sum == t: return
 
     # if any of the values is confidential and the sum is lower than the total, then OK
-    if ci and sum <= t: return
+    if na and sum <= t: return
 
     # report error
-    err = categories_label + "_sum_T=" + str(t) + "_SUM=" + str(sum)
+    err = categories_label + "_sum___T=" + str(t) + "_while_SUM=" + str(sum)
     err_codes.append(err)
 
 

@@ -1,1 +1,1 @@
-java -jar /home/juju/programmes/geodiff-2.3/GeoDiff.jar -m diff -v1 /home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg -v2 /home/juju/gisco/census_2021_production/census_grid_2021.gpkg -id identCol -o /home/juju/gisco/census_2021_validation/geodiff/
+java -jar /home/juju/programmes/geodiff-2.3/GeoDiff.jar -m diff -v1 /home/juju/geodata/census/2021/ESTAT_Census_2021_V2_without_CI.gpkg -v2 /home/juju/gisco/census_2021_production/census_grid_2021.gpkg -id GRD_ID -o /home/juju/gisco/census_2021_validation/geodiff/ -ati CNTR_ID
