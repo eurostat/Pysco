@@ -42,8 +42,6 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             if stat == "Y15-64": stat = "Y_1564"
             stat_ci = row["SPECIAL_VALUE"]
             value = row["OBS_VALUE"]
-            if value is None or value == "": value = 0
-            value = int(value)
 
             # check confidential values
             if stat_ci != "confidential" and stat_ci != "" and stat_ci != "notApplicable":
@@ -53,7 +51,7 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # check no value is provided for confidential cells
             if stat_ci == "confidential" and value > 0:
                 cell["ERROR_TYPE"].append("non_zero_value_for_confidential")
-                cell["ERROR_MSG"].append("non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + str(value))
+                cell["ERROR_MSG"].append("non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + value)
 
             # check land surface is within [0,1]
             lsu = row["LAND_SURFACE"]
@@ -73,19 +71,17 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # The flag ‘populated’ shall be applicable only to ‘total population’
             if stat == "T":
                 popu = cell.get("POPULATED")
-                if popu is None or popu == "": popu = 0
-                popu = int(popu)
 
                 # must be 0 or 1
-                if popu != 0 and popu != 1:
+                if popu != "0" and popu != "1":
                     cell["ERROR_TYPE"].append("unexpected_populated_value")
-                    cell["ERROR_MSG"].append("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + str(popu))
-                if(value > 0 and popu != 1):
+                    cell["ERROR_MSG"].append("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + popu)
+                if(value != "" and int(value) > 0 and popu != "1"):
                     cell["ERROR_TYPE"].append("non_zero_value_for_populated_cell")
-                    cell["ERROR_MSG"].append("non zero value for cell with POPULATED == 0" + id +" "+cc+ ": " + stat + " = " + str(value))
-                if(value == 0 and popu != 0):
+                    cell["ERROR_MSG"].append("non zero value for cell with POPULATED == 0" + id +" "+cc+ ": " + stat + " = " + value)
+                if(value == "0" and popu != "0"):
                     cell["ERROR_TYPE"].append("zero_value_for_populated_cell")
-                    cell["ERROR_MSG"].append("zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + str(value))
+                    cell["ERROR_MSG"].append("zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + value)
 
 
 

@@ -99,7 +99,7 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             value = int(value)
 
             # populated
-            # as soon as an OBS_VALUE > 0 or confidential is found for a cell, we consider it as populated, even if the POPULATED column value is missing or 0.
+            # as soon as a populated value is 1 or an OBS_VALUE > 0 or confidential is found for a cell, we consider it as populated, even if the POPULATED column value is missing or 0.
             popu = cell.get("POPULATED")
             if popu is None or popu == "": popu = 0
             popu = int(popu)
@@ -155,7 +155,7 @@ for cell in cells:
     cell["CNTR_ID"] = "-".join(sorted(cell["CNTR_ID"]))
 
     # round land surface to 4 decimals
-    cell["LAND_SURFACE"] = round(cell["LAND_SURFACE"], 6)
+    #cell["LAND_SURFACE"] = round(cell["LAND_SURFACE"], 6)
     # force below 1
     if cell["LAND_SURFACE"] >1: cell["LAND_SURFACE"] = 1
 
