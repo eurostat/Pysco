@@ -10,6 +10,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from utils.compare_gpkg import compare
 
 
+
+print("Loading GPKG...")
 prod = gpd.read_file("/home/juju/gisco/census_2021_production/census_grid_2021.gpkg")
 print(f"Production: {len(prod)} features")
 v2 = gpd.read_file("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg")
