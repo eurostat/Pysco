@@ -10,24 +10,38 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from utils.compare_gpkg import compare
 
 
+prod = gpd.read_file("/home/juju/gisco/census_2021_production/census_grid_2021.gpkg")
+print(f"Production: {len(prod)} features")
+v2 = gpd.read_file("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg")
+print(f"V2: {len(v2)} features")
 
-prod_path = "/home/juju/gisco/census_2021_production/census_grid_2021.gpkg"
-v2_path = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
 
-compare(
-    ref=gpd.read_file(prod_path),
-    cmp=gpd.read_file(v2_path),
-    id_field="GRD_ID",
-    attrs=['T', 'M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT', 'LAND_SURFACE', 'POPULATED',]
-    )
+
+data = {
+    "T": ["T"],
+    "SEX": ["M", "F"],
+    "AGE": ["Y_LT15", "Y_1564", "Y_GE65"],
+    "EMP": ["EMP"],
+    "BIRT": ['NAT', 'EU_OTH', 'OTH'],
+    "MOVE": ['SAME', 'CHG_IN', 'CHG_OUT'],
+    "LAND": ['LAND_SURFACE'],
+    "POP": ['POPULATED']
+}
+
+for group, attrs in data.items():
+    print(f"Comparing group {group} with attributes {attrs}")
+    compare(
+        ref=prod,
+        cmp=v2,
+        id_field="GRD_ID",
+        attrs=attrs
+        ).to_file("/home/juju/gisco/census_2021_validation/geodiff/diffs"+group+".gpkg", driver="GPKG")
 
 
 
 
 # get the missing cells
 if False:
-    prod = gpd.read_file(prod_path)
-    v2 = gpd.read_file(v2_path)
 
     prod_cells = set(prod["GRD_ID"])
     v2_cells = set(v2["GRD_ID"])
