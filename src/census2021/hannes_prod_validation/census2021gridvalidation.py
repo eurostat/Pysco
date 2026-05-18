@@ -43,28 +43,28 @@ print(datetime.now(), len(cells), "cells loaded")
 def check_categories_total(cell, categories, categories_label, err_codes):
     t = cell["T"]
 
-    #check if any value of the categories is confidential
-    ci = False
+    # check if any value of the categories is confidential or not available
+    na = False
     for cat in categories:
-        if cell[cat+"_CI"] == 0: continue
-        ci = True
+        if cell[cat+"_CI"] != -9999 and cell[cat] is not None and cell[cat] >= 0: continue
+        na = True
         break
 
-    #sum population figures by category
+    # sum population figures by category
     sum = 0
     for cat in categories:
         v = cell[cat]
-        if v==None or v==-9999: continue
+        if v == None or v <= 0: continue
         sum += v
 
-    #if the sum is equal to the total, then OK
-    if sum==t: return
+    # if the sum is equal to the total, then OK
+    if sum == t: return
 
-    #if any of the values is confidential and the sum is lower than the total, then OK
-    if ci and sum<=t: return
+    # if any of the values is confidential and the sum is lower than the total, then OK
+    if na and sum <= t: return
 
-    #report error
-    err = categories_label + "_sum_T=" + str(t) + "_SUM=" + str(sum)
+    # report error
+    err = categories_label + "_sum_issue___T=" + str(t) + "_while_SUM=" + str(sum)
     err_codes.append(err)
 
 
@@ -184,16 +184,18 @@ def validation(cells, rules, file_name):
 print(datetime.now(), "Run validation cell by cell...")
 
 #list of rules
-rules = ["ci_val", "ci_consis", "ci_consis_1", "populated_val", "populated_consis", "pop_values_none", "pop_values_non_neg",
-         "emp_smaller_than_pop", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
+#rules = ["ci_val", "ci_consis", "ci_consis_1", "populated_val", "populated_consis", "pop_values_none", "pop_values_non_neg",
+#         "emp_smaller_than_pop", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
+
+rules = ["cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
 
 #one file per validation rule
 for rule in rules:
     print(datetime.now(), rule)
     validation(cells, [rule], "errors_"+rule)
 
-#all combined
-validation(cells, rules, "errors")
+#print(datetime.now(), "all combined")
+#validation(cells, rules, "errors")
 
 
 
