@@ -26,7 +26,8 @@ issues that could be detected previously:
 - data on unalocated cells
 
 
-POPULATED attribute is problematic in input data. Should be O or 1. Sometimes decimal. Sometimes not compliant with the rules:
+POPULATED attribute is problematic in input data. Should be O or 1. Sometimes decimal ? Value None considered as 0.
+Many times not compliant with the rules:
             # data items on total population with an observed value other than ‘0’ shall be marked with the flag ‘populated’;
             # and (c) data items on total population with an observed value ‘0’ shall not be marked with the flag ‘populated’. 
             # The flag ‘populated’ shall be applicable only to ‘total population’

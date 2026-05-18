@@ -21,14 +21,14 @@ print(datetime.now(), f"V2: {len(v2)} features")
 
 
 data = {
-    #"T": ["T"],
-    #"SEX": ["M", "F"],
-    #"AGE": ["Y_LT15", "Y_1564", "Y_GE65"],
-    #"EMP": ["EMP"],
-    #"BIRT": ['NAT', 'EU_OTH', 'OTH'],
-    #"MOVE": ['SAME', 'CHG_IN', 'CHG_OUT'],
+    "T": ["T"],
+    "SEX": ["M", "F"],
+    "AGE": ["Y_LT15", "Y_1564", "Y_GE65"],
+    "EMP": ["EMP"],
+    "BIRT": ['NAT', 'EU_OTH', 'OTH'],
+    "MOVE": ['SAME', 'CHG_IN', 'CHG_OUT'],
     "LAND": ['LAND_SURFACE'],
-    #"POP": ['POPULATED']
+    "POP": ['POPULATED']
 }
 
 for group, attrs in data.items():

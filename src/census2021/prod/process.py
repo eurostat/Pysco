@@ -131,9 +131,9 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # new cell value not confidential: keep or add value
             elif stat_ci == "" or stat_ci == "notApplicable":
                 if prv_value is None:
-                    cell[stat] = value
+                    cell[stat] = int(value)
                 else:
-                    cell[stat] += value
+                    cell[stat] += int(value)
             else:
                 print("unexpected confidential value found: " + stat_ci, cc, value)
 
