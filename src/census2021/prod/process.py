@@ -155,7 +155,7 @@ for cell in cells:
     cell["CNTR_ID"] = "-".join(sorted(cell["CNTR_ID"]))
 
     # round land surface to 4 decimals
-    cell["LAND_SURFACE"] = round(cell["LAND_SURFACE"], 4)
+    cell["LAND_SURFACE"] = round(cell["LAND_SURFACE"], 6)
     # force below 1
     if cell["LAND_SURFACE"] >1: cell["LAND_SURFACE"] = 1
 
