@@ -155,5 +155,6 @@ for rule in rules:
     validation(cells, [rule], "errors_"+rule)
 
 # all combined
+print(datetime.now(), "all combined")
 validation(cells, rules, "errors")
 
