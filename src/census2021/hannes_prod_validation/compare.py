@@ -5,17 +5,18 @@
 import geopandas as gpd
 import os
 import sys
+from datetime import datetime
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.compare_gpkg import compare
 
 
 
-print("Loading GPKG...")
+print(datetime.now(), "Loading GPKG...")
 prod = gpd.read_file("/home/juju/gisco/census_2021_production/census_grid_2021.gpkg")
-print(f"Production: {len(prod)} features")
+print(datetime.now(), f"Production: {len(prod)} features")
 v2 = gpd.read_file("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg")
-print(f"V2: {len(v2)} features")
+print(datetime.now(), f"V2: {len(v2)} features")
 
 
 
@@ -31,13 +32,13 @@ data = {
 }
 
 for group, attrs in data.items():
-    print(f"Comparing group {group} with attributes {attrs}")
+    print(datetime.now(), f"Comparing group {group} with attributes {attrs}")
     compare(
         ref=prod,
         cmp=v2,
         id_field="GRD_ID",
         attrs=attrs
-        ).to_file("/home/juju/gisco/census_2021_validation/geodiff/diffs"+group+".gpkg", driver="GPKG")
+        ).to_file("/home/juju/gisco/census_2021_validation/geodiff/diffs_"+group+".gpkg", driver="GPKG")
 
 
 
@@ -50,8 +51,8 @@ if False:
     missing_in_v2 = prod_cells - v2_cells
     missing_in_prod = v2_cells - prod_cells
 
-    print(f"Cells missing in V2 but present in production: {len(missing_in_v2)}")
-    print(f"Cells missing in production but present in V2: {len(missing_in_prod)}")
+    print(datetime.now(), f"Cells missing in V2 but present in production: {len(missing_in_v2)}")
+    print(datetime.now(), f"Cells missing in production but present in V2: {len(missing_in_prod)}")
 
 
     # save missing cells to gpkg
