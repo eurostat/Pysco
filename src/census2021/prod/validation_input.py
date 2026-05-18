@@ -49,7 +49,7 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
                 cell["ERROR_MSG"].append("confidential value found: " + stat_ci + " for " + id + " in " + cc)
 
             # check no value is provided for confidential cells
-            if stat_ci == "confidential" and value > 0:
+            if stat_ci == "confidential" and value !="" and int(value) > 0:
                 cell["ERROR_TYPE"].append("non_zero_value_for_confidential")
                 cell["ERROR_MSG"].append("non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + value)
 
@@ -72,10 +72,10 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             if stat == "T":
                 popu = cell.get("POPULATED")
 
-                # must be 0 or 1
-                if popu != "0" and popu != "1":
+                # must be 0 or 1, or none
+                if popu != "0" and popu != "1": # and popu != None:
                     cell["ERROR_TYPE"].append("unexpected_populated_value")
-                    cell["ERROR_MSG"].append("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + popu)
+                    cell["ERROR_MSG"].append("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + popu + " for stat " + stat + " with value " + value)
                 if(value != "" and int(value) > 0 and popu != "1"):
                     cell["ERROR_TYPE"].append("non_zero_value_for_populated_cell")
                     cell["ERROR_MSG"].append("non zero value for cell with POPULATED == 0" + id +" "+cc+ ": " + stat + " = " + value)
