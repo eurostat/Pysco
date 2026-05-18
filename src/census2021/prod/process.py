@@ -95,16 +95,13 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             if stat == "Y15-64": stat = "Y_1564"
             stat_ci = row["SPECIAL_VALUE"]
             value = row["OBS_VALUE"]
-            if value is None or value == "": value = 0
-            value = int(value)
 
             # populated
             # as soon as a populated value is 1 or an OBS_VALUE > 0 or confidential is found for a cell, we consider it as populated, even if the POPULATED column value is missing or 0.
             popu = cell.get("POPULATED")
-            if popu is None or popu == "": popu = 0
-            popu = int(popu)
+            if popu is None or popu == "": popu = "0"
             # do that, to force compliance with specs
-            if popu > 0 or value > 0 or stat_ci == "confidential": cell["POPULATED"] = 1
+            if popu == "1" or (value != "" and int(value) > 0) or stat_ci == "confidential": cell["POPULATED"] = 1
 
             # land surface
             # the value is repeated for all stat positions: use only the one for stat "T"
@@ -117,11 +114,16 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
                     else:
                         cell["LAND_SURFACE"] += v
 
+            # NA case
+            if value is None or value == "":
+                cell[stat] = NA_VALUE
+                continue
+
             # get previous cell value for that stat
             prv_value = cell.get(stat)
-            # if previous cell value is confidential, keep it confidential, even if new value is not confidential
-            # it could happen when 2 countries report data on the same cell and one of them reports confidential values.
-            if prv_value == CONFIDENTIAL_VALUE: continue
+            # if previous cell value is confidential or NA, keep it as it is, even if new value is available and not confidential.
+            # it could happen when 2 countries report data on the same cell and one of them reports confidential values or NA values.
+            if prv_value == CONFIDENTIAL_VALUE or prv_value == NA_VALUE: continue
 
             # if new cell value confidential, set cell value to confidential
             if stat_ci == "confidential":

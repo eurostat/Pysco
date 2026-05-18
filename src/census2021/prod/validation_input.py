@@ -40,10 +40,11 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # get row info
             stat = row["STAT"]
             if stat == "Y15-64": stat = "Y_1564"
-            stat_ci = row["SPECIAL_VALUE"]
             value = row["OBS_VALUE"]
 
+
             # check confidential values
+            stat_ci = row["SPECIAL_VALUE"]
             if stat_ci != "confidential" and stat_ci != "" and stat_ci != "notApplicable":
                 cell["ERROR_TYPE"].append("confidential_value")
                 cell["ERROR_MSG"].append("confidential value found: " + stat_ci + " for " + id + " in " + cc)
@@ -52,6 +53,8 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             if stat_ci == "confidential" and value !="" and int(value) > 0:
                 cell["ERROR_TYPE"].append("non_zero_value_for_confidential")
                 cell["ERROR_MSG"].append("non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + value)
+
+
 
             # check land surface is within [0,1]
             lsu = row["LAND_SURFACE"]
@@ -73,7 +76,7 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
                 popu = cell.get("POPULATED")
 
                 # must be 0 or 1, or none
-                if popu != "0" and popu != "1": # and popu != None:
+                if popu != "0" and popu != "1" and popu != None:
                     cell["ERROR_TYPE"].append("unexpected_populated_value")
                     cell["ERROR_MSG"].append("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + popu + " for stat " + stat + " with value " + value)
                 if(value != "" and int(value) > 0 and popu != "1"):
