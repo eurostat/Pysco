@@ -1,20 +1,22 @@
-Issue with land_area.
-one value reported for each stat value, while it should be sufficient to report it once
-wrong model. land_area should have been considered as a 'stat' value.
-For pixels shared between countries, it is assumed each country reports the land_area of its part of the cell. The sum of the land area contributions from the countries sharing a cell should thus in theory remain equal or below 1.
-But when summing these contributions, many shared cells result in values above 1. In such case, the land-surface value is ceiled to 1.
+
+unalocated population: it is now kept in the disseminated data. For GPKG, features without geometries with id=cc_unallocated
+
+added a new column called 'cntr_id' with reporting countries
 
 value set to -8888 when not available because confidential and to -9999 when not available, for other reasons
 
-cell_id: no need for CC_ before grid_id
+Issue with land_area.
+one value reported for each stat value, while it should be sufficient to report it once
+wrong model. land_area should have been considered as a 'stat' value.
 
-unalocated population: it is now kept in the disseminated data. For GPKG, features without geometries with id=cc_unallocated
+For pixels shared between countries, it is assumed each country reports the land_area of its part of the cell. The sum of the land area contributions from the countries sharing a cell should thus in theory remain equal or below 1.
+But when summing these contributions, many shared cells result in values above 1. In such case, the land-surface value is ceiled to 1.
+
+cell_id: no need for CC_ before grid_id
 
 EL reported confidential value (column SPECIAL_VALUE) as "notApplicable" while other country leave it blank.
 
 script runs in around 10 minutes.
-
-added a new column called 'cntr_id' with reporting countries
 
 cases of values provided for confidential flag: LU, SK (other ?)
 in such case, value not disseminated. Maybe it could and the confidential value is a mistake (for LU (high values) but not for SK).
