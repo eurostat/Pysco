@@ -22,3 +22,17 @@ missing_in_prod_gdf = v2[v2["GRD_ID"].isin(missing_in_prod)]
 missing_in_v2_gdf.to_file("/home/juju/gisco/census_2021_validation/geodiff/missing_in_v2.gpkg", driver="GPKG")
 missing_in_prod_gdf.to_file("/home/juju/gisco/census_2021_validation/geodiff/missing_in_prod.gpkg", driver="GPKG")
 
+# loop through prod rows. for each row, get the row in v2 with the same GRD_ID
+for idx, row in prod.iterrows():
+    grd_id = row["GRD_ID"]
+    v2_row = v2[v2["GRD_ID"] == grd_id]
+    if v2_row.empty:
+        print(f"GRD_ID {grd_id} missing in V2")
+    else:
+        # compare values in row and v2_row
+        for col in prod.columns:
+            prod_value = row[col]
+            v2_value = v2_row.iloc[0][col]
+            if prod_value != v2_value:
+                print(f"GRD_ID {grd_id} column {col} differs: prod={prod_value} v2={v2_value}")
+

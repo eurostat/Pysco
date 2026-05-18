@@ -39,5 +39,9 @@ and EMP>T
 
 
 
-Compare both GPKG files. Use Geodiff ?
+Compare both GPKG files.
+
+There are 183 cells that are described in country data that have been lost in V2
+11 are for non allocated data for FR, IT, FI, BG, EL, SE, DK, NO, BE, LV, LU, SI
+The others are 0 population cells in DE, DK, EL, NL, PL, PT
 
