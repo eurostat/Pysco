@@ -34,6 +34,7 @@ remaining issues:
 in the cat sum only (due to NDC). Same number.
 and EMP>T (still 9491 cases in XX)
 
+New issues: 4453 cells with no land_surface (0 or NA) but with population (T>0 or populated='1')
 
 
 
