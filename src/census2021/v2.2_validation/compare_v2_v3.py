@@ -40,7 +40,7 @@ if True:
             attrs=attrs
             )
         print(datetime.now(), f"Group {group} comparison done. Nb differences: {len(out)}")
-        out.to_file("/home/juju/gisco/census_2021_validation/geodiff/diffs_"+group+".gpkg", driver="GPKG")
+        out.to_file("/home/juju/gisco/census_2021_v2_validation/geodiff/diffs_"+group+".gpkg", driver="GPKG")
 
 
 
@@ -60,6 +60,6 @@ if False:
     # save missing cells to gpkg
     missing_in_v2_gdf = prod[prod["GRD_ID"].isin(missing_in_v2)]
     missing_in_prod_gdf = v2[v2["GRD_ID"].isin(missing_in_prod)]
-    missing_in_v2_gdf.to_file("/home/juju/gisco/census_2021_validation/geodiff/missing_in_v2.gpkg", driver="GPKG")
-    missing_in_prod_gdf.to_file("/home/juju/gisco/census_2021_validation/geodiff/missing_in_prod.gpkg", driver="GPKG")
+    missing_in_v2_gdf.to_file("/home/juju/gisco/census_2021_v2_validation/geodiff/missing_in_v2.gpkg", driver="GPKG")
+    missing_in_prod_gdf.to_file("/home/juju/gisco/census_2021_v2_validation/geodiff/missing_in_prod.gpkg", driver="GPKG")
 

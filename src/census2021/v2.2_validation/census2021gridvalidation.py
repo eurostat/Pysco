@@ -11,7 +11,7 @@ from utils.gridutils import grid_to_geopackage
 grid_path = "/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg"
 
 #output folder where to store the validation reports
-output_folder = "/home/juju/gisco/census_2021_validation/"
+output_folder = "/home/juju/gisco/census_2021_v2_validation/"
 os.makedirs(output_folder, exist_ok=True)
 
 # bounding box to focus on. Set to None for entire check
