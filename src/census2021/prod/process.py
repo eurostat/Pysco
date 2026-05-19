@@ -74,7 +74,7 @@ gpkg_grid_to_geotiff(
     grid_id_field='GRD_ID',
     attributes= ['T', 'M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT', 'POPULATED'],
     #bbox=None,
-    gpkg_nodata_values=-9999,
+    gpkg_nodata_values=[NA_VALUE], #CONFIDENTIAL_VALUE
     tiff_nodata_value=-9999,
     dtype=np.int32,
     compress='DEFLATE'
