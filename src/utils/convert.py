@@ -330,10 +330,15 @@ def gpkg_grid_to_geotiff(
                 #CRS3035RES100mN2361200E3848300
 
                 # get cell lower left coordinates
-                coords = get_cell_xy_from_id(id)
-                if coords is None: continue
+                coords = get_cell_xy_from_id(id, ignore_errors=True)
+
+                if coords is None:
+                    print(datetime.now(), "Skip cell with id", id, "in file", gpkg)
+                    continue
+
                 x = coords[0]
                 y = coords[1]
+
                 #TODO also check all cells have the same RES ?
 
                 # get pixel position
