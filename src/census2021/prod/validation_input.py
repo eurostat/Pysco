@@ -119,5 +119,6 @@ def validate_input(rule, out_path):
     '''
 
 for rule in ["ci_values", "consist_ci_value", "land_surface_value", "populated_values", "consist_populated_value"]:
+    print(datetime.now(), "validate rule", rule)
     validate_input(rule, output_folder + "validation_input" + rule + ".gpkg")
 

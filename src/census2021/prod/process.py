@@ -119,6 +119,10 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
                 cell[stat] = NA_VALUE
                 continue
 
+            # allow dissemination of values that are provided but declared as confidential
+            # TODO decide !
+            stat_ci = ""
+
             # get previous cell value for that stat
             prv_value = cell.get(stat)
             # if previous cell value is confidential or NA, keep it as it is, even if new value is available and not confidential.

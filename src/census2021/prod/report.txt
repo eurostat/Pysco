@@ -16,11 +16,13 @@ But when summing these contributions, many shared cells result in values above 1
 EL reported confidential value (column SPECIAL_VALUE) as "notApplicable" while other country leave it blank.
 
 
-cases of values provided for confidential flag: LU, SK (other ?)
-in such case, value not disseminated. Maybe it could and the confidential value is a mistake (for LU (high values) but not for SK).
+cases of values provided for confidential flag. 611 cells in LU (466 cells) and SK (145 cells)
+in such case, value (not ?) disseminated.
+Maybe it could and the confidential value is a mistake (for LU (high values) but not for SK).
+
 
 POPULATED attribute is problematic in input data. Should be "O" or "1". Value "" present, considered as "0".
-Many times not compliant with the rules:
+Many times (for almost all cells - 4.5M out of ) not compliant with the rules:
             # data items on total population with an observed value other than ‘0’ shall be marked with the flag ‘populated’;
             # and (c) data items on total population with an observed value ‘0’ shall not be marked with the flag ‘populated’. 
             # The flag ‘populated’ shall be applicable only to ‘total population’
@@ -50,9 +52,4 @@ populated:
 land surface:
 rounding issues. 0.5529999999999 instead of 0.553 (for CRS3035RES1000mN2288000E3891000)
 NA in country data replaced with 0. (RO, NL, DK, FR, coast)
-
-
-
-TODO
-check CI/data inconsistency by country. decide what to do, if it is a mistake or not
 
