@@ -110,6 +110,18 @@ def validation(cells, rules, file_name):
             if lsu < 0 or lsu > 1:
                 err_codes.append("LAND_SURFACE_invalid_value="+str(lsu))
 
+        # check cells with no land and with population: (land_surface <= 0)  and (T != 0 or populated = 1)
+        if "consist_land_population" in rules:
+            lsu = float(c["LAND_SURFACE"])
+            if lsu > 0: continue
+            t = c["T"]
+            if t <= 0: continue
+            popu = c["POPULATED"]
+            if popu <= 0: continue
+
+            err_codes.append("POPULATION_without_LAND_SURFACE - LS="+str(lsu)+" T="+" POPULATED="+str(popu))
+
+
 
         # check categories sum up to total
         if "cat_sum_sex" in rules:
@@ -133,11 +145,11 @@ def validation(cells, rules, file_name):
         #sort errors
         errors = sorted(errors, key=lambda c: c["errors"])
 
-        print(datetime.now(), "Save to ", output_folder + file_name + ".csv")
-        save_as_csv(output_folder + file_name + ".csv", errors)
+        #print(datetime.now(), "Save to ", output_folder + file_name + ".csv")
+        #save_as_csv(output_folder + file_name + ".csv", errors)
 
         print(datetime.now(), "Save to ", output_folder + file_name + ".gpkg")
-        grid_to_geopackage(errors, output_folder + file_name +".gpkg", layer_name = file_name)
+        grid_to_geopackage(errors, output_folder + file_name +".gpkg", layer_name = file_name, ignore_errors=True, grid_resolution=1000)
 
 
 
@@ -147,7 +159,7 @@ print(datetime.now(), "Run validation cell by cell...")
 
 # list of rules
 rules = ["ci_val", "pop_values_none", "pop_values_non_neg",
-         "emp_smaller_than_pop", "invalid_land_surface_value", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
+         "emp_smaller_than_pop", "invalid_land_surface_value", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange", "consist_land_population"]
 
 # one file per validation rule
 for rule in rules:

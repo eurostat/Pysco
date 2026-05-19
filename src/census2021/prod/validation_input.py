@@ -108,7 +108,7 @@ def validate_input(rule, out_path):
         #cell["GRD_ID"] = cell["GRD_ID_"][3:]
 
     print(datetime.now(), "store as geopackage")
-    grid_to_geopackage(cells, out_path, grid_resolution=1000)
+    grid_to_geopackage(cells, out_path, grid_resolution=1000, ignore_errors=True)
 
     '''
     print(datetime.now(), "store as csv")

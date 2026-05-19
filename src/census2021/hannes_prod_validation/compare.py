@@ -27,18 +27,20 @@ data = {
     "EMP": ["EMP"],
     "BIRT": ['NAT', 'EU_OTH', 'OTH'],
     "MOVE": ['SAME', 'CHG_IN', 'CHG_OUT'],
-    "LAND": ['LAND_SURFACE'],
-    "POP": ['POPULATED']
+    "LAND_SURFACE": ['LAND_SURFACE'],
+    "POPULATED": ['POPULATED']
 }
 
 for group, attrs in data.items():
     print(datetime.now(), f"Comparing group {group} with attributes {attrs}")
-    compare(
+    out = compare(
         ref=prod,
         cmp=v2,
         id_field="GRD_ID",
         attrs=attrs
-        ).to_file("/home/juju/gisco/census_2021_validation/geodiff/diffs_"+group+".gpkg", driver="GPKG")
+        )
+    print(datetime.now(), f"Group {group} comparison done. Nb differences: {len(out)}")
+    out.to_file("/home/juju/gisco/census_2021_validation/geodiff/diffs_"+group+".gpkg", driver="GPKG")
 
 
 

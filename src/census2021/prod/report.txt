@@ -3,6 +3,7 @@ Changes / improvements / corrections:
 - unalocated population: it is now kept in the disseminated data. For GPKG, features without geometries with id=cc_unallocated
 - value set to -8888 when not available because confidential and to -9999 when not available, for other undocumented reason. Consequently, no "CI" attribute.
 - cell_id: no need for CC_ before grid_id
+- when T=0 and all others are not available, then all are set to 0. Applies to BE, and FR (EMP) and DE (EMP)
 
 
 land_area:
@@ -43,8 +44,6 @@ There are 183 cells that are described in country data that have been lost in V2
 11 are for non allocated data for FR, IT, FI, BG, EL, SE, DK, NO, BE, LV, LU, SI
 The others are 0 population cells in DE, DK, EL, NL, PL, PT
 
-253 cells in FR where Y_15 is set to -9999 while data is provided and set to 0.
-
 populated:
 32573 cells where populated is 1 but should be 0
 326 cells where it is 0 but should be 1
@@ -52,4 +51,7 @@ populated:
 land surface:
 rounding issues. 0.5529999999999 instead of 0.553 (for CRS3035RES1000mN2288000E3891000)
 NA in country data replaced with 0. (RO, NL, DK, FR, coast)
+
+
+TODO: check no land and population: (land_surface <= 0)  and (T != 0 or populated = 1)
 
