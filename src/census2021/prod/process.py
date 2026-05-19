@@ -98,10 +98,8 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
 
             # populated
             # as soon as a populated value is 1 or an OBS_VALUE > 0 or confidential is found for a cell, we consider it as populated, even if the POPULATED column value is missing or 0.
-            popu = cell.get("POPULATED")
-            #if popu is None or popu == "": popu = "0"
             # do that, to force compliance with specs
-            if popu == "1" or (value != "" and int(value) > 0) or stat_ci == "confidential": cell["POPULATED"] = 1
+            if cell.get("POPULATED") == "1" or (value != "" and int(value) > 0) or stat_ci == "confidential": cell["POPULATED"] = 1
 
             # land surface
             # the value is repeated for all stat positions: use only the one for stat "T"
