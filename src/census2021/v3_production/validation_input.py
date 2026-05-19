@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from utils.gridutils import grid_to_geopackage
 
 input_path = "/home/juju/geodata/census/2021/input20250123/"
-output_folder = "/home/juju/gisco/census_2021_production/input_validation/"
+output_folder = "/home/juju/gisco/census_2021_v3_production/input_validation/"
 os.makedirs(output_folder, exist_ok=True)
 
 

@@ -15,7 +15,7 @@ from utils.convert import gpkg_grid_to_geotiff
 input_path = "/home/juju/geodata/census/2021/input20250123/"
 
 # location of the output files (geopackage, csv, parquet)
-output_path = "/home/juju/gisco/census_2021_production/"
+output_path = "/home/juju/gisco/census_2021_v3_production/"
 CONFIDENTIAL_VALUE = -8888
 NA_VALUE = -9999
 
