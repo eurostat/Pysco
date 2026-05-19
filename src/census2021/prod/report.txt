@@ -35,7 +35,7 @@ in the cat sum only (due to NDC). Same number.
 and EMP>T (still 9491 cases in XX)
 
 New issues: 4453 cells with no land_surface (0 or NA) but with population (T>0 or populated='1')
-
+RO, NL, DK, FR, coast
 
 
 
@@ -53,6 +53,4 @@ land surface:
 rounding issues. 0.5529999999999 instead of 0.553 (for CRS3035RES1000mN2288000E3891000)
 NA in country data replaced with 0. (RO, NL, DK, FR, coast)
 
-
-TODO: check no land and population: (land_surface <= 0)  and (T != 0 or populated = 1)
 

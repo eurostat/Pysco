@@ -83,7 +83,7 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # get cell, create one if it does not exist yet
             cell = cells.get(id)
             if cell is None:
-                cell = { "GRD_ID": id, "CNTR_ID": [cc] }
+                cell = { "GRD_ID": id, "CNTR_ID": [cc], "POPULATED": 0 }
                 cells[id] = cell
 
             # country code
@@ -99,7 +99,7 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # populated
             # as soon as a populated value is 1 or an OBS_VALUE > 0 or confidential is found for a cell, we consider it as populated, even if the POPULATED column value is missing or 0.
             popu = cell.get("POPULATED")
-            if popu is None or popu == "": popu = "0"
+            #if popu is None or popu == "": popu = "0"
             # do that, to force compliance with specs
             if popu == "1" or (value != "" and int(value) > 0) or stat_ci == "confidential": cell["POPULATED"] = 1
 
@@ -119,7 +119,7 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
                 cell[stat] = NA_VALUE
                 continue
 
-            # allow dissemination of values that are provided but declared as confidential
+            # allow (or not ?) dissemination of values that are provided but declared as confidential
             # TODO decide !
             stat_ci = ""
 
