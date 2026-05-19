@@ -1,12 +1,15 @@
 import sys
 import os
 import csv
+
+import numpy as np
 import pyarrow as pa
 import pyarrow.parquet as pq
 from datetime import datetime
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.gridutils import grid_to_geopackage
+from utils.convert import gpkg_grid_to_geotiff
 
 # location of the country files
 input_path = "/home/juju/geodata/census/2021/input20250123/"
@@ -63,6 +66,26 @@ confidential: SPECIAL_VALUE
 '''
 
 
+
+print(datetime.now(), "gpkg to geotiff")
+gpkg_grid_to_geotiff(
+    input_gpkgs = [output_path + "ESTAT_Census_2021_V3.gpkg"],
+    output_tiff=output_path + "ESTAT_Census_2021_V3.tiff",
+    grid_id_field='GRD_ID',
+    attributes= ['T', 'M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT', 'POPULATED'],
+    #bbox=None,
+    gpkg_nodata_values=-9999,
+    tiff_nodata_value=-9999,
+    dtype=np.int32,
+    compress='DEFLATE'
+)
+
+
+exit(0)
+
+
+
+
 # output cells, as a dictionnary indexed by cell_id
 cells = {}
 
@@ -83,7 +106,7 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # get cell, create one if it does not exist yet
             cell = cells.get(id)
             if cell is None:
-                cell = { "GRD_ID": id, "CNTR_ID": [cc], "POPULATED": 0 }
+                cell = { "GRD_ID": id, "CNTR_ID": [cc], "POPULATED": NA_VALUE }
                 cells[id] = cell
 
             # country code
@@ -97,9 +120,14 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             value = row["OBS_VALUE"]
 
             # populated
-            # as soon as a populated value is 1 or an OBS_VALUE > 0 or confidential is found for a cell, we consider it as populated, even if the POPULATED column value is missing or 0.
-            # do that, to force compliance with specs
-            if cell.get("POPULATED") == "1" or (value != "" and int(value) > 0) or stat_ci == "confidential": cell["POPULATED"] = 1
+            # applies only on total population
+            if stat == "T":
+                # as soon as a "populated" is "1" or value > 0 or confidential, we consider it as populated, even if the POPULATED column value is missing or 0.
+                # do that, to force compliance with specs
+                if row("POPULATED") == "1" or (value != "" and int(value) > 0) or stat_ci == "confidential":
+                    cell["POPULATED"] = 1
+                else:
+                    cell["POPULATED"] = 0
 
             # land surface
             # the value is repeated for all stat positions: use only the one for stat "T"
@@ -158,9 +186,7 @@ for cell in cells:
     # sort country codes in cell
     cell["CNTR_ID"] = "-".join(sorted(cell["CNTR_ID"]))
 
-    # round land surface to 4 decimals
-    #cell["LAND_SURFACE"] = round(cell["LAND_SURFACE"], 6)
-    # force below 1
+    # force LAND_SURFACE below 1
     if cell["LAND_SURFACE"] >1: cell["LAND_SURFACE"] = 1
 
     # sort cell properties
@@ -172,18 +198,16 @@ for cell in cells:
 # keep new list of cells with ordered properties
 cells = cells_
 
+
+
 print(datetime.now(), "store as geopackage")
-grid_to_geopackage(cells, output_path + "census_grid_2021.gpkg", grid_resolution=1000, ignore_errors=True, layer_name="census_grid_2021")
+grid_to_geopackage(cells, output_path + "ESTAT_Census_2021_V3.gpkg", grid_resolution=1000, ignore_errors=True, layer_name="ESTAT_Census_2021_V3")
 
 print(datetime.now(), "store as csv")
-with open(output_path + "census_grid_2021.csv", "w") as f:
+with open(output_path + "ESTAT_Census_2021_V3.csv", "w") as f:
     writer = csv.DictWriter(f, fieldnames=cells[0].keys())
     writer.writeheader()
     writer.writerows(cells)
 
 print(datetime.now(), "store as parquet")
-pq.write_table(pa.Table.from_pylist(cells), output_path + "census_grid_2021.parquet")
-
-#TODO store as geotiff
-
-
+pq.write_table(pa.Table.from_pylist(cells), output_path + "ESTAT_Census_2021_V3.parquet")
