@@ -1,10 +1,11 @@
+Changes / improvements / corrections:
+- added a new column called 'cntr_id' with reporting countries
+- unalocated population: it is now kept in the disseminated data. For GPKG, features without geometries with id=cc_unallocated
+- value set to -8888 when not available because confidential and to -9999 when not available, for other undocumented reason. Consequently, no "CI" attribute.
+- cell_id: no need for CC_ before grid_id
 
-unalocated population: it is now kept in the disseminated data. For GPKG, features without geometries with id=cc_unallocated
 
-added a new column called 'cntr_id' with reporting countries
-
-value set to -8888 when not available because confidential and to -9999 when not available, for other reasons
-
+land_area:
 Issue with land_area.
 one value reported for each stat value, while it should be sufficient to report it once
 wrong model. land_area should have been considered as a 'stat' value.
@@ -12,31 +13,25 @@ wrong model. land_area should have been considered as a 'stat' value.
 For pixels shared between countries, it is assumed each country reports the land_area of its part of the cell. The sum of the land area contributions from the countries sharing a cell should thus in theory remain equal or below 1.
 But when summing these contributions, many shared cells result in values above 1. In such case, the land-surface value is ceiled to 1.
 
-cell_id: no need for CC_ before grid_id
-
 EL reported confidential value (column SPECIAL_VALUE) as "notApplicable" while other country leave it blank.
 
-script runs in around 10 minutes.
 
 cases of values provided for confidential flag: LU, SK (other ?)
 in such case, value not disseminated. Maybe it could and the confidential value is a mistake (for LU (high values) but not for SK).
 
-
-issues that could be detected previously:
-- data on unalocated cells
-
-
-POPULATED attribute is problematic in input data. Should be O or 1. Sometimes decimal ? Value None considered as 0.
+POPULATED attribute is problematic in input data. Should be "O" or "1". Value "" present, considered as "0".
 Many times not compliant with the rules:
             # data items on total population with an observed value other than ‘0’ shall be marked with the flag ‘populated’;
             # and (c) data items on total population with an observed value ‘0’ shall not be marked with the flag ‘populated’. 
             # The flag ‘populated’ shall be applicable only to ‘total population’
 Rule chosen: provided value ignored and set to 1 as soon as an observed value is positive or confidential
-
+Populated should be handled as a "stat", like land_surface
 
 remaining issues:
-in the cat sum only (due to NDC)
-and EMP>T
+in the cat sum only (due to NDC). Same number.
+and EMP>T (still 9491 cases in XX)
+
+
 
 
 
