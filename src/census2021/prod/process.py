@@ -73,7 +73,7 @@ gpkg_grid_to_geotiff(
     output_tiff=output_path + "ESTAT_Census_2021_V3.tiff",
     grid_id_field='GRD_ID',
     attributes= ['T', 'M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT', 'POPULATED'],
-    #bbox=None,
+    bbox=[ 900000, 900000, 6600000, 5500000 ],
     gpkg_nodata_values=[NA_VALUE], #CONFIDENTIAL_VALUE
     tiff_nodata_value=-9999,
     dtype=np.int32,
