@@ -19,28 +19,28 @@ v2 = gpd.read_file("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg")
 print(datetime.now(), f"V2: {len(v2)} features")
 
 
+if True:
+    data = {
+        "T": ["T"],
+        "SEX": ["M", "F"],
+        "AGE": ["Y_LT15", "Y_1564", "Y_GE65"],
+        "EMP": ["EMP"],
+        "BIRT": ['NAT', 'EU_OTH', 'OTH'],
+        "MOVE": ['SAME', 'CHG_IN', 'CHG_OUT'],
+        "LAND_SURFACE": ['LAND_SURFACE'],
+        "POPULATED": ['POPULATED']
+    }
 
-data = {
-    "T": ["T"],
-    "SEX": ["M", "F"],
-    "AGE": ["Y_LT15", "Y_1564", "Y_GE65"],
-    "EMP": ["EMP"],
-    "BIRT": ['NAT', 'EU_OTH', 'OTH'],
-    "MOVE": ['SAME', 'CHG_IN', 'CHG_OUT'],
-    "LAND_SURFACE": ['LAND_SURFACE'],
-    "POPULATED": ['POPULATED']
-}
-
-for group, attrs in data.items():
-    print(datetime.now(), f"Comparing group {group} with attributes {attrs}")
-    out = compare(
-        ref=prod,
-        cmp=v2,
-        id_field="GRD_ID",
-        attrs=attrs
-        )
-    print(datetime.now(), f"Group {group} comparison done. Nb differences: {len(out)}")
-    out.to_file("/home/juju/gisco/census_2021_validation/geodiff/diffs_"+group+".gpkg", driver="GPKG")
+    for group, attrs in data.items():
+        print(datetime.now(), f"Comparing group {group} with attributes {attrs}")
+        out = compare(
+            ref=prod,
+            cmp=v2,
+            id_field="GRD_ID",
+            attrs=attrs
+            )
+        print(datetime.now(), f"Group {group} comparison done. Nb differences: {len(out)}")
+        out.to_file("/home/juju/gisco/census_2021_validation/geodiff/diffs_"+group+".gpkg", driver="GPKG")
 
 
 

@@ -4,9 +4,11 @@ Changes / improvements / corrections:
 - value set to -8888 when not available because confidential and to -9999 when not available, for other undocumented reason. Consequently, no "CI" attribute.
 - cell_id: no need for CC_ before grid_id
 - when T=0 and all others are not available, then all are set to 0. Applies to BE, and FR (EMP) and DE (EMP)
+- EL reported confidential value (column SPECIAL_VALUE) as "notApplicable" while other country leave it blank. Consider that as black.
 
 
-land_area:
+- land_area:
+
 Issue with land_area.
 one value reported for each stat value, while it should be sufficient to report it once
 wrong model. land_area should have been considered as a 'stat' value.
@@ -14,15 +16,14 @@ wrong model. land_area should have been considered as a 'stat' value.
 For pixels shared between countries, it is assumed each country reports the land_area of its part of the cell. The sum of the land area contributions from the countries sharing a cell should thus in theory remain equal or below 1.
 But when summing these contributions, many shared cells result in values above 1. In such case, the land-surface value is ceiled to 1.
 
-EL reported confidential value (column SPECIAL_VALUE) as "notApplicable" while other country leave it blank.
 
 
-cases of values provided for confidential flag. 611 cells in LU (466 cells) and SK (145 cells)
+- cases of values provided for confidential flag. 611 cells in LU (466 cells) and SK (145 cells)
 in such case, value (not ?) disseminated.
 Maybe it could and the confidential value is a mistake (for LU (high values) but not for SK).
 
 
-POPULATED attribute is problematic in input data. Should be "O" or "1". Value "" present, considered as "0".
+- POPULATED attribute is problematic in input data. Should be "O" or "1". Value "" present, considered as "0".
 Many times (for almost all cells - 4.5M out of ) not compliant with the rules:
             # data items on total population with an observed value other than ‘0’ shall be marked with the flag ‘populated’;
             # and (c) data items on total population with an observed value ‘0’ shall not be marked with the flag ‘populated’. 
@@ -30,27 +31,30 @@ Many times (for almost all cells - 4.5M out of ) not compliant with the rules:
 Rule chosen: provided value ignored and set to 1 as soon as an observed value is positive or confidential
 Populated should be handled as a "stat", like land_surface
 
-remaining issues:
-in the cat sum only (due to NDC). Same number.
-and EMP>T (still 9491 cases in XX)
-
-New issues: 4453 cells with no land_surface (0 or NA) but with population (T>0 or populated='1')
-RO, NL, DK, FR, coast
 
 
+Changes compared to v2 version:
 
-Compare both GPKG files.
-
-There are 183 cells that are described in country data that have been lost in V2
+- No more confidentiality / value consistency issue.
+- There were 183 cells that are described in country data that have been lost in v2
 11 are for non allocated data for FR, IT, FI, BG, EL, SE, DK, NO, BE, LV, LU, SI
 The others are 0 population cells in DE, DK, EL, NL, PL, PT
+This has been corrected.
 
-populated:
+- populated:
 32573 cells where populated is 1 but should be 0
 326 cells where it is 0 but should be 1
+This has been corrected.
 
 land surface:
 rounding issues. 0.5529999999999 instead of 0.553 (for CRS3035RES1000mN2288000E3891000)
 NA in country data replaced with 0. (RO, NL, DK, FR, coast)
+This has been corrected.
 
+
+
+remaining issues:
+- in the cat sum only (due to NDC). Same number.
+- and EMP>T (still 9491 cases in XX)
+- New issues: 4453 cells with no land_surface (0 or NA) but with population (T>0 or populated='1'). RO, NL, DK, FR, coast
 
