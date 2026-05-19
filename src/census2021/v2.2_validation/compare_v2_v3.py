@@ -13,7 +13,7 @@ from utils.compare_gpkg import compare
 
 
 print(datetime.now(), "Loading GPKG...")
-prod = gpd.read_file("/home/juju/gisco/census_2021_production/census_grid_2021.gpkg")
+prod = gpd.read_file("/home/juju/gisco/census_2021_production/ESTAT_Census_2021_V3.gpkg")
 print(datetime.now(), f"Production: {len(prod)} features")
 v2 = gpd.read_file("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg")
 print(datetime.now(), f"V2: {len(v2)} features")

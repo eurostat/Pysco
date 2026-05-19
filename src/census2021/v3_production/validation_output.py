@@ -8,7 +8,7 @@ from utils.csvutils import save_as_csv
 from utils.gridutils import grid_to_geopackage
 
 # input gpkg file to validate
-grid_path = "/home/juju/gisco/census_2021_production/census_grid_2021.gpkg"
+grid_path = "/home/juju/gisco/census_2021_production/ESTAT_Census_2021_V3.gpkg"
 confidential_value = -8888
 na_value = -9999
 
