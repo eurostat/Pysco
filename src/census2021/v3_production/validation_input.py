@@ -77,11 +77,11 @@ def validate_input(rule, out_path):
                 # and (c) data items on total population with an observed value ‘0’ shall not be marked with the flag ‘populated’. 
                 # The flag ‘populated’ shall be applicable only to ‘total population’
                 if stat == "T":
-                    popu = cell.get("POPULATED")
+                    popu = row["POPULATED"]
 
                     # must be 0 or 1, or none
                     if rule == "all" or rule == "populated_values":
-                        if popu != "0" and popu != "1" and popu != None:
+                        if popu != "0" and popu != "1":
                             cell["ERROR_TYPE"].append("unexpected_populated_value")
                             cell["ERROR_MSG"].append("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + popu + " for stat " + stat + " with value " + value)
                     if rule == "all" or rule == "consist_populated_value":

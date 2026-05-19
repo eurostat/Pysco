@@ -1,6 +1,7 @@
 TODO:
-check metadata
-produce geotiff
+run validation_input
+update readme
+produce geotiff. bands with different types ?
 
 
 v2.2: version currently published.
@@ -15,6 +16,7 @@ v3: new version with corrections.
 11 are for non allocated data for FR, IT, FI, BG, EL, SE, DK, NO, BE, LV, LU, SI
 The others are 0 population cells in DE, DK, EL, NL, PL, PT
 This has been corrected. unalocated population: it is now kept in the disseminated data. For GPKG, features without geometries with id=cc_unallocated
+- simplified formats: CSV and parquet are no longer data item based but cell based. A single geotiff with several bands.
 
 - cases of values provided for confidential flag. 611 cells in LU (466 cells) and SK (145 cells)
 in such case, value (not ?) disseminated.
