@@ -125,9 +125,16 @@ def validation(cells, rules, file_name):
         if "consist_populated_t" in rules:
             t = c["T"]
             popu = c["POPULATED"]
-            if t == 0 and popu == 0: continue
+
+            # data items on total population with an observed value other than ‘0’ shall be marked with the flag ‘populated’;
             if (t > 0 or t == CONFIDENTIAL_VALUE) and popu == 1: continue
+
+            # data items on total population with an observed value ‘0’ shall not be marked with the flag ‘populated’. 
+            if t == 0 and popu == 0: continue
+
+            #if t == 0 and popu == 1: continue
             err_codes.append("Inconsistency populated/population. POPULATED="+str(popu)+" T="+str(t))
+
 
 
         # check categories sum up to total
