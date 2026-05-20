@@ -104,8 +104,9 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # applies only on total population
             if stat == "T":
                 prev_popu = cell.get("POPULATED")
-                if prev_popu == None or prev_popu == 0:
-                    cell["POPULATED"] = int(row["POPULATED"])
+                popu = int(row["POPULATED"])
+                if prev_popu != 1 and popu is not None:
+                    cell["POPULATED"] = popu
 
                 # as soon as a "populated" is "1" or value > 0 or confidential, we consider it as populated, even if the POPULATED column value is missing or 0.
                 # do that, to force compliance with specs
