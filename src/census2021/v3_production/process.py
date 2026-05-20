@@ -128,6 +128,7 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
 
             # NA case
             if value is None or value == "":
+                #if stat_ci != "confidential": print(cc, stat)
                 cell[stat] = NA_VALUE
                 continue
 

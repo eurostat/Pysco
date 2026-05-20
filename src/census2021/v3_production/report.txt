@@ -1,8 +1,6 @@
 TODO:
-check all
 
 update readme
-produce geotiff. bands with different types ?
 draft email - report with images ?
 
 
@@ -46,6 +44,7 @@ All issues have been fixed except:
 - and EMP>T (still 9491 cases in XX)
 - New issues: 4452 cells with no LAND_SURFACE (0 or NA) but with population (T>0 or populated='1'). RO, NL, DK, FR, coast
 - New issues: 43709 cells with T=0 but POPULATED = 1. May be a consequence of NDC method.
+- New issues: 254 data items have an OBS_VALUE = "" while it is not confidential. It concerns FR, for Y_LT15 and SAME. Maybe these values should be forced to 0.
 
 *** Future improvements for ESOPE
 - cell_id: no need for CC_ before grid_id. The country code is already provided under AREA_OF_DISSEMINATION.
