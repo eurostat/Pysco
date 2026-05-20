@@ -47,6 +47,12 @@ def validate_input(rule, out_path):
                 stat_ci = row["SPECIAL_VALUE"]
 
                 # check confidential values
+                if rule == "all" or rule == "values":
+                    if value == "" or value is None or int(value)<0:
+                        cell["ERROR_TYPE"].append("value")
+                        cell["ERROR_MSG"].append("unexpected value found: " + value + " for " + stat + " for " + id + " in " + cc)
+
+                # check confidential values
                 if rule == "all" or rule == "ci_values":
                     if stat_ci != "confidential" and stat_ci != "" and stat_ci != "notApplicable":
                         cell["ERROR_TYPE"].append("confidential_value")
@@ -119,7 +125,7 @@ def validate_input(rule, out_path):
         writer.writerows(cells)
     '''
 
-for rule in ["ci_values", "consist_ci_value", "land_surface_value", "populated_values", "consist_populated_value"]:
+for rule in ["values", "ci_values", "consist_ci_value", "land_surface_value", "populated_values", "consist_populated_value"]:
     print(datetime.now(), "validate rule", rule)
     validate_input(rule, output_folder + "validation_input" + rule + ".gpkg")
 
