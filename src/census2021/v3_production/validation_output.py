@@ -110,7 +110,7 @@ def validation(cells, rules, file_name):
             if lsu < 0 or lsu > 1:
                 err_codes.append("LAND_SURFACE_invalid_value="+str(lsu))
 
-        # check cells with no land and with population: (land_surface <= 0)  and (T != 0 or populated = 1)
+        # check cells with no land and with population: (land_surface <= 0) and (T != 0 or populated = 1)
         if "consist_land_population" in rules:
             lsu = float(c["LAND_SURFACE"])
             if lsu > 0: continue
@@ -121,6 +121,13 @@ def validation(cells, rules, file_name):
 
             err_codes.append("POPULATION_without_LAND_SURFACE - LS="+str(lsu)+" T="+" POPULATED="+str(popu))
 
+        # check POPULATED / T consistency
+        if "consist_populated_t" in rules:
+            t = c["T"]
+            popu = c["POPULATED"]
+            if t == 0 and popu == 0: continue
+            if (t > 0 or t == confidential_value) and popu == 1: continue
+            err_codes.append("Inconsistency populated/population. POPULATED="+str(popu)+" T="+str(t))
 
 
         # check categories sum up to total
@@ -159,7 +166,7 @@ print(datetime.now(), "Run validation cell by cell...")
 
 # list of rules
 rules = ["ci_val", "pop_values_none", "pop_values_non_neg",
-         "emp_smaller_than_pop", "invalid_land_surface_value", "consist_land_population", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
+         "emp_smaller_than_pop", "invalid_land_surface_value", "consist_land_population", "consist_populated_t", "cat_sum_sex", "cat_sum_age", "cat_sum_cntbirth", "cat_sum_reschange"]
 
 # one file per validation rule
 for rule in rules:
