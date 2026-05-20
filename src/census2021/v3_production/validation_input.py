@@ -50,19 +50,19 @@ def validate_input(rule, out_path):
                 if rule == "all" or rule == "values":
                     if value == "" or value is None or int(value)<0:
                         cell["ERROR_TYPE"].append("value")
-                        cell["ERROR_MSG"].append("unexpected value found: " + value + " for " + stat + " for " + id + " in " + cc)
+                        cell["ERROR_MSG"].append("unexpected value found: " + stat + "=" + value)
 
                 # check confidential values
                 if rule == "all" or rule == "ci_values":
                     if stat_ci != "confidential" and stat_ci != "" and stat_ci != "notApplicable":
                         cell["ERROR_TYPE"].append("confidential_value")
-                        cell["ERROR_MSG"].append("confidential value found: " + stat_ci + " for " + id + " in " + cc)
+                        cell["ERROR_MSG"].append("confidential value found: " + stat + ". conf=" + stat_ci)
 
                 # check no value is provided for confidential cells
                 if rule == "all" or rule == "consist_ci_value":
                     if stat_ci == "confidential" and value !="" and int(value) > 0:
                         cell["ERROR_TYPE"].append("non_zero_value_for_confidential")
-                        cell["ERROR_MSG"].append("non zero value for confidential value " + id +" "+cc+ ": " + stat + " = " + value)
+                        cell["ERROR_MSG"].append("non zero value for confidential value: " + stat + "=" + value)
 
 
                 # check land surface is within [0,1]
@@ -72,7 +72,7 @@ def validate_input(rule, out_path):
                     lsu = float(lsu)
                     if lsu < 0 or lsu > 1:
                         cell["ERROR_TYPE"].append("invalid_land_surface_value")
-                        cell["ERROR_MSG"].append("invalid land surface value " + id +" "+cc+ ": " + str(lsu))
+                        cell["ERROR_MSG"].append("invalid land surface value: " + str(lsu))
 
                 #TODO check that for all rows of a cell/cnt, lsu values are the same
 
@@ -87,17 +87,17 @@ def validate_input(rule, out_path):
                     if rule == "all" or rule == "populated_values":
                         if popu != "0" and popu != "1":
                             cell["ERROR_TYPE"].append("unexpected_populated_value")
-                            cell["ERROR_MSG"].append("unexpected POPULATED value found for cell " + id +" "+cc+ ": " + popu + " for stat " + stat + " with value " + value)
+                            cell["ERROR_MSG"].append("unexpected POPULATED value found: " + popu + " with " + stat + "=" + value)
 
                     if rule == "all" or rule == "consist_populated_value":
                         # data items on total population with an observed value other than ‘0’ shall be marked with the flag ‘populated’;
                         if(value != "" and int(value) > 0 and popu != "1"):
                             cell["ERROR_TYPE"].append("non_zero_value_for_populated_cell")
-                            cell["ERROR_MSG"].append("non zero value for cell with POPULATED == 0" + id +" "+cc+ ": " + stat + " = " + value)
+                            cell["ERROR_MSG"].append("non zero value with POPULATED == 0: " + stat + "=" + value)
                         # data items on total population with an observed value ‘0’ shall not be marked with the flag ‘populated’. 
                         if((value == "0" or value == "") and popu != "0"):
                             cell["ERROR_TYPE"].append("zero_value_for_populated_cell")
-                            cell["ERROR_MSG"].append("zero value for cell with POPULATED > 0" + id +" "+cc+ ": " + stat + " = " + value)
+                            cell["ERROR_MSG"].append("zero value with POPULATED > 0: " + stat + "=" + value)
 
     # cells dict to values list
     cells = list(cells.values())
