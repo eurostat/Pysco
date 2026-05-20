@@ -46,11 +46,11 @@ def validate_input(rule, out_path):
 
                 stat_ci = row["SPECIAL_VALUE"]
 
-                # check confidential values
+                # check values
                 if rule == "all" or rule == "values":
-                    if value == "" or value is None or int(value)<0:
+                    if stat_ci != "confidential" and (value == "" or value is None or int(value)<0):
                         cell["ERROR_TYPE"].append("value")
-                        cell["ERROR_MSG"].append("unexpected value found: " + stat + "=" + value)
+                        cell["ERROR_MSG"].append("unexpected value found: " + stat + "=" + value + "  conf="+stat_ci)
 
                 # check confidential values
                 if rule == "all" or rule == "ci_values":

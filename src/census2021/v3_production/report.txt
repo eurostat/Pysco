@@ -34,27 +34,22 @@ For pixels shared between countries, it is assumed each country reports the land
 But when summing these contributions, many shared cells result in values above 1. In such case, the land-surface value is ceiled to 1.
 
 
-- POPULATED attribute is problematic in input data. Should be "O" or "1". Value "" present, considered as "0".
-Many times (for almost all cells - 4.5M out of ) not compliant with the rules:
-            # data items on total population with an observed value other than ‘0’ shall be marked with the flag ‘populated’;
-            # and (c) data items on total population with an observed value ‘0’ shall not be marked with the flag ‘populated’. 
-            # The flag ‘populated’ shall be applicable only to ‘total population’
-Rule chosen: provided value ignored and set to 1 as soon as an observed value is positive or confidential
-
-In v2, 32573 cells were populated is 1 but should be 0. 326 cells where it is 0 but should be 1
+In v2, 32673 cells where populated=1 but should be 0. 326 cells where populated=0 but should be 1
 This has been corrected.
 
 
 
 *** remaining issues in v3
+All issues have been fixed except:
+- 611 cases where confidential but data disseminated (LU, SK)
 - in the cat sum only (due to NDC). Same number.
 - and EMP>T (still 9491 cases in XX)
-- New issues: 4453 cells with no LAND_SURFACE (0 or NA) but with population (T>0 or populated='1'). RO, NL, DK, FR, coast
-
+- New issues: 4452 cells with no LAND_SURFACE (0 or NA) but with population (T>0 or populated='1'). RO, NL, DK, FR, coast
+- New issues: 43709 cells with T=0 but POPULATED = 1. May be a consequence of NDC method.
 
 *** Future improvements for ESOPE
 - cell_id: no need for CC_ before grid_id. The country code is already provided under AREA_OF_DISSEMINATION.
 - Issue with land_area. One value reported for each data item, while it should be sufficient to report it once for each cell. wrong model. land_area should have been considered as a 'stat' value.
 - Populated should be handled as a "stat", like land_surface
 In the DSD, remove columns on POPULATED and LAND_SURFACE and add them as values under STAT column
-
+- land_area: ensures each country reports the land area of the part of the cell of its territory, to ensure aggregated value is correct and <1km2.
