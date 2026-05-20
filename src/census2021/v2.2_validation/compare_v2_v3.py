@@ -1,7 +1,6 @@
-# compare V2 gpkg with clean production gpkg
+# compare V2 with v3 gpkg
 
 
-# detect cells missing in V2 but present in production
 import geopandas as gpd
 import os
 import sys
@@ -12,9 +11,11 @@ from utils.compare_gpkg import compare
 
 
 
-print(datetime.now(), "Loading GPKG...")
-prod = gpd.read_file("/home/juju/gisco/census_2021_v3_production/ESTAT_Census_2021_V3.gpkg")
-print(datetime.now(), f"Production: {len(prod)} features")
+print(datetime.now(), "Loading v3 GPKG...")
+v3 = gpd.read_file("/home/juju/gisco/census_2021_v3_production/ESTAT_Census_2021_V3.gpkg")
+print(datetime.now(), f"V3: {len(v3)} features")
+
+print(datetime.now(), "Loading v2 GPKG...")
 v2 = gpd.read_file("/home/juju/geodata/census/2021/ESTAT_Census_2021_V2.gpkg")
 print(datetime.now(), f"V2: {len(v2)} features")
 
@@ -34,7 +35,7 @@ if True:
     for group, attrs in data.items():
         print(datetime.now(), f"Comparing group {group} with attributes {attrs}")
         out = compare(
-            ref=prod,
+            ref=v3,
             cmp=v2,
             id_field="GRD_ID",
             attrs=attrs
@@ -46,20 +47,20 @@ if True:
 
 
 # get the missing cells
-if False:
+if True:
 
-    prod_cells = set(prod["GRD_ID"])
+    v3_cells = set(v3["GRD_ID"])
     v2_cells = set(v2["GRD_ID"])
-    missing_in_v2 = prod_cells - v2_cells
-    missing_in_prod = v2_cells - prod_cells
+    missing_in_v2 = v3_cells - v2_cells
+    missing_in_v3 = v2_cells - v3_cells
 
-    print(datetime.now(), f"Cells missing in V2 but present in production: {len(missing_in_v2)}")
-    print(datetime.now(), f"Cells missing in production but present in V2: {len(missing_in_prod)}")
+    print(datetime.now(), f"Cells missing in V2 but present in V3: {len(missing_in_v2)}")
+    print(datetime.now(), f"Cells missing in V3 but present in V2: {len(missing_in_v3)}")
 
 
     # save missing cells to gpkg
-    missing_in_v2_gdf = prod[prod["GRD_ID"].isin(missing_in_v2)]
-    missing_in_prod_gdf = v2[v2["GRD_ID"].isin(missing_in_prod)]
+    missing_in_v2_gdf = v3[v3["GRD_ID"].isin(missing_in_v2)]
+    missing_in_v3_gdf = v2[v2["GRD_ID"].isin(missing_in_v3)]
     missing_in_v2_gdf.to_file("/home/juju/gisco/census_2021_v2_validation/geodiff/missing_in_v2.gpkg", driver="GPKG")
-    missing_in_prod_gdf.to_file("/home/juju/gisco/census_2021_v2_validation/geodiff/missing_in_prod.gpkg", driver="GPKG")
+    missing_in_v3_gdf.to_file("/home/juju/gisco/census_2021_v2_validation/geodiff/missing_in_v3.gpkg", driver="GPKG")
 
