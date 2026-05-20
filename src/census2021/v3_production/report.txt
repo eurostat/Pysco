@@ -1,8 +1,6 @@
 TODO:
-
-update readme
-draft email - report with images ?
-
+geotiff for land_area ?
+geoparquet ?
 
 v2.2: version currently published.
 v3: new version with corrections.
