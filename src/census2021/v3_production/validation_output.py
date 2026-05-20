@@ -9,8 +9,8 @@ from utils.gridutils import grid_to_geopackage
 
 # input gpkg file to validate
 grid_path = "/home/juju/gisco/census_2021_v3_production/ESTAT_Census_2021_V3.gpkg"
-confidential_value = -8888
-na_value = -9999
+CONFIDENTIAL_VALUE = -8888
+NA_VALUE = -9999
 
 # output folder where to store the validation reports
 output_folder = "/home/juju/gisco/census_2021_v3_production/output_validation/"
@@ -41,7 +41,7 @@ def check_categories_total(cell, categories, categories_label, err_codes):
     # check if any value of the categories is confidential or not available
     na = False
     for cat in categories:
-        if cell[cat] != confidential_value and cell[cat] != na_value: continue
+        if cell[cat] != CONFIDENTIAL_VALUE and cell[cat] != NA_VALUE: continue
         na = True
         break
 
@@ -49,7 +49,7 @@ def check_categories_total(cell, categories, categories_label, err_codes):
     sum = 0
     for cat in categories:
         v = cell[cat]
-        if v==None or v==na_value or v==confidential_value: continue
+        if v==None or v==NA_VALUE or v==CONFIDENTIAL_VALUE: continue
         sum += v
 
     # if the sum is equal to the total, then OK
@@ -78,7 +78,7 @@ def validation(cells, rules, file_name):
 
         # "data items on total population shall not be reported as confidential"
         if "ci_val" in rules:
-            if c["T"] == confidential_value:
+            if c["T"] == CONFIDENTIAL_VALUE:
                 err_codes.append("T value reported as confidential")
 
         # check valid population values: not none
@@ -92,8 +92,8 @@ def validation(cells, rules, file_name):
             for att in ['T','M', 'F', 'Y_LT15', 'Y_1564', 'Y_GE65', 'EMP', 'NAT', 'EU_OTH', 'OTH', 'SAME', 'CHG_IN', 'CHG_OUT']:
                 v = c[att]
                 if v >= 0: continue
-                if v == confidential_value: continue
-                if v == na_value: continue
+                if v == CONFIDENTIAL_VALUE: continue
+                if v == NA_VALUE: continue
                 if v == None: continue
                 err_codes.append(att+"_negative_value="+str(v))
 
@@ -106,7 +106,7 @@ def validation(cells, rules, file_name):
         # check land_surface within [0,1]
         if "invalid_land_surface_value" in rules:
             lsu = float(c["LAND_SURFACE"])
-            if lsu == na_value: continue
+            if lsu == NA_VALUE: continue
             if lsu < 0 or lsu > 1:
                 err_codes.append("LAND_SURFACE_invalid_value="+str(lsu))
 
@@ -126,7 +126,7 @@ def validation(cells, rules, file_name):
             t = c["T"]
             popu = c["POPULATED"]
             if t == 0 and popu == 0: continue
-            if (t > 0 or t == confidential_value) and popu == 1: continue
+            if (t > 0 or t == CONFIDENTIAL_VALUE) and popu == 1: continue
             err_codes.append("Inconsistency populated/population. POPULATED="+str(popu)+" T="+str(t))
 
 

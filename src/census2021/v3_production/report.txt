@@ -1,6 +1,6 @@
 TODO:
-redo populated
 check all
+
 update readme
 produce geotiff. bands with different types ?
 draft email - report with images ?
