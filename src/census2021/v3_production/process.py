@@ -87,7 +87,7 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # get cell, create one if it does not exist yet
             cell = cells.get(id)
             if cell is None:
-                cell = { "GRD_ID": id, "CNTR_ID": [cc], "POPULATED": NA_VALUE }
+                cell = { "GRD_ID": id, "CNTR_ID": [cc] }
                 cells[id] = cell
 
             # country code
@@ -103,7 +103,9 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # populated
             # applies only on total population
             if stat == "T":
-                cell["POPULATED"] = int(row["POPULATED"])
+                prev_popu = cell.get("POPULATED")
+                if prev_popu == None or prev_popu == 0:
+                    cell["POPULATED"] = int(row["POPULATED"])
 
                 # as soon as a "populated" is "1" or value > 0 or confidential, we consider it as populated, even if the POPULATED column value is missing or 0.
                 # do that, to force compliance with specs
