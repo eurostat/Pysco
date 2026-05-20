@@ -103,12 +103,14 @@ for cc in ["AT","BE","BG","CH","CY","CZ","DE","DK","EE","EL","ES","FI","FR","HR"
             # populated
             # applies only on total population
             if stat == "T":
+                cell["POPULATED"] = int(row["POPULATED"])
+
                 # as soon as a "populated" is "1" or value > 0 or confidential, we consider it as populated, even if the POPULATED column value is missing or 0.
                 # do that, to force compliance with specs
-                if row["POPULATED"] == "1" or (value != "" and int(value) > 0) or stat_ci == "confidential":
-                    cell["POPULATED"] = 1
-                else:
-                    cell["POPULATED"] = 0
+                #if row["POPULATED"] == "1" or (value != "" and int(value) > 0) or stat_ci == "confidential":
+                #    cell["POPULATED"] = 1
+                #else:
+                #    cell["POPULATED"] = 0
 
             # land surface
             # the value is repeated for all stat positions: use only the one for stat "T"
