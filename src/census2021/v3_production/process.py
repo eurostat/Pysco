@@ -212,3 +212,14 @@ gpkg_grid_to_geotiff(
     compress='DEFLATE'
 )
 
+gpkg_grid_to_geotiff(
+    input_gpkgs = [output_path + "ESTAT_Census_2021_V3.gpkg"],
+    output_tiff=output_path + "ESTAT_Census_2021_LAND_SURFACE_V3.tiff",
+    grid_id_field='GRD_ID',
+    attributes= ['LAND_SURFACE'],
+    bbox=[ 900000, 900000, 6600000, 5500000 ],
+    gpkg_nodata_values=[NA_VALUE], #CONFIDENTIAL_VALUE
+    tiff_nodata_value=-9999,
+    dtype=np.float32,
+    compress='DEFLATE'
+)
