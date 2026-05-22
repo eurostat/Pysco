@@ -212,6 +212,7 @@ gpkg_grid_to_geotiff(
     compress='DEFLATE'
 )
 
+print(datetime.now(), "gpkg to geotiff LAND_SURFACE")
 gpkg_grid_to_geotiff(
     input_gpkgs = [output_path + "ESTAT_Census_2021_V3.gpkg"],
     output_tiff=output_path + "ESTAT_Census_2021_LAND_SURFACE_V3.tiff",
