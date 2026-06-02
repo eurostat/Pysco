@@ -149,6 +149,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
 
     # keep only small components (remove the largest ones)
     ccs.sort(key=lambda a:-len(a))
+    # TODO expose that as parameter
     threshold_connected_component_to_remove_node_nb = 50 # 50 * 100 = 5km
     while(len(ccs)>0 and len(ccs[0]) >= threshold_connected_component_to_remove_node_nb): ccs.pop(0)
 
