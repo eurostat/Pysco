@@ -161,6 +161,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
     for n in ccs: del graph[n]
 
 
+
     if(len(snappable_nodes)==0):
         pd.DataFrame({}).to_parquet(out_file)
         print(datetime.now(), x_part, y_part, "0 cells saved")
@@ -243,6 +244,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
     # make output dataframe
     data = { 'GRD_ID':grd_ids }
     if keep_distance_to_node: data['distance_to_node'] = distances_to_node
+    #TODO rename duration into more generic 'cost' term
     for kk in range(k): data['duration_s_'+str(kk+1)] = costs[kk]
 
     # compute average duration and simplify duration values
