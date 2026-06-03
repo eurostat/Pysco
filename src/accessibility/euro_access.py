@@ -40,7 +40,7 @@ for grid_resolution in [100]: # 1000
             if service == "evrp": tomtom_year = "2023"
 
             def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
-            def duration_simplification_fun(x): return int(round(x))
+            def cost_simplification_fun(x): return int(round(x))
 
             # define and create ouput folder, depending on year, service, resolution
             out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(grid_resolution) + "m/"
@@ -74,7 +74,7 @@ for grid_resolution in [100]: # 1000
                 extention_buffer = 20000 if service in ["education", "evrp"] else 60000,
                 detailled = True,
                 densification_distance = grid_resolution,
-                duration_simplification_fun = duration_simplification_fun,
+                cost_simplification_fun = cost_simplification_fun,
                 num_processors = 3 if service in ["education", "evrp"] else 2,
                 shuffle=True,
                 show_detailled_messages = False

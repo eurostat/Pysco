@@ -91,7 +91,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
             to_network_speed_ms,
             detailled,
             densification_distance,
-            duration_simplification_fun,
+            cost_simplification_fun,
             keep_distance_to_node,
             show_detailled_messages = False,
             ):
@@ -244,28 +244,27 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
     # make output dataframe
     data = { 'GRD_ID':grd_ids }
     if keep_distance_to_node: data['distance_to_node'] = distances_to_node
-    #TODO rename duration into more generic 'cost' term
-    for kk in range(k): data['duration_s_'+str(kk+1)] = costs[kk]
+    for kk in range(k): data['cost_s_'+str(kk+1)] = costs[kk]
 
-    # compute average duration and simplify duration values
+    # compute average cost and simplify cost values
     averages = []
     for i in range(len(data['GRD_ID'])):
         # compute average
         sum_ = 0
         for kk in range(k):
-            dur = data['duration_s_'+str(kk+1)][i]
-            if dur<0: sum_ = -1; break
-            sum_ += dur
-            # simplify duration values
-            if duration_simplification_fun != None: data['duration_s_'+str(kk+1)][i] = duration_simplification_fun(dur)
+            cost = data['cost_s_'+str(kk+1)][i]
+            if cost<0: sum_ = -1; break
+            sum_ += cost
+            # simplify cost values
+            if cost_simplification_fun != None: data['cost_s_'+str(kk+1)][i] = cost_simplification_fun(cost)
         # store average value, simplified if necessary
         if sum_ <0:
             sum_ = -1
         else:
             sum_ = sum_/k
-            if duration_simplification_fun != None: sum_ = duration_simplification_fun(sum_)
+            if cost_simplification_fun != None: sum_ = cost_simplification_fun(sum_)
         averages.append(sum_)
-    data['duration_average_s_'+str(k)] = averages
+    data['cost_average_s_'+str(k)] = averages
 
     # save output
     pd.DataFrame(data).to_parquet(out_file)
@@ -297,7 +296,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         extention_buffer = 30000,
         detailled = False,
         densification_distance = None,
-        duration_simplification_fun = None,
+        cost_simplification_fun = None,
         keep_distance_to_node = False,
         num_processors = 1,
         show_detailled_messages = False,
@@ -325,7 +324,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         extention_buffer (int, optional): the buffer distance around the tile area. The network and pois within the tile extended by this distance is loaded. Data only for the cell within the tile are stored. Defaults to 30000.
         detailled (bool, optional): Set to true to create a network node for each network section geometry vertice. Set to false to create nodes only for the initial and final nodes. Defaults to False.
         densification_distance (_type_, optional): densify the network section geometries to ensure network edges are not longer than this threshold. This ensures cell centres are properly snapped to interior section nodes. Defaults to None.
-        duration_simplification_fun (_type_, optional): function applied to output duration indicators to simplify it. It could be a simple rounding. Defaults to None.
+        cost_simplification_fun (_type_, optional): function applied to output cost indicators (duration, distance, etc.) to simplify it. It could be a simple rounding. Defaults to None.
         keep_distance_to_node (bool, optional): Set to true to store the distance from the grid cell to the network node it is snapped to. Can be used to control snapping effect. Defaults to False.
         num_processors (int, optional): Number of processes to use, for parallel processing. Defaults to 1.
         show_detailled_messages (bool, optional): set to true to see verbode debugging messages. Defaults to False.
@@ -363,7 +362,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
             to_network_speed_ms,
             detailled,
             densification_distance,
-            duration_simplification_fun,
+            cost_simplification_fun,
             keep_distance_to_node,
             show_detailled_messages,
         ) for xy in processes_params ]

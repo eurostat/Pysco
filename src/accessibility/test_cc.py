@@ -55,7 +55,7 @@ if True:
         extention_buffer = 0,
         detailled = True,
         densification_distance=100,
-        duration_simplification_fun = duration_simplification_fun,
+        cost_simplification_fun = duration_simplification_fun,
         num_processors = 5,
         shuffle=True,
         show_detailled_messages = False

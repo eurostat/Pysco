@@ -76,7 +76,7 @@ for grid_resolution in [100]: # 1000
             extention_buffer = extention_buffer,
             detailled = detailled_network_decomposition,
             densification_distance=densification_distance,
-            duration_simplification_fun = duration_simplification_fun,
+            cost_simplification_fun = duration_simplification_fun,
             num_processors = num_processors_to_use,
             shuffle=True
         )
