@@ -71,23 +71,25 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=False):
 def accessiblity_grid_k_nearest_dijkstra(bbox,
             pois_loader,
             road_network_loader,
-            weight_function,
-            is_not_snappable_fun,
-            initial_node_level_fun,
-            final_node_level_fun,
-            is_start_blocked,
-            is_end_blocked,
-            cell_id_fun,
-            grid_resolution,
-            cell_network_max_distance,
-            to_network_speed_ms,
-            detailled,
-            densification_distance,
-            cost_simplification_fun,
-            keep_distance_to_node = False,
             k = None,
+            weight_function = lambda feature, sl:sl,
+            is_not_snappable_fun = None,
+            initial_node_level_fun = None,
+            final_node_level_fun = None,
+            is_start_blocked = None,
+            is_end_blocked = None,
+            cell_id_fun=lambda x,y:str(x)+"_"+str(y),
+            grid_resolution = 1000,
+            cell_network_max_distance=-1,
+            to_network_speed_ms = None,
+            detailled = False,
+            densification_distance = None,
+            cost_simplification_fun = None,
+            keep_distance_to_node = False,
             show_detailled_messages = False,
             ):
+    """ see accessiblity_grid_k_nearest_dijkstra_parallel below """
+
 
     if show_detailled_messages: print(datetime.now(), "get source POIs")
     pois = list(pois_loader(bbox))
@@ -282,165 +284,40 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
     extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+file_size+extention_buffer, y_part+file_size+extention_buffer)
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "get source POIs")
-    pois = list(pois_loader(extended_bbox))
-    if(not pois):
-        pd.DataFrame({}).to_parquet(out_file)
-        print(datetime.now(), x_part, y_part, "0 cells saved")
-        return
 
-    if show_detailled_messages: print(datetime.now(), x_part, y_part, "make graph")
-    roads = road_network_loader(extended_bbox)
-    gb_ = ___graph_adjacency_list_from_geodataframe(roads,
-                                                        weight_fun = weight_function,
-                                                        is_not_snappable_fun = is_not_snappable_fun,
-                                                        detailled = detailled,
-                                                        densification_distance=densification_distance,
-                                                        initial_node_level_fun = initial_node_level_fun,
-                                                        final_node_level_fun = final_node_level_fun,
-                                                        is_start_blocked = is_start_blocked,
-                                                        is_end_blocked = is_end_blocked,
-                                                        )
-    graph = gb_['graph']
-    snappable_nodes = gb_['snappable_nodes']
-    del gb_, roads
-    if show_detailled_messages: print(datetime.now(), x_part, y_part, len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
-
-    if(len(snappable_nodes)==0):
-        pd.DataFrame({}).to_parquet(out_file)
-        print(datetime.now(), x_part, y_part, "0 cells saved")
-        return
-
-
-
-    # keep only main connected component
-
-    # compute connected components
-    ccs = connected_components_directed(graph)
-    assert( len(graph) == sum(len(cc) for cc in ccs) )
-
-    # keep only small components (remove the largest ones)
-    ccs.sort(key=lambda a:-len(a))
-    # TODO expose that as parameter
-    threshold_connected_component_to_remove_node_nb = 50 # 50 * 100 = 5km
-    while(len(ccs)>0 and len(ccs[0]) >= threshold_connected_component_to_remove_node_nb): ccs.pop(0)
-
-    # combine list of nodes of all connected components to remove
-    ccs = set(chain.from_iterable(ccs))
-
-    # remove connected components
-    snappable_nodes = [n for n in snappable_nodes if n not in ccs]
-    for n in ccs: del graph[n]
-
-
-
-    if(len(snappable_nodes)==0):
-        pd.DataFrame({}).to_parquet(out_file)
-        print(datetime.now(), x_part, y_part, "0 cells saved")
-        return
-
-
-
-    if show_detailled_messages: print(datetime.now(), x_part, y_part, "build nodes spatial index")
-    idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
-
-    if show_detailled_messages: print(datetime.now(), x_part, y_part, "get source nodes")
-    sources = []
-    for poi in pois:
-        # TODO: check if geometry is a multipoint ?
-        coo = poi['geometry']['coordinates']
-        x = coo[0]
-        y = coo[1]
-        n = snappable_nodes[next(idx.nearest((x, y, x, y), 1))]
-        sources.append(n)
-    del pois
-    if show_detailled_messages: print(datetime.now(), x_part, y_part, len(sources), "source nodes found")
-
-    if show_detailled_messages: print(datetime.now(), x_part, y_part, "compute accessiblity")
-    result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
-    del graph, sources
-
-    if show_detailled_messages: print(datetime.now(), x_part, y_part, "keep only nodes with data on it")
-    snappable_nodes = [n for n in snappable_nodes if result[n]]
-
-    if show_detailled_messages: print(datetime.now(), x_part, y_part, "build new nodes spatial index")
-    idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
-
-    if show_detailled_messages: print(datetime.now(), x_part, y_part, "extract cell accessibility data")
-    grd_ids = [] #the cell identifiers
-    costs = [] #the costs - an array of arrays
-    for _ in range(k): costs.append([])
-    distances_to_node = [] #the cell center distance to its graph node
-
-    # go through cells
-    r2 = grid_resolution / 2
-    for x in range(x_part, x_part+file_size, grid_resolution):
-        for y in range(y_part, y_part+file_size, grid_resolution):
-
-            # snap cell centre to the snappable nodes, using the spatial index
-            ni_ = next(idx.nearest((x+r2, y+r2, x+r2, y+r2), 1), None)
-            if ni_ == None: continue
-            n = snappable_nodes[ni_]
-
-            # compute distance from cell centre to node, and skip if too far
-            dtn = distance_to_node(n, x+r2, y+r2)
-            if cell_network_max_distance>0 and dtn>= cell_network_max_distance: continue
-
-            # get costs
-            cs = result[n]
-
-            # add some cost for dtn travel
-            ttn = 0
-            if to_network_speed_ms is not None and to_network_speed_ms >0:
-                ttn = dtn / to_network_speed_ms
-
-            # store costs
-            for kk in range(k):
-                if kk>=len(cs): costs[kk].append(-1)
-                else: costs[kk].append(cs[kk]['cost'] + ttn)
-
-            # store distance cell center/node
-            if keep_distance_to_node:
-                distances_to_node.append( round(dtn) )
-
-            # store cell id
-            grd_ids.append(cell_id_fun(x,y))
-
-    del result, idx, snappable_nodes
-
-    if len(grd_ids) == 0:
-        pd.DataFrame({}).to_parquet(out_file)
-        print(datetime.now(), x_part, y_part, "0 cells saved")
-        return
-
-    # make output dataframe
-    data = { 'GRD_ID':grd_ids }
-    if keep_distance_to_node: data['distance_to_node'] = distances_to_node
-    for kk in range(k): data['cost_s_'+str(kk+1)] = costs[kk]
-
-    # compute average cost and simplify cost values
-    averages = []
-    for i in range(len(data['GRD_ID'])):
-        # compute average
-        sum_ = 0
-        for kk in range(k):
-            cost = data['cost_s_'+str(kk+1)][i]
-            if cost<0: sum_ = -1; break
-            sum_ += cost
-            # simplify cost values
-            if cost_simplification_fun != None: data['cost_s_'+str(kk+1)][i] = cost_simplification_fun(cost)
-        # store average value, simplified if necessary
-        if sum_ <0:
-            sum_ = -1
-        else:
-            sum_ = sum_/k
-            if cost_simplification_fun != None: sum_ = cost_simplification_fun(sum_)
-        averages.append(sum_)
-    data['cost_average_s_'+str(k)] = averages
+    # function call
+    data = accessiblity_grid_k_nearest_dijkstra(
+        bbox = extended_bbox,
+        pois_loader = pois_loader,
+        road_network_loader = road_network_loader,
+        k = k,
+        weight_function = weight_function,
+        is_not_snappable_fun = is_not_snappable_fun,
+        initial_node_level_fun = initial_node_level_fun,
+        final_node_level_fun = final_node_level_fun,
+        is_start_blocked = is_start_blocked,
+        is_end_blocked = is_end_blocked,
+        cell_id_fun = cell_id_fun,
+        grid_resolution = grid_resolution,
+        cell_network_max_distance = cell_network_max_distance,
+        to_network_speed_ms = to_network_speed_ms,
+        detailled = detailled,
+        densification_distance = densification_distance,
+        cost_simplification_fun = cost_simplification_fun,
+        keep_distance_to_node = keep_distance_to_node,
+        show_detailled_messages = show_detailled_messages,
+    )
 
     # save output
-    pd.DataFrame(data).to_parquet(out_file)
 
-    print(datetime.now(), x_part, y_part, len(grd_ids), "cells saved")
+    if data is None:
+        pd.DataFrame({}).to_parquet(out_file)
+        print(datetime.now(), x_part, y_part, "0 cells saved")
+        return
+
+    # save output
+    print(datetime.now(), x_part, y_part, len(data['GRD_ID']), "cells saved")
+    pd.DataFrame(data).to_parquet(out_file)
 
 
 
@@ -452,7 +329,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         road_network_loader,
         bbox,
         out_folder,
-        k = 3,
+        k = None,
         weight_function = lambda feature,sl:sl,
         is_not_snappable_fun = None,
         initial_node_level_fun=None,
@@ -481,7 +358,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         road_network_loader (fun): the road network sections loader.
         bbox (bounding box): the bounding box to restrict the analysis.
         out_folder (str): the output folder path where to create the output parquet files, one per tile.
-        k (int, optional): the k parmeter, to compute the average time to k nearest pois. Defaults to 3.
+        k (int, optional): the k parmeter, to compute the average time to k nearest pois. Defaults to None, which means compute only cost to nearest poi.
         weight_function (fun, optional): a function returning the weight of a network section part. Defaults to lambdafeature.
         direction_fun (fun, optional): a function returning the direction of a network section. Defaults to lambda feature:"both".
         is_not_snappable_fun (fun, optional): a function specifying the network sections that should not be used to snap cell centres. These are network sections that are forbidden to be used as origin/destination such as highway sections or access lanes.
