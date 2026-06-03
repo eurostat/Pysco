@@ -13,7 +13,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.utils import cartesian_product_comp
 from utils.netutils import nodes_spatial_index_adjacendy_list, distance_to_node, ___graph_adjacency_list_from_geodataframe, connected_components_directed
 
-# TODO extract tomtomnetwork building ?
 
 
 def ___multi_source_k_nearest_dijkstra(graph, sources, k=1, with_paths=False):
@@ -91,6 +90,7 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
             cost_simplification_fun = None,
             keep_distance_to_node = False,
             show_detailled_messages = False,
+            threshold_connected_component_to_remove_node_nb = -1,
             ):
     """ see accessiblity_grid_k_nearest_dijkstra_parallel below """
 
@@ -118,26 +118,27 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
     if(len(snappable_nodes)==0): return
 
 
-    # keep only main connected component
 
-    # compute connected components
-    ccs = connected_components_directed(graph)
-    assert( len(graph) == sum(len(cc) for cc in ccs) )
+    # keep only main connected components
+    if threshold_connected_component_to_remove_node_nb > 0:
 
-    # keep only small components (remove the largest ones)
-    ccs.sort(key=lambda a:-len(a))
-    # TODO expose that as a parameter
-    threshold_connected_component_to_remove_node_nb = 50 # 50 * 100 = 5km
-    while(len(ccs)>0 and len(ccs[0]) >= threshold_connected_component_to_remove_node_nb): ccs.pop(0)
+        # compute connected components
+        ccs = connected_components_directed(graph)
+        assert( len(graph) == sum(len(cc) for cc in ccs) )
 
-    # combine list of nodes of all connected components to remove
-    ccs = set(chain.from_iterable(ccs))
+        # keep only small components (remove the largest ones)
+        ccs.sort(key=lambda a:-len(a))
+        while(len(ccs)>0 and len(ccs[0]) >= threshold_connected_component_to_remove_node_nb): ccs.pop(0)
 
-    # remove connected components
-    snappable_nodes = [n for n in snappable_nodes if n not in ccs]
-    for n in ccs: del graph[n]
+        # combine list of nodes of all connected components to remove
+        ccs = set(chain.from_iterable(ccs))
 
-    if(len(snappable_nodes)==0): return
+        # remove nodes of too small connected components
+        snappable_nodes = [n for n in snappable_nodes if n not in ccs]
+        for n in ccs: del graph[n]
+
+        if(len(snappable_nodes)==0): return
+
 
     if show_detailled_messages: print(datetime.now(), "build nodes spatial index")
     idx = nodes_spatial_index_adjacendy_list(snappable_nodes)
@@ -272,6 +273,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
             densification_distance,
             cost_simplification_fun,
             keep_distance_to_node,
+            threshold_connected_component_to_remove_node_nb,
             show_detailled_messages = False,
             ):
     """ see accessiblity_grid_k_nearest_dijkstra_parallel below """
@@ -352,6 +354,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         densification_distance = None,
         cost_simplification_fun = None,
         keep_distance_to_node = False,
+        threshold_connected_component_to_remove_node_nb = -1,
         num_processors = 1,
         show_detailled_messages = False,
         shuffle = False,
@@ -380,6 +383,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         densification_distance (_type_, optional): densify the network section geometries to ensure network edges are not longer than this threshold. This ensures cell centres are properly snapped to interior section nodes. Defaults to None.
         cost_simplification_fun (_type_, optional): function applied to output cost indicators (duration, distance, etc.) to simplify it. It could be a simple rounding. Defaults to None.
         keep_distance_to_node (bool, optional): Set to true to store the distance from the grid cell to the network node it is snapped to. Can be used to control snapping effect. Defaults to False.
+        threshold_connected_component_to_remove_node_nb (int, optional): The minimum number of nodes a connected component must have to be kept. Components with fewer nodes are removed. Defaults to -1.
         num_processors (int, optional): Number of processes to use, for parallel processing. Defaults to 1.
         show_detailled_messages (bool, optional): set to true to see verbode debugging messages. Defaults to False.
         shuffle (bool, optional): set to true to shuffle the tiles before processing. Keep to false to process the tiles in sequential order. Defaults to False.
@@ -418,6 +422,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
             densification_distance,
             cost_simplification_fun,
             keep_distance_to_node,
+            threshold_connected_component_to_remove_node_nb,
             show_detailled_messages,
         ) for xy in processes_params ]
 
