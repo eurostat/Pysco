@@ -111,7 +111,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
     extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+file_size+extention_buffer, y_part+file_size+extention_buffer)
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "get source POIs")
-    pois = pois_loader(extended_bbox)
+    pois = list(pois_loader(extended_bbox))
     if(not pois):
         pd.DataFrame({}).to_parquet(out_file)
         print(datetime.now(), x_part, y_part, "0 cells saved")
