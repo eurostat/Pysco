@@ -19,7 +19,7 @@ if not os.path.exists(out_folder): os.makedirs(out_folder)
 bbox = [ 3930000, 2250000,  3960000, 2280000 ]
 grid_resolution = 100
 year = "2023"
-k = 7
+k = None
 
 # build accessibility grid
 if True:
