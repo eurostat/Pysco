@@ -22,7 +22,7 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=1, with_paths=False):
 
     :param graph: A dictionary representing the adjacency list of the graph - that is each node is a key; and each value is a list of tuples (node,weight) of the links from this node.
     :param sources: A list of source node ids.
-    :param k: Number of nearest sources to track.
+    :param k: Number of nearest sources to track. Default to 1.
     :param with_paths: Whether to track and return the paths.
     :return: A dictionary mapping each node to a sorted list of 
              {'cost': c, 'source': s, 'path': [sequence of nodes]} if with_paths,
