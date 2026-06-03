@@ -13,7 +13,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.utils import cartesian_product_comp
 from utils.netutils import nodes_spatial_index_adjacendy_list, distance_to_node, ___graph_adjacency_list_from_geodataframe, connected_components_directed
 
-# TODO testS
 # TODO extract tomtomnetwork building ?
 
 
