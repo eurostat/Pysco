@@ -1,7 +1,5 @@
-from turtle import pd
-
 from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra
-import panda as np
+import pandas as pd
 
 import sys
 import os
