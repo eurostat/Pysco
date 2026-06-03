@@ -29,7 +29,7 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=1, with_paths=False):
              or {'cost': c, 'source': s} if not.
     """
 
-    result = {node: [] for node in graph}
+    result = { node: [] for node in graph }
     priority_queue = []
 
     # Initialize all sources
