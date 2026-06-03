@@ -14,7 +14,7 @@ from utils.utils import cartesian_product_comp
 from utils.netutils import nodes_spatial_index_adjacendy_list, distance_to_node, ___graph_adjacency_list_from_geodataframe, connected_components_directed
 
 
-def ___multi_source_k_nearest_dijkstra(graph, sources, k=3, with_paths=False):
+def ___multi_source_k_nearest_dijkstra(graph, sources, k=1, with_paths=False):
     """
     Computes the k nearest sources, their costs, and optionally paths to each node.
 
@@ -122,7 +122,7 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
 
     # keep only small components (remove the largest ones)
     ccs.sort(key=lambda a:-len(a))
-    # TODO expose that as parameter
+    # TODO expose that as a parameter
     threshold_connected_component_to_remove_node_nb = 50 # 50 * 100 = 5km
     while(len(ccs)>0 and len(ccs[0]) >= threshold_connected_component_to_remove_node_nb): ccs.pop(0)
 
@@ -151,6 +151,7 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
     if show_detailled_messages: print(datetime.now(), len(sources), "source nodes found")
 
     if show_detailled_messages: print(datetime.now(), "compute accessiblity")
+    if k is None: k=1
     result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
     del graph, sources
 
@@ -217,24 +218,25 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
     for kk in range(k): data['cost_s_'+str(kk+1)] = costs[kk]
 
     # compute average cost and simplify cost values
-    averages = []
-    for i in range(len(data['GRD_ID'])):
-        # compute average
-        sum_ = 0
-        for kk in range(k):
-            cost = data['cost_s_'+str(kk+1)][i]
-            if cost<0: sum_ = -1; break
-            sum_ += cost
-            # simplify cost values
-            if cost_simplification_fun != None: data['cost_s_'+str(kk+1)][i] = cost_simplification_fun(cost)
-        # store average value, simplified if necessary
-        if sum_ <0:
-            sum_ = -1
-        else:
-            sum_ = sum_/k
-            if cost_simplification_fun != None: sum_ = cost_simplification_fun(sum_)
-        averages.append(sum_)
-    data['cost_average_s_'+str(k)] = averages
+    if k>1:
+        averages = []
+        for i in range(len(data['GRD_ID'])):
+            # compute average
+            sum_ = 0
+            for kk in range(k):
+                cost = data['cost_s_'+str(kk+1)][i]
+                if cost<0: sum_ = -1; break
+                sum_ += cost
+                # simplify cost values
+                if cost_simplification_fun != None: data['cost_s_'+str(kk+1)][i] = cost_simplification_fun(cost)
+            # store average value, simplified if necessary
+            if sum_ <0:
+                sum_ = -1
+            else:
+                sum_ = sum_/k
+                if cost_simplification_fun != None: sum_ = cost_simplification_fun(sum_)
+            averages.append(sum_)
+        data['cost_average_s_'+str(k)] = averages
 
     return data
 
