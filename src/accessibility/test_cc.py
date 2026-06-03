@@ -24,7 +24,7 @@ grid_resolution = 100
 year = "2023"
 
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
-def duration_simplification_fun(x): return int(round(x))
+def cost_simplification_fun(x): return int(round(x))
 
 # define tomtom and POI loaders
 def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom"+year+"12.gpkg", bbox=bbox) #, where="FOW!='20'"
@@ -55,7 +55,7 @@ if True:
         extention_buffer = 0,
         detailled = True,
         densification_distance=100,
-        cost_simplification_fun = duration_simplification_fun,
+        cost_simplification_fun = cost_simplification_fun,
         num_processors = 5,
         shuffle=True,
         show_detailled_messages = False
@@ -67,7 +67,7 @@ if True:
         [out_file],
         out_folder + "out.tiff",
         bbox = bbox,
-        attributes=["duration_s_1", "duration_average_s_3"],
+        attributes=["cost_s_1", "cost_average_s_3"],
         parquet_nodata_values=[-1],
         dtype=np.int16,
         value_fun= lambda v:v if v<32767 else 32767, # np.int16(v),
