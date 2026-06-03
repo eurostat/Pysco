@@ -121,6 +121,7 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
 
     # keep only main connected components
     if threshold_connected_component_to_remove_node_nb > 0:
+        if show_detailled_messages: print(datetime.now(), "remove small connected components of the graph")
 
         # compute connected components
         ccs = connected_components_directed(graph)
@@ -137,6 +138,7 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
         snappable_nodes = [n for n in snappable_nodes if n not in ccs]
         for n in ccs: del graph[n]
 
+        if show_detailled_messages: print(datetime.now(), len(graph.keys()), "nodes,", len(snappable_nodes), "snappable nodes.")
         if(len(snappable_nodes)==0): return
 
 

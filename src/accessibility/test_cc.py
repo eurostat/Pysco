@@ -42,15 +42,14 @@ if True:
         final_node_level_fun = final_node_level_fun,
         cell_id_fun = lambda x,y: "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x)),
         grid_resolution= grid_resolution,
-        cell_network_max_distance= 1000,
+        cell_network_max_distance= 1500,
         to_network_speed_ms= 15/3.6,
         detailled = True,
         densification_distance=100,
         cost_simplification_fun = lambda x: int(round(x)),
+        #threshold_connected_component_to_remove_node_nb= 50,
         show_detailled_messages = True
     )
-
-    print("nb lines", len(data))
 
     # save as parquet
     pd.DataFrame(data).to_parquet(out_file)

@@ -80,12 +80,12 @@ densification_distance = grid_resolution
 
 # keep cells whose centre is within 3 * grid_resolution from a network node
 cell_network_max_distance = 3 * grid_resolution
-                
+
 
 
 def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
 
-def duration_simplification_fun(x): return int(round(x))
+def cost_simplification_fun(x): return int(round(x))
 
 
 # choose number of processors, depending on service type and resolution
@@ -139,7 +139,7 @@ if __name__ == '__main__':
         extention_buffer = extention_buffer,
         detailled = detailled_network_decomposition,
         densification_distance=densification_distance,
-        duration_simplification_fun = duration_simplification_fun,
+        cost_simplification_fun = cost_simplification_fun,
         num_processors = num_processors_to_use,
         shuffle=is_shuffle,
         show_detailled_messages = True
