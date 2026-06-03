@@ -19,6 +19,7 @@ if not os.path.exists(out_folder): os.makedirs(out_folder)
 bbox = [ 3930000, 2250000,  3960000, 2280000 ]
 grid_resolution = 100
 year = "2023"
+k = 7
 
 # build accessibility grid
 if True:
@@ -32,7 +33,7 @@ if True:
         pois_loader = pois_loader,
         road_network_loader = road_network_loader,
         bbox = bbox,
-        k = 3,
+        k = k,
         weight_function = weight_function,
         is_not_snappable_fun = is_not_snappable_fun,
         initial_node_level_fun = initial_node_level_fun,
@@ -61,7 +62,7 @@ if True:
         [out_file],
         out_folder + "out.tiff",
         bbox = bbox,
-        attributes=["cost_s_1", "cost_average_s_3"],
+        attributes=["cost_1"] if k is None or k <= 1 else ["cost_1", "cost_average_"+str(k)],
         parquet_nodata_values=[-1],
         dtype=np.int16,
         value_fun= lambda v:v if v<32767 else 32767, # np.int16(v),

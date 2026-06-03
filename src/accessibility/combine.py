@@ -53,7 +53,7 @@ for resolution in [100]:
                     files,
                     geotiff,
                     bbox = bbox,
-                    attributes=["cost_s_1", "cost_average_s_" + str(k)],
+                    attributes=["cost_1", "cost_average_" + str(k)],
                     parquet_nodata_values=[-1],
                     dtype = np.int32 if service=="evrp" else np.int16,
                     value_fun= (lambda v:v) if service=="evrp" else (lambda v: (v if v<32767 else 32767)), # np.int16(v),

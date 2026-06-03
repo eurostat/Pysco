@@ -220,7 +220,7 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
     # make output dataframe
     data = { 'GRD_ID':grd_ids }
     if keep_distance_to_node: data['distance_to_node'] = distances_to_node
-    for kk in range(k): data['cost_s_'+str(kk+1)] = costs[kk]
+    for kk in range(k): data['cost_'+str(kk+1)] = costs[kk]
 
     # compute average cost and simplify cost values
     if k>1:
@@ -229,11 +229,11 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
             # compute average
             sum_ = 0
             for kk in range(k):
-                cost = data['cost_s_'+str(kk+1)][i]
+                cost = data['cost_'+str(kk+1)][i]
                 if cost<0: sum_ = -1; break
                 sum_ += cost
                 # simplify cost values
-                if cost_simplification_fun != None: data['cost_s_'+str(kk+1)][i] = cost_simplification_fun(cost)
+                if cost_simplification_fun != None: data['cost_'+str(kk+1)][i] = cost_simplification_fun(cost)
             # store average value, simplified if necessary
             if sum_ <0:
                 sum_ = -1
@@ -241,7 +241,7 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
                 sum_ = sum_/k
                 if cost_simplification_fun != None: sum_ = cost_simplification_fun(sum_)
             averages.append(sum_)
-        data['cost_average_s_'+str(k)] = averages
+        data['cost_average_'+str(k)] = averages
 
     return data
 
