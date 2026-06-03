@@ -1,5 +1,6 @@
 from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra
 import pandas as pd
+import numpy as np
 
 import sys
 import os
@@ -25,13 +26,12 @@ if True:
     if os.path.exists(out_file): os.remove(out_file)
 
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom202312.gpkg", bbox=bbox) #, where="FOW!='20'"
-    def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/healthcare_2023_3035"+".gpkg", bbox=bbox) #, where="levels IS NULL or levels!='0'" if service=="education" else "")
+    def pois_loader(bbox): return iter_features("/home/juju/geodata/gisco/basic_services/healthcare_2023_3035_20260421"+".gpkg", bbox=bbox) #, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
     data = accessiblity_grid_k_nearest_dijkstra(
         pois_loader = pois_loader,
         road_network_loader = road_network_loader,
         bbox = bbox,
-        out_folder = out_folder,
         k = 3,
         weight_function = weight_function,
         is_not_snappable_fun = is_not_snappable_fun,
@@ -43,18 +43,13 @@ if True:
         grid_resolution= grid_resolution,
         cell_network_max_distance= 1000,
         to_network_speed_ms= 15/3.6,
-        file_size = 30000,
-        extention_buffer = 0,
         detailled = True,
         densification_distance=100,
         cost_simplification_fun = lambda x: int(round(x)),
-        num_processors = 5,
-        shuffle=True,
-        show_detailled_messages = False
+        show_detailled_messages = True
     )
 
     print("nb lines", len(data))
-    print(data)
 
     # save as parquet
     pd.DataFrame(data).to_parquet(out_file)
