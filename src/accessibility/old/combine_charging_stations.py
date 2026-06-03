@@ -21,7 +21,7 @@ cnts = None #["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
 
 for resolution in [100]:
 
-    for year in ["2025","2023"]:
+    for year in ["2024","2023"]:
 
         # ouput folder
         out_folder_service_year = out_folder + "out_" + year + "_" + str(resolution) + "m/"
