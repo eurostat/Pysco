@@ -146,8 +146,15 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
     if show_detailled_messages: print(datetime.now(), "get source nodes")
     sources = []
     for poi in pois:
-        # TODO: check if geometry is a multipoint ?
-        coo = poi['geometry']['coordinates']
+        gp = poi['geometry']
+        if gp.type == 'Point':
+            coo = gp['coordinates']
+        elif gp.type == 'MultiPoint' and len(gp['coordinates'])==1:
+            coo = gp['coordinates'][0]
+        else:
+            print("unsupported geometry type for poi", poi['id'], ":", gp.type, "Take centroid as position.")
+            coo = gp.centroid['coordinates']
+
         x = coo[0]
         y = coo[1]
         n = snappable_nodes[next(idx.nearest((x, y, x, y), 1))]

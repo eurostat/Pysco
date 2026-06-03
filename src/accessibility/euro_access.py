@@ -6,9 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
 from utils.tomtomutils import weight_function, weight_function_length, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun, is_start_blocked, is_end_blocked
 
-#TODO
-# ensures all POIs are connected to a large cc when going out
-# either remove the CCs, OR reconnect them, OR ensure it is not deconnected
+# TODO
 # accessibility to schools by walking
 # secondary education services accessibility
 
