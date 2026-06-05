@@ -103,6 +103,7 @@ def gridify_gpkg(input_gpkg_path, grid_spacing, output_gpkg_path, explode_multi=
 
 
 def gpkg_point_to_csv(gpkg_path, csv_path, attributes_to_keep=None, rounding_precision=None):
+
     # Load the input GeoPackage file
     gdf = gpd.read_file(gpkg_path)
 

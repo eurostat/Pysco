@@ -6,7 +6,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.gridutils import gpkg_point_to_csv
 
-prepare_csv = True
+prepare_csv = False
 aggregate = True
 tiling = True
 
@@ -30,7 +30,7 @@ for service in ["evrp", "healthcare", "education"]:
             print("prepare csv")
             gpkg_point_to_csv(services_path + service + "_" + year + "_3035.gpkg",
                             csv_file,
-                            attributes_to_keep= ["name"] if service == "education" else ["hospital_name"] if service == "healthcare" else None,
+                            attributes_to_keep= ["name"] if service == "education" else ["hospital_name"] if service == "healthcare" else [],
                             rounding_precision=-1)
 
             # remove rows without coordinates
@@ -56,7 +56,7 @@ for service in ["evrp", "healthcare", "education"]:
                     10,
                     csva,
                     a,
-                    aggregation_fun = None if service == "evrp" else   { "name": aggregation_single_value },
+                    aggregation_fun = {} if service == "evrp" else   { "name": aggregation_single_value },
                 )
 
 
