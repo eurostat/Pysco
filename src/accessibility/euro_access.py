@@ -28,14 +28,16 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 for grid_resolution in [100]: # 1000
 
     for service in ["evrp"]: #["healthcare", "education", "evrp"]:
-        years = ["2023", "2024"] if service == "evrp" else ["2023", "2020"]
+        years = ["2023", "2024", "2025"] if service == "evrp" else ["2023", "2020"]
 
         for year in years:
             print(grid_resolution, service, year)
 
             # define tomtom year
-            tomtom_year = "2019" if year == "2020" else year
-            if service == "evrp": tomtom_year = "2023"
+            if service == "evrp":
+                tomtom_year = "2025" if year == "2025" else "2023"
+            else:
+                tomtom_year = "2019" if year == "2020" else year
 
             def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
             def cost_simplification_fun(x): return int(round(x))
