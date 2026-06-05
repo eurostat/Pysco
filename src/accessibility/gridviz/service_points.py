@@ -17,7 +17,7 @@ out_folder = "/home/juju/gisco/accessibility/gridviz/pois/"
 if not os.path.exists(out_folder): os.makedirs(out_folder)
 if not os.path.exists("tmp/"): os.makedirs("tmp/")
 
-for service in ["healthcare", "education", "evrp"]:
+for service in ["evrp", "healthcare", "education"]:
 
     services_path = "/home/juju/geodata/gisco/recharging_points/" if service == "evrp" else "/home/juju/geodata/gisco/basic_services/from_website/"
     years = ["2023", "2020"] if service != "evrp" else ["2023", "2024", "2025"]
