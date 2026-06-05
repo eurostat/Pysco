@@ -17,8 +17,9 @@ out_folder = "/home/juju/gisco/accessibility/gridviz/pois/"
 
 if not os.path.exists("tmp/"): os.makedirs("tmp/")
 
-for service in ["healthcare", "education"]:
-    for year in ["2020", "2023"]:
+for service in ["healthcare", "education", "evrp"]:
+    years = ["2023", "2020"] if service != "evrp" else ["2023", "2024", "2025"]
+    for year in years:
         print(service, year)
         csv_file = "tmp/" + service + "_" + year + "_10" + ".csv"
 
@@ -26,7 +27,7 @@ for service in ["healthcare", "education"]:
             print("prepare csv")
             gpkg_point_to_csv(services_path + service + "_" + year + "_3035.gpkg",
                             csv_file,
-                            attributes_to_keep= ["name" if service == "education" else "hospital_name"],
+                            attributes_to_keep= ["name"] if service == "education" else ["hospital_name"] if service == "healthcare" else None,
                             rounding_precision=-1)
 
             # remove rows without coordinates
@@ -52,7 +53,7 @@ for service in ["healthcare", "education"]:
                     10,
                     csva,
                     a,
-                    aggregation_fun = { "name": aggregation_single_value },
+                    aggregation_fun = None if service == "evrp" else   { "name": aggregation_single_value },
                 )
 
 
