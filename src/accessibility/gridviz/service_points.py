@@ -13,7 +13,8 @@ tiling = True
 #
 out_folder = "/home/juju/gisco/accessibility/gridviz/pois/"
 
-
+# make missing folders
+if not os.path.exists(out_folder): os.makedirs(out_folder)
 if not os.path.exists("tmp/"): os.makedirs("tmp/")
 
 for service in ["healthcare", "education", "evrp"]:
