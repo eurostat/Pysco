@@ -13,7 +13,6 @@ out_folder = '/home/juju/gisco/accessibility/'
 country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 nuts_gpkg = '/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg'
 
-version_tag = "v2026_05"
 do_combination = True
 
 # whole europe
@@ -32,6 +31,9 @@ for resolution in [100]:
             # ouput folder
             out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(resolution) + "m/"
             if not os.path.exists(out_folder_service_year): continue
+
+            # define version tag (may depend on service and year)
+            version_tag = "v2026_06"
 
             # combine parquet files to a single tiff file
             geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(resolution) + "m_"+version_tag+".tif"

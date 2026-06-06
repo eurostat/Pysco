@@ -20,7 +20,7 @@ zip_move = True
 version_tag = "v2026_05"
 services = ["evrp"]  # healthcare education evrp
 resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
-get_years = lambda service: ["2024", "2023"] if service == "evrp" else ["2023", "2020"]
+get_years = lambda service: ["2025", "2024", "2023"] if service == "evrp" else ["2023", "2020"]
 get_k = lambda service: 5 if service == "evrp" else 3
 
 folder_gridviz = folder + "gridviz/"

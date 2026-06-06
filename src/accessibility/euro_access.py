@@ -33,11 +33,14 @@ for grid_resolution in [100]: # 1000
         for year in years:
             print(grid_resolution, service, year)
 
-            # define tomtom year
+            # select tomtom version
             if service == "evrp":
                 tomtom_year = "2025" if year == "2025" else "2023"
             else:
                 tomtom_year = "2019" if year == "2020" else year
+
+            # select POIs version
+            pois_data_version = "_20260421" if service == "healthcare" else "_20260421" if service == "education" else ""
 
             def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
             def cost_simplification_fun(x): return int(round(x))
@@ -46,11 +49,11 @@ for grid_resolution in [100]: # 1000
             out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(grid_resolution) + "m/"
             os.makedirs(out_folder_service_year, exist_ok=True)
 
-            # define tomtom and POI loaders
+            # define tomtom loader
             def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom"+tomtom_year+"12.gpkg", bbox=bbox) #, where="FOW!='20'"
 
+            # define POI loader
             pois_data_folder = "/home/juju/geodata/gisco/recharging_points/" if service == "evrp" else "/home/juju/geodata/gisco/basic_services/"
-            pois_data_version = "_20260421" if service == "healthcare" else "_20260421" if service == "education" else ""
             def pois_loader(bbox): return iter_features(pois_data_folder+service+"_"+year+"_3035"+pois_data_version+".gpkg", bbox=bbox) #, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
             # build accessibility grid
