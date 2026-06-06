@@ -22,7 +22,8 @@ for resolution in [100]:
 
     for service in ["evrp"]: # healthcare education evrp
 
-        years = ["2024", "2023", "2025"] if service == "evrp" else ["2023", "2020"]
+        years = ["2025"]
+        #years = ["2024", "2023", "2025"] if service == "evrp" else ["2023", "2020"]
         k = 5 if service == "evrp" else 3
 
         for year in years:
