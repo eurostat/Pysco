@@ -72,6 +72,7 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=1, with_paths=False):
 
 
 def accessiblity_grid_k_nearest_dijkstra(bbox,
+            extention_buffer,
             pois_loader,
             road_network_loader,
             k = None,
@@ -94,13 +95,19 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
             ):
     """ see accessiblity_grid_k_nearest_dijkstra_parallel below """
 
+    # make extended bbox
+    (x_min, y_min, x_max, y_max) = bbox
+    if extention_buffer is None: extended_bbox = bbox
+    else:
+        extended_bbox = (x_min-extention_buffer, y_min-extention_buffer, x_max+extention_buffer, y_max+extention_buffer)
+
 
     if show_detailled_messages: print(datetime.now(), "get source POIs")
-    pois = list(pois_loader(bbox))
+    pois = list(pois_loader(extended_bbox))
     if(not pois): return
 
     if show_detailled_messages: print(datetime.now(), "make graph")
-    roads = road_network_loader(bbox)
+    roads = road_network_loader(extended_bbox)
     gb_ = ___graph_adjacency_list_from_geodataframe(roads,
                                                         weight_fun = weight_function,
                                                         is_not_snappable_fun = is_not_snappable_fun,
@@ -184,7 +191,6 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
 
     # go through cells
     r2 = grid_resolution / 2
-    (x_min, y_min, x_max, y_max) = bbox
     x_min = floor(x_min/grid_resolution)*grid_resolution
     y_min = floor(y_min/grid_resolution)*grid_resolution
     x_max = ceil(x_max/grid_resolution)*grid_resolution
@@ -298,13 +304,14 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
     print(datetime.now(), x_part, y_part)
 
     # build extended bbox
-    extended_bbox = (x_part-extention_buffer, y_part-extention_buffer, x_part+file_size+extention_buffer, y_part+file_size+extention_buffer)
+    bbox = (x_part, y_part, x_part+file_size, y_part+file_size)
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "get source POIs")
 
     # function call
     data = accessiblity_grid_k_nearest_dijkstra(
-        bbox = extended_bbox,
+        bbox = bbox,
+        extention_buffer = extention_buffer,
         pois_loader = pois_loader,
         road_network_loader = road_network_loader,
         k = k,
