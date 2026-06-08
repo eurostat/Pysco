@@ -17,7 +17,7 @@ aggregate = True
 tiling = True
 zip_move = True
 
-version_tag = "v2026_05"
+version_tag = "v2026_06"
 services = ["evrp"]  # healthcare education evrp
 resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
 get_years = lambda service: ["2025", "2024", "2023"] if service == "evrp" else ["2023", "2020"]
