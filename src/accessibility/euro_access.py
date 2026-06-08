@@ -79,7 +79,7 @@ for grid_resolution in [100]: # 1000
                 densification_distance = grid_resolution,
                 cost_simplification_fun = cost_simplification_fun,
                 threshold_connected_component_to_remove_node_nb = 50,
-                num_processors = 4 if service == "evrp" else 3 if service == "education" else 2,
+                num_processors = 3 if service == "evrp" else 3 if service == "education" else 2,
                 shuffle=True,
                 show_detailled_messages = False
             )
