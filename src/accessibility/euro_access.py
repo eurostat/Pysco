@@ -11,10 +11,28 @@ from utils.tomtomutils import weight_function, weight_function_length, is_not_sn
 # secondary education services accessibility
 
 
-# folders where to find the inputs
-tomtom_data_folder = "/home/juju/geodata/tomtom/"
 # folders where to store the outputs
 out_folder = '/home/juju/gisco/accessibility/'
+
+# input data: pois and road network
+pois_datasets = {
+    "healthcare": {"2023":"/home/juju/geodata/gisco/basic_services/healthcare_2023_3035_20260421.gpkg",
+                   "2020":"/home/juju/geodata/gisco/basic_services/healthcare_2020_3035_20260421.gpkg"},
+    "education": {"2023":"/home/juju/geodata/gisco/basic_services/education_2023_3035_20260421.gpkg",
+                  "2020":"/home/juju/geodata/gisco/basic_services/education_2020_3035_20260421.gpkg"},
+    "evrp": {"2023":"/home/juju/geodata/gisco/recharging_points/evrp_2023_3035.gpkg",
+             "2024":"/home/juju/geodata/gisco/recharging_points/evrp_2024_3035.gpkg",
+             "2025":"/home/juju/geodata/gisco/recharging_points/evrp_2025_3035.gpkg"}
+}
+
+tomtom_data_folder = "/home/juju/geodata/tomtom/"
+tomtom_datasets = {
+    "2020": tomtom_data_folder + "tomtom201912.gpkg",
+    "2023": tomtom_data_folder + "tomtom202312.gpkg",
+    "2024": tomtom_data_folder + "tomtom202312.gpkg",
+    "2025": tomtom_data_folder + "tomtom202512.gpkg"
+}
+
 
 # define output bounding box
 # whole europe
@@ -28,19 +46,10 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 for grid_resolution in [100]: # 1000
 
     for service in ["evrp"]: #["healthcare", "education", "evrp"]:
-        years = ["2023", "2024", "2025"] if service == "evrp" else ["2023", "2020"]
+        years = pois_datasets[service].keys()
 
         for year in years:
             print(grid_resolution, service, year)
-
-            # select tomtom version
-            if service == "evrp":
-                tomtom_year = "2025" if year == "2025" else "2023"
-            else:
-                tomtom_year = "2019" if year == "2020" else year
-
-            # select POIs version
-            pois_data_version = "_20260421" if service == "healthcare" else "_20260421" if service == "education" else ""
 
             def cell_id_fun(x,y): return "CRS3035RES"+str(grid_resolution)+"mN"+str(int(y))+"E"+str(int(x))
             def cost_simplification_fun(x): return int(round(x))
@@ -50,11 +59,12 @@ for grid_resolution in [100]: # 1000
             os.makedirs(out_folder_service_year, exist_ok=True)
 
             # define tomtom loader
-            def road_network_loader(bbox): return iter_features(tomtom_data_folder + "tomtom"+tomtom_year+"12.gpkg", bbox=bbox) #, where="FOW!='20'"
+            tomtom_dataset = tomtom_datasets[year]
+            def road_network_loader(bbox): return iter_features(tomtom_dataset, bbox=bbox) #, where="FOW!='20'"
 
             # define POI loader
-            pois_data_folder = "/home/juju/geodata/gisco/recharging_points/" if service == "evrp" else "/home/juju/geodata/gisco/basic_services/"
-            def pois_loader(bbox): return iter_features(pois_data_folder+service+"_"+year+"_3035"+pois_data_version+".gpkg", bbox=bbox) #, where="levels IS NULL or levels!='0'" if service=="education" else "")
+            pois_dataset = pois_datasets[service][year]
+            def pois_loader(bbox): return iter_features(pois_dataset, bbox=bbox) #, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
             # build accessibility grid
             accessiblity_grid_k_nearest_dijkstra_parallel(

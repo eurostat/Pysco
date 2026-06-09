@@ -13,9 +13,9 @@ folder = "/home/juju/gisco/accessibility/"
 folder_pop_tiff = "/home/juju/geodata/census/2021/aggregated_tiff/"
 target_folder = "/home/juju/pCloudDrive"
 
-aggregate = True
-tiling = False
-zip_move = False
+aggregate = False
+tiling = True
+zip_move = True
 
 version_tag = "v2026_05"
 services = ["evrp"]  # healthcare education evrp
