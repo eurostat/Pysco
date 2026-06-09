@@ -17,11 +17,15 @@ aggregate = False
 tiling = True
 zip_move = True
 
-version_tag = "v2026_05"
 services = ["evrp"]  # healthcare education evrp
-resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
-get_years = lambda service: ["2025", "2024", "2023"] if service == "evrp" else ["2023", "2020"]
+data = {
+    "education": {"2020":"v2026_04", "2023":"v2026_04"},
+    "healthcare": {"2020":"v2026_04", "2023":"v2026_04"},
+    "evrp":  {"2023":"v2026_05", "2024":"v2026_05", "2025":"v2026_06"},
+}
 get_k = lambda service: 5 if service == "evrp" else 3
+
+resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
 
 folder_gridviz = folder + "gridviz/"
 if not os.path.exists(folder_gridviz): os.makedirs(folder_gridviz)
@@ -30,13 +34,13 @@ if not os.path.exists(folder_gridviz): os.makedirs(folder_gridviz)
 if aggregate:
     print(datetime.now(), "aggregate")
     for service in services:
-        for year in get_years(service):
+        for year in data[service].keys():
 
             # it is better to resample all resolution from 100m one. Otherwise, we do medians of medians which may create some biais around places with many nodata pixels
             for resolution in resolutions:
                 print(datetime.now(), service, year, resolution)
-                resample_geotiff_aligned(folder + "euro_access_"+service+"_"+year+"_100m_"+version_tag+".tif",
-                                         folder_gridviz+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m_"+version_tag+".tif",
+                resample_geotiff_aligned(folder + "euro_access_"+service+"_"+year+"_100m_"+data[service][year]+".tif",
+                                         folder_gridviz+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m_"+data[service][year]+".tif",
                                          resolution, Resampling.med)
 
 
@@ -54,9 +58,9 @@ if tiling:
             # prepare dict for geotiff bands
             dict = {}
             k = get_k(service)
-            for year in get_years(service):
-                dict["dt_1_" + year] = {"file":folder_gridviz+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+version_tag+".tif", "band":1}
-                dict["dt_a"+str(k)+"_" + year] = {"file":folder_gridviz+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+version_tag+".tif", "band":2}
+            for year in data[service].keys():
+                dict["dt_1_" + year] = {"file":folder_gridviz+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+data[service][year]+".tif", "band":1}
+                dict["dt_a"+str(k)+"_" + year] = {"file":folder_gridviz+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+data[service][year]+".tif", "band":2}
                 dict["POP_2021"] = { "file":folder_pop_tiff+"pop_2021_"+str(resolution)+".tif", "band":1 }
 
             # launch tiling
@@ -80,11 +84,11 @@ if zip_move:
         print(datetime.now(), "Move zip file", service)
         shutil.move(folder_gridviz + service + ".zip", target_folder)
 
-        for year in get_years(service):
+        for year in data[service].keys():
             print(datetime.now(), "Copy tiff files", service, year)
 
             # 100m
-            shutil.copy(folder+"euro_access_"+service+"_"+year+"_100m_"+version_tag+".tif", target_folder)
+            shutil.copy(folder+"euro_access_"+service+"_"+year+"_100m_"+data[service][year]+".tif", target_folder)
             # 1000m
-            shutil.copy(folder_gridviz+"euro_access_"+service+"_"+year+"_1000m_"+version_tag+".tif", folder)
-            shutil.copy(folder+"euro_access_"+service+"_"+year+"_1000m_"+version_tag+".tif", target_folder)
+            shutil.copy(folder_gridviz+"euro_access_"+service+"_"+year+"_1000m_"+data[service][year]+".tif", folder)
+            shutil.copy(folder+"euro_access_"+service+"_"+year+"_1000m_"+data[service][year]+".tif", target_folder)
