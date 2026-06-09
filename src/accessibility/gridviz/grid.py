@@ -14,10 +14,10 @@ folder_pop_tiff = "/home/juju/geodata/census/2021/aggregated_tiff/"
 target_folder = "/home/juju/pCloudDrive"
 
 aggregate = True
-tiling = True
-zip_move = True
+tiling = False
+zip_move = False
 
-version_tag = "v2026_06"
+version_tag = "v2026_05"
 services = ["evrp"]  # healthcare education evrp
 resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
 get_years = lambda service: ["2025", "2024", "2023"] if service == "evrp" else ["2023", "2020"]
