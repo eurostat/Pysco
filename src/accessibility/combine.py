@@ -8,10 +8,21 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.convert import parquet_grid_to_geotiff
 from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
 
+
+datasets = {
+    "healthcare": ["2023","2020"],
+    "education": ["2023","2020"],
+    "evrp": ["2023","2024", "2025"],
+}
+
+# define version tag (may depend on service and year)
+version_tag = "v2026_06"
+
 # where to store the outputs
 out_folder = '/home/juju/gisco/accessibility/'
 country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 nuts_gpkg = '/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg'
+
 
 do_combination = True
 
@@ -20,21 +31,16 @@ bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for resolution in [100]:
 
-    for service in ["evrp"]: # healthcare education evrp
+    for service in datasets.keys():
 
-        years = ["2025"]
-        #years = ["2024", "2023", "2025"] if service == "evrp" else ["2023", "2020"]
         k = 5 if service == "evrp" else 3
 
-        for year in years:
+        for year in datasets[service]:
             print(resolution, service, year)
 
             # ouput folder
             out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(resolution) + "m/"
             if not os.path.exists(out_folder_service_year): continue
-
-            # define version tag (may depend on service and year)
-            version_tag = "v2026_06"
 
             # combine parquet files to a single tiff file
             geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(resolution) + "m_"+version_tag+".tif"
