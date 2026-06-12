@@ -13,7 +13,7 @@ folder = "/home/juju/gisco/accessibility/"
 folder_pop_tiff = "/home/juju/geodata/census/2021/aggregated_tiff/"
 target_folder = "/home/juju/pCloudDrive"
 
-aggregate = False
+aggregate = True
 tiling = True
 zip_move = True
 
