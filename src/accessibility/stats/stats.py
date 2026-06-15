@@ -6,12 +6,9 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 #from utils.featureutils import iter_features
 from utils.grid2stat import aggregate_geotiff_to_regions
 
-#nuts_lvl = "3"
-#su = iter_features(f"/home/juju/geodata/gisco/CNTR_RG_100K_{nuts_version}_3035.gpkg", where="STAT_LEVL_CODE = " + str(nuts_lvl))
-#su = list(su)
-#print("Number of features: ", len(su))
-
-
+# compute products
+# compute ratios of the results
+# compute nb services per LAU-NUTS - per category? check CHr file
 
 
 print("Starting aggregation at: ", datetime.now())
