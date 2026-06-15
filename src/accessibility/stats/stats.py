@@ -20,7 +20,7 @@ aggregate_geotiff_to_regions(
     #gpkg_path=f"/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
     gpkg_path=f"/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg",
     #region_id_attr="NUTS_ID",
-    region_id_attr="LAU_ID",
+    region_id_attr="GISCO_ID",
     geotiff_path=f"/home/juju/gisco/accessibility/euro_access_evrp_2025_100m_v2026_06.tif",
     output_csv_path=f"/home/juju/gisco/accessibility/stats/evrp_2025_v2026_06.csv",
     output_col_name="evrp_2025",
