@@ -50,7 +50,7 @@ if produce_population_stats:
                 region_id_attr=su_info["id"],
                 geotiff_path=pop_rasters[res],
                 output_csv_path=working_folder + f"population_T_{su_name}_{res}m.csv",
-                output_col_name="evrp_2025",
+                output_col_name="T",
             )
     #TODO do other categories from 1000m
 
