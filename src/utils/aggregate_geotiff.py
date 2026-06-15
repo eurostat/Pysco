@@ -189,32 +189,3 @@ def aggregate_geotiff_to_regions(
 
     print(f"Done. Results written to {output_csv_path}  ({len(id_list)} regions)")
 
-
-# ---------------------------------------------------------------------------
-# CLI entry point (optional)
-# ---------------------------------------------------------------------------
-if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(
-        description="Aggregate GeoTIFF pixel values into polygon regions."
-    )
-    parser.add_argument("gpkg", help="Path to the GeoPackage file")
-    parser.add_argument("region_id", help="Name of the region ID attribute")
-    parser.add_argument("geotiff", help="Path to the GeoTIFF file")
-    parser.add_argument("output_csv", help="Path for the output CSV file")
-    parser.add_argument(
-        "--block-size",
-        type=int,
-        default=1024,
-        help="Tile size in pixels (default: 1024)",
-    )
-    args = parser.parse_args()
-
-    aggregate_geotiff_to_regions(
-        gpkg_path=args.gpkg,
-        region_id_attr=args.region_id,
-        geotiff_path=args.geotiff,
-        output_csv_path=args.output_csv,
-        block_size=args.block_size,
-    )
