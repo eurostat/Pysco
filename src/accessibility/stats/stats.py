@@ -9,6 +9,7 @@ from utils.grid2stat import aggregate_geotiff_to_regions
 # compute products
 # compute ratios of the results
 # compute nb services per LAU-NUTS - per category? check CHr file
+# map stats on nuts + LAUs (joe)
 
 
 print("Starting aggregation at: ", datetime.now())
