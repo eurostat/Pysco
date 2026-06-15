@@ -37,7 +37,9 @@ def aggregate_geotiff_to_regions(
     region_id_attr: str,
     geotiff_path: str,
     output_csv_path: str,
+    output_col_name: str = "sum",
     block_size: int = 1024,
+    band: int = 1,
 ) -> None:
     """
     For each region in *gpkg_path*, sum the values of all GeoTIFF pixels
@@ -53,10 +55,14 @@ def aggregate_geotiff_to_regions(
         Path to the input GeoTIFF (single band used; first band if multi-band).
     output_csv_path : str
         Path for the output CSV file.  Created or overwritten.
+    output_col_name : str
+        Column name for the aggregated values in the output CSV (default: "sum").
     block_size : int
         Width/height of the processing tile in pixels.  Tune to fit available
         RAM.  1024 is a safe default; raise to 4096+ on memory-rich machines
         for fewer I/O round-trips.
+    band : int
+        The band number to read from the GeoTIFF (default: 1).
     """
     gpkg_path = Path(gpkg_path)
     geotiff_path = Path(geotiff_path)
@@ -72,7 +78,7 @@ def aggregate_geotiff_to_regions(
         transform = src.transform
         nodata = src.nodata
         height, width = src.height, src.width
-        band_count = src.count  # we use band 1
+        #band_count = src.count  # we use band 1
 
         # Reproject regions if necessary
         if regions.crs is None:
@@ -101,7 +107,7 @@ def aggregate_geotiff_to_regions(
                 col_count = min(block_size, width - col_off)
 
                 window = Window(col_off, row_off, col_count, row_count)
-                data = src.read(1, window=window).astype(np.float64)
+                data = src.read(band, window=window).astype(np.float64)
 
                 # Mask nodata pixels
                 if nodata is not None:
@@ -183,7 +189,7 @@ def aggregate_geotiff_to_regions(
     output_csv_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_csv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow([region_id_attr, "sum"])
+        writer.writerow([region_id_attr, output_col_name])
         for rid in id_list:           # preserve original order
             writer.writerow([rid, sums[rid]])
 

@@ -9,6 +9,7 @@ from utils.aggregate_geotiff import aggregate_geotiff_to_regions
 #su = list(su)
 #print("Number of features: ", len(su))
 
+
 aggregate_geotiff_to_regions(
     gpkg_path=f"/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
     region_id_attr="NUTS_ID",
