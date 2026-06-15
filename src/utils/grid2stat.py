@@ -9,14 +9,79 @@ from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
+import numpy.typing as npt
 import geopandas as gpd
-import rasterio
+from typing import Callable
 
+import rasterio
 from rasterio.windows import Window
 from rasterio.enums import Resampling
+from rasterio.transform import from_bounds
 
 from shapely import prepare, contains_xy
 from shapely.strtree import STRtree
+
+
+
+def transform_geotiff(
+    input_path: str,
+    output_path: str,
+    func: Callable[[npt.NDArray], npt.NDArray],
+    output_dtype: str = None,
+    band: int = 1,
+    compress: str = "lzw",
+) -> None:
+    """
+    Apply a lambda/function to each pixel of a GeoTIFF band and write the result
+    to a new GeoTIFF, preserving spatial metadata.
+ 
+    Parameters
+    ----------
+    input_path : str
+        Path to the input GeoTIFF file.
+    output_path : str
+        Path where the output GeoTIFF will be written.
+    func : Callable
+        A function (or lambda) applied element-wise to the pixel array.
+        Receives a NumPy array and must return a NumPy array of the same shape.
+        Example: lambda x: x * 2 + 1
+    output_dtype : str, optional
+        NumPy/GDAL dtype string for the output raster (e.g. 'float32', 'uint8',
+        'int16', 'float64'). Defaults to the input band's dtype when not provided.
+    band : int, optional
+        1-based band index to read from the input file. Defaults to 1.
+ 
+    Raises
+    ------
+    ValueError
+        If the requested band index is out of range.
+    """
+    with rasterio.open(input_path) as src:
+        data = src.read(band)                          # shape: (height, width)
+        profile = src.profile.copy()
+ 
+    # Apply the user-supplied function
+    result: npt.NDArray = func(data)
+ 
+    if result.shape != data.shape:
+        raise ValueError(
+            f"The function returned an array with shape {result.shape}, "
+            f"but the input shape is {data.shape}. Shapes must match."
+        )
+ 
+    # Resolve output dtype
+    resolved_dtype = output_dtype if output_dtype is not None else str(data.dtype)
+    result = result.astype(resolved_dtype)
+
+    # Update profile for a single-band output
+    profile.update(
+        dtype=resolved_dtype,
+        count=1,
+        compress=compress,
+    )
+ 
+    with rasterio.open(output_path, "w", **profile) as dst:
+        dst.write(result, 1)
 
 
 
