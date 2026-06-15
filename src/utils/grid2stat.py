@@ -1,20 +1,4 @@
 """
-aggregate_geotiff.py
---------------------
-Aggregate GeoTIFF pixel values into polygon regions using a point-in-polygon
-strategy: only the pixel *centres* that fall inside a region are summed.
-
-Optimisation strategy for large datasets
------------------------------------------
-1. Spatial index (STRtree) on the region geometries so pixel-centre lookup is
-   O(log n) rather than O(n).
-2. Windowed / block reading of the GeoTIFF – the raster is never loaded
-   entirely into RAM.  Each block is read once.
-3. Per-block spatial filter: the block's bounding box is used to pre-filter
-   candidate regions before the inner point-in-polygon test.
-4. NumPy vectorised coordinate generation inside each block.
-5. nodata masking applied before any geometry query.
-
 Dependencies
 ------------
     pip install rasterio geopandas shapely numpy pandas
@@ -27,10 +11,125 @@ from pathlib import Path
 import numpy as np
 import geopandas as gpd
 import rasterio
+
 from rasterio.windows import Window
-#from shapely.geometry import MultiPoint
+from rasterio.enums import Resampling
+
 from shapely import prepare, contains_xy
 from shapely.strtree import STRtree
+
+
+
+def multiply_geotiffs(
+    path_a: str,
+    path_b: str,
+    output_path: str,
+    band_a: int = 1,
+    band_b: int = 1,
+    output_dtype: str | None = None,
+) -> None:
+    """
+    Compute the pixel-wise product of two GeoTIFF files and write the result
+    to a new GeoTIFF.
+    Both inputs must share the same CRS, extent, and pixel grid.
+    Where either input pixel is no-data the output pixel is also no-data.
+    
+    This is usefull to compute weighted average statistics, e.g. population-weighted accessibility:
+    1. Multiply an accessibility raster (e.g. travel time to nearest hospital) by a population raster (e.g. population count per pixel).
+    2. Sum the resulting "population-weighted accessibility" values within each region.
+    3. Divide the total population-weighted accessibility by the total population in that region to get the population-weighted average accessibility.
+ 
+    Parameters
+    ----------
+    path_a : str
+        Path to the first GeoTIFF.
+    path_b : str
+        Path to the second GeoTIFF.
+    output_path : str
+        Path for the output GeoTIFF (created or overwritten).
+    band_a : int, optional
+        1-based band index to read from the first file (default: 1).
+    band_b : int, optional
+        1-based band index to read from the second file (default: 1).
+    output_dtype : str or None, optional
+        NumPy/rasterio dtype for the output band, e.g. ``"float32"``.
+        Defaults to ``float64`` so that integer products don't overflow.
+    """
+    with rasterio.open(path_a) as src_a, rasterio.open(path_b) as src_b:
+ 
+        # ------------------------------------------------------------------ #
+        # Read data and no-data values                                        #
+        # ------------------------------------------------------------------ #
+        data_a = src_a.read(band_a).astype(np.float64)
+        data_b = src_b.read(band_b).astype(np.float64)
+ 
+        nodata_a = src_a.nodata
+        nodata_b = src_b.nodata
+ 
+        # ------------------------------------------------------------------ #
+        # Build no-data masks (True where the pixel IS no-data)              #
+        # ------------------------------------------------------------------ #
+        if nodata_a is not None and np.isnan(nodata_a):
+            mask_a = np.isnan(data_a)
+        elif nodata_a is not None:
+            mask_a = data_a == nodata_a
+        else:
+            mask_a = np.zeros(data_a.shape, dtype=bool)
+ 
+        if nodata_b is not None and np.isnan(nodata_b):
+            mask_b = np.isnan(data_b)
+        elif nodata_b is not None:
+            mask_b = data_b == nodata_b
+        else:
+            mask_b = np.zeros(data_b.shape, dtype=bool)
+ 
+        combined_nodata_mask = mask_a | mask_b
+ 
+        # ------------------------------------------------------------------ #
+        # Compute product                                                     #
+        # ------------------------------------------------------------------ #
+        product = data_a * data_b
+ 
+        # ------------------------------------------------------------------ #
+        # Choose output dtype and no-data sentinel                           #
+        # ------------------------------------------------------------------ #
+        if output_dtype is None:
+            output_dtype = "float64"
+ 
+        # Use NaN as the output no-data sentinel for float types; fall back
+        # to the first file's no-data value (or -9999) for integer types.
+        np_dtype = np.dtype(output_dtype)
+        if np.issubdtype(np_dtype, np.floating):
+            out_nodata = float("nan")
+        else:
+            # For integer outputs pick a sentinel: prefer source A's value
+            out_nodata = nodata_a if nodata_a is not None else -9999
+            out_nodata = int(out_nodata)
+ 
+        product = product.astype(np_dtype)
+        product[combined_nodata_mask] = out_nodata
+ 
+        # ------------------------------------------------------------------ #
+        # Write output GeoTIFF (copy spatial metadata from file A)          #
+        # ------------------------------------------------------------------ #
+        profile = src_a.profile.copy()
+        profile.update(
+            dtype=output_dtype,
+            count=1,
+            nodata=out_nodata,
+            compress="lzw",          # lossless, widely supported
+            predictor=2,             # horizontal differencing – good for floats
+            tiled=True,
+            blockxsize=256,
+            blockysize=256,
+        )
+ 
+        with rasterio.open(output_path, "w", **profile) as dst:
+            dst.write(product[np.newaxis, :, :])   # shape (1, rows, cols)
+ 
+
+
+
 
 
 def aggregate_geotiff_to_regions(
@@ -46,6 +145,20 @@ def aggregate_geotiff_to_regions(
     For each region in *gpkg_path*, sum the values of all GeoTIFF pixels
     whose centre lies within that region, then write results to a CSV.
 
+    Aggregate GeoTIFF pixel values into polygon regions using a point-in-polygon
+    strategy: only the pixel *centres* that fall inside a region are summed.
+
+    Optimisation strategy for large datasets
+    -----------------------------------------
+    1. Spatial index (STRtree) on the region geometries so pixel-centre lookup is
+    O(log n) rather than O(n).
+    2. Windowed / block reading of the GeoTIFF – the raster is never loaded
+    entirely into RAM.  Each block is read once.
+    3. Per-block spatial filter: the block's bounding box is used to pre-filter
+    candidate regions before the inner point-in-polygon test.
+    4. NumPy vectorised coordinate generation inside each block.
+    5. nodata masking applied before any geometry query.
+    
     Parameters
     ----------
     gpkg_path : str
