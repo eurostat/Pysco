@@ -19,7 +19,7 @@ produce_population_stats = True
 # output folder
 output_folder = "/home/juju/gisco/accessibility/stats/"
 # working folder
-working_folder = "./tmp/stats/"
+working_folder = "/tmp/stats/"
 
 # the statistical units
 su = {
