@@ -23,8 +23,8 @@ working_folder = "./tmp/stats/"
 
 # the statistical units
 su = {
+    "NUTS": { "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg", "id": "NUTS_ID" },
     "LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID" },
-    "NUTS": { "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg", "id": "NUTS_ID" }
 }
 
 # population rasters
@@ -41,7 +41,7 @@ os.makedirs(working_folder, exist_ok=True)
 
 # prepare total population per su
 if produce_population_stats:
-    for res in ["100", "1000"]:
+    for res in ["1000", "100"]:
         for su_name, su_info in su.items():
 
             print(datetime.now(), "produce T population from " +res+"m for "+su_name ) 
