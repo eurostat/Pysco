@@ -28,7 +28,8 @@ import numpy as np
 import geopandas as gpd
 import rasterio
 from rasterio.windows import Window
-from shapely.geometry import MultiPoint
+#from shapely.geometry import MultiPoint
+from shapely import prepare, contains_xy
 from shapely.strtree import STRtree
 
 
@@ -161,7 +162,7 @@ def aggregate_geotiff_to_regions(
                 # 5. Point-in-polygon for each candidate region
                 # ------------------------------------------------------
                 # Build a MultiPoint for bulk contains queries
-                points_xy = np.stack([xs, ys], axis=1)
+                #points_xy = np.stack([xs, ys], axis=1)
 
                 for geom, rid in zip(candidate_geoms, candidate_ids):
                     # Fast bounding-box pre-check per region
@@ -178,7 +179,6 @@ def aggregate_geotiff_to_regions(
                     bbox_vals = values[in_bbox]
 
                     # Vectorised contains via prepared geometry
-                    from shapely import prepare, contains_xy
                     prepare(geom)
                     inside = contains_xy(geom, bbox_xs, bbox_ys)
                     sums[rid] += bbox_vals[inside].sum()
