@@ -25,27 +25,55 @@ pop_rasters = {
 
 # accessibility grids
 acc_grids = {
+    "healthcare" : {
+        "2020": "/home/juju/gisco/accessibility/euro_access_healthcare_2020_100m_v2026_04.tif",
+        "2023": "/home/juju/gisco/accessibility/euro_access_healthcare_2023_100m_v2026_04.tif",
+    },
+    "education" : {
+        "2020": "/home/juju/gisco/accessibility/euro_access_education_2020_100m_v2026_04.tif",
+        "2023": "/home/juju/gisco/accessibility/euro_access_education_2023_100m_v2026_04.tif",
+    },
     "evrp" : {
-        "2025": "/home/juju/gisco/accessibility/euro_access_evrp_2025_1000m_v2026_06.tif",
-    }
+        "2023": "/home/juju/gisco/accessibility/euro_access_evrp_2023_100m_v2026_05.tif",
+        "2024": "/home/juju/gisco/accessibility/euro_access_evrp_2024_100m_v2026_05.tif",
+        "2025": "/home/juju/gisco/accessibility/euro_access_evrp_2025_100m_v2026_06.tif",
+    },
 }
 
-res = "1000"
+# classes
+classes = {
+    "healthcare" : {
+        "pop_tot":(0, 1e9),
+        "pop_under_5min": (0, 5*60),
+        "pop_under_20min": (0, 20*60),
+        "pop_under_45min": (0, 45*60),
+    },
+    "education" : {
+        "pop_tot":(0, 1e9),
+        "pop_under_2min": (0, 2*60),
+        "pop_under_10min": (0, 10*60),
+        "pop_under_20min": (0, 20*60),
+    },
+    "evrp" : {
+        "pop_tot":(0, 1e9),
+        "pop_under_500m": (0, 500),
+        "pop_under_5000m": (0, 5000),
+    },
+}
+
+
+res = "100"
 su = "NUTS"
 year = "2025"
 service = "evrp"
 
 print(datetime.now(), su, service, year, res)
 zonal_sum_by_class(
-    classes_path=acc_grids[service][year],
-    values_path=pop_rasters[res],
-    zonal_path=sus[su]["path"],
-    classes={
-        "pop_tot":(0, 1e9),
-        "pop_under_500m": (0, 500),
-        "pop_under_5000m": (0, 5000),
-    },
-    gpkg_path=output_folder + su + "_" + service + "_" + year + ".gpkg",
+    classes_path = acc_grids[service][year],
+    values_path = pop_rasters[res],
+    zonal_path = sus[su]["path"],
+    classes = classes[service],
+    gpkg_path = output_folder + su + "_" + service + "_" + year + ".gpkg",
     verbose = False
 )
 print(datetime.now(), "Done")
