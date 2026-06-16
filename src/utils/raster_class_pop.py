@@ -13,7 +13,7 @@ def zonal_sum_by_class(
     verbose:bool = True,
     class_name_change_fun = None,
     rounding_fun = None,
-    csv_type = None,
+    output_data_type = None,
     values_band:int = 0,
     classes_band:int = 0,
 ) -> gpd.GeoDataFrame:
@@ -119,13 +119,15 @@ def zonal_sum_by_class(
     if rounding_fun is not None:
         zonal[cols] = zonal[cols].apply(lambda s: s.map(lambda v: None if v is None or isnan(v) else rounding_fun(v)))
 
+    # force output data type
+    if output_data_type is not None: zonal[cols] = zonal[cols].astype(output_data_type)
+
     # export to GPKG
     if gpkg_path is not None:
         zonal.to_file(gpkg_path,driver='GPKG', layer=gpkg_layer)
 
     # export to CSV
     if csv_path is not None:
-        if csv_type is not None: zonal[cols] = zonal[cols].astype(csv_type)
         zonal[ [id_att] + cols ].to_csv(csv_path, index=False)
 
     return zonal

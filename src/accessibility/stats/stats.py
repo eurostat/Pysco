@@ -86,7 +86,7 @@ for su in sus.keys():
                 verbose = False,
                 class_name_change_fun = lambda cn: cn+"_"+year,
                 #rounding_fun = lambda v : int(round(v))
-                csv_type = "Int64",
+                output_data_type = "Int64",
             )
 
         #TODO join CSV by year
