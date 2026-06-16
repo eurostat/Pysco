@@ -33,7 +33,7 @@ acc_grids = {
 
 
 res = "1000"
-su_ = "LAU"
+su_ = "NUTS"
 year = "2025"
 service = "evrp"
 
