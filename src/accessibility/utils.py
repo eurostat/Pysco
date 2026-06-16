@@ -45,6 +45,7 @@ nuts_gpkg = '/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg'
 
 # define country codes for the countries covered, depending on the country and the year
 def get_countries_covered(service:str, year:str):
+    if service == "evrp": return "all"
     cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
             "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
             "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO" ]
