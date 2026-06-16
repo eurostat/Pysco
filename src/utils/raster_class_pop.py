@@ -52,8 +52,7 @@ def zonal_sum_by_class(
     #TODO apply filter here
 
     # Create a column for each class
-    for class_name in classes.keys():
-         zonal[class_name]=None
+    #for class_name in classes.keys(): zonal[class_name]=None
 
     # Open raster files
     with rasterio.open(classes_path) as src_classes, rasterio.open(values_path) as src_values:
@@ -69,20 +68,16 @@ def zonal_sum_by_class(
             # For simplify, we suppose that the rasters files are aligned
             # TODO : step for reproject and resample if it's necessary 
 
-        # Read data
-        #classes_array = src_classes.read(1)
-        #values_array = src_values.read(1)
-
         # Manage NoData for values
         values_nodata = src_values.nodata if src_values.nodata is not None else -9999 
-        
+
         # Process for each polygon in zonal
         for index, row in zonal.iterrows():
             # Clip raster by the polygon's geometry
             geometry = [mapping(row.geometry)]
             try:
                 # Découpage du raster POP et de sa fenêtre
-                # Clip values raster 
+                # Clip values raster
                 values_clipped, values_transform = mask(src_values, geometry, crop=True, filled=True)
                 values_clipped = values_clipped[values_band]
 
@@ -107,7 +102,7 @@ def zonal_sum_by_class(
                 # Apply the class_mask to the values array
                 # only consider the values where the class_mask is True
                 values_in_class = values_clipped[class_mask]
-                
+
                 # Filter NoData values 
                 valid_values = values_in_class[values_in_class != values_nodata]
 
