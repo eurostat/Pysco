@@ -65,7 +65,7 @@ classes = {
 }
 
 
-res = "100"
+res = "1000"
 for su in sus.keys():
     for service in acc_grids_versions.keys():
         for year in acc_grids_versions[service].keys():
