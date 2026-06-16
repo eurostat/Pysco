@@ -149,7 +149,7 @@ def multiple_zonal_sum_by_class_to_gpkg(
     try:
         for p in classes_paths:
             print("{} - Start file : {}".format(datetime.now(),p[0]))
-            result = zonal_sum_by_class_to_gpkg(p[0], values_path, zonal_path, classes,p[1],p[2])
+            zonal_sum_by_class(p[0], values_path, zonal_path, classes, gpkg_path=p[1], gpkg_layer=p[2])
             print("{} - end file : {}".format(datetime.now(),p[0]))
 
     except Exception as e:
