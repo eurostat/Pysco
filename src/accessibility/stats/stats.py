@@ -26,17 +26,17 @@ pop_rasters = {
 # accessibility grids
 acc_grids = {
     "healthcare" : {
-        "2020": "/home/juju/gisco/accessibility/euro_access_healthcare_2020_100m_v2026_04.tif",
+        "2020": "/home/juju/gisco/accessibility/euro_access_healthcare_2020_1000m_v2026_04.tif",
         "2023": "/home/juju/gisco/accessibility/euro_access_healthcare_2023_100m_v2026_04.tif",
     },
     "education" : {
-        "2020": "/home/juju/gisco/accessibility/euro_access_education_2020_100m_v2026_04.tif",
-        "2023": "/home/juju/gisco/accessibility/euro_access_education_2023_100m_v2026_04.tif",
+        "2020": "/home/juju/gisco/accessibility/euro_access_education_2020_1000m_v2026_04.tif",
+        "2023": "/home/juju/gisco/accessibility/euro_access_education_2023_1000m_v2026_04.tif",
     },
     "evrp" : {
-        "2023": "/home/juju/gisco/accessibility/euro_access_evrp_2023_100m_v2026_05.tif",
-        "2024": "/home/juju/gisco/accessibility/euro_access_evrp_2024_100m_v2026_05.tif",
-        "2025": "/home/juju/gisco/accessibility/euro_access_evrp_2025_100m_v2026_06.tif",
+        "2023": "/home/juju/gisco/accessibility/euro_access_evrp_2023_1000m_v2026_05.tif",
+        "2024": "/home/juju/gisco/accessibility/euro_access_evrp_2024_1000m_v2026_05.tif",
+        "2025": "/home/juju/gisco/accessibility/euro_access_evrp_2025_1000m_v2026_06.tif",
     },
 }
 
@@ -62,15 +62,15 @@ classes = {
 }
 
 
-pop_res = "1000"
+res = "1000"
 year = "2025"
 for su in sus.keys():
     for service in acc_grids.keys():
         for year in acc_grids[service].keys():
-            print(datetime.now(), su, service, year, pop_res)
+            print(datetime.now(), su, service, year, res)
             zonal_sum_by_class(
                 classes_path = acc_grids[service][year],
-                values_path = pop_rasters[pop_res],
+                values_path = pop_rasters[res],
                 zonal_path = sus[su]["path"],
                 classes = classes[service],
                 gpkg_path = output_folder + su + "_" + service + "_" + year + ".gpkg",
