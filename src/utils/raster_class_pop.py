@@ -52,10 +52,12 @@ def zonal_sum_by_class(
         # Test if CRS and transformation are compatible
         if src_classes.crs != src_values.crs:    
             print("Error: Classes and values rasters have different CRSs")
-            print(src_classes.crs, src_values.crs)
+            print(src_classes.crs)
+            print(src_values.crs)
         if src_classes.transform != src_values.transform:    
             print("Error: Classes and values rasters have different Transform")
-            print(src_classes.transform, src_values.transform)
+            print(src_classes.transform)
+            print(src_values.transform)
             # For simplify, we suppose that the rasters files are aligned
             # TODO : step for reproject and resample if it's necessary 
 
