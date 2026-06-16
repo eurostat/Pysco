@@ -4,8 +4,10 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.raster_class_pop import zonal_sum_by_class
+from utils.csvutils import transform_csv_columns
 
 # TODO
+# CSV: filter, round, combine by year
 # stats by age group: educ for young, healthcare for old
 # faster ?
 # stats by degree of urbanisation
@@ -67,6 +69,7 @@ for su in sus.keys():
     for service in acc_grids_versions.keys():
         for year in acc_grids_versions[service].keys():
             print(datetime.now(), su, service, year, res)
+
             zonal_sum_by_class(
                 classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
                 values_path = pop_rasters[res],
@@ -77,7 +80,13 @@ for su in sus.keys():
                 id_att= sus[su]["id"],
                 verbose = False,
             )
-            print(datetime.now(), "Done")
+
+            # add year to column CSV
+            transform_csv_columns(
+                input_path = output_folder + su + "_" + service + "_" + year + ".csv",
+                exclude_column = sus[su]["id"],
+                transform_fn = lambda col: col + "_" + year
+            )
 
 
 
