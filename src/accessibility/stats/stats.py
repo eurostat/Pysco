@@ -24,6 +24,9 @@ working_folder = "./tmp/stats/"
 # accessiblity grids folder
 acc_grids_folder = "/home/juju/gisco/accessibility/"
 
+# resolution of the grids to use
+res = "1000"
+
 # the statistical units
 sus = {
     #"LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID" },
@@ -65,7 +68,7 @@ classes = {
 }
 
 
-res = "1000"
+
 for su in sus.keys():
     for service in acc_grids_versions.keys():
         for year in acc_grids_versions[service].keys():
@@ -82,7 +85,8 @@ for su in sus.keys():
                 id_att= sus[su]["id"],
                 verbose = False,
                 class_name_change_fun = lambda cn: cn+"_"+year,
-                rounding_fun = lambda v : int(round(v))
+                #rounding_fun = lambda v : int(round(v))
+                csv_type = "Int64",
             )
 
         #TODO join CSV by year

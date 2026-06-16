@@ -13,6 +13,7 @@ def zonal_sum_by_class(
     verbose:bool = True,
     class_name_change_fun = None,
     rounding_fun = None,
+    csv_type = None,
     values_band:int = 0,
     classes_band:int = 0,
 ) -> gpd.GeoDataFrame:
@@ -124,6 +125,7 @@ def zonal_sum_by_class(
 
     # export to CSV
     if csv_path is not None:
+        if csv_type is not None: zonal[cols] = zonal[cols].astype(csv_type)
         zonal[ [id_att] + cols ].to_csv(csv_path, index=False)
 
     return zonal
