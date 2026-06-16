@@ -3,6 +3,7 @@ import geopandas as gpd
 from rasterio.mask import mask
 from shapely.geometry import mapping
 from typing import Dict
+from math import isnan
 
 
 def zonal_sum_by_class(
@@ -120,7 +121,7 @@ def zonal_sum_by_class(
 
     # apply rounding function
     if rounding_fun is not None:
-        zonal[cols] = zonal[cols].apply(lambda s: s.map(lambda v: None if v is None else rounding_fun(v)))
+        zonal[cols] = zonal[cols].apply(lambda s: s.map(lambda v: None if v is None or isnan(v) else rounding_fun(v)))
 
     # export to GPKG
     if gpkg_path is not None:
