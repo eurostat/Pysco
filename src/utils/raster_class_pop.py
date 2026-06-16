@@ -8,6 +8,7 @@ from datetime import datetime
 
 def zonal_sum_by_class(
     classes_path: str, values_path: str, zonal_path: str, classes: Dict[str, tuple],
+    gpkg_path:str=None, gpkg_layer:str=None,
     with_warnings:bool = True
 ) -> gpd.GeoDataFrame:
     """
@@ -80,7 +81,7 @@ def zonal_sum_by_class(
                     # TODO : Manage the resampling 
                     continue
             except Exception as e:
-                print(f"Error during the clipping of polygon {index}: {e}")
+                if with_warnings: print(f"Problem during the clipping of polygon {index}: {e}")
                 continue
 
             # Calculate the sum for each classes
@@ -101,6 +102,10 @@ def zonal_sum_by_class(
                     zonal.loc[index, class_name] = total_sum
                 else:
                     zonal.loc[index, class_name] = 0.0 # 0 si no pixels match the conditions 
+
+    # export to GPKG
+    if gpkg_path is not None:
+        zonal.to_file(gpkg_path,driver='GPKG', layer=gpkg_layer)
 
     return zonal
 
