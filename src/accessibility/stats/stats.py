@@ -68,6 +68,18 @@ classes = {
     },
 }
 
+# function to determine the countries not covered by service and year
+def zonal_filter(id_att:str, service:str, year:str):
+    def out(r):
+        # get region id
+        id = r[id_att]
+        # if the id contains on of the country codes to exclude, then exclude
+        for ccex in ["AL", "TR", "UA", "UK"]:
+            if ccex in id: return False
+        # else keep
+        return True
+    return out
+
 
 
 for su in sus.keys():
@@ -82,7 +94,7 @@ for su in sus.keys():
                 classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
                 values_path = pop_rasters[res],
                 zonal_path = sus[su]["path"],
-                zonal_filter = lambda r : "AL" not in r[id_att] and "TR" not in r[id_att],
+                zonal_filter = zonal_filter(id_att, service, year),
                 classes = classes[service],
                 gpkg_path = file_name + ".gpkg" if with_gpkg else None,
                 csv_path = file_name + ".csv",
