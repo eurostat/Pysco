@@ -23,6 +23,16 @@ out_folder = '/home/juju/gisco/accessibility/'
 country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 nuts_gpkg = '/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg'
 
+# define country codes for the countries covered, depending on the country and the year
+def get_countries_covered(service:str, year:str):
+    cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
+            "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
+            "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO" ]
+    #exclude: ["CH", "RS", "BA", "MK", "AL", "ME", "MD"],
+    if service == "healthcare": cnts.append("CH")
+    if year == "2023": cnts.append("AL")
+    return cnts
+
 
 do_combination = True
 
@@ -72,19 +82,13 @@ for resolution in [100]:
                 files = None
 
             print(resolution, service, year, "apply mask to force some countries to nodata")
-            cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
-                    "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
-                    "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO" ]
-            #exclude: ["CH", "RS", "BA", "MK", "AL", "ME", "MD"],
-            if service == "healthcare": cnts.append("CH")
-            if year == "2023": cnts.append("AL")
             if service != "evrp":
                 geotiff_mask_by_countries(
                     geotiff,
                     geotiff,
                     gpkg = country_gpkg,
                     gpkg_column = 'CNTR_ID',
-                    values = cnts,
+                    values = get_countries_covered(service, year),
                     compress="deflate",
                 )
 

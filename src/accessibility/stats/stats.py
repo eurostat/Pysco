@@ -6,6 +6,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from utils.raster_class_pop import zonal_sum_by_class
 from utils.csvutils import join_csv_files
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from combine import get_countries_covered
 
 # TODO
 # filter
@@ -70,14 +72,13 @@ classes = {
 
 # function to determine the countries not covered by service and year
 def zonal_filter(id_att:str, service:str, year:str):
+    cnts = get_countries_covered(service, year)
     def out(r):
-        # get region id
+        # if the id contains on of the country codes covered, then keep, else exclude
         id = r[id_att]
-        # if the id contains on of the country codes to exclude, then exclude
-        for ccex in ["AL", "TR", "UA", "UK"]:
-            if ccex in id: return False
-        # else keep
-        return True
+        for cnt in cnts:
+            if cnt in id: return True
+        return False
     return out
 
 
