@@ -8,6 +8,7 @@ from math import isnan
 
 def zonal_sum_by_class(
     classes_path: str, values_path: str, zonal_path: str, classes: Dict[str, tuple],
+    zonal_filter = None,
     gpkg_path:str=None, gpkg_layer:str=None,
     csv_path:str=None, id_att:str="id",
     verbose:bool = True,
@@ -25,6 +26,7 @@ def zonal_sum_by_class(
     classes_path : path to raster file from which define classes
     values_path : path to raster file which contain values to sum
     zonal_path : path to polygonal vector file
+    zonal_filter : a function to filter the zones and exclude some of them. The function returns True to keep, False to exclude.
     classes : dictionnary that define classes 
         This dictionnary 
             keys are the name of the output field
@@ -45,12 +47,12 @@ def zonal_sum_by_class(
     }   
     result_gdf=zonal_sum_by_class(RASTER_CLASSES_PATH,RASTER_VALUES_PATH,ZONAL_FILE,DICT_CLASSES)
 
-    
-    
+
+
     """
     # Load vector file
     zonal = gpd.read_file(zonal_path)
-    #TODO apply filter here
+    if zonal_filter: zonal = zonal[zonal.apply(zonal_filter, axis=1)]
 
     # Create a column for each class
     #for class_name in classes.keys(): zonal[class_name]=None

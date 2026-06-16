@@ -9,7 +9,6 @@ from utils.csvutils import join_csv_files
 
 # TODO
 # filter
-# combine by year
 # faster ?
 # stats by age group: educ for young, healthcare for old
 # stats by degree of urbanisation
@@ -72,6 +71,7 @@ classes = {
 
 
 for su in sus.keys():
+    id_att = sus[su]["id"]
     for service in acc_grids_versions.keys():
         csvs = []
         for year in acc_grids_versions[service].keys():
@@ -82,10 +82,11 @@ for su in sus.keys():
                 classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
                 values_path = pop_rasters[res],
                 zonal_path = sus[su]["path"],
+                zonal_filter = lambda r : "AL" not in r[id_att] and "TR" not in r[id_att],
                 classes = classes[service],
                 gpkg_path = file_name + ".gpkg" if with_gpkg else None,
                 csv_path = file_name + ".csv",
-                id_att= sus[su]["id"],
+                id_att= id_att,
                 verbose = False,
                 class_name_change_fun = lambda cn: cn+"_"+year,
                 #rounding_fun = lambda v : int(round(v))
@@ -96,7 +97,7 @@ for su in sus.keys():
 
         if join_csvs:
             print(datetime.now(), "join CSV all years")
-            join_csv_files(csvs, sus[su]["id"], output_folder + su + "_" + service + ".csv")
+            join_csv_files(csvs, id_att, output_folder + su + "_" + service + ".csv")
             for csv in csvs: os.remove(csv)
 
 
