@@ -5,6 +5,12 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.raster_class_pop import zonal_sum_by_class
 
+# TODO
+# faster
+# stats by age group
+# stats by degree of urbanisation
+# make it possible that population raster is finer than class grid
+
 
 # output folder
 output_folder = "/home/juju/gisco/accessibility/stats/"
@@ -27,7 +33,7 @@ pop_rasters = {
 acc_grids = {
     "healthcare" : {
         "2020": "/home/juju/gisco/accessibility/euro_access_healthcare_2020_1000m_v2026_04.tif",
-        "2023": "/home/juju/gisco/accessibility/euro_access_healthcare_2023_100m_v2026_04.tif",
+        "2023": "/home/juju/gisco/accessibility/euro_access_healthcare_2023_1000m_v2026_04.tif",
     },
     "education" : {
         "2020": "/home/juju/gisco/accessibility/euro_access_education_2020_1000m_v2026_04.tif",

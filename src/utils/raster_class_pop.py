@@ -115,7 +115,7 @@ def zonal_sum_by_class(
         zonal.to_file(gpkg_path,driver='GPKG', layer=gpkg_layer)
 
     if csv_path is not None:
-        cols_to_keep = [id_att] + classes.keys()
+        cols_to_keep = [id_att] + list(classes.keys())
         zonal[cols_to_keep].to_csv(csv_path, index=False)
 
     return zonal
