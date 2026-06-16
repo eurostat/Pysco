@@ -88,6 +88,8 @@ for su in sus.keys():
                 transform_fn = lambda col: col + "_" + year
             )
 
+        #TODO join CSV by year
+
 
 
 
