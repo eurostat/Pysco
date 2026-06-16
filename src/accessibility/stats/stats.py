@@ -73,6 +73,7 @@ classes = {
 # function to determine the countries not covered by service and year
 def zonal_filter(id_att:str, service:str, year:str):
     cnts = get_countries_covered(service, year)
+    print(cnts)
     def out(r):
         # if the id contains on of the country codes covered, then keep, else exclude
         id = r[id_att]
