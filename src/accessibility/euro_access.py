@@ -5,42 +5,11 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.featureutils import iter_features
 from utils.tomtomutils import weight_function, weight_function_length, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun, is_start_blocked, is_end_blocked
+from accessibility.utils import pois_datasets, tomtom_datasets, bbox, out_folder
 
 # TODO
 # accessibility to schools by walking
 # secondary education services accessibility
-
-
-# folders where to store the outputs
-out_folder = '/home/juju/gisco/accessibility/'
-
-# input data: pois and road network
-pois_datasets = {
-    "healthcare": {"2023":"/home/juju/geodata/gisco/basic_services/healthcare_2023_3035_20260421.gpkg",
-                   "2020":"/home/juju/geodata/gisco/basic_services/healthcare_2020_3035_20260421.gpkg"},
-    "education": {"2023":"/home/juju/geodata/gisco/basic_services/education_2023_3035_20260421.gpkg",
-                  "2020":"/home/juju/geodata/gisco/basic_services/education_2020_3035_20260421.gpkg"},
-    "evrp": {"2023":"/home/juju/geodata/gisco/recharging_points/evrp_2023_3035.gpkg",
-             "2024":"/home/juju/geodata/gisco/recharging_points/evrp_2024_3035.gpkg",
-             "2025":"/home/juju/geodata/gisco/recharging_points/evrp_2025_3035.gpkg"}
-}
-
-tomtom_data_folder = "/home/juju/geodata/tomtom/"
-tomtom_datasets = {
-    "2020": tomtom_data_folder + "tomtom201912.gpkg",
-    "2023": tomtom_data_folder + "tomtom202312.gpkg",
-    "2024": tomtom_data_folder + "tomtom202312.gpkg",
-    "2025": tomtom_data_folder + "tomtom202512.gpkg"
-}
-
-
-# define output bounding box
-# whole europe
-bbox = [ 900000, 900000, 6600000, 5500000 ]
-#luxembourg
-#bbox = [4030000, 2930000, 4060000, 2960000]
-#greece
-#bbox = [ 5000000, 1500000, 5500000, 2000000 ]
 
 
 for grid_resolution in [100]: # 1000
