@@ -62,15 +62,15 @@ classes = {
 }
 
 
-res = "1000"
+pop_res = "1000"
 year = "2025"
 for su in sus.keys():
     for service in acc_grids.keys():
         for year in acc_grids[service].keys():
-            print(datetime.now(), su, service, year, res)
+            print(datetime.now(), su, service, year, pop_res)
             zonal_sum_by_class(
                 classes_path = acc_grids[service][year],
-                values_path = pop_rasters[res],
+                values_path = pop_rasters[pop_res],
                 zonal_path = sus[su]["path"],
                 classes = classes[service],
                 gpkg_path = output_folder + su + "_" + service + "_" + year + ".gpkg",
