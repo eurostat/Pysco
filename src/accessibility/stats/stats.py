@@ -42,8 +42,8 @@ pop_rasters = {
 # accessibility grids
 acc_grids_versions = {
     "healthcare" : { "2020": "v2026_04", "2023": "v2026_04", },
-    "education" : { "2020": "v2026_04", "2023": "v2026_04", },
-    "evrp" : { "2023": "v2026_05", "2024": "v2026_05", "2025": "v2026_06", },
+    #"education" : { "2020": "v2026_04", "2023": "v2026_04", },
+    #"evrp" : { "2023": "v2026_05", "2024": "v2026_05", "2025": "v2026_06", },
 }
 
 # classes
@@ -93,7 +93,7 @@ for su in sus.keys():
             csvs.append(file_name + ".csv")
 
         print(datetime.now(), "join CSV all years")
-        join_csv_files(csvs, sus[su]["id"], file_name = output_folder + su + "_" + service + ".csv")
+        join_csv_files(csvs, sus[su]["id"], output_folder + su + "_" + service + ".csv")
         for csv in csvs: os.remove(csv + ".csv")
 
 
