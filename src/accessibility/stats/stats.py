@@ -10,6 +10,7 @@ from utils.raster_class_pop import zonal_sum_by_class
 # faster ?
 # stats by degree of urbanisation
 # make it possible that population raster is finer than class grid
+# use also indicator to the X nearest ?
 
 
 # output folder
