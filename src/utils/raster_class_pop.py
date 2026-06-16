@@ -1,10 +1,8 @@
 import rasterio
 import geopandas as gpd
-import numpy as np
 from rasterio.mask import mask
 from shapely.geometry import mapping
 from typing import Dict
-from datetime import datetime
 
 
 def zonal_sum_by_class(
@@ -14,7 +12,10 @@ def zonal_sum_by_class(
     verbose:bool = True,
     class_name_change_fun = None,
     rounding_fun = None,
+    values_band:int = 0,
+    classes_band:int = 0,
 ) -> gpd.GeoDataFrame:
+
     """
     Calculate the sum from values_path raster corresponding to classes define in the classes dictionnary on classes_path raster 
     for each polygon from the zonal_path vector file
@@ -51,7 +52,7 @@ def zonal_sum_by_class(
 
     # Create a column for each class
     for class_name in classes.keys():
-         zonal[class_name]=np.nan
+         zonal[class_name]=None
 
     # Open raster files
     with rasterio.open(classes_path) as src_classes, rasterio.open(values_path) as src_values:
@@ -68,9 +69,9 @@ def zonal_sum_by_class(
             # TODO : step for reproject and resample if it's necessary 
 
         # Read data
-        classes_array = src_classes.read(1)
-        values_array = src_values.read(1)
-        
+        #classes_array = src_classes.read(1)
+        #values_array = src_values.read(1)
+
         # Manage NoData for values
         values_nodata = src_values.nodata if src_values.nodata is not None else -9999 
         
@@ -82,12 +83,12 @@ def zonal_sum_by_class(
                 # Découpage du raster POP et de sa fenêtre
                 # Clip values raster 
                 values_clipped, values_transform = mask(src_values, geometry, crop=True, filled=True)
-                values_clipped = values_clipped[0] # Prendre le premier (et unique) band
-                
+                values_clipped = values_clipped[values_band]
+
                 # Clip classes raster
                 classes_clipped, classes_transform = mask(src_classes, geometry, crop=True, filled=True)
-                classes_clipped = classes_clipped[0] # Prendre le premier (et unique) band
-                
+                classes_clipped = classes_clipped[classes_band]
+
                 # Ensure that the two clipped raster have the same size
                 if values_clipped.shape != classes_clipped.shape:
                     if verbose: print(f"Warning: the clipped raster for the polygon {index} don't have the same size")
