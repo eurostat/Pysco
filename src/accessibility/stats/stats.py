@@ -62,21 +62,21 @@ classes = {
 }
 
 
-res = "100"
-su = "NUTS"
+res = "1000"
 year = "2025"
-service = "evrp"
-
-print(datetime.now(), su, service, year, res)
-zonal_sum_by_class(
-    classes_path = acc_grids[service][year],
-    values_path = pop_rasters[res],
-    zonal_path = sus[su]["path"],
-    classes = classes[service],
-    gpkg_path = output_folder + su + "_" + service + "_" + year + ".gpkg",
-    verbose = False
-)
-print(datetime.now(), "Done")
+for su in sus.keys():
+    for service in acc_grids.keys():
+        for year in acc_grids[service].keys():
+            print(datetime.now(), su, service, year, res)
+            zonal_sum_by_class(
+                classes_path = acc_grids[service][year],
+                values_path = pop_rasters[res],
+                zonal_path = sus[su]["path"],
+                classes = classes[service],
+                gpkg_path = output_folder + su + "_" + service + "_" + year + ".gpkg",
+                verbose = False
+            )
+            print(datetime.now(), "Done")
 
 
 
