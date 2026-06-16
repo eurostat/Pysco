@@ -7,7 +7,8 @@ from typing import Dict
 from datetime import datetime
 
 def zonal_sum_by_class(
-    classes_path: str, values_path: str, zonal_path: str, classes: Dict[str, tuple]
+    classes_path: str, values_path: str, zonal_path: str, classes: Dict[str, tuple],
+    with_warnings:bool = True
 ) -> gpd.GeoDataFrame:
     """
     Calculate the sum from values_path raster corresponding to classes define in the classes dictionnary on classes_path raster 
@@ -48,7 +49,7 @@ def zonal_sum_by_class(
     with rasterio.open(classes_path) as src_classes, rasterio.open(values_path) as src_values:
         # Test if CRS and transformation are compatible
         if src_classes.crs != src_values.crs or src_classes.transform != src_values.transform:    
-            print("Warning: Classes and values rasters have different metadata (CR/Transform)")
+            print("Error: Classes and values rasters have different metadata (CR/Transform)")
             # For simplify, we suppose that the rasters files are aligned
             # TODO : step for reproject and resample if it's necessary 
             
@@ -75,7 +76,7 @@ def zonal_sum_by_class(
                 
                 # Ensure that the two clipped raster have the same size
                 if values_clipped.shape != classes_clipped.shape:
-                    print(f"Warning: the clipped raster for the polygon {index} don't have the same size")
+                    if with_warnings: print(f"Warning: the clipped raster for the polygon {index} don't have the same size")
                     # TODO : Manage the resampling 
                     continue
             except Exception as e:
@@ -106,7 +107,8 @@ def zonal_sum_by_class(
 
 def zonal_sum_by_class_to_gpkg(
     # acc_path: str, pop_path: str, zones_path: str, classes: Dict[str, tuple]
-    classes_path: str, values_path: str, zonal_path: str, classes: Dict[str, tuple],export_file : str,layer:str = None
+    classes_path: str, values_path: str, zonal_path: str, classes: Dict[str, tuple],export_file : str,layer:str = None,
+    with_warnings:bool = True
 ) -> bool:
     """
     Compute the zonal_sum_by_class function and save the result in a GeoPackage file
@@ -140,13 +142,14 @@ def zonal_sum_by_class_to_gpkg(
 
     try:
         zonal_result = zonal_sum_by_class(
-        classes_path, values_path, zonal_path, classes
+        classes_path, values_path, zonal_path, classes, with_warnings=with_warnings
         )
         zonal_result.to_file(export_file,driver='GPKG', layer=layer)
     except Exception as e:
          print(f"Error during processing : {e}")
          return False
     return True
+
 
 
 def multiple_zonal_sum_by_class_to_gpkg(

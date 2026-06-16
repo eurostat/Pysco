@@ -32,18 +32,22 @@ acc_grids = {
 }
 
 
-
+res = 1000
+su_ = "LAU"
+year = "2025"
+service = "evrp"
 
 zonal_sum_by_class_to_gpkg(
-    classes_path=acc_grids["evrp"]["2025"],
-    values_path=pop_rasters["1000"],
-    zonal_path=su["NUTS"]["path"],
+    classes_path=acc_grids[service][year],
+    values_path=pop_rasters[res],
+    zonal_path=su[su_]["path"],
     classes={
         "pop_tot":(0, 1e9),
         "pop_under_500m": (0, 500),
         "pop_under_5000m": (0, 5000),
     },
-    export_file=output_folder + "NUTS_evrp_2025.gpkg"
+    export_file=output_folder + su_ + "_" + service + "_" + year + ".gpkg",
+    with_warnings = False
 )
 
 
