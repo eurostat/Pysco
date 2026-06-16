@@ -16,6 +16,8 @@ from utils.raster_class_pop import zonal_sum_by_class
 output_folder = "/home/juju/gisco/accessibility/stats/"
 # working folder
 working_folder = "./tmp/stats/"
+# accessiblity grids folder
+acc_grids_folder = "/home/juju/gisco/accessibility/"
 
 # the statistical units
 sus = {
@@ -30,20 +32,10 @@ pop_rasters = {
 }
 
 # accessibility grids
-acc_grids = {
-    "healthcare" : {
-        "2020": "/home/juju/gisco/accessibility/euro_access_healthcare_2020_100m_v2026_04.tif",
-        "2023": "/home/juju/gisco/accessibility/euro_access_healthcare_2023_100m_v2026_04.tif",
-    },
-    "education" : {
-        "2020": "/home/juju/gisco/accessibility/euro_access_education_2020_100m_v2026_04.tif",
-        "2023": "/home/juju/gisco/accessibility/euro_access_education_2023_100m_v2026_04.tif",
-    },
-    "evrp" : {
-        "2023": "/home/juju/gisco/accessibility/euro_access_evrp_2023_100m_v2026_05.tif",
-        "2024": "/home/juju/gisco/accessibility/euro_access_evrp_2024_100m_v2026_05.tif",
-        "2025": "/home/juju/gisco/accessibility/euro_access_evrp_2025_100m_v2026_06.tif",
-    },
+acc_grids_versions = {
+    "healthcare" : {        "2020": "v2026_04",        "2023": "v2026_04",    },
+    "education" : {        "2020": "v2026_04",        "2023": "v2026_04",    },
+    "evrp" : {        "2023": "v2026_05",        "2024": "v2026_05",        "2025": "v2026_06",    },
 }
 
 # classes
@@ -71,11 +63,11 @@ classes = {
 res = "100"
 year = "2025"
 for su in sus.keys():
-    for service in acc_grids.keys():
-        for year in acc_grids[service].keys():
+    for service in acc_grids_versions.keys():
+        for year in acc_grids_versions[service].keys():
             print(datetime.now(), su, service, year, res)
             zonal_sum_by_class(
-                classes_path = acc_grids[service][year],
+                classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
                 values_path = pop_rasters[res],
                 zonal_path = sus[su]["path"],
                 classes = classes[service],
