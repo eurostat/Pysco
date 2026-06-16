@@ -82,7 +82,7 @@ for su in sus.keys():
                 id_att= sus[su]["id"],
                 verbose = False,
                 class_name_change_fun = lambda cn: cn+"_"+year,
-                rounding_fun = round
+                rounding_fun = lambda v : int(round(v))
             )
 
         #TODO join CSV by year

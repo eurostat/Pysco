@@ -112,12 +112,15 @@ def zonal_sum_by_class(
 
                 # Agregation : compute the sum 
                 if class_name_change_fun is not None: class_name = class_name_change_fun(class_name)
-                if valid_values.size > 0:
-                    total_sum = valid_values.sum()
-                    if rounding_fun is not None: total_sum = rounding_fun(total_sum)
-                    zonal.loc[index, class_name] = total_sum
-                else:
-                    zonal.loc[index, class_name] = None
+                zonal.loc[index, class_name] = valid_values.sum() if valid_values.size > 0 else None
+
+    # column names
+    cols = list(classes.keys())
+    if class_name_change_fun is not None: cols = [class_name_change_fun(x) for x in cols]
+
+    # apply rounding function
+    if rounding_fun is not None:
+        zonal[cols] = zonal[cols].apply(lambda s: s.map(rounding_fun))
 
     # export to GPKG
     if gpkg_path is not None:
@@ -125,10 +128,7 @@ def zonal_sum_by_class(
 
     # export to CSV
     if csv_path is not None:
-        cols_to_keep = list(classes.keys())
-        if class_name_change_fun is not None: cols_to_keep = [class_name_change_fun(x) for x in cols_to_keep]
-        cols_to_keep = [id_att] + cols_to_keep
-        zonal[cols_to_keep].to_csv(csv_path, index=False)
+        zonal[ [id_att] + cols ].to_csv(csv_path, index=False)
 
     return zonal
 
