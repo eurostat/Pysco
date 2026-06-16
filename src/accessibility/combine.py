@@ -5,25 +5,19 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.convert import parquet_grid_to_geotiff
 from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
-from accessibility.utils import pois_datasets, get_countries_covered, out_folder, country_gpkg, nuts_gpkg
-
-
-# define version tag (may depend on service and year)
-version_tag = "v2026_06"
+from accessibility.utils import dataset_versions, get_countries_covered, out_folder, country_gpkg, nuts_gpkg, bbox
 
 
 do_combination = True
 
-# whole europe
-bbox = [ 900000, 900000, 6600000, 5500000 ]
 
 for resolution in [100]:
 
-    for service in datasets.keys():
+    for service in dataset_versions.keys():
 
         k = 5 if service == "evrp" else 3
 
-        for year in datasets[service].keys():
+        for year in dataset_versions[service].keys():
             print(resolution, service, year)
 
             # ouput folder
@@ -31,7 +25,7 @@ for resolution in [100]:
             if not os.path.exists(out_folder_service_year): continue
 
             # combine parquet files to a single tiff file
-            geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(resolution) + "m_"+version_tag+".tif"
+            geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(resolution) + "m_"+ dataset_versions[service][year] +".tif"
 
             # check if tiff file was already produced
             if os.path.isfile(geotiff) and do_combination:

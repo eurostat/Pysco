@@ -2,6 +2,7 @@
 # folders where to store the outputs
 out_folder = '/home/juju/gisco/accessibility/'
 
+
 # input data: pois and road network
 pois_datasets = {
     "healthcare": {"2023":"/home/juju/geodata/gisco/basic_services/healthcare_2023_3035_20260421.gpkg",
@@ -12,6 +13,13 @@ pois_datasets = {
              "2024":"/home/juju/geodata/gisco/recharging_points/evrp_2024_3035.gpkg",
              "2025":"/home/juju/geodata/gisco/recharging_points/evrp_2025_3035.gpkg"}
 }
+
+dataset_versions = {
+    "education": {"2020":"v2026_04", "2023":"v2026_04"},
+    "healthcare": {"2020":"v2026_04", "2023":"v2026_04"},
+    "evrp":  {"2023":"v2026_05", "2024":"v2026_05", "2025":"v2026_06"},
+}
+
 
 tomtom_data_folder = "/home/juju/geodata/tomtom/"
 tomtom_datasets = {
@@ -44,3 +52,7 @@ def get_countries_covered(service:str, year:str):
     if service == "healthcare": cnts.append("CH")
     if year == "2023": cnts.append("AL")
     return cnts
+
+
+# folder where to copy the results for deployment
+target_folder = "/home/juju/pCloudDrive"
