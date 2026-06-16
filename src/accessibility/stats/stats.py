@@ -6,8 +6,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")
 from utils.raster_class_pop import zonal_sum_by_class
 
 # TODO
-# faster
-# stats by age group
+# stats by age group: educ for young, healthcare for old
+# faster ?
 # stats by degree of urbanisation
 # make it possible that population raster is finer than class grid
 
