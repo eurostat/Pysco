@@ -4,7 +4,7 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 #from utils.grid2stat import aggregate_geotiff_to_regions
-from utils.raster_class_pop import zonal_sum_by_class_to_gpkg
+from utils.raster_class_pop import zonal_sum_by_class
 
 
 # output folder
@@ -38,7 +38,7 @@ year = "2025"
 service = "evrp"
 
 print(datetime.now(), su_, service, year, res)
-zonal_sum_by_class_to_gpkg(
+zonal_sum_by_class(
     classes_path=acc_grids[service][year],
     values_path=pop_rasters[res],
     zonal_path=su[su_]["path"],
@@ -47,7 +47,7 @@ zonal_sum_by_class_to_gpkg(
         "pop_under_500m": (0, 500),
         "pop_under_5000m": (0, 5000),
     },
-    export_file=output_folder + su_ + "_" + service + "_" + year + ".gpkg",
+    gpkg_path=output_folder + su_ + "_" + service + "_" + year + ".gpkg",
     verbose = False
 )
 print(datetime.now(), "Done")
