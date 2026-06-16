@@ -74,7 +74,9 @@ for su in sus.keys():
                 zonal_path = sus[su]["path"],
                 classes = classes[service],
                 gpkg_path = output_folder + su + "_" + service + "_" + year + ".gpkg",
-                verbose = False
+                csv_path = output_folder + su + "_" + service + "_" + year + ".csv",
+                id_att= sus[su]["id"],
+                verbose = False,
             )
             print(datetime.now(), "Done")
 

@@ -9,6 +9,7 @@ from datetime import datetime
 def zonal_sum_by_class(
     classes_path: str, values_path: str, zonal_path: str, classes: Dict[str, tuple],
     gpkg_path:str=None, gpkg_layer:str=None,
+    csv_path:str=None, id_att:str="id",
     verbose:bool = True
 ) -> gpd.GeoDataFrame:
     """
@@ -106,6 +107,10 @@ def zonal_sum_by_class(
     # export to GPKG
     if gpkg_path is not None:
         zonal.to_file(gpkg_path,driver='GPKG', layer=gpkg_layer)
+
+    if csv_path is not None:
+        cols_to_keep = [id_att] + classes.keys()
+        zonal[cols_to_keep].to_csv(csv_path, index=False)
 
     return zonal
 
