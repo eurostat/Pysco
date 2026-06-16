@@ -1,4 +1,5 @@
 from datetime import datetime
+from math import round
 import sys
 import os
 
@@ -26,7 +27,7 @@ acc_grids_folder = "/home/juju/gisco/accessibility/"
 
 # the statistical units
 sus = {
-    "LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID" },
+    #"LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID" },
     "NUTS": { "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg", "id": "NUTS_ID" },
 }
 
@@ -81,7 +82,8 @@ for su in sus.keys():
                 csv_path = file_name + ".csv",
                 id_att= sus[su]["id"],
                 verbose = False,
-                class_name_change_fun = lambda cn: cn+"_"+year
+                class_name_change_fun = lambda cn: cn+"_"+year,
+                rounding_fun = round
             )
 
         #TODO join CSV by year

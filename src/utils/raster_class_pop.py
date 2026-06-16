@@ -109,11 +109,14 @@ def zonal_sum_by_class(
                 # Filter NoData values 
                 valid_values = values_in_class[values_in_class != values_nodata]
                 
+                print(rounding_fun, rounding_fun(45.434))
+
+
                 # Agregation : compute the sum 
-                if class_name_change_fun: class_name = class_name_change_fun(class_name)
+                if class_name_change_fun is not None: class_name = class_name_change_fun(class_name)
                 if valid_values.size > 0:
                     total_sum = valid_values.sum()
-                    if rounding_fun: total_sum = rounding_fun(total_sum)
+                    if rounding_fun is not None: total_sum = rounding_fun(total_sum)
                     zonal.loc[index, class_name] = total_sum
                 else:
                     zonal.loc[index, class_name] = None
