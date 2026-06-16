@@ -37,7 +37,7 @@ acc_grids = {
 zonal_sum_by_class_to_gpkg(
     classes_path=acc_grids["evrp"]["2025"],
     values_path=pop_rasters["1000"],
-    zonal_path=su["NUTS"],
+    zonal_path=su["NUTS"]["path"],
     classes={
         "pop_tot":(0, 1e9),
         "pop_under_500m": (0, 500),
