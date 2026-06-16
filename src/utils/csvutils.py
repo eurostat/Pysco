@@ -62,35 +62,75 @@ def transform_csv_columns(
 
 
 
-def join_csvs(
-    files: list[str],
-    output: str,
-    add_source_column: bool = False,
-    ignore_index: bool = True,
-    verboce: bool = False,
-) -> None:
-    if not files:
-        print("No CSV files found. Nothing to do.", file=sys.stderr)
-        sys.exit(1)
- 
-    frames = []
-    for path in files:
-        try:
-            df = pd.read_csv(path)
-            if add_source_column:
-                df.insert(0, "_source_file", os.path.basename(path))
-            frames.append(df)
-            if verboce: print(f"  ✓ {path}  ({len(df):,} rows, {len(df.columns)} cols)")
-        except Exception as exc:
-            if verboce: print(f"  ✗ {path}  ERROR: {exc}", file=sys.stderr)
- 
-    if not frames:
-        if verboce: print("All files failed to load.", file=sys.stderr)
-        sys.exit(1)
- 
-    merged = pd.concat(frames, ignore_index=ignore_index)
-    merged.to_csv(output, index=False)
-    if verboce: print(f"\nDone — {len(merged):,} total rows written to '{output}'")
- 
 
+def join_csv_files(
+    file_paths: list[str],
+    id_column: str,
+    output_path: str,
+    join_type: str = "outer",
+) -> None:
+    """
+    Join multiple CSV files on a shared ID column and write the result to a new CSV.
  
+    Args:
+        file_paths:  Ordered list of CSV file paths to join.
+        id_column:   Name of the common ID column present in every file.
+        output_path: Path where the merged CSV will be saved.
+        join_type:   "inner" (only IDs present in ALL files) or
+                     "outer" (all IDs, missing values filled with "").
+    """
+    if not file_paths:
+        raise ValueError("file_paths must contain at least one file.")
+    if join_type not in ("inner", "outer"):
+        raise ValueError("join_type must be 'inner' or 'outer'.")
+ 
+    def load(path: str) -> dict[str, dict]:
+        """Return {id_value: {col: value, ...}} for one CSV file."""
+        with open(path, newline="", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            if reader.fieldnames is None or id_column not in reader.fieldnames:
+                raise ValueError(
+                    f"Column '{id_column}' not found in '{path}'. "
+                    f"Available: {reader.fieldnames}"
+                )
+            return {row[id_column]: dict(row) for row in reader}
+ 
+    tables = [load(p) for p in file_paths]
+ 
+    # Determine the final set of IDs
+    id_sets = [set(t.keys()) for t in tables]
+    if join_type == "inner":
+        all_ids = sorted(id_sets[0].intersection(*id_sets[1:]))
+    else:  # outer
+        all_ids = sorted(id_sets[0].union(*id_sets[1:]))
+ 
+    # Collect all column names (ID column first, then the rest in file order)
+    seen = {id_column}
+    fieldnames = [id_column]
+    for path, table in zip(file_paths, tables):
+        sample = next(iter(table.values()), {})
+        for col in sample:
+            if col not in seen:
+                fieldnames.append(col)
+                seen.add(col)
+ 
+    # Merge rows
+    merged_rows = []
+    for id_val in all_ids:
+        row = {id_column: id_val}
+        for table in tables:
+            record = table.get(id_val, {})
+            for col in fieldnames:
+                if col == id_column:
+                    continue
+                if col in record:
+                    row[col] = record[col]
+                elif col not in row:
+                    row[col] = ""   # fill missing with empty string
+        merged_rows.append(row)
+ 
+    with open(output_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(merged_rows)
+

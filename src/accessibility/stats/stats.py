@@ -4,10 +4,10 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.raster_class_pop import zonal_sum_by_class
-from utils.csvutils import transform_csv_columns
+from utils.csvutils import join_csv_files
+
 
 # TODO
-# round
 # filter
 # combine by year
 # faster ?
@@ -71,6 +71,7 @@ classes = {
 
 for su in sus.keys():
     for service in acc_grids_versions.keys():
+        csvs = []
         for year in acc_grids_versions[service].keys():
             print(datetime.now(), su, service, year, res)
             file_name = output_folder + su + "_" + service + "_" + year
@@ -89,11 +90,11 @@ for su in sus.keys():
                 output_data_type = "Int64",
             )
 
-        #TODO join CSV by year
-        #TODO filter, round
+            csvs.append(file_name + ".csv")
 
-
-
+        print(datetime.now(), "join CSV all years")
+        join_csv_files(csvs, sus[su]["id"], file_name = output_folder + su + "_" + service + ".csv")
+        for csv in csvs: os.remove(csv + ".csv")
 
 
 
