@@ -3,7 +3,6 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-#from utils.grid2stat import aggregate_geotiff_to_regions
 from utils.raster_class_pop import zonal_sum_by_class
 
 
@@ -13,7 +12,7 @@ output_folder = "/home/juju/gisco/accessibility/stats/"
 working_folder = "./tmp/stats/"
 
 # the statistical units
-su = {
+sus = {
     "NUTS": { "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg", "id": "NUTS_ID" },
     "LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID" },
 }
@@ -31,23 +30,22 @@ acc_grids = {
     }
 }
 
-
 res = "1000"
-su_ = "NUTS"
+su = "NUTS"
 year = "2025"
 service = "evrp"
 
-print(datetime.now(), su_, service, year, res)
+print(datetime.now(), su, service, year, res)
 zonal_sum_by_class(
     classes_path=acc_grids[service][year],
     values_path=pop_rasters[res],
-    zonal_path=su[su_]["path"],
+    zonal_path=sus[su]["path"],
     classes={
         "pop_tot":(0, 1e9),
         "pop_under_500m": (0, 500),
         "pop_under_5000m": (0, 5000),
     },
-    gpkg_path=output_folder + su_ + "_" + service + "_" + year + ".gpkg",
+    gpkg_path=output_folder + su + "_" + service + "_" + year + ".gpkg",
     verbose = False
 )
 print(datetime.now(), "Done")
