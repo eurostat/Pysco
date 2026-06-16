@@ -120,7 +120,7 @@ def zonal_sum_by_class(
 
     # apply rounding function
     if rounding_fun is not None:
-        zonal[cols] = zonal[cols].apply(lambda s: s.map(rounding_fun))
+        zonal[cols] = zonal[cols].apply(lambda s: s.map(lambda v: None if v is None else rounding_fun(v)))
 
     # export to GPKG
     if gpkg_path is not None:

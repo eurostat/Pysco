@@ -7,11 +7,11 @@ from utils.raster_class_pop import zonal_sum_by_class
 from utils.csvutils import transform_csv_columns
 
 # TODO
-# class name suffix instead of CSV column replacement
-# filter, round
+# round
+# filter
 # combine by year
-# stats by age group: educ for young, healthcare for old
 # faster ?
+# stats by age group: educ for young, healthcare for old
 # stats by degree of urbanisation
 # make it possible that population raster is finer than class grid
 # use also indicator to the X nearest ?
