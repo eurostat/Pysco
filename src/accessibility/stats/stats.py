@@ -48,7 +48,7 @@ zonal_sum_by_class_to_gpkg(
         "pop_under_5000m": (0, 5000),
     },
     export_file=output_folder + su_ + "_" + service + "_" + year + ".gpkg",
-    with_warnings = False
+    verbose = False
 )
 print(datetime.now(), "Done")
 

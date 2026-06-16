@@ -9,7 +9,7 @@ from datetime import datetime
 def zonal_sum_by_class(
     classes_path: str, values_path: str, zonal_path: str, classes: Dict[str, tuple],
     gpkg_path:str=None, gpkg_layer:str=None,
-    with_warnings:bool = True
+    verbose:bool = True
 ) -> gpd.GeoDataFrame:
     """
     Calculate the sum from values_path raster corresponding to classes define in the classes dictionnary on classes_path raster 
@@ -77,11 +77,11 @@ def zonal_sum_by_class(
                 
                 # Ensure that the two clipped raster have the same size
                 if values_clipped.shape != classes_clipped.shape:
-                    if with_warnings: print(f"Warning: the clipped raster for the polygon {index} don't have the same size")
+                    if verbose: print(f"Warning: the clipped raster for the polygon {index} don't have the same size")
                     # TODO : Manage the resampling 
                     continue
             except Exception as e:
-                if with_warnings: print(f"Problem during the clipping of polygon {index}: {e}")
+                if verbose: print(f"Problem during the clipping of polygon {index}: {e}")
                 continue
 
             # Calculate the sum for each classes
@@ -109,51 +109,6 @@ def zonal_sum_by_class(
 
     return zonal
 
-
-def zonal_sum_by_class_to_gpkg(
-    # acc_path: str, pop_path: str, zones_path: str, classes: Dict[str, tuple]
-    classes_path: str, values_path: str, zonal_path: str, classes: Dict[str, tuple],export_file : str,layer:str = None,
-    with_warnings:bool = True
-) -> bool:
-    """
-    Compute the zonal_sum_by_class function and save the result in a GeoPackage file
-   
-    classes_path : path to raster file from which define classes
-    values_path : path to raster file which contain values to sum
-    zonal_path : path to polygonal vector file
-    classes : dictionnary that define classes 
-        This dictionnary 
-            keys are the name of the output field
-            values are tuples with the min and max of each classe
-    export_file : path to the exported file
-    layer : Name of result layer in the Geopackage
-
-
-    Example : 
-    
-    RASTER_CLASSES_PATH = "C://mydata//raster_classes.tif"
-    RASTER_VALUES_PATH = "C://mydata//raster_value.tif"
-    ZONAL_FILE ="C://mydata//zonal_geopackage.gpkg"
-    EXPORT_FILE="C://mydata//result.gpkg" 
-    EXPORT_LAYER="mylayer"
-    DICT_CLASSES = {
-        "pop_tot":(0,350000), # for the total class indicate the max values
-        "pop_under_500m": (0, 500),
-        "pop_under_5000m": (0, 5000),
-        # Add class as you need
-    }   
-    result_gdf=zonal_sum_by_class(RASTER_CLASSES_PATH,RASTER_VALUES_PATH,ZONAL_FILE,DICT_CLASSES,EXPORT_FILE,EXPORT_LAYER)
-    """
-
-    try:
-        zonal_result = zonal_sum_by_class(
-        classes_path, values_path, zonal_path, classes, with_warnings=with_warnings
-        )
-        zonal_result.to_file(export_file,driver='GPKG', layer=layer)
-    except Exception as e:
-         print(f"Error during processing : {e}")
-         return False
-    return True
 
 
 
