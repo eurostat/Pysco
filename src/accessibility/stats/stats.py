@@ -42,7 +42,7 @@ zonal_sum_by_class_to_gpkg(
         "pop_tot":(0, 1e9),
         "pop_under_500m": (0, 500),
         "pop_under_5000m": (0, 5000),
-    }
+    },
     export_file=output_folder + "NUTS_evrp_2025.gpkg"
 )
 
