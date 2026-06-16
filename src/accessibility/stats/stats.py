@@ -37,6 +37,7 @@ su_ = "LAU"
 year = "2025"
 service = "evrp"
 
+print(datetime.now(), su_, service, year, res)
 zonal_sum_by_class_to_gpkg(
     classes_path=acc_grids[service][year],
     values_path=pop_rasters[res],
@@ -49,7 +50,7 @@ zonal_sum_by_class_to_gpkg(
     export_file=output_folder + su_ + "_" + service + "_" + year + ".gpkg",
     with_warnings = False
 )
-
+print(datetime.now(), "Done")
 
 
 
