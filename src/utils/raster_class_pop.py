@@ -50,11 +50,15 @@ def zonal_sum_by_class(
     # Open raster files
     with rasterio.open(classes_path) as src_classes, rasterio.open(values_path) as src_values:
         # Test if CRS and transformation are compatible
-        if src_classes.crs != src_values.crs or src_classes.transform != src_values.transform:    
-            print("Error: Classes and values rasters have different metadata (CR/Transform)")
+        if src_classes.crs != src_values.crs:    
+            print("Error: Classes and values rasters have different CRSs")
+            print(src_classes.crs, src_values.crs)
+        if src_classes.transform != src_values.transform:    
+            print("Error: Classes and values rasters have different Transform")
+            print(src_classes.transform, src_values.transform)
             # For simplify, we suppose that the rasters files are aligned
             # TODO : step for reproject and resample if it's necessary 
-            
+
         # Read data
         classes_array = src_classes.read(1)
         values_array = src_values.read(1)
