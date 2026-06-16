@@ -16,6 +16,8 @@ from utils.csvutils import join_csv_files
 # make it possible that population raster is finer than class grid
 # use also indicator to the X nearest ?
 
+join_csvs = True
+with_gpkg = True
 
 # output folder
 output_folder = "/home/juju/gisco/accessibility/stats/"
@@ -81,7 +83,7 @@ for su in sus.keys():
                 values_path = pop_rasters[res],
                 zonal_path = sus[su]["path"],
                 classes = classes[service],
-                gpkg_path = file_name + ".gpkg",
+                gpkg_path = file_name + ".gpkg" if with_gpkg else None,
                 csv_path = file_name + ".csv",
                 id_att= sus[su]["id"],
                 verbose = False,
@@ -92,9 +94,10 @@ for su in sus.keys():
 
             csvs.append(file_name + ".csv")
 
-        print(datetime.now(), "join CSV all years")
-        join_csv_files(csvs, sus[su]["id"], output_folder + su + "_" + service + ".csv")
-        for csv in csvs: os.remove(csv + ".csv")
+        if join_csvs:
+            print(datetime.now(), "join CSV all years")
+            join_csv_files(csvs, sus[su]["id"], output_folder + su + "_" + service + ".csv")
+            for csv in csvs: os.remove(csv)
 
 
 
