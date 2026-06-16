@@ -22,7 +22,7 @@ def zonal_sum_by_class(
             values are tuples with the min and max of each classe
 
     Example : 
-    
+
     RASTER_CLASSES_PATH = "C://mydata//raster_classes.tif"
     RASTER_VALUES_PATH = "C://mydata//raster_value.tif"
     ZONAL_FILE ="C://mydata//zonal_geopackage.gpkg"
@@ -106,7 +106,7 @@ def zonal_sum_by_class(
 
 def zonal_sum_by_class_to_gpkg(
     # acc_path: str, pop_path: str, zones_path: str, classes: Dict[str, tuple]
-    classes_path: str, values_path: str, zonal_path: str, classes: Dict[str, tuple],export_file : str,layer:str
+    classes_path: str, values_path: str, zonal_path: str, classes: Dict[str, tuple],export_file : str,layer:str = None
 ) -> bool:
      """
     Compute the zonal_sum_by_class function and save the result in a GeoPackage file

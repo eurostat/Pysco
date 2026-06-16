@@ -3,23 +3,14 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-#from utils.featureutils import iter_features
-from utils.grid2stat import aggregate_geotiff_to_regions
-
-# produce population stats
-# make mask geotiffs
-# compute products
-# join CSVs and compute ratios
-# map stats on nuts + LAUs (joe)
-# bonus: compute nb services per LAU-NUTS - per category? check CHr file
-
-produce_population_stats = True
+#from utils.grid2stat import aggregate_geotiff_to_regions
+from utils.raster_class_pop import zonal_sum_by_class_to_gpkg
 
 
 # output folder
 output_folder = "/home/juju/gisco/accessibility/stats/"
 # working folder
-working_folder = "/tmp/stats/"
+working_folder = "./tmp/stats/"
 
 # the statistical units
 su = {
@@ -32,6 +23,48 @@ pop_rasters = {
     "1000": "/home/juju/gisco/census_2021_v3_production/ESTAT_Census_2021_V3.tiff",
     "100": "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox.tif"
 }
+
+# accessibility grids
+acc_grids = {
+    "evrp" : {
+        "2025": "/home/juju/gisco/accessibility/euro_access_evrp_2025_1000m_v2026_06.tif",
+    }
+}
+
+
+
+
+zonal_sum_by_class_to_gpkg(
+    classes_path=acc_grids["evrp"]["2025"],
+    values_path=pop_rasters["1000"],
+    zonal_path=su["NUTS"],
+    classes={
+        "pop_tot":(0, 1e9),
+        "pop_under_500m": (0, 500),
+        "pop_under_5000m": (0, 5000),
+    }
+    export_file=output_folder + "NUTS_evrp_2025.gpkg"
+)
+
+
+
+
+
+
+
+'''
+
+# produce population stats
+# make mask geotiffs
+# compute products
+# join CSVs and compute ratios
+# map stats on nuts + LAUs (joe)
+# bonus: compute nb services per LAU-NUTS - per category? check CHr file
+
+
+produce_population_stats = True
+
+
 
 
 # make folders
@@ -53,6 +86,8 @@ if produce_population_stats:
                 output_col_name="T",
             )
     #TODO do other categories from 1000m
+'''
+
 
 
 
