@@ -13,6 +13,7 @@ def zonal_sum_by_class(
     csv_path:str=None, id_att:str="id",
     verbose:bool = True,
     class_name_change_fun = None,
+    rounding_fun = None,
 ) -> gpd.GeoDataFrame:
     """
     Calculate the sum from values_path raster corresponding to classes define in the classes dictionnary on classes_path raster 
@@ -26,6 +27,7 @@ def zonal_sum_by_class(
             keys are the name of the output field
             values are tuples with the min and max of each classe
     class_name_change_fun : a function str->str to change the class names on the fly. may be usefull to add a suffix with a year for example.
+    rounding_fun: a function number->number to apply to the final numbers, to round them for example.
 
     Example : 
 
@@ -108,13 +110,13 @@ def zonal_sum_by_class(
                 valid_values = values_in_class[values_in_class != values_nodata]
                 
                 # Agregation : compute the sum 
+                if class_name_change_fun: class_name = class_name_change_fun(class_name)
                 if valid_values.size > 0:
                     total_sum = valid_values.sum()
-                    if class_name_change_fun: class_name = class_name_change_fun()
+                    if rounding_fun: total_sum = rounding_fun(total_sum)
                     zonal.loc[index, class_name] = total_sum
-                    #TODO apply rounding ?
                 else:
-                    zonal.loc[index, class_name] = 0.0 # 0 si no pixels match the conditions 
+                    zonal.loc[index, class_name] = None
 
     # export to GPKG
     if gpkg_path is not None:
