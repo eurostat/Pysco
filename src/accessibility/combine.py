@@ -7,6 +7,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.convert import parquet_grid_to_geotiff
 from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
+from accessibility.utils import get_countries_covered
 
 
 datasets = {
@@ -22,16 +23,6 @@ version_tag = "v2026_06"
 out_folder = '/home/juju/gisco/accessibility/'
 country_gpkg = '/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg'
 nuts_gpkg = '/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg'
-
-# define country codes for the countries covered, depending on the country and the year
-def get_countries_covered(service:str, year:str):
-    cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
-            "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
-            "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO" ]
-    #exclude: ["CH", "RS", "BA", "MK", "AL", "ME", "MD"],
-    if service == "healthcare": cnts.append("CH")
-    if year == "2023": cnts.append("AL")
-    return cnts
 
 
 do_combination = True
