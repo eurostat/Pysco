@@ -7,7 +7,9 @@ from utils.raster_class_pop import zonal_sum_by_class
 from utils.csvutils import transform_csv_columns
 
 # TODO
-# CSV: filter, round, combine by year
+# class name suffix instead of CSV column replacement
+# filter, round
+# combine by year
 # stats by age group: educ for young, healthcare for old
 # faster ?
 # stats by degree of urbanisation
@@ -64,31 +66,28 @@ classes = {
 
 
 res = "100"
-year = "2025"
 for su in sus.keys():
     for service in acc_grids_versions.keys():
         for year in acc_grids_versions[service].keys():
             print(datetime.now(), su, service, year, res)
+            file_name = output_folder + su + "_" + service + "_" + year
 
             zonal_sum_by_class(
                 classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
                 values_path = pop_rasters[res],
                 zonal_path = sus[su]["path"],
                 classes = classes[service],
-                gpkg_path = output_folder + su + "_" + service + "_" + year + ".gpkg",
-                csv_path = output_folder + su + "_" + service + "_" + year + ".csv",
+                gpkg_path = file_name + ".gpkg",
+                csv_path = file_name + ".csv",
                 id_att= sus[su]["id"],
                 verbose = False,
-            )
-
-            # add year to column CSV
-            transform_csv_columns(
-                input_path = output_folder + su + "_" + service + "_" + year + ".csv",
-                exclude_column = sus[su]["id"],
-                transform_fn = lambda col: col + "_" + year
+                class_name_change_fun = lambda cn: cn+"_"+year
             )
 
         #TODO join CSV by year
+        #TODO filter, round
+
+
 
 
 

@@ -6,11 +6,13 @@ from shapely.geometry import mapping
 from typing import Dict
 from datetime import datetime
 
+
 def zonal_sum_by_class(
     classes_path: str, values_path: str, zonal_path: str, classes: Dict[str, tuple],
     gpkg_path:str=None, gpkg_layer:str=None,
     csv_path:str=None, id_att:str="id",
-    verbose:bool = True
+    verbose:bool = True,
+    class_name_change_fun = None,
 ) -> gpd.GeoDataFrame:
     """
     Calculate the sum from values_path raster corresponding to classes define in the classes dictionnary on classes_path raster 
@@ -23,6 +25,7 @@ def zonal_sum_by_class(
         This dictionnary 
             keys are the name of the output field
             values are tuples with the min and max of each classe
+    class_name_change_fun : a function str->str to change the class names on the fly. may be usefull to add a suffix with a year for example.
 
     Example : 
 
@@ -41,8 +44,9 @@ def zonal_sum_by_class(
     
     """
     # Load vector file
-    zonal=gpd.read_file(zonal_path)
-    
+    zonal = gpd.read_file(zonal_path)
+    #TODO apply filter here
+
     # Create a column for each class
     for class_name in classes.keys():
          zonal[class_name]=np.nan
@@ -95,7 +99,7 @@ def zonal_sum_by_class(
             for class_name, (min_val, max_val) in classes.items():
                 # Create a boolean mask based on the condition
                 class_mask = (classes_clipped >= min_val) & (classes_clipped <= max_val)
-                
+
                 # Apply the class_mask to the values array
                 # only consider the values where the class_mask is True
                 values_in_class = values_clipped[class_mask]
@@ -106,7 +110,9 @@ def zonal_sum_by_class(
                 # Agregation : compute the sum 
                 if valid_values.size > 0:
                     total_sum = valid_values.sum()
+                    if class_name_change_fun: class_name = class_name_change_fun()
                     zonal.loc[index, class_name] = total_sum
+                    #TODO apply rounding ?
                 else:
                     zonal.loc[index, class_name] = 0.0 # 0 si no pixels match the conditions 
 
@@ -119,54 +125,4 @@ def zonal_sum_by_class(
         zonal[cols_to_keep].to_csv(csv_path, index=False)
 
     return zonal
-
-
-
-
-def multiple_zonal_sum_by_class_to_gpkg(
-    # acc_path: str, pop_path: str, zones_path: str, classes: Dict[str, tuple]
-    #classes_path: str, values_path: str, zonal_path: str, classes: Dict[str, tuple],export_file : str,layer:str
-    classes_paths: list, values_path: str, zonal_path: str, classes: Dict[str, tuple]
-) -> bool:
-    """
-    Compute the multiple zonal_sum_by_class function and save the result in GeoPackage files based on differents classes raster but with the same values raster, zonal geopackage
-    and classes dictionary 
-   
-    classes_paths : an list of list structured as  [classes_path, export_file, layer]
-    values_path : path to raster file which contain values to sum
-    zonal_path : path to polygonal vector file
-    classes : dictionnary that define classes 
-        This dictionnary 
-            keys are the name of the output field
-            values are tuples with the min and max of each classe
-
-    Example : 
-
-    RASTER_CLASSES_PATHS=[
-                ["C://mydata//raster_classes1.tif","C://mydata//result1.gpkg","myLayer" ],
-                ["C://mydata//raster_classes2.tif","C://mydata//result2.gpkg","myLayer" ]
-    ]
-    RASTER_VALUES_PATH = "C://mydata//raster_value.tif"
-    ZONAL_FILE ="C://mydata//zonal_geopackage.gpkg"
-    DICT_CLASSES = {
-        "pop_tot":(0,350000), # for the total class indicate the max values
-        "pop_under_500m": (0, 500),
-        "pop_under_5000m": (0, 5000),
-        # Add class as you need
-    }   
-    result=multiple_zonal_sum_by_class_to_gpkg(RASTER_CLASSES_PATHS,RASTER_VALUES_PATH, ZONAL_FILE,DICT_CLASSES)
-    """
-
-    try:
-        for p in classes_paths:
-            print("{} - Start file : {}".format(datetime.now(),p[0]))
-            zonal_sum_by_class(p[0], values_path, zonal_path, classes, gpkg_path=p[1], gpkg_layer=p[2])
-            print("{} - end file : {}".format(datetime.now(),p[0]))
-
-    except Exception as e:
-        print("End with Exception")
-        return False
-    print("End Successfully")
-    return True
-
 
