@@ -5,9 +5,8 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.raster_class_pop import zonal_sum_by_class
 from utils.csvutils import join_csv_files
+from accessibility.utils import get_countries_covered
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from combine import get_countries_covered
 
 # TODO
 # filter
