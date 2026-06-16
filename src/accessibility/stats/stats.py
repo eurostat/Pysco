@@ -9,7 +9,6 @@ from accessibility.utils import get_countries_covered
 
 
 # TODO
-# filter
 # faster ?
 # stats by age group: educ for young, healthcare for old
 # stats by degree of urbanisation
