@@ -7,16 +7,19 @@ from math import isnan
 
 
 def zonal_sum_by_class(
-    classes_path: str, values_path: str, zonal_path: str, classes: Dict[str, tuple],
+    values_path: str,
+    classes_path: str, classes: Dict[str, tuple],
+    zonal_path: str, id_att:str="id",
     zonal_filter = None,
-    gpkg_path:str=None, gpkg_layer:str=None,
-    csv_path:str=None, id_att:str="id",
     verbose:bool = True,
     class_name_change_fun = None,
     rounding_fun = None,
     output_data_type = None,
     values_band:int = 0,
     classes_band:int = 0,
+    clean_zonal_attributes:bool = False,
+    gpkg_path:str=None, gpkg_layer:str=None,
+    csv_path:str=None,
 ) -> gpd.GeoDataFrame:
 
     """
@@ -33,6 +36,7 @@ def zonal_sum_by_class(
             values are tuples with the min and max of each classe
     class_name_change_fun : a function str->str to change the class names on the fly. may be usefull to add a suffix with a year for example.
     rounding_fun: a function number->number to apply to the final numbers, to round them for example.
+    clean_zonal_attributes: Set to True if you need to remove all useless attributes of the input GPKG. Then keep only the id and geometry
 
     Example : 
 
@@ -52,7 +56,9 @@ def zonal_sum_by_class(
     """
     # Load vector file
     zonal = gpd.read_file(zonal_path)
+    if clean_zonal_attributes: zonal = zonal[[id_att, 'geometry']]
     if zonal_filter: zonal = zonal[zonal.apply(zonal_filter, axis=1)]
+    #
 
     # Create a column for each class
     #for class_name in classes.keys(): zonal[class_name]=None

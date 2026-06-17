@@ -17,7 +17,6 @@ from accessibility.utils import get_countries_covered
 # make it possible that population raster is finer than class grid
 # use also indicator to the X nearest ?
 
-with_gpkg = False
 
 # output folder
 output_folder = "/home/juju/gisco/accessibility/stats/"
@@ -93,23 +92,27 @@ for su in sus.keys():
             print(datetime.now(), service, su, year, res)
             file_name = output_folder + service + "_" + su + "_" + year
 
-            zonal_sum_by_class(
+            df = zonal_sum_by_class(
                 classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
                 values_path = pop_rasters[res],
                 zonal_path = sus[su]["path"],
                 zonal_filter = zonal_filter(id_att, service, year),
                 classes = classes[service],
-                gpkg_path = file_name + ".gpkg" if with_gpkg else None,
-                csv_path = file_name + ".csv",
+                #gpkg_path = file_name + ".gpkg" if with_gpkg else None,
+                #csv_path = file_name + ".csv",
                 id_att= id_att,
                 verbose = False,
                 #class_name_change_fun = lambda cn: cn+"_"+year,
                 #rounding_fun = lambda v : int(round(v))
                 output_data_type = "Int64",
+                clean_zonal_attributes = True
             )
 
+            # drop geometry
+            df = df.drop(columns=['geometry'])
+
             print(datetime.now(), "compute percentages")
-            df = pd.read_csv(file_name + ".csv")
+            #df = pd.read_csv(file_name + ".csv")
             for att in classes[service].keys():
                 df[att.replace("pop","pct")] = df.apply(lambda row: round(100 * row[att] / row['pop_tot'], 2) if row['pop_tot'] != 0 else None, axis=1)
             df = df.drop(columns=['pct_tot'])
