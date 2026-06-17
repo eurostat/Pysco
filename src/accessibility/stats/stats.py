@@ -115,7 +115,7 @@ for service in acc_grids_versions.keys():
                 df[att.replace("pop","pct")] = df.apply(lambda row: round(100 * row[att] / row['pop_tot'], 2) if row['pop_tot'] != 0 else None, axis=1)
             df = df.drop(columns=['pct_tot'])
             #df.to_csv(file_name, index=False)
-            # sort by NUTS level and alphabetic order
+            os.remove(file_name + ".csv")
 
             # take data for compiled file
             for index, row in df.iterrows():
@@ -129,6 +129,7 @@ for service in acc_grids_versions.keys():
                     ob['value'] = row[k]
                     out.append(ob)
 
+        # sort by NUTS level and alphabetic order
         #df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
         print(datetime.now(), "save compiled file")
         pd.DataFrame(out).to_csv(output_folder + "euro_access_" + service + "_" + su + "_" + sus[su]["version"] + ".csv", index=False)
