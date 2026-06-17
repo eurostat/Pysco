@@ -10,8 +10,8 @@ from accessibility.utils import get_countries_covered
 
 
 # TODO
-# explode as hypercube
 # run with 100 !!!
+
 # correct ? faster ?
 # stats by age group: educ for young, healthcare for old
 # stats by degree of urbanisation
@@ -28,7 +28,7 @@ working_folder = "./tmp/stats/"
 acc_grids_folder = "/home/juju/gisco/accessibility/"
 
 # resolution of the grids to use
-res = "1000"
+res = "100"
 
 
 # the statistical units
@@ -86,9 +86,9 @@ def zonal_filter(id_att:str, service:str, year:str):
 
 
 
-for service in acc_grids_versions.keys():
-    for su in sus.keys():
-        id_att = sus[su]["id"]
+for su in sus.keys():
+    id_att = sus[su]["id"]
+    for service in acc_grids_versions.keys():
         out = []
         for year in acc_grids_versions[service].keys():
             print(datetime.now(), service, su, year, res)
