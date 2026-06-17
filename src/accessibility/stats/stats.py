@@ -9,9 +9,11 @@ from accessibility.utils import get_countries_covered
 
 
 # TODO
-# faster ?
+# Add FUAs
+# percentages
 # stats by age group: educ for young, healthcare for old
 # stats by degree of urbanisation
+# correct ? faster ?
 # make it possible that population raster is finer than class grid
 # use also indicator to the X nearest ?
 
@@ -28,8 +30,10 @@ acc_grids_folder = "/home/juju/gisco/accessibility/"
 # resolution of the grids to use
 res = "1000"
 
+
 # the statistical units
 sus = {
+    "URAU": { "path": "/home/juju/geodata/gisco/URAU_RG_100K_2024_3035.gpkg" , "id": "URAU_CODE" },
     "LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID" },
     "NUTS": { "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg", "id": "NUTS_ID" },
 }
