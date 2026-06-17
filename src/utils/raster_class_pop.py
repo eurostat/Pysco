@@ -71,23 +71,28 @@ def zonal_sum_by_class(
 
         # Process for each polygon in zonal
         for index, row in zonal.iterrows():
+
             # Clip raster by the polygon's geometry
             geometry = [mapping(row.geometry)]
 
-            # Clip values raster
-            values_clipped, _ = mask(src_values, geometry, crop=True, filled=True)
-            values_clipped = values_clipped[values_band]
-
-            # Clip classes raster
-            classes_clipped, _ = mask(src_classes, geometry, crop=True, filled=True)
-            classes_clipped = classes_clipped[classes_band]
-
-            # Ensure that the two clipped raster have the same size
-            if values_clipped.shape != classes_clipped.shape:
-                if verbose: print(f"Warning: the clipped raster for the polygon {index} don't have the same size")
+            # Clip values rasters
+            try:
+                values_clipped, _ = mask(src_values, geometry, crop=True, filled=True)
+                classes_clipped, _ = mask(src_classes, geometry, crop=True, filled=True)
+            except:
+                #print("Failed clipping", row[id_att])
                 continue
 
-            # Calculate the sum for each classes
+            # keep band
+            values_clipped = values_clipped[values_band]
+            classes_clipped = classes_clipped[classes_band]
+
+            # Ensure that the two clipped rasters have the same size
+            #if values_clipped.shape != classes_clipped.shape:
+            #    if verbose: print(f"Warning: the clipped raster for the polygon {index} don't have the same size")
+            #    continue
+
+            # Calculate the sum for each class
             for class_name, (min_val, max_val) in classes.items():
                 # Create a boolean mask based on the condition
                 class_mask = (classes_clipped >= min_val) & (classes_clipped < max_val)
