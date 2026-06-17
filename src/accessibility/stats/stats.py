@@ -108,8 +108,17 @@ for service in acc_grids_versions.keys():
                 output_data_type = "Int64",
             )
 
-            #
+            print(datetime.now(), "compute percentages")
             df = pd.read_csv(file_name + ".csv")
+            for att in classes[service].keys():
+                df[att.replace("pop","pct") + "_" +year] = df.apply(lambda row: round(100 * row[att + "_" +year] / row['pop_tot_' + year], 2) if row['pop_tot_' + year] != 0 else None, axis=1)
+            df = df.drop(columns=['pct_tot_' + year])
+            # sort by NUTS level and alphabetic order
+            #df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
+            #df.to_csv(file_name + ".csv", index=False)
+
+            #
+            #df = pd.read_csv(file_name + ".csv")
             for index, row in df.iterrows():
                 print(row.keys())
                 #print(index, row['name'], row['age'])
