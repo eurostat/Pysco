@@ -111,11 +111,20 @@ for su in sus.keys():
             # drop geometry
             df = df.drop(columns=['geometry'])
 
+            print(df)
+
             print(datetime.now(), "compute percentages")
             #df = pd.read_csv(file_name + ".csv")
             for att in classes[service].keys():
-                df[att.replace("pop","pct")] = df.apply(lambda row: round(100 * row[att] / row['pop_tot'], 2) if row['pop_tot'] != 0 else None, axis=1)
-            df = df.drop(columns=['pct_tot'])
+                if att == "pop_tot": continue
+                def fun(r):
+                    t = r['pop_tot']
+                    if t is None: return None
+                    v = r[att]
+                    if v is None: return None
+                    return round(100 * v/t, 2)
+                df[att.replace("pop","pct")] = df.apply(fun, axis=1)
+            #df = df.drop(columns=['pct_tot'])
             #df.to_csv(file_name, index=False)
             #os.remove(file_name + ".csv")
 
