@@ -46,8 +46,8 @@ pop_rasters = {
 # accessibility grids
 acc_grids_versions = {
     "healthcare" : { "2020": "v2026_04", "2023": "v2026_04", },
-    "education" : { "2020": "v2026_04", "2023": "v2026_04", },
-    "evrp" : { "2023": "v2026_05", "2024": "v2026_05", "2025": "v2026_06", },
+    #"education" : { "2020": "v2026_04", "2023": "v2026_04", },
+    #"evrp" : { "2023": "v2026_05", "2024": "v2026_05", "2025": "v2026_06", },
 }
 
 # classes
@@ -117,11 +117,12 @@ for su in sus.keys():
 
         print(datetime.now(), "compute percentages")
         df = pd.read_csv(joined_file)
-        for att in classes[service].keys():
-            for year in acc_grids_versions[service].keys():
+        for year in acc_grids_versions[service].keys():
+            for att in classes[service].keys():
                 df[att.replace("pop","pct") + "_" +year] = df.apply(lambda row: round(100 * row[att + "_" +year] / row['pop_tot_' + year], 2), axis=1)
-        # sort
-        df = df.sort_values('col', key=lambda s: s.apply(lambda x: (len(x), x)))
+            df = df.drop(columns=['pct_tot_' + year])
+        # sort by NUTS level and alphabetic order
+        df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
         df.to_csv(joined_file, index=False)
 
 
