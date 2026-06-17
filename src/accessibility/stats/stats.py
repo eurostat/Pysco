@@ -53,21 +53,21 @@ acc_grids_versions = {
 # classes
 classes = {
     "healthcare" : {
-        "pop_tot":(0, 1e9),
-        "pop_under_5min": (0, 5*60),
-        "pop_under_20min": (0, 20*60),
-        "pop_under_45min": (0, 45*60),
+        "pop_T":(0, 1e9),
+        "pop_LT_5_MIN": (0, 5*60),
+        "pop_LT_20_MIN": (0, 20*60),
+        "pop_LT_45_MIN": (0, 45*60),
     },
     "education" : {
-        "pop_tot":(0, 1e9),
-        "pop_under_2min": (0, 2*60),
-        "pop_under_10min": (0, 10*60),
-        "pop_under_20min": (0, 20*60),
+        "pop_T":(0, 1e9),
+        "pop_LT_2_MIN": (0, 2*60),
+        "pop_LT_10_MIN": (0, 10*60),
+        "pop_LT_20_MIN": (0, 20*60),
     },
     "evrp" : {
-        "pop_tot":(0, 1e9),
-        "pop_under_500m": (0, 500),
-        "pop_under_5000m": (0, 5000),
+        "pop_T":(0, 1e9),
+        "pop_LT_500_M": (0, 500),
+        "pop_LT_5000_M": (0, 5000),
     },
 }
 
@@ -112,14 +112,12 @@ for su in sus.keys():
             # drop geometry
             df = df.drop(columns=['geometry'])
 
-            print(df)
-
             print(datetime.now(), "compute percentages")
             #df = pd.read_csv(file_name + ".csv")
             for att in classes[service].keys():
-                if att == "pop_tot": continue
+                if att == "pop_T": continue
                 def fun(r):
-                    t = r['pop_tot']
+                    t = r['pop_T']
                     if not pd.notna(t): return None
                     v = r[att]
                     if not pd.notna(v): return None
