@@ -10,7 +10,6 @@ from accessibility.utils import get_countries_covered
 
 
 # TODO
-# percentages
 # stats by age group: educ for young, healthcare for old
 # stats by degree of urbanisation
 # correct ? faster ?
@@ -119,7 +118,7 @@ for su in sus.keys():
         df = pd.read_csv(joined_file)
         for year in acc_grids_versions[service].keys():
             for att in classes[service].keys():
-                df[att.replace("pop","pct") + "_" +year] = df.apply(lambda row: round(100 * row[att + "_" +year] / row['pop_tot_' + year], 2), axis=1)
+                df[att.replace("pop","pct") + "_" +year] = df.apply(lambda row: round(100 * row[att + "_" +year] / row['pop_tot_' + year], 2) if row['pop_tot_' + year] != 0 else None, axis=1)
             df = df.drop(columns=['pct_tot_' + year])
         # sort by NUTS level and alphabetic order
         df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
