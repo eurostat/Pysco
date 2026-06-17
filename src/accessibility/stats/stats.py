@@ -117,7 +117,7 @@ for su in sus.keys():
                 df[att.replace("pop","pct")] = df.apply(lambda row: round(100 * row[att] / row['pop_tot'], 2) if row['pop_tot'] != 0 else None, axis=1)
             df = df.drop(columns=['pct_tot'])
             #df.to_csv(file_name, index=False)
-            os.remove(file_name + ".csv")
+            #os.remove(file_name + ".csv")
 
             # take data for compiled file
             for index, row in df.iterrows():
