@@ -10,13 +10,14 @@ from accessibility.utils import get_countries_covered
 
 
 # TODO
+# correct ? faster ?
+# explode as hypercube
 # stats by age group: educ for young, healthcare for old
 # stats by degree of urbanisation
-# correct ? faster ?
 # make it possible that population raster is finer than class grid
 # use also indicator to the X nearest ?
 
-with_gpkg = True
+with_gpkg = False
 
 # output folder
 output_folder = "/home/juju/gisco/accessibility/stats/"
@@ -84,10 +85,10 @@ def zonal_filter(id_att:str, service:str, year:str):
 
 
 
-for su in sus.keys():
-    id_att = sus[su]["id"]
-    for service in acc_grids_versions.keys():
-        csvs = []
+for service in acc_grids_versions.keys():
+    for su in sus.keys():
+        id_att = sus[su]["id"]
+        out = []
         for year in acc_grids_versions[service].keys():
             print(datetime.now(), su, service, year, res)
             file_name = output_folder + service + "_" + su + "_" + year
@@ -107,8 +108,15 @@ for su in sus.keys():
                 output_data_type = "Int64",
             )
 
-            csvs.append(file_name + ".csv")
+            #
+            df = pd.read_csv(file_name + ".csv")
+            for index, row in df.iterrows():
+                print(row.keys())
+                #print(index, row['name'], row['age'])
 
+
+
+'''
         print(datetime.now(), "join CSV all years")
         joined_file = output_folder + "euro_access_" + service + "_" + su + "_" + sus[su]["version"] + ".csv"
         join_csv_files(csvs, id_att, joined_file)
@@ -123,7 +131,23 @@ for su in sus.keys():
         # sort by NUTS level and alphabetic order
         df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
         df.to_csv(joined_file, index=False)
+'''
 
+
+
+'''
+# make combined file
+#df = pd.DataFrame({ 'geo': [], 'serv': [], 'time': [], 'indic': [], 'unit': [], 'value': [] })
+for service in acc_grids_versions.keys():
+    rows = []
+    for su in sus.keys():
+        id_att = sus[su]["id"]
+        file = output_folder + "euro_access_" + service + "_" + su + "_" + sus[su]["version"] + ".csv"
+        # geo service year indic unit --- degurba age
+        rows.append({'name': f'User{i}', 'age': 20 + i})
+
+    pd.DataFrame(rows).to_csv(output_folder + "euro_access_" + service + "_" + sus.keys().join("_") + ".csv", index=False)
+'''
 
 
 '''
