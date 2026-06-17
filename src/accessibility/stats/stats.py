@@ -1,6 +1,7 @@
 from datetime import datetime
 import sys
 import os
+import pandas as pd
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.raster_class_pop import zonal_sum_by_class
@@ -9,7 +10,6 @@ from accessibility.utils import get_countries_covered
 
 
 # TODO
-# Add FUAs
 # percentages
 # stats by age group: educ for young, healthcare for old
 # stats by degree of urbanisation
@@ -17,7 +17,6 @@ from accessibility.utils import get_countries_covered
 # make it possible that population raster is finer than class grid
 # use also indicator to the X nearest ?
 
-join_csvs = True
 with_gpkg = True
 
 # output folder
@@ -34,8 +33,8 @@ res = "1000"
 # the statistical units
 sus = {
     "URAU": { "path": "/home/juju/geodata/gisco/URAU_RG_100K_2024_3035.gpkg" , "id": "URAU_CODE", "version":"2024" },
-    "LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID", "version":"2024" },
-    "NUTS": { "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg", "id": "NUTS_ID", "version":"2024" },
+    #"LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID", "version":"2024" },
+    #"NUTS": { "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg", "id": "NUTS_ID", "version":"2024" },
 }
 
 # population rasters
@@ -92,7 +91,7 @@ for su in sus.keys():
         csvs = []
         for year in acc_grids_versions[service].keys():
             print(datetime.now(), su, service, year, res)
-            file_name = output_folder + su + "_" + service + "_" + year
+            file_name = output_folder + service + "_" + su + "_" + year
 
             zonal_sum_by_class(
                 classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
@@ -111,12 +110,19 @@ for su in sus.keys():
 
             csvs.append(file_name + ".csv")
 
-        if join_csvs:
-            print(datetime.now(), "join CSV all years")
-            join_csv_files(csvs, id_att, output_folder + "euro_access_" + service + "_" + su + "_" + sus[su]["version"] + ".csv")
-            for csv in csvs: os.remove(csv)
+        print(datetime.now(), "join CSV all years")
+        joined_file = output_folder + "euro_access_" + service + "_" + su + "_" + sus[su]["version"] + ".csv"
+        join_csv_files(csvs, id_att, joined_file)
+        for csv in csvs: os.remove(csv)
 
-
+        print(datetime.now(), "compute percentages")
+        df = pd.read_csv(joined_file)
+        for att in classes[service].keys():
+            for year in acc_grids_versions[service].keys():
+                df[att.replace("pop","pct") + "_" +year] = df.apply(lambda row: round(100 * row[att + "_" +year] / row['pop_tot_' + year], 2), axis=1)
+        # sort
+        df = df.sort_values('col', key=lambda s: s.apply(lambda x: (len(x), x)))
+        df.to_csv(joined_file, index=False)
 
 
 
