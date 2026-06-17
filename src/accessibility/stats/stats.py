@@ -33,9 +33,9 @@ res = "1000"
 
 # the statistical units
 sus = {
-    "URAU": { "path": "/home/juju/geodata/gisco/URAU_RG_100K_2024_3035.gpkg" , "id": "URAU_CODE" },
-    "LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID" },
-    "NUTS": { "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg", "id": "NUTS_ID" },
+    "URAU": { "path": "/home/juju/geodata/gisco/URAU_RG_100K_2024_3035.gpkg" , "id": "URAU_CODE", "version":"2024" },
+    "LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID", "version":"2024" },
+    "NUTS": { "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg", "id": "NUTS_ID", "version":"2024" },
 }
 
 # population rasters
@@ -113,7 +113,7 @@ for su in sus.keys():
 
         if join_csvs:
             print(datetime.now(), "join CSV all years")
-            join_csv_files(csvs, id_att, output_folder + su + "_" + service + ".csv")
+            join_csv_files(csvs, id_att, output_folder + "euro_access_" + service + "_" + su + "_" + sus[su]["version"] + ".csv")
             for csv in csvs: os.remove(csv)
 
 
