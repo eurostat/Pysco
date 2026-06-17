@@ -11,7 +11,6 @@ from accessibility.utils import get_countries_covered
 
 # TODO
 # run with 100 !!!
-
 # correct ? faster ?
 # stats by age group: educ for young, healthcare for old
 # stats by degree of urbanisation
@@ -28,7 +27,7 @@ working_folder = "./tmp/stats/"
 acc_grids_folder = "/home/juju/gisco/accessibility/"
 
 # resolution of the grids to use
-res = "100"
+res = "1000"
 
 
 # the statistical units
