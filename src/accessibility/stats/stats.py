@@ -33,8 +33,8 @@ res = "1000"
 # the statistical units
 sus = {
     "URAU": { "path": "/home/juju/geodata/gisco/URAU_RG_100K_2024_3035.gpkg" , "id": "URAU_CODE", "version":"2024" },
-    #"LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID", "version":"2024" },
-    #"NUTS": { "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg", "id": "NUTS_ID", "version":"2024" },
+    "LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID", "version":"2024" },
+    "NUTS": { "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg", "id": "NUTS_ID", "version":"2024" },
 }
 
 # population rasters
@@ -46,8 +46,8 @@ pop_rasters = {
 # accessibility grids
 acc_grids_versions = {
     "healthcare" : { "2020": "v2026_04", "2023": "v2026_04", },
-    #"education" : { "2020": "v2026_04", "2023": "v2026_04", },
-    #"evrp" : { "2023": "v2026_05", "2024": "v2026_05", "2025": "v2026_06", },
+    "education" : { "2020": "v2026_04", "2023": "v2026_04", },
+    "evrp" : { "2023": "v2026_05", "2024": "v2026_05", "2025": "v2026_06", },
 }
 
 # classes
