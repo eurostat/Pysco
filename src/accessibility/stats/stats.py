@@ -10,8 +10,9 @@ from accessibility.utils import get_countries_covered
 
 
 # TODO
-# correct ? faster ?
 # explode as hypercube
+# run with 100 !!!
+# correct ? faster ?
 # stats by age group: educ for young, healthcare for old
 # stats by degree of urbanisation
 # make it possible that population raster is finer than class grid
@@ -90,7 +91,7 @@ for service in acc_grids_versions.keys():
         id_att = sus[su]["id"]
         out = []
         for year in acc_grids_versions[service].keys():
-            print(datetime.now(), su, service, year, res)
+            print(datetime.now(), service, su, year, res)
             file_name = output_folder + service + "_" + su + "_" + year
 
             zonal_sum_by_class(
@@ -103,7 +104,7 @@ for service in acc_grids_versions.keys():
                 csv_path = file_name + ".csv",
                 id_att= id_att,
                 verbose = False,
-                class_name_change_fun = lambda cn: cn+"_"+year,
+                #class_name_change_fun = lambda cn: cn+"_"+year,
                 #rounding_fun = lambda v : int(round(v))
                 output_data_type = "Int64",
             )
@@ -111,18 +112,28 @@ for service in acc_grids_versions.keys():
             print(datetime.now(), "compute percentages")
             df = pd.read_csv(file_name + ".csv")
             for att in classes[service].keys():
-                df[att.replace("pop","pct") + "_" +year] = df.apply(lambda row: round(100 * row[att + "_" +year] / row['pop_tot_' + year], 2) if row['pop_tot_' + year] != 0 else None, axis=1)
-            df = df.drop(columns=['pct_tot_' + year])
+                df[att.replace("pop","pct")] = df.apply(lambda row: round(100 * row[att] / row['pop_tot'], 2) if row['pop_tot'] != 0 else None, axis=1)
+            df = df.drop(columns=['pct_tot'])
+            df.to_csv(file_name, index=False)
             # sort by NUTS level and alphabetic order
-            #df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
-            #df.to_csv(file_name + ".csv", index=False)
 
-            #
-            #df = pd.read_csv(file_name + ".csv")
+            # take data for compiled file
             for index, row in df.iterrows():
-                print(row.keys())
-                #print(index, row['name'], row['age'])
+                geo = row[id_att]
+                for k in row.keys():
+                    if k == id_att: continue
+                    ob = { "geo":geo, "time":year }
+                    if 'pop' in k:
+                        ob['unit'] = "NR"
+                    else:
+                        ob['unit'] = "PC"
+                    ob['indic'] = k.replace("pop_","").replace("pct_","")
+                    ob['value'] = row[k]
+                    out.append(ob)
 
+        #df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
+        print(datetime.now(), "save compiled file")
+        pd.DataFrame(out).to_csv(output_folder + "euro_access_" + service + "_" + su + "_" + sus[su]["version"] + ".csv", index=False)
 
 
 '''
