@@ -118,7 +118,7 @@ for su in sus.keys():
                 if att == "pop_T": continue
                 def fun(r):
                     t = r['pop_T']
-                    if not pd.notna(t): return None
+                    if t==0 or not pd.notna(t): return None
                     v = r[att]
                     if not pd.notna(v): return None
                     return round(100 * v/t, 2)
@@ -132,11 +132,11 @@ for su in sus.keys():
                 geo = row[id_att]
                 for k in row.keys():
                     if k == id_att: continue
-                    ob = { "geo":geo, "time":year }
-                    if 'pop' in k: ob['unit'] = "NR"
-                    else: ob['unit'] = "PC"
-                    ob['indic'] = k.replace("pop_","").replace("pct_","")
-                    ob['value'] = row[k]
+                    ob = { "GEO":geo, "TIME":year }
+                    if 'pop' in k: ob['UNIT'] = "NR"
+                    else: ob['UNIT'] = "PC"
+                    ob['INDIC'] = k.replace("pop_","").replace("pct_","")
+                    ob['VALUE'] = row[k]
                     out.append(ob)
 
         # sort by NUTS level and alphabetic order
