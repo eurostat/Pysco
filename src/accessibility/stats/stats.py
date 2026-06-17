@@ -1,4 +1,5 @@
 from datetime import datetime
+from math import isnan
 import sys
 import os
 import pandas as pd
@@ -119,9 +120,9 @@ for su in sus.keys():
                 if att == "pop_tot": continue
                 def fun(r):
                     t = r['pop_tot']
-                    if t is None: return None
+                    if not pd.notna(t): return None
                     v = r[att]
-                    if v is None: return None
+                    if not pd.notna(v): return None
                     return round(100 * v/t, 2)
                 df[att.replace("pop","pct")] = df.apply(fun, axis=1)
             #df = df.drop(columns=['pct_tot'])
