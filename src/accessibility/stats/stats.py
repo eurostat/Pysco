@@ -13,6 +13,7 @@ from accessibility.utils import get_countries_covered
 # TODO
 # run with 100 !!!
 # correct ? faster ?
+# filter correctly countries: remove those without population (AL, etc.)
 # stats by age group: educ for young, healthcare for old
 # stats by degree of urbanisation
 # make it possible that population raster is finer than class grid
@@ -99,33 +100,21 @@ for su in sus.keys():
                 zonal_path = sus[su]["path"],
                 zonal_filter = zonal_filter(id_att, service, year),
                 classes = classes[service],
-                #gpkg_path = file_name + ".gpkg" if with_gpkg else None,
-                #csv_path = file_name + ".csv",
                 id_att= id_att,
                 verbose = False,
-                #class_name_change_fun = lambda cn: cn+"_"+year,
-                #rounding_fun = lambda v : int(round(v))
-                output_data_type = "Int64",
                 clean_zonal_attributes = True
-            )
-
-            # drop geometry
-            df = df.drop(columns=['geometry'])
+            ).drop(columns=['geometry'])
 
             print(datetime.now(), "compute percentages")
-            #df = pd.read_csv(file_name + ".csv")
             for att in classes[service].keys():
                 if att == "pop_T": continue
-                def fun(r):
+                def compute_percentage(r):
                     t = r['pop_T']
-                    if t==0 or not pd.notna(t): return None
+                    if not pd.notna(t) or t==0: return None
                     v = r[att]
                     if not pd.notna(v): return None
                     return round(100 * v/t, 2)
-                df[att.replace("pop","pct")] = df.apply(fun, axis=1)
-            #df = df.drop(columns=['pct_tot'])
-            #df.to_csv(file_name, index=False)
-            #os.remove(file_name + ".csv")
+                df[att.replace("pop","pct")] = df.apply(compute_percentage, axis=1)
 
             # take data for compiled file
             for index, row in df.iterrows():
