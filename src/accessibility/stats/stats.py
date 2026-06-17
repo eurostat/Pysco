@@ -123,10 +123,8 @@ for service in acc_grids_versions.keys():
                 for k in row.keys():
                     if k == id_att: continue
                     ob = { "geo":geo, "time":year }
-                    if 'pop' in k:
-                        ob['unit'] = "NR"
-                    else:
-                        ob['unit'] = "PC"
+                    if 'pop' in k: ob['unit'] = "NR"
+                    else: ob['unit'] = "PC"
                     ob['indic'] = k.replace("pop_","").replace("pct_","")
                     ob['value'] = row[k]
                     out.append(ob)
