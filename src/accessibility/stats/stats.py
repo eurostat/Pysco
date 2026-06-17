@@ -114,7 +114,7 @@ for service in acc_grids_versions.keys():
             for att in classes[service].keys():
                 df[att.replace("pop","pct")] = df.apply(lambda row: round(100 * row[att] / row['pop_tot'], 2) if row['pop_tot'] != 0 else None, axis=1)
             df = df.drop(columns=['pct_tot'])
-            df.to_csv(file_name, index=False)
+            #df.to_csv(file_name, index=False)
             # sort by NUTS level and alphabetic order
 
             # take data for compiled file
