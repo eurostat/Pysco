@@ -102,7 +102,7 @@ if True:
 
     # Drop the helper column and append
     pc_rows = pc_rows.drop(columns=['TOTAL'])#.query("INDIC != 'T'")
-    result = pd.concat([df, pc_rows], ignore_index=True)
+    df = pd.concat([df, pc_rows], ignore_index=True)
 
 
 # TODO sort ?
