@@ -192,7 +192,7 @@ def aggregate_geotiff_to_regions(
     out = []
     for rid in id_list:
         ob = { region_id_attr: rid, output_col_name: sums[rid] }
-        out.push(ob)
+        out.append(ob)
 
     # export
     return pd.DataFrame(out)
