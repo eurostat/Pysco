@@ -77,7 +77,6 @@ df = aggregate_geotiff_to_regions(
     #geotiff_mask_fun= lambda v:v==130,
     #verbose=True,
 )
-#print(df)
 df.to_csv("tmp/out.csv", index=False)
 
 
