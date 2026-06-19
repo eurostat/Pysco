@@ -19,6 +19,7 @@ from rasterio.enums import Resampling
 from rasterio.transform import from_bounds
 
 from shapely import prepare, contains_xy
+from shapely.geometry import box as shapely_box
 from shapely.strtree import STRtree
 
 
@@ -34,6 +35,7 @@ def aggregate_geotiff_to_regions(
     band: int = 1,
     geotiff_mask_path: str = None,
     geotiff_mask_fun = None,
+    mask_band = 1,
 ) -> None:
     """
     For each region in *gpkg_path*, sum the values of all GeoTIFF pixels
@@ -52,7 +54,7 @@ def aggregate_geotiff_to_regions(
     candidate regions before the inner point-in-polygon test.
     4. NumPy vectorised coordinate generation inside each block.
     5. nodata masking applied before any geometry query.
-    
+
     Parameters
     ----------
     gpkg_path : str
@@ -106,9 +108,7 @@ def aggregate_geotiff_to_regions(
         for rid in id_list:
             sums[rid] = 0.0
 
-        # ------------------------------------------------------------------
         # 2. Tile over the raster
-        # ------------------------------------------------------------------
         for row_off in range(0, height, block_size):
             row_count = min(block_size, height - row_off)
 
@@ -117,6 +117,8 @@ def aggregate_geotiff_to_regions(
 
                 window = Window(col_off, row_off, col_count, row_count)
                 data = src.read(band, window=window).astype(np.float64)
+                if geotiff_mask_path:
+                    data_mask = src_mask.read(mask_band, window=window)
 
                 # Mask nodata pixels
                 if nodata is not None:
@@ -125,12 +127,9 @@ def aggregate_geotiff_to_regions(
                     valid_mask = np.ones(data.shape, dtype=bool)
 
                 # Skip entirely empty blocks
-                if not valid_mask.any():
-                    continue
+                if not valid_mask.any(): continue
 
-                # ------------------------------------------------------
                 # 3. Compute pixel-centre coordinates for valid pixels
-                # ------------------------------------------------------
                 rows_idx, cols_idx = np.where(valid_mask)
 
                 # Absolute pixel indices within the full raster
@@ -144,10 +143,7 @@ def aggregate_geotiff_to_regions(
                 ys = transform.f + (abs_rows + 0.5) * transform.e
                 values = data[rows_idx, cols_idx]
 
-                # ------------------------------------------------------
-                # 4. Bounding-box pre-filter: which regions overlap this
-                #    block at all?
-                # ------------------------------------------------------
+                # 4. Bounding-box pre-filter: which regions overlap this block at all?
                 block_xmin = transform.c + col_off * transform.a
                 block_xmax = transform.c + (col_off + col_count) * transform.a
                 block_ymax = transform.f + row_off * transform.e
@@ -156,7 +152,6 @@ def aggregate_geotiff_to_regions(
                 bx_min, bx_max = min(block_xmin, block_xmax), max(block_xmin, block_xmax)
                 by_min, by_max = min(block_ymin, block_ymax), max(block_ymin, block_ymax)
 
-                from shapely.geometry import box as shapely_box
                 block_box = shapely_box(bx_min, by_min, bx_max, by_max)
                 candidate_indices = tree.query(block_box, predicate="intersects")
 
@@ -166,9 +161,7 @@ def aggregate_geotiff_to_regions(
                 candidate_geoms = [geom_list[i] for i in candidate_indices]
                 candidate_ids = [id_list[i] for i in candidate_indices]
 
-                # ------------------------------------------------------
                 # 5. Point-in-polygon for each candidate region
-                # ------------------------------------------------------
                 # Build a MultiPoint for bulk contains queries
                 #points_xy = np.stack([xs, ys], axis=1)
 
@@ -191,9 +184,7 @@ def aggregate_geotiff_to_regions(
                     inside = contains_xy(geom, bbox_xs, bbox_ys)
                     sums[rid] += bbox_vals[inside].sum()
 
-    # ------------------------------------------------------------------
     # 6. Write CSV
-    # ------------------------------------------------------------------
     output_csv_path.parent.mkdir(parents=True, exist_ok=True)
     with open(output_csv_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
