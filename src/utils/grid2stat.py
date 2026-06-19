@@ -91,6 +91,9 @@ def aggregate_geotiff_to_regions(
     # Ensure every region appears in output even if sum == 0
     for rid in id_list: sums[rid] = 0.0
 
+    # prepare output structure
+    out = []
+
     # Open tiff
     if geotiff_mask_path: src_mask = rasterio.open(geotiff_mask_path)
     with rasterio.open(geotiff_path) as src:
@@ -185,8 +188,14 @@ def aggregate_geotiff_to_regions(
                     inside = contains_xy(geom, bbox_xs, bbox_ys)
                     sums[rid] += bbox_vals[inside].sum()
 
+    # prepare output structure
+    out = []
+    for rid in id_list:
+        ob = { region_id_attr: rid, output_col_name: sums[rid] }
+        out.push(ob)
+
     # export
-    return pd.DataFrame({ region_id_attr: id_list, output_col_name: list(sums.values()) })
+    return pd.DataFrame(out)
 
 
 
