@@ -38,24 +38,23 @@ acc_grids_versions = {
 # classes
 classes = {
     "healthcare" : {
-        "pop_T":(0, 1e9),
-        "pop_LT_5_MIN": (0, 5*60),
-        "pop_LT_20_MIN": (0, 20*60),
-        "pop_LT_45_MIN": (0, 45*60),
+        "T": lambda v:True,
+        "LT_5_MIN": lambda v: v<=5*60,
+        "LT_20_MIN": lambda v: v<=20*60,
+        "LT_45_MIN": lambda v: v<=45*60,
     },
     "education" : {
-        "pop_T":(0, 1e9),
-        "pop_LT_2_MIN": (0, 2*60),
-        "pop_LT_10_MIN": (0, 10*60),
-        "pop_LT_20_MIN": (0, 20*60),
+        "T": lambda v:True,
+        "LT_2_MIN": lambda v: v<=2*60,
+        "LT_10_MIN": lambda v: v<=10*60,
+        "LT_20_MIN": lambda v: v<=20*60,
     },
     "evrp" : {
-        "pop_T":(0, 1e9),
-        "pop_LT_500_M": (0, 500),
-        "pop_LT_5000_M": (0, 5000),
+        "T":(0, 1e9),
+        "LT_500_M": lambda v: v<=500,
+        "LT_5000_M": lambda v: v<=5000,
     },
 }
-
 
 
 degurba_raster = "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2021/DGUR_LEVEL2_GRD_1KM_2021_extended.tif"
@@ -72,15 +71,14 @@ df = aggregate_geotiff_to_regions(
     region_id_attr=sus[su]["id"],
     geotiff_path=pop_rasters["1000"],
     band=1,
-    output_col_name="T",
     geotiff_mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-    geotiff_mask_fun= lambda v:v<=20*60,
+    geotiff_mask_fun= classes[service],
     #geotiff_mask_path=degurba_raster,
     #geotiff_mask_fun= lambda v:v==130,
     #verbose=True,
 )
 #print(df)
-df.to_csv("tmp/out.csv")
+df.to_csv("tmp/out.csv", index=False)
 
 
 

@@ -31,7 +31,6 @@ def aggregate_geotiff_to_regions(
     gpkg_path: str,
     region_id_attr: str,
     geotiff_path: str,
-    output_col_name: str = "sum",
     block_size: int = 1024,
     band: int = 1,
     geotiff_mask_path: str = None,
@@ -89,7 +88,10 @@ def aggregate_geotiff_to_regions(
     # Accumulator: region_id -> running sum
     sums: dict = defaultdict(float)
     # Ensure every region appears in output even if sum == 0
-    for rid in id_list: sums[rid] = 0.0
+    for rid in id_list:
+        sums[rid] = {}
+        for classe in geotiff_mask_fun.keys():
+            sums[rid][classe] = 0
 
     # prepare output structure
     out = []
@@ -113,86 +115,82 @@ def aggregate_geotiff_to_regions(
 
                 window = Window(col_off, row_off, col_count, row_count)
                 data = src.read(band, window=window).astype(np.float64)
-                #print(len(data),len(data[0]))
-                if geotiff_mask_path:
-                    data_mask = src_mask.read(mask_band, window=window).astype(np.float32)
-                    if geotiff_mask_fun:
-                        data_mask = geotiff_mask_fun(data_mask)
-                    #print(" ", len(data_mask),len(data_mask[0]))
-                    #print(data_mask)
-                    #data = data[data_mask]
-                    data = np.where(data_mask, data, nodata)
-                    #print(data)
-                    #print(" ", len(data),len(data[0]))
+                data_mask = src_mask.read(mask_band, window=window).astype(np.float32)
 
+                for classe in geotiff_mask_fun.keys():
+                    mask_fun = geotiff_mask_fun[classe]
+                    data_mask = mask_fun(data_mask)
+                    data2 = np.where(data_mask, data, nodata)
 
-                # Mask nodata pixels
-                if nodata is not None: valid_mask = ~np.isclose(data, nodata)
-                else: valid_mask = np.ones(data.shape, dtype=bool)
+                    # Mask nodata pixels
+                    if nodata is not None: valid_mask = ~np.isclose(data2, nodata)
+                    else: valid_mask = np.ones(data2.shape, dtype=bool)
 
-                # Skip entirely empty blocks
-                if not valid_mask.any(): continue
+                    # Skip entirely empty blocks
+                    if not valid_mask.any(): continue
 
-                # 3. Compute pixel-centre coordinates for valid pixels
-                rows_idx, cols_idx = np.where(valid_mask)
+                    # 3. Compute pixel-centre coordinates for valid pixels
+                    rows_idx, cols_idx = np.where(valid_mask)
 
-                # Absolute pixel indices within the full raster
-                abs_rows = rows_idx + row_off
-                abs_cols = cols_idx + col_off
+                    # Absolute pixel indices within the full raster
+                    abs_rows = rows_idx + row_off
+                    abs_cols = cols_idx + col_off
 
-                # Pixel centre = top-left corner of raster
-                #   + (col + 0.5) * pixel_width
-                #   + (row + 0.5) * pixel_height  (negative for north-up)
-                xs = transform.c + (abs_cols + 0.5) * transform.a
-                ys = transform.f + (abs_rows + 0.5) * transform.e
-                values = data[rows_idx, cols_idx]
+                    # Pixel centre = top-left corner of raster
+                    #   + (col + 0.5) * pixel_width
+                    #   + (row + 0.5) * pixel_height  (negative for north-up)
+                    xs = transform.c + (abs_cols + 0.5) * transform.a
+                    ys = transform.f + (abs_rows + 0.5) * transform.e
+                    values = data[rows_idx, cols_idx]
 
-                # 4. Bounding-box pre-filter: which regions overlap this block at all?
-                block_xmin = transform.c + col_off * transform.a
-                block_xmax = transform.c + (col_off + col_count) * transform.a
-                block_ymax = transform.f + row_off * transform.e
-                block_ymin = transform.f + (row_off + row_count) * transform.e
-                # Normalise min/max (transform.e is negative for north-up)
-                bx_min, bx_max = min(block_xmin, block_xmax), max(block_xmin, block_xmax)
-                by_min, by_max = min(block_ymin, block_ymax), max(block_ymin, block_ymax)
+                    # 4. Bounding-box pre-filter: which regions overlap this block at all?
+                    block_xmin = transform.c + col_off * transform.a
+                    block_xmax = transform.c + (col_off + col_count) * transform.a
+                    block_ymax = transform.f + row_off * transform.e
+                    block_ymin = transform.f + (row_off + row_count) * transform.e
+                    # Normalise min/max (transform.e is negative for north-up)
+                    bx_min, bx_max = min(block_xmin, block_xmax), max(block_xmin, block_xmax)
+                    by_min, by_max = min(block_ymin, block_ymax), max(block_ymin, block_ymax)
 
-                block_box = shapely_box(bx_min, by_min, bx_max, by_max)
-                candidate_indices = regions.query(block_box, predicate="intersects")
+                    block_box = shapely_box(bx_min, by_min, bx_max, by_max)
+                    candidate_indices = regions.query(block_box, predicate="intersects")
 
-                if len(candidate_indices) == 0:
-                    continue
-
-                candidate_geoms = [geom_list[i] for i in candidate_indices]
-                candidate_ids = [id_list[i] for i in candidate_indices]
-
-                # 5. Point-in-polygon for each candidate region
-                # Build a MultiPoint for bulk contains queries
-                # points_xy = np.stack([xs, ys], axis=1)
-
-                for geom, rid in zip(candidate_geoms, candidate_ids):
-                    # Fast bounding-box pre-check per region
-                    gx_min, gy_min, gx_max, gy_max = geom.bounds
-                    in_bbox = (
-                        (xs >= gx_min) & (xs <= gx_max) &
-                        (ys >= gy_min) & (ys <= gy_max)
-                    )
-                    if not in_bbox.any():
+                    if len(candidate_indices) == 0:
                         continue
 
-                    bbox_xs = xs[in_bbox]
-                    bbox_ys = ys[in_bbox]
-                    bbox_vals = values[in_bbox]
+                    candidate_geoms = [geom_list[i] for i in candidate_indices]
+                    candidate_ids = [id_list[i] for i in candidate_indices]
 
-                    # Vectorised contains via prepared geometry
-                    prepare(geom)
-                    inside = contains_xy(geom, bbox_xs, bbox_ys)
-                    sums[rid] += bbox_vals[inside].sum()
+                    # 5. Point-in-polygon for each candidate region
+                    # Build a MultiPoint for bulk contains queries
+                    # points_xy = np.stack([xs, ys], axis=1)
+
+                    for geom, rid in zip(candidate_geoms, candidate_ids):
+                        # Fast bounding-box pre-check per region
+                        gx_min, gy_min, gx_max, gy_max = geom.bounds
+                        in_bbox = (
+                            (xs >= gx_min) & (xs <= gx_max) &
+                            (ys >= gy_min) & (ys <= gy_max)
+                        )
+                        if not in_bbox.any():
+                            continue
+
+                        bbox_xs = xs[in_bbox]
+                        bbox_ys = ys[in_bbox]
+                        bbox_vals = values[in_bbox]
+
+                        # Vectorised contains via prepared geometry
+                        prepare(geom)
+                        inside = contains_xy(geom, bbox_xs, bbox_ys)
+                        sums[rid][classe] += bbox_vals[inside].sum()
 
     # prepare output structure
     out = []
     for rid in id_list:
-        ob = { region_id_attr: rid, output_col_name: sums[rid] }
-        out.append(ob)
+        for classe in geotiff_mask_fun.keys():
+            ob = { region_id_attr: rid, "dim": classe }
+            ob["value"] = sums[rid][classe]
+            out.append(ob)
 
     # export
     return pd.DataFrame(out)
