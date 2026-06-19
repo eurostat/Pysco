@@ -2,7 +2,8 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.grid2stat import aggregate_geotiff_to_regions
-
+#from utils.geotiff import crop_extend_bbox
+from accessibility.utils import bbox
 
 
 # the statistical units
@@ -18,6 +19,8 @@ pop_rasters = {
     "100": "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox.tif"
 }
 
+degurba_raster = "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2021/DGUR_LEVEL2_GRD_1KM_2021_extended.tif"
+
 
 su = "URAU"
 aggregate_geotiff_to_regions(
@@ -27,6 +30,8 @@ aggregate_geotiff_to_regions(
     band=1,
     output_csv_path="tmp/out.csv",
     output_col_name="T",
+    geotiff_mask_path=degurba_raster,
+    geotiff_mask_fun= lambda v:v==130
 )
 
 

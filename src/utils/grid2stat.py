@@ -32,6 +32,8 @@ def aggregate_geotiff_to_regions(
     output_col_name: str = "sum",
     block_size: int = 1024,
     band: int = 1,
+    geotiff_mask_path: str = None,
+    geotiff_mask_fun = None,
 ) -> None:
     """
     For each region in *gpkg_path*, sum the values of all GeoTIFF pixels
@@ -73,12 +75,13 @@ def aggregate_geotiff_to_regions(
     gpkg_path = Path(gpkg_path)
     geotiff_path = Path(geotiff_path)
     output_csv_path = Path(output_csv_path)
+    if geotiff_mask_path: geotiff_mask_path = Path(geotiff_mask_path)
 
-    # ------------------------------------------------------------------
-    # 1. Load regions and reproject to the raster CRS
-    # ------------------------------------------------------------------
+    # Load regions
     regions = gpd.read_file(gpkg_path)
 
+    # Open tiffs
+    if geotiff_mask_path: src_mask = rasterio.open(geotiff_mask_path)
     with rasterio.open(geotiff_path) as src:
         raster_crs = src.crs
         transform = src.transform
