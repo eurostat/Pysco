@@ -40,7 +40,7 @@ acc_grids_versions = {
 classes = {
     "healthcare" : {
         "T": lambda v:True,
-        "LT_5_MIN": lambda v: v<=5*60,
+        "LT_5_MIN": lambda v: v<=5*60 and v>=0,
         "LT_20_MIN": lambda v: v<=20*60,
         "LT_45_MIN": lambda v: v<=45*60,
     },
