@@ -6,8 +6,8 @@ import pandas as pd
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.raster_class_pop import zonal_sum_by_class
-from utils.csvutils import join_csv_files
 from accessibility.utils import get_countries_covered
+from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
@@ -131,7 +131,26 @@ for su in sus.keys():
         # sort by NUTS level and alphabetic order
         #df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
         print(datetime.now(), "save compiled file")
-        pd.DataFrame(out).to_csv(output_folder + "euro_access_" + service + "_" + su + "_" + sus[su]["version"] + ".csv", index=False)
+        geo = su + "_" + sus[su]["version"]
+        pd.DataFrame(out).to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
+
+
+
+        print(datetime.now(), "decompose by time series")
+
+        out_folder_d = output_folder + "decomposed/"
+        hypercube_csv_to_timeseries_csv(
+            output_folder + "euro_access_" + service + "_" + geo + ".csv",
+            out_folder_d,
+            output_file_name_fun = lambda f: "euro_access_" + service + "_" + geo + "__" + f)
+
+        # delete NR files (not usefull) and rename files (remove PC)
+        for f in os.listdir(out_folder_d):
+            if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
+            if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
+
+
+
 
 
 '''
