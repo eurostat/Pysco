@@ -22,7 +22,7 @@ from shapely import prepare, contains_xy
 from shapely.geometry import box as shapely_box
 from shapely.strtree import STRtree
 
-
+from datetime import datetime
 
 
 def aggregate_geotiff_to_regions(
@@ -36,6 +36,7 @@ def aggregate_geotiff_to_regions(
     geotiff_mask_path: str = None,
     geotiff_mask_fun = None,
     mask_band = 1,
+    verbose = False,
 ) -> None:
     """
     For each region in *gpkg_path*, sum the values of all GeoTIFF pixels
@@ -80,7 +81,8 @@ def aggregate_geotiff_to_regions(
     if geotiff_mask_path: geotiff_mask_path = Path(geotiff_mask_path)
 
     # Load regions
-    regions = gpd.read_file(gpkg_path)
+    regions = gpd.read_file(gpkg_path)[["geometry",region_id_attr]]
+    if verbose: print(datetime.now(), len(regions), "regions loaded")
 
     # Open tiffs
     if geotiff_mask_path: src_mask = rasterio.open(geotiff_mask_path)
@@ -98,9 +100,11 @@ def aggregate_geotiff_to_regions(
             regions = regions.to_crs(raster_crs)
 
         # Build a fast spatial index over region geometries
+        if verbose: print(datetime.now(), "build spatial index")
         geom_list = list(regions.geometry)
         id_list = list(regions[region_id_attr])
-        tree = STRtree(geom_list)
+        regions = STRtree(geom_list)
+        if verbose: print(datetime.now(), "done")
 
         # Accumulator: region_id -> running sum
         sums: dict = defaultdict(float)
@@ -153,7 +157,7 @@ def aggregate_geotiff_to_regions(
                 by_min, by_max = min(block_ymin, block_ymax), max(block_ymin, block_ymax)
 
                 block_box = shapely_box(bx_min, by_min, bx_max, by_max)
-                candidate_indices = tree.query(block_box, predicate="intersects")
+                candidate_indices = regions.query(block_box, predicate="intersects")
 
                 if len(candidate_indices) == 0:
                     continue

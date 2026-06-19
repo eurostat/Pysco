@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -22,7 +24,8 @@ pop_rasters = {
 degurba_raster = "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2021/DGUR_LEVEL2_GRD_1KM_2021_extended.tif"
 
 
-su = "URAU"
+su = "LAU"
+print(datetime.now(), su)
 aggregate_geotiff_to_regions(
     gpkg_path=sus[su]["path"],
     region_id_attr=sus[su]["id"],
@@ -33,6 +36,7 @@ aggregate_geotiff_to_regions(
     geotiff_mask_path=degurba_raster,
     geotiff_mask_fun= lambda v:v==130
 )
+print(datetime.now(), "Done")
 
 
 
