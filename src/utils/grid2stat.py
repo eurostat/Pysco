@@ -36,6 +36,7 @@ def aggregate_geotiff_to_regions(
     geotiff_mask_path: str = None,
     geotiff_mask_fun = None,
     mask_band = 1,
+    region_filter = None,
     #verbose = False,
 ) -> None:
     """
@@ -78,8 +79,11 @@ def aggregate_geotiff_to_regions(
     if geotiff_mask_path: geotiff_mask_path = Path(geotiff_mask_path)
 
     # Load regions
-    regions = gpd.read_file(gpkg_path)[["geometry", region_id_attr]]
+    regions = gpd.read_file(gpkg_path)
+    if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
+    regions = regions[["geometry", region_id_attr]]
     rcrs = regions.crs
+
     # Build a fast spatial index over region geometries
     geom_list = list(regions.geometry)
     id_list = list(regions[region_id_attr])

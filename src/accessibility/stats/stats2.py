@@ -5,7 +5,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.grid2stat import aggregate_geotiff_to_regions
-#from utils.geotiff import crop_extend_bbox
+from accessibility.utils import get_countries_covered
 from accessibility.utils import bbox
 
 # output folder
@@ -14,7 +14,7 @@ output_folder = "/home/juju/gisco/accessibility/stats/"
 acc_grids_folder = "/home/juju/gisco/accessibility/"
 
 # resolution of the grids to use
-res = "1000"
+res = "100"
 
 # the statistical units
 sus = {
@@ -61,6 +61,21 @@ classes = {
 
 
 
+# function to determine the countries not covered by service and year
+def zonal_filter(id_att:str, service:str, year:str):
+    cnts = get_countries_covered(service, year)
+    def out(r):
+        if cnts == "all": return True
+        # if the id contains on of the country codes covered, then keep, else exclude
+        id = r[id_att]
+        for cnt in cnts:
+            if cnt in id: return True
+        return False
+    return out
+
+
+
+
 
 su = "NUTS"
 id_att = sus[su]["id"]
@@ -73,7 +88,8 @@ for year in acc_grids_versions[service].keys():
     df_year = aggregate_geotiff_to_regions(
         gpkg_path=sus[su]["path"],
         region_id_attr=id_att,
-        geotiff_path=pop_rasters["1000"],
+        region_filter = zonal_filter(id_att, service, year),
+        geotiff_path=pop_rasters[res],
         band=1,
         geotiff_mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
         geotiff_mask_fun= classes[service],
