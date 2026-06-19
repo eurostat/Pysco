@@ -88,9 +88,10 @@ def zonal_filter(id_att:str, service:str, year:str):
 
 for su in sus.keys():
     id_att = sus[su]["id"]
+    geo = su + "_" + sus[su]["version"]
     for service in acc_grids_versions.keys():
 
-        if True:
+        if False:
             out = []
             for year in acc_grids_versions[service].keys():
                 print(datetime.now(), service, su, year, res)
@@ -133,7 +134,6 @@ for su in sus.keys():
             # sort by NUTS level and alphabetic order
             #df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
             print(datetime.now(), "save compiled file")
-            geo = su + "_" + sus[su]["version"]
             pd.DataFrame(out).to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
 
 
