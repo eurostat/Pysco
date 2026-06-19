@@ -11,10 +11,11 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
-# run with 100 !!!
-# filter correctly countries: remove those without population (AL, etc.)
+# advance mask
 # stats by age group: educ for young, healthcare for old
 # stats by degree of urbanisation
+# run with 100 !!!
+# filter correctly countries: remove those without population (AL, etc.)
 # use also indicator to the X nearest ?
 # faster ?
 # make it possible that population raster is finer than class grid

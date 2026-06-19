@@ -23,179 +23,6 @@ from shapely.strtree import STRtree
 
 
 
-def transform_geotiff(
-    input_path: str,
-    output_path: str,
-    func: Callable[[npt.NDArray], npt.NDArray],
-    output_dtype: str = None,
-    band: int = 1,
-    compress: str = "lzw",
-) -> None:
-    """
-    Apply a lambda/function to each pixel of a GeoTIFF band and write the result
-    to a new GeoTIFF, preserving spatial metadata.
- 
-    Parameters
-    ----------
-    input_path : str
-        Path to the input GeoTIFF file.
-    output_path : str
-        Path where the output GeoTIFF will be written.
-    func : Callable
-        A function (or lambda) applied element-wise to the pixel array.
-        Receives a NumPy array and must return a NumPy array of the same shape.
-        Example: lambda x: x * 2 + 1
-    output_dtype : str, optional
-        NumPy/GDAL dtype string for the output raster (e.g. 'float32', 'uint8',
-        'int16', 'float64'). Defaults to the input band's dtype when not provided.
-    band : int, optional
-        1-based band index to read from the input file. Defaults to 1.
- 
-    Raises
-    ------
-    ValueError
-        If the requested band index is out of range.
-    """
-    with rasterio.open(input_path) as src:
-        data = src.read(band)                          # shape: (height, width)
-        profile = src.profile.copy()
- 
-    # Apply the user-supplied function
-    result: npt.NDArray = func(data)
- 
-    if result.shape != data.shape:
-        raise ValueError(
-            f"The function returned an array with shape {result.shape}, "
-            f"but the input shape is {data.shape}. Shapes must match."
-        )
- 
-    # Resolve output dtype
-    resolved_dtype = output_dtype if output_dtype is not None else str(data.dtype)
-    result = result.astype(resolved_dtype)
-
-    # Update profile for a single-band output
-    profile.update(
-        dtype=resolved_dtype,
-        count=1,
-        compress=compress,
-    )
- 
-    with rasterio.open(output_path, "w", **profile) as dst:
-        dst.write(result, 1)
-
-
-
-def multiply_geotiffs(
-    path_a: str,
-    path_b: str,
-    output_path: str,
-    band_a: int = 1,
-    band_b: int = 1,
-    output_dtype: str | None = None,
-) -> None:
-    """
-    Compute the pixel-wise product of two GeoTIFF files and write the result
-    to a new GeoTIFF.
-    Both inputs must share the same CRS, extent, and pixel grid.
-    Where either input pixel is no-data the output pixel is also no-data.
-    
-    This is usefull to compute weighted average statistics, e.g. population-weighted accessibility:
-    1. Multiply an accessibility raster (e.g. travel time to nearest hospital) by a population raster (e.g. population count per pixel).
-    2. Sum the resulting "population-weighted accessibility" values within each region.
-    3. Divide the total population-weighted accessibility by the total population in that region to get the population-weighted average accessibility.
- 
-    Parameters
-    ----------
-    path_a : str
-        Path to the first GeoTIFF.
-    path_b : str
-        Path to the second GeoTIFF.
-    output_path : str
-        Path for the output GeoTIFF (created or overwritten).
-    band_a : int, optional
-        1-based band index to read from the first file (default: 1).
-    band_b : int, optional
-        1-based band index to read from the second file (default: 1).
-    output_dtype : str or None, optional
-        NumPy/rasterio dtype for the output band, e.g. ``"float32"``.
-        Defaults to ``float64`` so that integer products don't overflow.
-    """
-    with rasterio.open(path_a) as src_a, rasterio.open(path_b) as src_b:
- 
-        # ------------------------------------------------------------------ #
-        # Read data and no-data values                                        #
-        # ------------------------------------------------------------------ #
-        data_a = src_a.read(band_a).astype(np.float64)
-        data_b = src_b.read(band_b).astype(np.float64)
- 
-        nodata_a = src_a.nodata
-        nodata_b = src_b.nodata
- 
-        # ------------------------------------------------------------------ #
-        # Build no-data masks (True where the pixel IS no-data)              #
-        # ------------------------------------------------------------------ #
-        if nodata_a is not None and np.isnan(nodata_a):
-            mask_a = np.isnan(data_a)
-        elif nodata_a is not None:
-            mask_a = data_a == nodata_a
-        else:
-            mask_a = np.zeros(data_a.shape, dtype=bool)
- 
-        if nodata_b is not None and np.isnan(nodata_b):
-            mask_b = np.isnan(data_b)
-        elif nodata_b is not None:
-            mask_b = data_b == nodata_b
-        else:
-            mask_b = np.zeros(data_b.shape, dtype=bool)
- 
-        combined_nodata_mask = mask_a | mask_b
- 
-        # ------------------------------------------------------------------ #
-        # Compute product                                                     #
-        # ------------------------------------------------------------------ #
-        product = data_a * data_b
- 
-        # ------------------------------------------------------------------ #
-        # Choose output dtype and no-data sentinel                           #
-        # ------------------------------------------------------------------ #
-        if output_dtype is None:
-            output_dtype = "float64"
- 
-        # Use NaN as the output no-data sentinel for float types; fall back
-        # to the first file's no-data value (or -9999) for integer types.
-        np_dtype = np.dtype(output_dtype)
-        if np.issubdtype(np_dtype, np.floating):
-            out_nodata = float("nan")
-        else:
-            # For integer outputs pick a sentinel: prefer source A's value
-            out_nodata = nodata_a if nodata_a is not None else -9999
-            out_nodata = int(out_nodata)
- 
-        product = product.astype(np_dtype)
-        product[combined_nodata_mask] = out_nodata
- 
-        # ------------------------------------------------------------------ #
-        # Write output GeoTIFF (copy spatial metadata from file A)          #
-        # ------------------------------------------------------------------ #
-        profile = src_a.profile.copy()
-        profile.update(
-            dtype=output_dtype,
-            count=1,
-            nodata=out_nodata,
-            compress="lzw",          # lossless, widely supported
-            predictor=2,             # horizontal differencing – good for floats
-            tiled=True,
-            blockxsize=256,
-            blockysize=256,
-        )
- 
-        with rasterio.open(output_path, "w", **profile) as dst:
-            dst.write(product[np.newaxis, :, :])   # shape (1, rows, cols)
- 
-
-
-
-
 
 def aggregate_geotiff_to_regions(
     gpkg_path: str,
@@ -373,3 +200,198 @@ def aggregate_geotiff_to_regions(
 
     print(f"Done. Results written to {output_csv_path}  ({len(id_list)} regions)")
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def transform_geotiff(
+    input_path: str,
+    output_path: str,
+    func: Callable[[npt.NDArray], npt.NDArray],
+    output_dtype: str = None,
+    band: int = 1,
+    compress: str = "lzw",
+) -> None:
+    """
+    Apply a lambda/function to each pixel of a GeoTIFF band and write the result
+    to a new GeoTIFF, preserving spatial metadata.
+ 
+    Parameters
+    ----------
+    input_path : str
+        Path to the input GeoTIFF file.
+    output_path : str
+        Path where the output GeoTIFF will be written.
+    func : Callable
+        A function (or lambda) applied element-wise to the pixel array.
+        Receives a NumPy array and must return a NumPy array of the same shape.
+        Example: lambda x: x * 2 + 1
+    output_dtype : str, optional
+        NumPy/GDAL dtype string for the output raster (e.g. 'float32', 'uint8',
+        'int16', 'float64'). Defaults to the input band's dtype when not provided.
+    band : int, optional
+        1-based band index to read from the input file. Defaults to 1.
+ 
+    Raises
+    ------
+    ValueError
+        If the requested band index is out of range.
+    """
+    with rasterio.open(input_path) as src:
+        data = src.read(band)                          # shape: (height, width)
+        profile = src.profile.copy()
+ 
+    # Apply the user-supplied function
+    result: npt.NDArray = func(data)
+ 
+    if result.shape != data.shape:
+        raise ValueError(
+            f"The function returned an array with shape {result.shape}, "
+            f"but the input shape is {data.shape}. Shapes must match."
+        )
+ 
+    # Resolve output dtype
+    resolved_dtype = output_dtype if output_dtype is not None else str(data.dtype)
+    result = result.astype(resolved_dtype)
+
+    # Update profile for a single-band output
+    profile.update(
+        dtype=resolved_dtype,
+        count=1,
+        compress=compress,
+    )
+ 
+    with rasterio.open(output_path, "w", **profile) as dst:
+        dst.write(result, 1)
+
+
+
+def multiply_geotiffs(
+    path_a: str,
+    path_b: str,
+    output_path: str,
+    band_a: int = 1,
+    band_b: int = 1,
+    output_dtype: str | None = None,
+) -> None:
+    """
+    Compute the pixel-wise product of two GeoTIFF files and write the result
+    to a new GeoTIFF.
+    Both inputs must share the same CRS, extent, and pixel grid.
+    Where either input pixel is no-data the output pixel is also no-data.
+    
+    This is usefull to compute weighted average statistics, e.g. population-weighted accessibility:
+    1. Multiply an accessibility raster (e.g. travel time to nearest hospital) by a population raster (e.g. population count per pixel).
+    2. Sum the resulting "population-weighted accessibility" values within each region.
+    3. Divide the total population-weighted accessibility by the total population in that region to get the population-weighted average accessibility.
+ 
+    Parameters
+    ----------
+    path_a : str
+        Path to the first GeoTIFF.
+    path_b : str
+        Path to the second GeoTIFF.
+    output_path : str
+        Path for the output GeoTIFF (created or overwritten).
+    band_a : int, optional
+        1-based band index to read from the first file (default: 1).
+    band_b : int, optional
+        1-based band index to read from the second file (default: 1).
+    output_dtype : str or None, optional
+        NumPy/rasterio dtype for the output band, e.g. ``"float32"``.
+        Defaults to ``float64`` so that integer products don't overflow.
+    """
+    with rasterio.open(path_a) as src_a, rasterio.open(path_b) as src_b:
+ 
+        # ------------------------------------------------------------------ #
+        # Read data and no-data values                                        #
+        # ------------------------------------------------------------------ #
+        data_a = src_a.read(band_a).astype(np.float64)
+        data_b = src_b.read(band_b).astype(np.float64)
+ 
+        nodata_a = src_a.nodata
+        nodata_b = src_b.nodata
+ 
+        # ------------------------------------------------------------------ #
+        # Build no-data masks (True where the pixel IS no-data)              #
+        # ------------------------------------------------------------------ #
+        if nodata_a is not None and np.isnan(nodata_a):
+            mask_a = np.isnan(data_a)
+        elif nodata_a is not None:
+            mask_a = data_a == nodata_a
+        else:
+            mask_a = np.zeros(data_a.shape, dtype=bool)
+ 
+        if nodata_b is not None and np.isnan(nodata_b):
+            mask_b = np.isnan(data_b)
+        elif nodata_b is not None:
+            mask_b = data_b == nodata_b
+        else:
+            mask_b = np.zeros(data_b.shape, dtype=bool)
+ 
+        combined_nodata_mask = mask_a | mask_b
+ 
+        # ------------------------------------------------------------------ #
+        # Compute product                                                     #
+        # ------------------------------------------------------------------ #
+        product = data_a * data_b
+ 
+        # ------------------------------------------------------------------ #
+        # Choose output dtype and no-data sentinel                           #
+        # ------------------------------------------------------------------ #
+        if output_dtype is None:
+            output_dtype = "float64"
+ 
+        # Use NaN as the output no-data sentinel for float types; fall back
+        # to the first file's no-data value (or -9999) for integer types.
+        np_dtype = np.dtype(output_dtype)
+        if np.issubdtype(np_dtype, np.floating):
+            out_nodata = float("nan")
+        else:
+            # For integer outputs pick a sentinel: prefer source A's value
+            out_nodata = nodata_a if nodata_a is not None else -9999
+            out_nodata = int(out_nodata)
+ 
+        product = product.astype(np_dtype)
+        product[combined_nodata_mask] = out_nodata
+ 
+        # ------------------------------------------------------------------ #
+        # Write output GeoTIFF (copy spatial metadata from file A)          #
+        # ------------------------------------------------------------------ #
+        profile = src_a.profile.copy()
+        profile.update(
+            dtype=output_dtype,
+            count=1,
+            nodata=out_nodata,
+            compress="lzw",          # lossless, widely supported
+            predictor=2,             # horizontal differencing – good for floats
+            tiled=True,
+            blockxsize=256,
+            blockysize=256,
+        )
+ 
+        with rasterio.open(output_path, "w", **profile) as dst:
+            dst.write(product[np.newaxis, :, :])   # shape (1, rows, cols)
+ 
