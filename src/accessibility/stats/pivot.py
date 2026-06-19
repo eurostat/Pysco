@@ -4,7 +4,7 @@ import os
 
 
 
-def decompose_hypercube(input_csv: str, output_folder: str) -> list[str]:
+def decompose_hypercube(input_csv: str, output_folder: str, output_file_name_fun = None, verbose: bool = False) -> list[str]:
     """
     Decompose a hypercube CSV into one file per (UNIT, INDIC) combination.
  
@@ -29,15 +29,12 @@ def decompose_hypercube(input_csv: str, output_folder: str) -> list[str]:
     dim_cols = [c for c in df.columns if c != "VALUE"]          # e.g. GEO TIME UNIT INDIC
     pivot_col = "TIME"                                           # becomes VALUE_XXXX columns
     group_cols = [c for c in dim_cols if c not in {"GEO", pivot_col}]  # e.g. UNIT INDIC
- 
-    written_files = []
- 
+  
     for keys, group in df.groupby(group_cols):
         # Build a tidy label like "UNIT_NR__INDIC_T"
         if isinstance(keys, str):          # only one grouping column (edge-case)
             keys = (keys,)
         label_parts = [f"{col}_{val}" for col, val in zip(group_cols, keys)]
-        label = "__".join(label_parts)
  
         # Pivot TIME → columns
         pivoted = (
@@ -48,21 +45,17 @@ def decompose_hypercube(input_csv: str, output_folder: str) -> list[str]:
  
         # Rename columns: year integers → VALUE_YYYY
         pivoted.columns.name = None
-        pivoted = pivoted.rename(
-            columns=lambda c: f"VALUE_{c}" if c != "GEO" else c
-        )
+        pivoted = pivoted.rename( columns=lambda c: f"{c}" if c != "GEO" else c)
  
-        out_path = os.path.join(output_folder, f"{label}.csv")
+        out_path = "_".join(label_parts)
+        if output_file_name_fun: out_path = output_file_name_fun(out_path)
+        out_path = os.path.join(output_folder, f"{out_path}.csv")
         pivoted.to_csv(out_path, index=False)
-        written_files.append(out_path)
-        print(f"Written: {out_path}  ({len(pivoted)} rows, {list(pivoted.columns)})")
+        if verbose: print(f"Written: {out_path}  ({len(pivoted)} rows, {list(pivoted.columns)})")
  
-    return written_files
-
 
 
 
 in_folder = "/home/juju/gisco/accessibility/stats/"
-
 decompose_hypercube(in_folder + "euro_access_evrp_NUTS_2024.csv", in_folder + "decomposed/")
 
