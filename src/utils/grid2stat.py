@@ -93,9 +93,6 @@ def aggregate_geotiff_to_regions(
         for classe in geotiff_mask_fun.keys():
             sums[rid][classe] = 0
 
-    # prepare output structure
-    out = []
-
     # Open tiff
     if geotiff_mask_path: src_mask = rasterio.open(geotiff_mask_path)
     with rasterio.open(geotiff_path) as src:
@@ -120,6 +117,7 @@ def aggregate_geotiff_to_regions(
 
                 # loop through attributes
                 for classe in geotiff_mask_fun.keys():
+
                     # get masked data
                     mask_fun = geotiff_mask_fun[classe]
                     data_mask2 = mask_fun(data_mask)
@@ -175,8 +173,7 @@ def aggregate_geotiff_to_regions(
                             (xs >= gx_min) & (xs <= gx_max) &
                             (ys >= gy_min) & (ys <= gy_max)
                         )
-                        if not in_bbox.any():
-                            continue
+                        if not in_bbox.any(): continue
 
                         bbox_xs = xs[in_bbox]
                         bbox_ys = ys[in_bbox]

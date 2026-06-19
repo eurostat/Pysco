@@ -1,4 +1,5 @@
 from datetime import datetime
+import pandas as pd
 
 import sys
 import os
@@ -56,28 +57,38 @@ classes = {
     },
 }
 
-
-degurba_raster = "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2021/DGUR_LEVEL2_GRD_1KM_2021_extended.tif"
+#degurba_raster = "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2021/DGUR_LEVEL2_GRD_1KM_2021_extended.tif"
 
 
 
 
 su = "NUTS"
+id_att = sus[su]["id"]
+geo = su + "_" + sus[su]["version"]
+
 service = "healthcare"
-year = "2023"
-print(datetime.now(), su)
-df = aggregate_geotiff_to_regions(
-    gpkg_path=sus[su]["path"],
-    region_id_attr=sus[su]["id"],
-    geotiff_path=pop_rasters["1000"],
-    band=1,
-    geotiff_mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-    geotiff_mask_fun= classes[service],
-    #geotiff_mask_path=degurba_raster,
-    #geotiff_mask_fun= lambda v:v==130,
-    #verbose=True,
-)
-df.to_csv("tmp/out.csv", index=False)
+dfc = None
+for year in acc_grids_versions[service].keys():
+    print(datetime.now(), su, service, year)
+    df = aggregate_geotiff_to_regions(
+        gpkg_path=sus[su]["path"],
+        region_id_attr=id_att,
+        geotiff_path=pop_rasters["1000"],
+        band=1,
+        geotiff_mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
+        geotiff_mask_fun= classes[service],
+        #geotiff_mask_path=degurba_raster,
+        #geotiff_mask_fun= lambda v:v==130,
+        #verbose=True,
+    )
+    df["TIME"] = year
+    dfc = df if dfc is None else pd.concat([dfc, df], ignore_index=True)
+
+dfc["UNIT"] = 'NR'
+dfc = dfc.rename(columns={id_att: 'GEO', 'dim': 'INDIC', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
+
+print(datetime.now(), "save compiled file")
+dfc.to_csv("tmp/" + "euro_access_" + service + "_" + geo + ".csv", index=False)
 
 
 
