@@ -31,14 +31,13 @@ def aggregate_geotiff_to_regions(
     gpkg_path: str,
     region_id_attr: str,
     geotiff_path: str,
-    output_csv_path: str,
     output_col_name: str = "sum",
     block_size: int = 1024,
     band: int = 1,
     geotiff_mask_path: str = None,
     geotiff_mask_fun = None,
     mask_band = 1,
-    verbose = False,
+    #verbose = False,
 ) -> None:
     """
     For each region in *gpkg_path*, sum the values of all GeoTIFF pixels
@@ -66,8 +65,6 @@ def aggregate_geotiff_to_regions(
         Name of the attribute that uniquely identifies each region.
     geotiff_path : str
         Path to the input GeoTIFF (single band used; first band if multi-band).
-    output_csv_path : str
-        Path for the output CSV file.  Created or overwritten.
     output_col_name : str
         Column name for the aggregated values in the output CSV (default: "sum").
     block_size : int
@@ -79,11 +76,11 @@ def aggregate_geotiff_to_regions(
     """
     gpkg_path = Path(gpkg_path)
     geotiff_path = Path(geotiff_path)
-    output_csv_path = Path(output_csv_path)
     if geotiff_mask_path: geotiff_mask_path = Path(geotiff_mask_path)
 
     # Load regions
     regions = gpd.read_file(gpkg_path)[["geometry", region_id_attr]]
+    rcrs = regions.crs
     # Build a fast spatial index over region geometries
     geom_list = list(regions.geometry)
     id_list = list(regions[region_id_attr])
@@ -102,8 +99,7 @@ def aggregate_geotiff_to_regions(
         height, width = src.height, src.width
 
         # check same CRS
-        if regions.crs != src.crs:
-            raise ValueError("Different CRS for GPKG and raster")
+        if rcrs != src.crs: raise ValueError("Different CRS for GPKG and raster")
 
         # 2. Tile over the raster
         for row_off in range(0, height, block_size):
@@ -190,7 +186,7 @@ def aggregate_geotiff_to_regions(
                     sums[rid] += bbox_vals[inside].sum()
 
     # export
-    return pd.DataFrame({ region_id_attr: id_list, output_col_name: sums })
+    return pd.DataFrame({ region_id_attr: id_list, output_col_name: list(sums.values()) })
 
 
 

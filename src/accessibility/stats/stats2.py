@@ -31,13 +31,15 @@ df = aggregate_geotiff_to_regions(
     region_id_attr=sus[su]["id"],
     geotiff_path=pop_rasters["1000"],
     band=1,
-    output_csv_path="tmp/out.csv",
     output_col_name="T",
     #geotiff_mask_path=degurba_raster,
     #geotiff_mask_fun= lambda v:v==130,
     #verbose=True,
 )
 print(df)
+df.to_csv("tmp/out.csv")
+
+
 
 
 
