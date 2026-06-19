@@ -89,65 +89,67 @@ def zonal_filter(id_att:str, service:str, year:str):
 for su in sus.keys():
     id_att = sus[su]["id"]
     for service in acc_grids_versions.keys():
-        out = []
-        for year in acc_grids_versions[service].keys():
-            print(datetime.now(), service, su, year, res)
-            file_name = output_folder + service + "_" + su + "_" + year
 
-            df = zonal_sum_by_class(
-                classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-                values_path = pop_rasters[res],
-                zonal_path = sus[su]["path"],
-                zonal_filter = zonal_filter(id_att, service, year),
-                classes = classes[service],
-                id_att= id_att,
-                verbose = False,
-                clean_zonal_attributes = True
-            ).drop(columns=['geometry'])
+        if True:
+            out = []
+            for year in acc_grids_versions[service].keys():
+                print(datetime.now(), service, su, year, res)
+                file_name = output_folder + service + "_" + su + "_" + year
 
-            print(datetime.now(), "compute percentages")
-            for att in classes[service].keys():
-                if att == "pop_T": continue
-                def compute_percentage(r):
-                    t = r['pop_T']
-                    if not pd.notna(t) or t==0: return None
-                    v = r[att]
-                    if not pd.notna(v): return None
-                    return round(100 * v/t, 2)
-                df[att.replace("pop","pct")] = df.apply(compute_percentage, axis=1)
+                df = zonal_sum_by_class(
+                    classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
+                    values_path = pop_rasters[res],
+                    zonal_path = sus[su]["path"],
+                    zonal_filter = zonal_filter(id_att, service, year),
+                    classes = classes[service],
+                    id_att= id_att,
+                    verbose = False,
+                    clean_zonal_attributes = True
+                ).drop(columns=['geometry'])
 
-            # take data for compiled file
-            for index, row in df.iterrows():
-                geo = row[id_att]
-                for k in row.keys():
-                    if k == id_att: continue
-                    ob = { "GEO":geo, "TIME":year }
-                    if 'pop' in k: ob['UNIT'] = "NR"
-                    else: ob['UNIT'] = "PC"
-                    ob['INDIC'] = k.replace("pop_","").replace("pct_","")
-                    ob['VALUE'] = row[k]
-                    out.append(ob)
+                print(datetime.now(), "compute percentages")
+                for att in classes[service].keys():
+                    if att == "pop_T": continue
+                    def compute_percentage(r):
+                        t = r['pop_T']
+                        if not pd.notna(t) or t==0: return None
+                        v = r[att]
+                        if not pd.notna(v): return None
+                        return round(100 * v/t, 2)
+                    df[att.replace("pop","pct")] = df.apply(compute_percentage, axis=1)
 
-        # sort by NUTS level and alphabetic order
-        #df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
-        print(datetime.now(), "save compiled file")
-        geo = su + "_" + sus[su]["version"]
-        pd.DataFrame(out).to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
+                # take data for compiled file
+                for index, row in df.iterrows():
+                    geo = row[id_att]
+                    for k in row.keys():
+                        if k == id_att: continue
+                        ob = { "GEO":geo, "TIME":year }
+                        if 'pop' in k: ob['UNIT'] = "NR"
+                        else: ob['UNIT'] = "PC"
+                        ob['INDIC'] = k.replace("pop_","").replace("pct_","")
+                        ob['VALUE'] = row[k]
+                        out.append(ob)
+
+            # sort by NUTS level and alphabetic order
+            #df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
+            print(datetime.now(), "save compiled file")
+            geo = su + "_" + sus[su]["version"]
+            pd.DataFrame(out).to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
 
 
+        if True:
+            print(datetime.now(), "decompose by time series")
 
-        print(datetime.now(), "decompose by time series")
+            out_folder_d = output_folder + "decomposed/"
+            hypercube_csv_to_timeseries_csv(
+                output_folder + "euro_access_" + service + "_" + geo + ".csv",
+                out_folder_d,
+                output_file_name_fun = lambda f: "euro_access_" + service + "_" + geo + "__" + f)
 
-        out_folder_d = output_folder + "decomposed/"
-        hypercube_csv_to_timeseries_csv(
-            output_folder + "euro_access_" + service + "_" + geo + ".csv",
-            out_folder_d,
-            output_file_name_fun = lambda f: "euro_access_" + service + "_" + geo + "__" + f)
-
-        # delete NR files (not usefull) and rename files (remove PC)
-        for f in os.listdir(out_folder_d):
-            if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
-            if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
+            # delete NR files (not usefull) and rename files (remove PC)
+            for f in os.listdir(out_folder_d):
+                if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
+                if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
 
 
 
