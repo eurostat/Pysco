@@ -75,8 +75,6 @@ def zonal_filter(id_att:str, service:str, year:str):
 
 
 
-
-
 su = "NUTS"
 id_att = sus[su]["id"]
 geo = su + "_" + sus[su]["version"]
@@ -93,6 +91,7 @@ for year in acc_grids_versions[service].keys():
         band=1,
         geotiff_mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
         geotiff_mask_fun= classes[service],
+        block_size=4096,
         #geotiff_mask_path=degurba_raster,
         #geotiff_mask_fun= lambda v:v==130,
         #verbose=True,
