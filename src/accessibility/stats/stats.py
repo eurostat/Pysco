@@ -91,7 +91,7 @@ for su in sus.keys():
     geo = su + "_" + sus[su]["version"]
     for service in acc_grids_versions.keys():
 
-        if False:
+        if True:
             out = []
             for year in acc_grids_versions[service].keys():
                 print(datetime.now(), service, su, year, res)
