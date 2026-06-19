@@ -90,7 +90,7 @@ df = df.rename(columns={id_att: 'GEO', 'dim': 'INDIC', 'value': 'VALUE'})[["GEO"
 # compute percentages
 if True:
     # Get the totals (INDIC='T') for each GEO/TIME combination
-    totals = df[df_year['INDIC'] == 'T'][['GEO', 'TIME', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+    totals = df[df['INDIC'] == 'T'][['GEO', 'TIME', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
     # Merge totals back onto the full dataframe
     df_merged = df.merge(totals, on=['GEO', 'TIME'])
@@ -105,7 +105,7 @@ if True:
     result = pd.concat([df, pc_rows], ignore_index=True)
 
 
-
+# TODO sort ?
 print(datetime.now(), "save compiled file")
 df.to_csv("tmp/" + "euro_access_" + service + "_" + geo + ".csv", index=False)
 
