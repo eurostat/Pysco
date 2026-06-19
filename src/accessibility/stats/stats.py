@@ -23,8 +23,6 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 # output folder
 output_folder = "/home/juju/gisco/accessibility/stats/"
-# working folder
-working_folder = "./tmp/stats/"
 # accessiblity grids folder
 acc_grids_folder = "/home/juju/gisco/accessibility/"
 
