@@ -24,20 +24,20 @@ pop_rasters = {
 degurba_raster = "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2021/DGUR_LEVEL2_GRD_1KM_2021_extended.tif"
 
 
-su = "LAU"
+su = "NUTS"
 print(datetime.now(), su)
-aggregate_geotiff_to_regions(
+df = aggregate_geotiff_to_regions(
     gpkg_path=sus[su]["path"],
     region_id_attr=sus[su]["id"],
     geotiff_path=pop_rasters["1000"],
     band=1,
     output_csv_path="tmp/out.csv",
     output_col_name="T",
-    geotiff_mask_path=degurba_raster,
-    geotiff_mask_fun= lambda v:v==130
+    #geotiff_mask_path=degurba_raster,
+    #geotiff_mask_fun= lambda v:v==130,
+    #verbose=True,
 )
-print(datetime.now(), "Done")
-
+print(df)
 
 
 

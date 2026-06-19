@@ -4,7 +4,8 @@ Dependencies
     pip install rasterio geopandas shapely numpy pandas
 """
 
-import csv
+#import csv
+import pandas as pd
 from collections import defaultdict
 from pathlib import Path
 
@@ -17,6 +18,7 @@ import rasterio
 from rasterio.windows import Window
 from rasterio.enums import Resampling
 from rasterio.transform import from_bounds
+from rasterio.enums import Compression
 
 from shapely import prepare, contains_xy
 from shapely.geometry import box as shapely_box
@@ -81,36 +83,27 @@ def aggregate_geotiff_to_regions(
     if geotiff_mask_path: geotiff_mask_path = Path(geotiff_mask_path)
 
     # Load regions
-    regions = gpd.read_file(gpkg_path)[["geometry",region_id_attr]]
-    if verbose: print(datetime.now(), len(regions), "regions loaded")
+    regions = gpd.read_file(gpkg_path)[["geometry", region_id_attr]]
+    # Build a fast spatial index over region geometries
+    geom_list = list(regions.geometry)
+    id_list = list(regions[region_id_attr])
+    regions = STRtree(geom_list)
 
-    # Open tiffs
+    # Accumulator: region_id -> running sum
+    sums: dict = defaultdict(float)
+    # Ensure every region appears in output even if sum == 0
+    for rid in id_list: sums[rid] = 0.0
+
+    # Open tiff
     if geotiff_mask_path: src_mask = rasterio.open(geotiff_mask_path)
     with rasterio.open(geotiff_path) as src:
-        raster_crs = src.crs
         transform = src.transform
         nodata = src.nodata
         height, width = src.height, src.width
-        #band_count = src.count  # we use band 1
 
-        # Reproject regions if necessary
-        if regions.crs is None:
-            raise ValueError("GeoPackage has no CRS defined.")
-        if regions.crs != raster_crs:
-            regions = regions.to_crs(raster_crs)
-
-        # Build a fast spatial index over region geometries
-        if verbose: print(datetime.now(), "build spatial index")
-        geom_list = list(regions.geometry)
-        id_list = list(regions[region_id_attr])
-        regions = STRtree(geom_list)
-        if verbose: print(datetime.now(), "done")
-
-        # Accumulator: region_id -> running sum
-        sums: dict = defaultdict(float)
-        # Ensure every region appears in output even if sum == 0
-        for rid in id_list:
-            sums[rid] = 0.0
+        # check same CRS
+        if regions.crs != src.crs:
+            raise ValueError("Different CRS for GPKG and raster")
 
         # 2. Tile over the raster
         for row_off in range(0, height, block_size):
@@ -121,14 +114,22 @@ def aggregate_geotiff_to_regions(
 
                 window = Window(col_off, row_off, col_count, row_count)
                 data = src.read(band, window=window).astype(np.float64)
+                #print(len(data),len(data[0]))
                 if geotiff_mask_path:
-                    data_mask = src_mask.read(mask_band, window=window)
+                    data_mask = src_mask.read(mask_band, window=window).astype(np.float32)
+                    if geotiff_mask_fun:
+                        data_mask = geotiff_mask_fun(data_mask)
+                    #print(" ", len(data_mask),len(data_mask[0]))
+                    #print(data_mask)
+                    #data = data[data_mask]
+                    data = np.where(data_mask, data, nodata)
+                    #print(data)
+                    #print(" ", len(data),len(data[0]))
+
 
                 # Mask nodata pixels
-                if nodata is not None:
-                    valid_mask = ~np.isclose(data, nodata)
-                else:
-                    valid_mask = np.ones(data.shape, dtype=bool)
+                if nodata is not None: valid_mask = ~np.isclose(data, nodata)
+                else: valid_mask = np.ones(data.shape, dtype=bool)
 
                 # Skip entirely empty blocks
                 if not valid_mask.any(): continue
@@ -167,7 +168,7 @@ def aggregate_geotiff_to_regions(
 
                 # 5. Point-in-polygon for each candidate region
                 # Build a MultiPoint for bulk contains queries
-                #points_xy = np.stack([xs, ys], axis=1)
+                # points_xy = np.stack([xs, ys], axis=1)
 
                 for geom, rid in zip(candidate_geoms, candidate_ids):
                     # Fast bounding-box pre-check per region
@@ -188,18 +189,53 @@ def aggregate_geotiff_to_regions(
                     inside = contains_xy(geom, bbox_xs, bbox_ys)
                     sums[rid] += bbox_vals[inside].sum()
 
-    # 6. Write CSV
-    output_csv_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(output_csv_path, "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow([region_id_attr, output_col_name])
-        for rid in id_list:           # preserve original order
-            writer.writerow([rid, sums[rid]])
-
-    print(f"Done. Results written to {output_csv_path}  ({len(id_list)} regions)")
+    # export
+    return pd.DataFrame({ region_id_attr: id_list, output_col_name: sums })
 
 
 
+
+
+
+
+def conditional_raster(
+    raster1_path: str,
+    raster2_path: str,
+    output_path: str,
+    condition,
+    nodata_value=np.nan,
+):
+    """
+    Creates a new raster with values from raster1 where raster2 satisfies a condition.
+
+    Parameters
+    ----------
+    raster1_path   : path to the source raster (values to keep)
+    raster2_path   : path to the condition raster (values to test)
+    output_path    : path for the output GeoTIFF
+    condition      : callable that takes a numpy array and returns a boolean mask
+                     e.g.  lambda x: x > 100
+                           lambda x: (x >= 0) & (x < 50)
+                           lambda x: x != -9999
+    nodata_value   : value written where the condition is False (default: nan)
+    """
+    with rasterio.open(raster1_path) as src1, rasterio.open(raster2_path) as src2:
+        profile = src1.profile.copy()
+        profile.update(
+            dtype=rasterio.float32,
+            nodata=nodata_value,
+            compress=Compression.deflate,
+        )
+
+        with rasterio.open(output_path, "w", **profile) as dst:
+            for band_idx in range(1, src1.count + 1):
+                data1 = src1.read(band_idx).astype(np.float32)
+                data2 = src2.read(band_idx).astype(np.float32)
+
+                mask = condition(data2)          # boolean array
+                result = np.where(mask, data1, nodata_value)
+
+                dst.write(result, band_idx)
 
 
 
