@@ -14,7 +14,7 @@ def decompose_hypercube(input_csv: str, output_folder: str, output_file_name_fun
  
     Each output file has the structure:
         id_columns, <time1>, <time2>, ...
- 
+
     Parameters
     ----------
     input_csv     : path to the input CSV file
@@ -61,5 +61,7 @@ def decompose_hypercube(input_csv: str, output_folder: str, output_file_name_fun
 
 
 in_folder = "/home/juju/gisco/accessibility/stats/"
-decompose_hypercube(in_folder + "euro_access_evrp_NUTS_2024.csv", in_folder + "decomposed/")
+service = "evrp"
+geo = "NUTS_2024"
+decompose_hypercube(in_folder + "euro_access_"+service+"_"+geo+".csv", in_folder + "decomposed/", output_file_name_fun = lambda f: "euro_access_"+service+"_"+geo+f)
 
