@@ -113,24 +113,27 @@ def aggregate_geotiff_to_regions(
             for col_off in range(0, width, block_size):
                 col_count = min(block_size, width - col_off)
 
+                # get tile raster data
                 window = Window(col_off, row_off, col_count, row_count)
                 data = src.read(band, window=window).astype(np.float64)
                 data_mask = src_mask.read(mask_band, window=window).astype(np.float32)
 
+                # loop through attributes
                 for classe in geotiff_mask_fun.keys():
+                    # get masked data
                     mask_fun = geotiff_mask_fun[classe]
-                    data_mask = mask_fun(data_mask)
-                    data2 = np.where(data_mask, data, nodata)
+                    data_mask2 = mask_fun(data_mask)
+                    data2 = np.where(data_mask2, data, nodata)
 
                     # Mask nodata pixels
-                    if nodata is not None: valid_mask = ~np.isclose(data2, nodata)
-                    else: valid_mask = np.ones(data2.shape, dtype=bool)
+                    if nodata is not None: data2 = ~np.isclose(data2, nodata)
+                    else: data2 = np.ones(data2.shape, dtype=bool)
 
                     # Skip entirely empty blocks
-                    if not valid_mask.any(): continue
+                    if not data2.any(): continue
 
                     # 3. Compute pixel-centre coordinates for valid pixels
-                    rows_idx, cols_idx = np.where(valid_mask)
+                    rows_idx, cols_idx = np.where(data2)
 
                     # Absolute pixel indices within the full raster
                     abs_rows = rows_idx + row_off
