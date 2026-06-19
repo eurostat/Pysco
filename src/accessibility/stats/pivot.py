@@ -16,6 +16,7 @@ hypercube_csv_to_timeseries_csv(
     out_folder,
     output_file_name_fun = lambda f: "euro_access_"+service+"_"+geo+"__"+f)
 
-# delete NR files (not usefull)
+# delete NR files (not usefull) and rename files (remove PC)
 for filename in os.listdir(out_folder):
-    if "__UNIT_NR__" in filename: os.remove(os.path.join(out_folder, filename))
+    if "__UNIT_NR" in filename: os.remove(os.path.join(out_folder, filename))
+    if "__UNIT_PC" in filename: os.rename(os.path.join(out_folder, filename), os.path.join(out_folder, filename.replace("__UNIT_PC", "")))
