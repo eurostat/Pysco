@@ -51,7 +51,7 @@ def decompose_hypercube(input_csv: str, output_folder: str, output_file_name_fun
         pivoted.columns.name = None
         pivoted = pivoted.rename( columns=lambda c: f"{c}" if c != id_columns else c)
  
-        out_path = "_".join(label_parts)
+        out_path = "__".join(label_parts)
         if output_file_name_fun: out_path = output_file_name_fun(out_path)
         out_path = os.path.join(output_folder, f"{out_path}.csv")
         pivoted.to_csv(out_path, index=False)
@@ -63,5 +63,6 @@ def decompose_hypercube(input_csv: str, output_folder: str, output_file_name_fun
 in_folder = "/home/juju/gisco/accessibility/stats/"
 service = "evrp"
 geo = "NUTS_2024"
-decompose_hypercube(in_folder + "euro_access_"+service+"_"+geo+".csv", in_folder + "decomposed/", output_file_name_fun = lambda f: "euro_access_"+service+"_"+geo+f)
+decompose_hypercube(in_folder + "euro_access_"+service+"_"+geo+".csv", in_folder + "decomposed/",
+                    output_file_name_fun = lambda f: "euro_access_"+service+"_"+geo+"__"+f)
 
