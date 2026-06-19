@@ -40,20 +40,20 @@ acc_grids_versions = {
 classes = {
     "healthcare" : {
         "T": lambda v:True,
-        "LT_5_MIN": lambda v: v<=5*60 and v>=0,
-        "LT_20_MIN": lambda v: v<=20*60,
-        "LT_45_MIN": lambda v: v<=45*60,
+        "LT_5_MIN": lambda v: (v<=5*60) & (v>=0),
+        "LT_20_MIN": lambda v: (v<=20*60) & (v>=0),
+        "LT_45_MIN": lambda v: (v<=45*60) & (v>=0),
     },
     "education" : {
         "T": lambda v:True,
-        "LT_2_MIN": lambda v: v<=2*60,
-        "LT_10_MIN": lambda v: v<=10*60,
-        "LT_20_MIN": lambda v: v<=20*60,
+        "LT_2_MIN": lambda v: (v<=2*60) & (v>=0),
+        "LT_10_MIN": lambda v: (v<=10*60) & (v>=0),
+        "LT_20_MIN": lambda v: (v<=20*60) & (v>=0),
     },
     "evrp" : {
         "T":(0, 1e9),
-        "LT_500_M": lambda v: v<=500,
-        "LT_5000_M": lambda v: v<=5000,
+        "LT_500_M": lambda v: (v<=500) & (v>=0),
+        "LT_5000_M": lambda v: (v<=5000) & (v>=0),
     },
 }
 
