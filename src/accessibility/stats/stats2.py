@@ -67,10 +67,10 @@ id_att = sus[su]["id"]
 geo = su + "_" + sus[su]["version"]
 
 service = "healthcare"
-dfc = None
+df = None
 for year in acc_grids_versions[service].keys():
     print(datetime.now(), su, service, year)
-    df = aggregate_geotiff_to_regions(
+    df_year = aggregate_geotiff_to_regions(
         gpkg_path=sus[su]["path"],
         region_id_attr=id_att,
         geotiff_path=pop_rasters["1000"],
@@ -81,14 +81,33 @@ for year in acc_grids_versions[service].keys():
         #geotiff_mask_fun= lambda v:v==130,
         #verbose=True,
     )
-    df["TIME"] = year
-    dfc = df if dfc is None else pd.concat([dfc, df], ignore_index=True)
+    df_year["TIME"] = year
+    df = df_year if df is None else pd.concat([df, df_year], ignore_index=True)
 
-dfc["UNIT"] = 'NR'
-dfc = dfc.rename(columns={id_att: 'GEO', 'dim': 'INDIC', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
+df["UNIT"] = 'NR'
+df = df.rename(columns={id_att: 'GEO', 'dim': 'INDIC', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
+
+# compute percentages
+if True:
+    # Get the totals (INDIC='T') for each GEO/TIME combination
+    totals = df[df_year['INDIC'] == 'T'][['GEO', 'TIME', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+
+    # Merge totals back onto the full dataframe
+    df_merged = df.merge(totals, on=['GEO', 'TIME'])
+
+    # Build the percentage rows
+    pc_rows = df_merged.copy()
+    pc_rows['VALUE'] = (pc_rows['VALUE'] / pc_rows['TOTAL'] * 100).round(2)
+    pc_rows['UNIT'] = 'PC'
+
+    # Drop the helper column and append
+    pc_rows = pc_rows.drop(columns=['TOTAL'])#.query("INDIC != 'T'")
+    result = pd.concat([df, pc_rows], ignore_index=True)
+
+
 
 print(datetime.now(), "save compiled file")
-dfc.to_csv("tmp/" + "euro_access_" + service + "_" + geo + ".csv", index=False)
+df.to_csv("tmp/" + "euro_access_" + service + "_" + geo + ".csv", index=False)
 
 
 
