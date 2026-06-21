@@ -278,7 +278,7 @@ def load_prepare_regions(
     }
 
     # Build a fast spatial index over region geometries
-    regions["index"] = STRtree(regions["geoms"]),
+    regions["index"] = STRtree(regions["geoms"])
     return regions
 
 
