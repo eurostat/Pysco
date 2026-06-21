@@ -126,7 +126,7 @@ for su in sus.keys():
 
         # TODO sort ?
         print(datetime.now(), "save compiled file")
-        df.to_csv("tmp/" + "euro_access_" + service + "_" + geo + ".csv", index=False)
+        df.to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
 
 
 
