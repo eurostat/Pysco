@@ -50,7 +50,7 @@ classes = {
         "LT_20_MIN": lambda v: (v<=20*60) & (v>=0),
     },
     "evrp" : {
-        "T":(0, 1e9),
+        "T": lambda v:True,
         "LT_500_M": lambda v: (v<=500) & (v>=0),
         "LT_5000_M": lambda v: (v<=5000) & (v>=0),
     },
