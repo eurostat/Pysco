@@ -4,9 +4,8 @@ import pandas as pd
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-from utils.grid2stat import aggregate_geotiff_to_regions
+from utils.grid2stat import aggregate_geotiff_to_regions_, load_prepare_regions
 from accessibility.utils import get_countries_covered
-from accessibility.utils import bbox
 
 # output folder
 output_folder = "/home/juju/gisco/accessibility/stats/"
@@ -75,54 +74,59 @@ def zonal_filter(id_att:str, service:str, year:str):
 
 
 
-su = "NUTS"
-id_att = sus[su]["id"]
-geo = su + "_" + sus[su]["version"]
 
-service = "healthcare"
-df = None
-for year in acc_grids_versions[service].keys():
-    print(datetime.now(), su, service, year)
-    df_year = aggregate_geotiff_to_regions(
-        gpkg_path=sus[su]["path"],
-        region_id_attr=id_att,
-        region_filter = zonal_filter(id_att, service, year),
-        geotiff_path=pop_rasters[res],
-        band=1,
-        geotiff_mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-        geotiff_mask_fun= classes[service],
-        block_size=4096,
-        #geotiff_mask_path=degurba_raster,
-        #geotiff_mask_fun= lambda v:v==130,
-        #verbose=True,
-    )
-    df_year["TIME"] = year
-    df = df_year if df is None else pd.concat([df, df_year], ignore_index=True)
+for su in sus.keys():
+    id_att = sus[su]["id"]
+    geo = su + "_" + sus[su]["version"]
 
-df["UNIT"] = 'NR'
-df = df.rename(columns={id_att: 'GEO', 'dim': 'INDIC', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
+    for service in acc_grids_versions.keys():
 
-# compute percentages
-if True:
-    # Get the totals (INDIC='T') for each GEO/TIME combination
-    totals = df[df['INDIC'] == 'T'][['GEO', 'TIME', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+        df = None
+        for year in acc_grids_versions[service].keys():
+            print(datetime.now(), su, service, year, res)
 
-    # Merge totals back onto the full dataframe
-    df_merged = df.merge(totals, on=['GEO', 'TIME'])
+            # load and prepare regions
+            regions = load_prepare_regions(sus[su]["path"], id_att, zonal_filter(id_att, service, year))
 
-    # Build the percentage rows
-    pc_rows = df_merged.copy()
-    pc_rows['VALUE'] = (pc_rows['VALUE'] / pc_rows['TOTAL'] * 100).round(2)
-    pc_rows['UNIT'] = 'PC'
+            # compute stats
+            df_year = aggregate_geotiff_to_regions_(
+                regions=regions,
+                geotiff_path=pop_rasters[res],
+                band=1,
+                geotiff_mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
+                geotiff_mask_fun= classes[service],
+                block_size=4096,
+                #geotiff_mask_path=degurba_raster,
+                #geotiff_mask_fun= lambda v:v==130,
+                #verbose=True,
+            )
+            df_year["TIME"] = year
+            df = df_year if df is None else pd.concat([df, df_year], ignore_index=True)
 
-    # Drop the helper column and append
-    pc_rows = pc_rows.drop(columns=['TOTAL']).query("INDIC != 'T'")
-    df = pd.concat([df, pc_rows], ignore_index=True)
+        df["UNIT"] = 'NR'
+        df = df.rename(columns={id_att: 'GEO', 'dim': 'INDIC', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
+
+        # compute percentages
+        if True:
+            # Get the totals (INDIC='T') for each GEO/TIME combination
+            totals = df[df['INDIC'] == 'T'][['GEO', 'TIME', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+
+            # Merge totals back onto the full dataframe
+            df_merged = df.merge(totals, on=['GEO', 'TIME'])
+
+            # Build the percentage rows
+            pc_rows = df_merged.copy()
+            pc_rows['VALUE'] = (pc_rows['VALUE'] / pc_rows['TOTAL'] * 100).round(2)
+            pc_rows['UNIT'] = 'PC'
+
+            # Drop the helper column and append
+            pc_rows = pc_rows.drop(columns=['TOTAL']).query("INDIC != 'T'")
+            df = pd.concat([df, pc_rows], ignore_index=True)
 
 
-# TODO sort ?
-print(datetime.now(), "save compiled file")
-df.to_csv("tmp/" + "euro_access_" + service + "_" + geo + ".csv", index=False)
+        # TODO sort ?
+        print(datetime.now(), "save compiled file")
+        df.to_csv("tmp/" + "euro_access_" + service + "_" + geo + ".csv", index=False)
 
 
 
