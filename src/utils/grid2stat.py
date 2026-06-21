@@ -82,18 +82,18 @@ def aggregate_geotiff_to_regions(
     regions = gpd.read_file(gpkg_path)
     if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
     regions = regions[["geometry", region_id_attr]]
-    regions_ = {
+    regions = {
         "ids" : list(regions[region_id_attr]),
         "geoms" : list(regions.geometry),
         "crs": regions.crs,
     }
     # Build a fast spatial index over region geometries
-    regions_["index"] = STRtree(regions_["geoms"]),
+    regions["index"] = STRtree(regions["geoms"]),
 
     # Accumulator: region_id -> running sum
     sums: dict = defaultdict(float)
     # Ensure every region appears in output even if sum == 0
-    for rid in regions_["ids"]:
+    for rid in regions["ids"]:
         sums[rid] = {}
         for classe in geotiff_mask_fun.keys():
             sums[rid][classe] = 0
@@ -106,7 +106,7 @@ def aggregate_geotiff_to_regions(
         height, width = src.height, src.width
 
         # check same CRS
-        if regions_["crs"] != src.crs: raise ValueError("Different CRS for GPKG and raster")
+        if regions["crs"] != src.crs: raise ValueError("Different CRS for GPKG and raster")
 
         # 2. Tile over the raster
         for row_off in range(0, height, block_size):
@@ -159,13 +159,13 @@ def aggregate_geotiff_to_regions(
                     by_min, by_max = min(block_ymin, block_ymax), max(block_ymin, block_ymax)
 
                     block_box = shapely_box(bx_min, by_min, bx_max, by_max)
-                    candidate_indices = regions_["index"].query(block_box, predicate="intersects")
+                    candidate_indices = regions["index"].query(block_box, predicate="intersects")
 
                     if len(candidate_indices) == 0:
                         continue
 
-                    candidate_geoms = [regions_["geoms"][i] for i in candidate_indices]
-                    candidate_ids = [regions_["ids"][i] for i in candidate_indices]
+                    candidate_geoms = [regions["geoms"][i] for i in candidate_indices]
+                    candidate_ids = [regions["ids"][i] for i in candidate_indices]
 
                     # 5. Point-in-polygon for each candidate region
                     # Build a MultiPoint for bulk contains queries
@@ -191,7 +191,7 @@ def aggregate_geotiff_to_regions(
 
     # prepare output structure
     out = []
-    for rid in regions_["ids"]:
+    for rid in regions["ids"]:
         for classe in geotiff_mask_fun.keys():
             ob = { region_id_attr: rid, "dim": classe }
             ob["value"] = sums[rid][classe]
