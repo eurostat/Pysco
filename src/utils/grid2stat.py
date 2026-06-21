@@ -27,6 +27,7 @@ from shapely.strtree import STRtree
 from datetime import datetime
 
 
+
 def aggregate_geotiff_to_regions(
     gpkg_path: str,
     region_id_attr: str,
@@ -37,7 +38,6 @@ def aggregate_geotiff_to_regions(
     geotiff_mask_fun = None,
     mask_band = 1,
     region_filter = None,
-    #verbose = False,
 ) -> None:
     """
     For each region in *gpkg_path*, sum the values of all GeoTIFF pixels
@@ -74,21 +74,72 @@ def aggregate_geotiff_to_regions(
     band : int
         The band number to read from the GeoTIFF (default: 1).
     """
-    gpkg_path = Path(gpkg_path)
     geotiff_path = Path(geotiff_path)
     if geotiff_mask_path: geotiff_mask_path = Path(geotiff_mask_path)
 
-    # Load regions
-    regions = gpd.read_file(gpkg_path)
-    if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
-    regions = regions[["geometry", region_id_attr]]
-    regions = {
-        "ids" : list(regions[region_id_attr]),
-        "geoms" : list(regions.geometry),
-        "crs": regions.crs,
-    }
-    # Build a fast spatial index over region geometries
-    regions["index"] = STRtree(regions["geoms"]),
+    # load regions
+    regions = load_prepare_regions(gpkg_path=gpkg_path, region_id_attr=region_id_attr, region_filter=region_filter)
+
+    #
+    return aggregate_geotiff_to_regions_(
+        regions,
+        geotiff_path,
+        block_size,
+        band,
+        geotiff_mask_path,
+        geotiff_mask_fun,
+        mask_band,
+    )
+
+
+
+
+def aggregate_geotiff_to_regions_(
+    regions: dict,
+    geotiff_path: str,
+    block_size: int = 1024,
+    band: int = 1,
+    geotiff_mask_path: str = None,
+    geotiff_mask_fun = None,
+    mask_band = 1,
+) -> None:
+    """
+    For each region in *gpkg_path*, sum the values of all GeoTIFF pixels
+    whose centre lies within that region, then write results to a CSV.
+
+    Aggregate GeoTIFF pixel values into polygon regions using a point-in-polygon
+    strategy: only the pixel *centres* that fall inside a region are summed.
+
+    Optimisation strategy for large datasets
+    -----------------------------------------
+    1. Spatial index (STRtree) on the region geometries so pixel-centre lookup is
+    O(log n) rather than O(n).
+    2. Windowed / block reading of the GeoTIFF – the raster is never loaded
+    entirely into RAM.  Each block is read once.
+    3. Per-block spatial filter: the block's bounding box is used to pre-filter
+    candidate regions before the inner point-in-polygon test.
+    4. NumPy vectorised coordinate generation inside each block.
+    5. nodata masking applied before any geometry query.
+
+    Parameters
+    ----------
+    gpkg_path : str
+        Path to a GeoPackage (.gpkg) containing (multi-)polygon features.
+    region_id_attr : str
+        Name of the attribute that uniquely identifies each region.
+    geotiff_path : str
+        Path to the input GeoTIFF (single band used; first band if multi-band).
+    output_col_name : str
+        Column name for the aggregated values in the output CSV (default: "sum").
+    block_size : int
+        Width/height of the processing tile in pixels.  Tune to fit available
+        RAM.  1024 is a safe default; raise to 4096+ on memory-rich machines
+        for fewer I/O round-trips.
+    band : int
+        The band number to read from the GeoTIFF (default: 1).
+    """
+    geotiff_path = Path(geotiff_path)
+    if geotiff_mask_path: geotiff_mask_path = Path(geotiff_mask_path)
 
     # Accumulator: region_id -> running sum
     sums: dict = defaultdict(float)
@@ -200,6 +251,35 @@ def aggregate_geotiff_to_regions(
     # export
     return pd.DataFrame(out)
 
+
+
+
+
+def load_prepare_regions(
+    gpkg_path: str,
+    region_id_attr: str,
+    region_filter = None,
+) -> dict:
+
+    # Load regions
+    gpkg_path = Path(gpkg_path)
+    regions = gpd.read_file(gpkg_path)
+
+    # apply filter
+    if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
+
+    # keep only usefull columns
+    regions = regions[["geometry", region_id_attr]]
+
+    regions = {
+        "ids" : list(regions[region_id_attr]),
+        "geoms" : list(regions.geometry),
+        "crs": regions.crs,
+    }
+
+    # Build a fast spatial index over region geometries
+    regions["index"] = STRtree(regions["geoms"]),
+    return regions
 
 
 
