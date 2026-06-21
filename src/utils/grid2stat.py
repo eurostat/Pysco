@@ -244,7 +244,7 @@ def aggregate_geotiff_to_regions_(
     out = []
     for rid in regions["ids"]:
         for classe in geotiff_mask_fun.keys():
-            ob = { region_id_attr: rid, "dim": classe }
+            ob = { regions["id"]: rid, "dim": classe }
             ob["value"] = sums[rid][classe]
             out.append(ob)
 
@@ -275,6 +275,7 @@ def load_prepare_regions(
         "ids" : list(regions[region_id_attr]),
         "geoms" : list(regions.geometry),
         "crs": regions.crs,
+        "id" : region_id_attr,
     }
 
     # Build a fast spatial index over region geometries
