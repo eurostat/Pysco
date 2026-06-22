@@ -120,10 +120,9 @@ for su in sus.keys():
 
                 # take data for compiled file
                 for index, row in df.iterrows():
-                    geo = row[id_att]
                     for k in row.keys():
                         if k == id_att: continue
-                        ob = { "GEO":geo, "TIME":year }
+                        ob = { "GEO":row[id_att], "TIME":year }
                         if 'pop' in k: ob['UNIT'] = "NR"
                         else: ob['UNIT'] = "PC"
                         ob['INDIC'] = k.replace("pop_","").replace("pct_","")
