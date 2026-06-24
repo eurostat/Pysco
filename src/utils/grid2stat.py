@@ -55,16 +55,16 @@ def grid2stat(
             # Clip rasters by region geometry
             geometry = [mapping(region.geometry)]
             try:
-                values_clipped, _ = mask(src_population, geometry, crop=True, filled=True)
-                classes_clipped, _ = mask(src_mask, geometry, crop=True, filled=True)
+                population_clipped, _ = mask(src_population, geometry, crop=True, filled=True)
+                mask_clipped, _ = mask(src_mask, geometry, crop=True, filled=True)
             except:
                 #print("Failed clipping", row[id_att])
                 continue
 
             # keep band
-            #TODO do before ? at src level ?
-            values_clipped = values_clipped[population_band]
-            classes_clipped = classes_clipped[mask_band]
+            #TODO do before clipping ? at src level ?
+            population_clipped = population_clipped[population_band]
+            mask_clipped = mask_clipped[mask_band]
 
             # Ensure that the two clipped rasters have the same size
             #if values_clipped.shape != classes_clipped.shape:
@@ -77,11 +77,11 @@ def grid2stat(
                 for class_name, mf in classes.items():
 
                     # Create a boolean mask based on the condition
-                    class_mask = mf(classes_clipped)
+                    class_mask = mf(mask_clipped)
 
                     # Apply the class_mask to the values array
                     # only consider the values where the class_mask is True
-                    values_in_class = values_clipped[class_mask]
+                    values_in_class = population_clipped[class_mask]
 
                     # Filter NoData values 
                     valid_values = values_in_class[values_in_class != values_nodata]
