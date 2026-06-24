@@ -58,7 +58,7 @@ def grid2stat(
                 continue
 
             # keep band
-            #TODO do before ?
+            #TODO do before ? at src level ?
             values_clipped = values_clipped[population_band]
             classes_clipped = classes_clipped[mask_band]
 
