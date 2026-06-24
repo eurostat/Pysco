@@ -119,14 +119,16 @@ def grid2stats(
     min_max,
     region_path: str, region_id_att:str="id",
     region_filter = None,
+    regions = None,
     values_band:int = 0,
     classes_band:int = 0,
     verbose:bool = True,
 ) -> pd.DataFrame:
 
-    # Load regions
-    regions = gpd.read_file(region_path)
-    if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
+    # load regions
+    if regions is None:
+        regions = gpd.read_file(region_path)
+        if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
     regions = regions[[region_id_att, 'geometry']]
 
     # output data

@@ -3,6 +3,7 @@ from math import isnan
 import sys
 import os
 import pandas as pd
+import geopandas as gpd
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.raster_class_pop import grid2stats
@@ -88,22 +89,26 @@ def region_filter(id_att:str, service:str, year:str):
 
 
 for su in sus.keys():
-    id_att = sus[su]["id"]
+    region_id_att = sus[su]["id"]
     geo = su + "_" + sus[su]["version"]
     for service in acc_grids_versions.keys():
 
         df = None
         for year in acc_grids_versions[service].keys():
+
+            # load regions
+            regions = gpd.read_file(sus[su]["path"])
+            regions = regions[regions.apply(region_filter(region_id_att, service, year), axis=1)]
+
             for class_name, min_max in classes[service].items():
                 print(datetime.now(), service, su, year, res, class_name)
 
                 df_ = grid2stats(
-                    classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
+                    regions = regions,
                     values_path = pop_rasters[res],
-                    region_path = sus[su]["path"],
-                    region_filter = region_filter(id_att, service, year),
+                    classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
                     min_max = min_max,
-                    region_id_att = id_att,
+                    region_id_att = region_id_att,
                     verbose = False,
                 )
 
@@ -113,7 +118,7 @@ for su in sus.keys():
 
         # modify columns
         df["UNIT"] = 'NR'
-        df = df.rename(columns={id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
+        df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
 
         # compute percentages
         if True:
