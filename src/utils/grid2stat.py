@@ -29,21 +29,25 @@ def grid2stat(
     out = []
 
     # Open raster files
-    with rasterio.open(mask_path) as src_classes, rasterio.open(population_path) as src_values:
+    with rasterio.open(mask_path) as src_mask, rasterio.open(population_path) as src_population:
 
         # Test if rasters are compatible
-        # TODO check also same resolution ?
-        if src_classes.crs != src_values.crs:    
-            print("Error: Classes and values rasters have different CRSs")
-            print(src_classes.crs)
-            print(src_values.crs)
-        if src_classes.transform != src_values.transform:    
-            print("Error: Classes and values rasters have different Transform")
-            print(src_classes.transform)
-            print(src_values.transform)
+        if src_mask.crs != src_population.crs:    
+            print("Error: Rasters have different CRSs")
+            print(src_mask.crs)
+            print(src_population.crs)
+        if src_mask.transform != src_population.transform:    
+            print("Error: Rasters have different Transform")
+            print(src_mask.transform)
+            print(src_population.transform)
+        if src_mask.res[0] != src_population.res[0] or src_mask.res[1] != src_population.res[1]:
+            print("Error: Rasters have different resolutions")
+            print(src_mask.res)
+            print(src_population.res)
+
 
         # Manage NoData for values
-        values_nodata = src_values.nodata if src_values.nodata is not None else -9999 
+        values_nodata = src_population.nodata if src_population.nodata is not None else -9999 
 
         # Process each region
         for index, region in regions.iterrows():
@@ -51,8 +55,8 @@ def grid2stat(
             # Clip rasters by region geometry
             geometry = [mapping(region.geometry)]
             try:
-                values_clipped, _ = mask(src_values, geometry, crop=True, filled=True)
-                classes_clipped, _ = mask(src_classes, geometry, crop=True, filled=True)
+                values_clipped, _ = mask(src_population, geometry, crop=True, filled=True)
+                classes_clipped, _ = mask(src_mask, geometry, crop=True, filled=True)
             except:
                 #print("Failed clipping", row[id_att])
                 continue
@@ -73,7 +77,7 @@ def grid2stat(
                 for class_name, mf in classes.items():
 
                     # Create a boolean mask based on the condition
-                    class_mask = mask_fun(classes_clipped)
+                    class_mask = mf(classes_clipped)
 
                     # Apply the class_mask to the values array
                     # only consider the values where the class_mask is True

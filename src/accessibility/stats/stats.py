@@ -12,11 +12,9 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
-# use lambda functions
-
+# stats by age group: educ for young, healthcare for old
 # filter correctly countries: remove those without population (AL, etc.)
 # advance multiple mask: test stat with geotiff mask pre-process - no: better do it on-the-fly ?
-# stats by age group: educ for young, healthcare for old
 # stats by degree of urbanisation
 # stats by average to the X nearest
 # make it possible that population raster is finer than class grid
@@ -72,6 +70,32 @@ access_classes = {
     },
 }
 
+#use code DEG_URB
+'''
+TOTAL		Total		Y
+DEG1_DEG2		Urban areas		Y
+DEG1		Cities		Y
+DEG2		Towns and suburbs		Y
+DEG3		Rural areas		Y
+NRP		No response		Y
+UNK		Unknown		Y
+
+130 = Urban Centre (was 30)
+223= Dense Urban Custer (was 23)
+222 = Semi dense Urban cluster (remains the same)
+221 = Suburban/peri-urban grid cell (was 21)
+313 = Rural cluster (was 13)
+312 = Low density rural grid cell (was 12)
+311 = Very low density rural grid cell (was 11)
+310 = Water
+'''
+degurba_classes = {
+    "TOTAL": lambda v:True,
+    "DEG1": lambda v: v<200,
+    "DEG2": lambda v: (v>200) & (v<300),
+    "DEG3": lambda v: (v>310),
+}
+
 # function to determine the countries not covered by service and year
 def region_filter(id_att:str, service:str, year:str):
     cnts = get_countries_covered(service, year)
@@ -98,10 +122,12 @@ for su in sus.keys():
             df_ = grid2stat(
                 region_path = sus[su]["path"],
                 region_filter = region_filter(region_id_att, service, year),
-                population_path = pop_rasters[res],
-                mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-                mask_fun = { "INDIC": access_classes[service] },
                 region_id_att = region_id_att,
+                population_path = pop_rasters[res],
+                population_band = 1,
+                mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
+                mask_fun = { "ACCESS_INDIC": access_classes[service] }, # "DEG_URB": degurba_classes
+                mask_band = 1,
                 verbose = False,
             )
 
@@ -110,12 +136,12 @@ for su in sus.keys():
 
         # modify columns
         df["UNIT"] = 'NR'
-        df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
+        df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","UNIT","ACCESS_INDIC","VALUE"]]
 
         # compute percentages
         if True:
-            # Get the totals (INDIC='T') for each GEO/TIME combination
-            totals = df[df['INDIC'] == 'T'][['GEO', 'TIME', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+            # Get the totals (ACCESS_INDIC='T') for each GEO/TIME combination
+            totals = df[df['ACCESS_INDIC'] == 'T'][['GEO', 'TIME', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
             # Merge totals back onto the full dataframe
             df_merged = df.merge(totals, on=['GEO', 'TIME'])
@@ -126,7 +152,7 @@ for su in sus.keys():
             pc_rows['UNIT'] = 'PC'
 
             # Drop the helper column and append
-            pc_rows = pc_rows.drop(columns=['TOTAL']).query("INDIC != 'T'")
+            pc_rows = pc_rows.drop(columns=['TOTAL']).query("ACCESS_INDIC != 'T'")
             df = pd.concat([df, pc_rows], ignore_index=True)
 
         # TODO sort ?
@@ -175,7 +201,7 @@ for su in sus.keys():
                         ob = { "GEO":row[id_att], "TIME":year }
                         if 'pop' in k: ob['UNIT'] = "NR"
                         else: ob['UNIT'] = "PC"
-                        ob['INDIC'] = k.replace("pop_","").replace("pct_","")
+                        ob['ACCESS_INDIC'] = k.replace("pop_","").replace("pct_","")
                         ob['VALUE'] = row[k]
                         out.append(ob)
         '''
