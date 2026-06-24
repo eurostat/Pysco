@@ -9,15 +9,15 @@ from math import isnan
 
 
 
-def grid2stats(
-    values_path: str,
-    classes_path: str,
-    min_max,
+def grid2stat(
+    population_path: str,
+    population_band:int = 0,
     region_path: str = None, region_id_att:str="id",
     region_filter = None,
     regions = None,
-    values_band:int = 0,
-    classes_band:int = 0,
+    mask_path: str = None,
+    mask_fun = None,
+    mask_band:int = 0,
     verbose:bool = True,
 ) -> pd.DataFrame:
 
@@ -31,7 +31,7 @@ def grid2stats(
     out = []
 
     # Open raster files
-    with rasterio.open(classes_path) as src_classes, rasterio.open(values_path) as src_values:
+    with rasterio.open(mask_path) as src_classes, rasterio.open(population_path) as src_values:
 
         # Test if rasters are compatible
         # TODO check also same resolution ?
@@ -47,7 +47,7 @@ def grid2stats(
         # Manage NoData for values
         values_nodata = src_values.nodata if src_values.nodata is not None else -9999 
 
-        (min_val, max_val) = min_max
+        (min_val, max_val) = mask_fun
 
         # Process each region
         for index, region in regions.iterrows():
@@ -63,8 +63,8 @@ def grid2stats(
 
             # keep band
             #TODO do before ?
-            values_clipped = values_clipped[values_band]
-            classes_clipped = classes_clipped[classes_band]
+            values_clipped = values_clipped[population_band]
+            classes_clipped = classes_clipped[mask_band]
 
             # Ensure that the two clipped rasters have the same size
             #if values_clipped.shape != classes_clipped.shape:

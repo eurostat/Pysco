@@ -6,13 +6,13 @@ import pandas as pd
 import geopandas as gpd
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-from utils.grid2stat import grid2stats
+from utils.grid2stat import grid2stat
 from accessibility.utils import get_countries_covered
 from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
-# lambda functions
+# use lambda functions
 
 # filter correctly countries: remove those without population (AL, etc.)
 # advance multiple mask: test stat with geotiff mask pre-process - no: better do it on-the-fly ?
@@ -101,11 +101,11 @@ for su in sus.keys():
             for class_name, min_max in classes[service].items():
                 print(datetime.now(), service, su, year, res, class_name)
 
-                df_ = grid2stats(
+                df_ = grid2stat(
                     regions = regions,
-                    values_path = pop_rasters[res],
-                    classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-                    min_max = min_max,
+                    population_path = pop_rasters[res],
+                    mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
+                    mask_fun = min_max,
                     region_id_att = region_id_att,
                     verbose = False,
                 )
