@@ -12,8 +12,6 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
-# preload zonal
-# zonal regions
 # lambda functions
 
 # filter correctly countries: remove those without population (AL, etc.)
