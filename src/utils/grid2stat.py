@@ -14,7 +14,6 @@ def grid2stat(
     population_band:int = 0,
     region_path: str = None, region_id_att:str="id",
     region_filter = None,
-    regions = None,
     mask_path: str = None,
     mask_fun = None,
     mask_band:int = 0,
@@ -22,9 +21,8 @@ def grid2stat(
 ) -> pd.DataFrame:
 
     # load regions, if not specified
-    if regions is None:
-        regions = gpd.read_file(region_path)
-        if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
+    regions = gpd.read_file(region_path)
+    if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
     regions = regions[[region_id_att, 'geometry']]
 
     # output data
@@ -46,8 +44,6 @@ def grid2stat(
 
         # Manage NoData for values
         values_nodata = src_values.nodata if src_values.nodata is not None else -9999 
-
-        (min_val, max_val) = mask_fun
 
         # Process each region
         for index, region in regions.iterrows():
@@ -71,23 +67,31 @@ def grid2stat(
             #    if verbose: print(f"Warning: the clipped raster for the polygon {index} don't have the same size")
             #    continue
 
-            # Create a boolean mask based on the condition
-            #TODO use generic lambda function instead
-            class_mask = (classes_clipped >= min_val) & (classes_clipped < max_val)
+            # TODO currently only one
+            for indic, classes in mask_fun.items():
 
-            # Apply the class_mask to the values array
-            # only consider the values where the class_mask is True
-            values_in_class = values_clipped[class_mask]
+                for class_name, min_max in classes.items():
 
-            # Filter NoData values 
-            valid_values = values_in_class[values_in_class != values_nodata]
+                    (min_val, max_val) = min_max
 
-            if valid_values.size == 0: continue
+                    # Create a boolean mask based on the condition
+                    #TODO use generic lambda function instead
+                    class_mask = (classes_clipped >= min_val) & (classes_clipped < max_val)
 
-            # Agregation : compute the sum and make data item
-            ob = { "value" : valid_values.sum() }
-            ob[region_id_att] = region[region_id_att]
-            out.append(ob)
+                    # Apply the class_mask to the values array
+                    # only consider the values where the class_mask is True
+                    values_in_class = values_clipped[class_mask]
+
+                    # Filter NoData values 
+                    valid_values = values_in_class[values_in_class != values_nodata]
+
+                    if valid_values.size == 0: continue
+
+                    # Agregation : compute the sum and make data item
+                    ob = { "value" : valid_values.sum() }
+                    ob[region_id_att] = region[region_id_att]
+                    ob[indic] = class_name
+                    out.append(ob)
 
     return pd.DataFrame(out)
 

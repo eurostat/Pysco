@@ -13,6 +13,7 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 # TODO
 # use lambda functions
+# back to dict !
 
 # filter correctly countries: remove those without population (AL, etc.)
 # advance multiple mask: test stat with geotiff mask pre-process - no: better do it on-the-fly ?
@@ -52,7 +53,7 @@ acc_grids_versions = {
 }
 
 # classes
-classes = {
+access_classes = {
     "healthcare" : {
         "T":(0, 1e9),
         "LT_5_MIN": (0, 5*60),
@@ -93,26 +94,20 @@ for su in sus.keys():
 
         df = None
         for year in acc_grids_versions[service].keys():
+            print(datetime.now(), service, su, year, res)
 
-            # load regions
-            regions = gpd.read_file(sus[su]["path"])
-            regions = regions[regions.apply(region_filter(region_id_att, service, year), axis=1)]
+            df_ = grid2stat(
+                region_path = sus[su]["path"],
+                region_filter = region_filter(region_id_att, service, year),
+                population_path = pop_rasters[res],
+                mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
+                mask_fun = { "INDIC": access_classes[service] },
+                region_id_att = region_id_att,
+                verbose = False,
+            )
 
-            for class_name, min_max in classes[service].items():
-                print(datetime.now(), service, su, year, res, class_name)
-
-                df_ = grid2stat(
-                    regions = regions,
-                    population_path = pop_rasters[res],
-                    mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-                    mask_fun = min_max,
-                    region_id_att = region_id_att,
-                    verbose = False,
-                )
-
-                df_["TIME"] = year
-                df_["INDIC"] = class_name
-                df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
+            df_["TIME"] = year
+            df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
         # modify columns
         df["UNIT"] = 'NR'
