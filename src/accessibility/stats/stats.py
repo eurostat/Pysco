@@ -26,7 +26,7 @@ output_folder = "/home/juju/gisco/accessibility/stats/"
 acc_grids_folder = "/home/juju/gisco/accessibility/"
 
 # resolution of the grids to use
-res = "1000"
+res_default = "100"
 
 
 # the statistical units
@@ -40,6 +40,12 @@ sus = {
 pop_rasters = {
     "1000": "/home/juju/gisco/census_2021_v3_production/ESTAT_Census_2021_V3.tiff",
     "100": "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox.tif"
+}
+age_group_to_band = {
+    "T":1,
+    "Y_LT15":4,
+    "Y_1564":5,
+    "Y_GE65":6,
 }
 
 # accessibility grids
@@ -117,22 +123,25 @@ for su in sus.keys():
 
         df = None
         for year in acc_grids_versions[service].keys():
-            print(datetime.now(), service, su, year, res)
+            for age_group in age_group_to_band.keys():
+                res = res_default if age_group == "T" else 1000
 
-            df_ = grid2stat(
-                region_path = sus[su]["path"],
-                region_filter = region_filter(region_id_att, service, year),
-                region_id_att = region_id_att,
-                population_path = pop_rasters[res],
-                population_band = 1,
-                mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-                mask_fun = { "ACCESS_INDIC": access_classes[service] }, # "DEG_URB": degurba_classes
-                mask_band = 1,
-                verbose = False,
-            )
+                print(datetime.now(), service, su, year, age_group, res)
 
-            df_["TIME"] = year
-            df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
+                df_ = grid2stat(
+                    region_path = sus[su]["path"],
+                    region_filter = region_filter(region_id_att, service, year),
+                    region_id_att = region_id_att,
+                    population_path = pop_rasters[res],
+                    population_band = age_group_to_band[age_group],
+                    mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res_default + "m_" + acc_grids_versions[service][year] + ".tif",
+                    mask_fun = { "ACCESS_INDIC": access_classes[service] }, # "DEG_URB": degurba_classes
+                    mask_band = 1,
+                    verbose = False,
+                )
+                df_["AGE"] = age_group
+                df_["TIME"] = year
+                df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
         # modify columns
         df["UNIT"] = 'NR'
