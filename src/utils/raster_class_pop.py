@@ -117,7 +117,7 @@ def grid2stats(
     values_path: str,
     classes_path: str,
     min_max,
-    region_path: str, region_id_att:str="id",
+    region_path: str = None, region_id_att:str="id",
     region_filter = None,
     regions = None,
     values_band:int = 0,
