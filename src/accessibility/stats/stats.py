@@ -6,7 +6,7 @@ import pandas as pd
 import geopandas as gpd
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-from utils.raster_class_pop import grid2stats
+from utils.grid2stat import grid2stats
 from accessibility.utils import get_countries_covered
 from utils.csvutils import hypercube_csv_to_timeseries_csv
 
