@@ -25,7 +25,7 @@ output_folder = "/home/juju/gisco/accessibility/stats/"
 acc_grids_folder = "/home/juju/gisco/accessibility/"
 
 # resolution of the grids to use
-res = "100"
+res = "1000"
 
 
 # the statistical units
@@ -92,7 +92,7 @@ for su in sus.keys():
             #out = []
             df = None
             for year in acc_grids_versions[service].keys():
-                for class_name, min_max in classes.items():
+                for class_name, min_max in classes[service].items():
                     print(datetime.now(), service, su, year, res, class_name)
 
                     df_ = zonal_sum_by_class2(
@@ -100,16 +100,17 @@ for su in sus.keys():
                         values_path = pop_rasters[res],
                         zonal_path = sus[su]["path"],
                         zonal_filter = zonal_filter(id_att, service, year),
-                        class_name=class_name,
                         min_max=min_max,
                         id_att= id_att,
                         verbose = False,
                         clean_zonal_attributes = True
-                    ).drop(columns=['geometry'])
+                    )
 
                     df_["TIME"] = year
                     df_["INDIC"] = class_name
                     df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
+
+                    print(df)
 
                 '''
                 print(datetime.now(), "compute percentages")
@@ -140,7 +141,7 @@ for su in sus.keys():
             #print(datetime.now(), "save compiled file")
             #pd.DataFrame(out).to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
             df["UNIT"] = 'NR'
-            #df = df.rename(columns={id_att: 'GEO', 'dim': 'INDIC', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
+            df = df.rename(columns={id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
 
             # TODO compute percentages
 

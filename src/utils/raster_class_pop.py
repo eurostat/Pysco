@@ -116,14 +116,13 @@ def zonal_sum_by_class(
 def zonal_sum_by_class2(
     values_path: str,
     classes_path: str,
-    class_name:str,
     min_max,
     zonal_path: str, id_att:str="id",
     zonal_filter = None,
-    verbose:bool = True,
     values_band:int = 0,
     classes_band:int = 0,
     clean_zonal_attributes:bool = False,
+    verbose:bool = True,
 ) -> pd.DataFrame:
 
     """
@@ -138,7 +137,6 @@ def zonal_sum_by_class2(
         This dictionnary 
             keys are the name of the output field
             values are tuples with the min and max of each classe
-    clean_zonal_attributes: Set to True if you need to remove all useless attributes of the input GPKG. Then keep only the id and geometry
 
     Example : 
 
@@ -156,10 +154,10 @@ def zonal_sum_by_class2(
 
 
     """
-    # Load zones
+    # Load regions
     zonal = gpd.read_file(zonal_path)
-    if clean_zonal_attributes: zonal = zonal[[id_att, 'geometry']]
     if zonal_filter: zonal = zonal[zonal.apply(zonal_filter, axis=1)]
+    zonal = zonal[[id_att, 'geometry']]
 
     # output data
     out = []
@@ -216,15 +214,12 @@ def zonal_sum_by_class2(
             # Filter NoData values 
             valid_values = values_in_class[values_in_class != values_nodata]
 
-            # Agregation : compute the sum 
-            #zonal.loc[index, class_name] = valid_values.sum() if valid_values.size > 0 else None
-
             if valid_values.size == 0: continue
 
-            ob = { "dim":class_name, "sum":valid_values.sum() }
+            # Agregation : compute the sum and make data item
+            ob = { "value" : valid_values.sum() }
             ob[id_att] = row[id_att]
             out.append(ob)
-
 
     return pd.DataFrame(out)
 
