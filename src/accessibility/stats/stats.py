@@ -145,7 +145,7 @@ for su in sus.keys():
 
         # modify columns
         df["UNIT"] = 'NR'
-        df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","UNIT","ACCESS_INDIC","VALUE"]]
+        df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","ACCESS_INDIC","UNIT","VALUE"]]
 
         # compute percentages
         if True:
