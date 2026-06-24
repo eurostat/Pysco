@@ -124,7 +124,7 @@ for su in sus.keys():
         df = None
         for year in acc_grids_versions[service].keys():
             for age_group in age_group_to_band.keys():
-                res = res_default if age_group == "T" else 1000
+                res = res_default if age_group == "T" else "1000"
 
                 print(datetime.now(), service, su, year, age_group, res)
 
