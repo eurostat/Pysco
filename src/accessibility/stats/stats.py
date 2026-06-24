@@ -5,7 +5,7 @@ import os
 import pandas as pd
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-from utils.raster_class_pop import zonal_sum_by_class,grid2stats
+from utils.raster_class_pop import grid2stats
 from accessibility.utils import get_countries_covered
 from utils.csvutils import hypercube_csv_to_timeseries_csv
 
@@ -74,7 +74,7 @@ classes = {
 }
 
 # function to determine the countries not covered by service and year
-def zonal_filter(id_att:str, service:str, year:str):
+def region_filter(id_att:str, service:str, year:str):
     cnts = get_countries_covered(service, year)
     def out(r):
         if cnts == "all": return True
@@ -92,56 +92,51 @@ for su in sus.keys():
     geo = su + "_" + sus[su]["version"]
     for service in acc_grids_versions.keys():
 
+        df = None
+        for year in acc_grids_versions[service].keys():
+            for class_name, min_max in classes[service].items():
+                print(datetime.now(), service, su, year, res, class_name)
+
+                df_ = grid2stats(
+                    classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
+                    values_path = pop_rasters[res],
+                    region_path = sus[su]["path"],
+                    region_filter = region_filter(id_att, service, year),
+                    min_max = min_max,
+                    region_id_att = id_att,
+                    verbose = False,
+                    clean_zonal_attributes = True
+                )
+
+                df_["TIME"] = year
+                df_["INDIC"] = class_name
+                df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
+
+        # modify columns
+        df["UNIT"] = 'NR'
+        df = df.rename(columns={id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
+
+        # compute percentages
         if True:
-            #out = []
-            df = None
-            for year in acc_grids_versions[service].keys():
-                for class_name, min_max in classes[service].items():
-                    print(datetime.now(), service, su, year, res, class_name)
+            # Get the totals (INDIC='T') for each GEO/TIME combination
+            totals = df[df['INDIC'] == 'T'][['GEO', 'TIME', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
-                    df_ = grid2stats(
-                        classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-                        values_path = pop_rasters[res],
-                        region_path = sus[su]["path"],
-                        region_filter = zonal_filter(id_att, service, year),
-                        min_max=min_max,
-                        region_id_att= id_att,
-                        verbose = False,
-                        clean_zonal_attributes = True
-                    )
+            # Merge totals back onto the full dataframe
+            df_merged = df.merge(totals, on=['GEO', 'TIME'])
 
-                    df_["TIME"] = year
-                    df_["INDIC"] = class_name
-                    df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
+            # Build the percentage rows
+            pc_rows = df_merged.copy()
+            pc_rows['VALUE'] = (pc_rows['VALUE'] / pc_rows['TOTAL'] * 100).round(2)
+            pc_rows['UNIT'] = 'PC'
 
-            # sort by NUTS level and alphabetic order
-            #df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
-            #print(datetime.now(), "save compiled file")
-            #pd.DataFrame(out).to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
-            df["UNIT"] = 'NR'
-            df = df.rename(columns={id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
+            # Drop the helper column and append
+            pc_rows = pc_rows.drop(columns=['TOTAL']).query("INDIC != 'T'")
+            df = pd.concat([df, pc_rows], ignore_index=True)
 
-            # compute percentages
-            if True:
-                # Get the totals (INDIC='T') for each GEO/TIME combination
-                totals = df[df['INDIC'] == 'T'][['GEO', 'TIME', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+        # TODO sort ?
 
-                # Merge totals back onto the full dataframe
-                df_merged = df.merge(totals, on=['GEO', 'TIME'])
-
-                # Build the percentage rows
-                pc_rows = df_merged.copy()
-                pc_rows['VALUE'] = (pc_rows['VALUE'] / pc_rows['TOTAL'] * 100).round(2)
-                pc_rows['UNIT'] = 'PC'
-
-                # Drop the helper column and append
-                pc_rows = pc_rows.drop(columns=['TOTAL']).query("INDIC != 'T'")
-                df = pd.concat([df, pc_rows], ignore_index=True)
-
-            # TODO sort ?
-
-            print(datetime.now(), "save compiled file")
-            df.to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
+        print(datetime.now(), "save compiled file")
+        df.to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
 
         '''
         if True:
