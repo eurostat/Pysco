@@ -11,13 +11,11 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
-# advance mask
+# filter correctly countries: remove those without population (AL, etc.)
+# advance multiple mask: test stat with geotiff mask pre-process - no: better do it on-the-fly ?
 # stats by age group: educ for young, healthcare for old
 # stats by degree of urbanisation
-# run with 100 !!!
-# filter correctly countries: remove those without population (AL, etc.)
-# use also indicator to the X nearest ?
-# faster ?
+# stats by average to the X nearest
 # make it possible that population raster is finer than class grid
 
 
