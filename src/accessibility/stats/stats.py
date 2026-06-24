@@ -5,12 +5,16 @@ import os
 import pandas as pd
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-from utils.raster_class_pop import zonal_sum_by_class,zonal_sum_by_class2
+from utils.raster_class_pop import zonal_sum_by_class,grid2stats
 from accessibility.utils import get_countries_covered
 from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
+# preload zonal
+# zonal regions
+# lambda functions
+
 # filter correctly countries: remove those without population (AL, etc.)
 # advance multiple mask: test stat with geotiff mask pre-process - no: better do it on-the-fly ?
 # stats by age group: educ for young, healthcare for old
@@ -51,21 +55,21 @@ acc_grids_versions = {
 # classes
 classes = {
     "healthcare" : {
-        "pop_T":(0, 1e9),
-        "pop_LT_5_MIN": (0, 5*60),
-        "pop_LT_20_MIN": (0, 20*60),
-        "pop_LT_45_MIN": (0, 45*60),
+        "T":(0, 1e9),
+        "LT_5_MIN": (0, 5*60),
+        "LT_20_MIN": (0, 20*60),
+        "LT_45_MIN": (0, 45*60),
     },
     "education" : {
-        "pop_T":(0, 1e9),
-        "pop_LT_2_MIN": (0, 2*60),
-        "pop_LT_10_MIN": (0, 10*60),
-        "pop_LT_20_MIN": (0, 20*60),
+        "T":(0, 1e9),
+        "LT_2_MIN": (0, 2*60),
+        "LT_10_MIN": (0, 10*60),
+        "LT_20_MIN": (0, 20*60),
     },
     "evrp" : {
-        "pop_T":(0, 1e9),
-        "pop_LT_500_M": (0, 500),
-        "pop_LT_5000_M": (0, 5000),
+        "T":(0, 1e9),
+        "LT_500_M": (0, 500),
+        "LT_5000_M": (0, 5000),
     },
 }
 
@@ -95,13 +99,13 @@ for su in sus.keys():
                 for class_name, min_max in classes[service].items():
                     print(datetime.now(), service, su, year, res, class_name)
 
-                    df_ = zonal_sum_by_class2(
+                    df_ = grid2stats(
                         classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
                         values_path = pop_rasters[res],
-                        zonal_path = sus[su]["path"],
-                        zonal_filter = zonal_filter(id_att, service, year),
+                        region_path = sus[su]["path"],
+                        region_filter = zonal_filter(id_att, service, year),
                         min_max=min_max,
-                        id_att= id_att,
+                        region_id_att= id_att,
                         verbose = False,
                         clean_zonal_attributes = True
                     )
@@ -110,9 +114,58 @@ for su in sus.keys():
                     df_["INDIC"] = class_name
                     df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
-                    print(df)
+            # sort by NUTS level and alphabetic order
+            #df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
+            #print(datetime.now(), "save compiled file")
+            #pd.DataFrame(out).to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
+            df["UNIT"] = 'NR'
+            df = df.rename(columns={id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
 
-                '''
+            # compute percentages
+            if True:
+                # Get the totals (INDIC='T') for each GEO/TIME combination
+                totals = df[df['INDIC'] == 'T'][['GEO', 'TIME', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+
+                # Merge totals back onto the full dataframe
+                df_merged = df.merge(totals, on=['GEO', 'TIME'])
+
+                # Build the percentage rows
+                pc_rows = df_merged.copy()
+                pc_rows['VALUE'] = (pc_rows['VALUE'] / pc_rows['TOTAL'] * 100).round(2)
+                pc_rows['UNIT'] = 'PC'
+
+                # Drop the helper column and append
+                pc_rows = pc_rows.drop(columns=['TOTAL']).query("INDIC != 'T'")
+                df = pd.concat([df, pc_rows], ignore_index=True)
+
+            # TODO sort ?
+
+            print(datetime.now(), "save compiled file")
+            df.to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
+
+        '''
+        if True:
+            print(datetime.now(), "decompose by time series")
+
+            out_folder_d = output_folder + "decomposed/"
+            hypercube_csv_to_timeseries_csv(
+                output_folder + "euro_access_" + service + "_" + geo + ".csv",
+                out_folder_d,
+                output_file_name_fun = lambda f: "euro_access_" + service + "_" + geo + "__" + f)
+
+            # delete NR files (not usefull) and rename files (remove PC)
+            for f in os.listdir(out_folder_d):
+                if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
+                if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
+        '''
+
+
+
+
+
+
+
+        '''
                 print(datetime.now(), "compute percentages")
                 for att in classes[service].keys():
                     if att == "pop_T": continue
@@ -134,37 +187,7 @@ for su in sus.keys():
                         ob['INDIC'] = k.replace("pop_","").replace("pct_","")
                         ob['VALUE'] = row[k]
                         out.append(ob)
-                '''
-
-            # sort by NUTS level and alphabetic order
-            #df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
-            #print(datetime.now(), "save compiled file")
-            #pd.DataFrame(out).to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
-            df["UNIT"] = 'NR'
-            df = df.rename(columns={id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
-
-            # TODO compute percentages
-
-            # TODO sort ?
-            print(datetime.now(), "save compiled file")
-            df.to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
-
         '''
-        if True:
-            print(datetime.now(), "decompose by time series")
-
-            out_folder_d = output_folder + "decomposed/"
-            hypercube_csv_to_timeseries_csv(
-                output_folder + "euro_access_" + service + "_" + geo + ".csv",
-                out_folder_d,
-                output_file_name_fun = lambda f: "euro_access_" + service + "_" + geo + "__" + f)
-
-            # delete NR files (not usefull) and rename files (remove PC)
-            for f in os.listdir(out_folder_d):
-                if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
-                if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
-        '''
-
 
 
 
