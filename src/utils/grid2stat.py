@@ -67,16 +67,13 @@ def grid2stat(
             #    if verbose: print(f"Warning: the clipped raster for the polygon {index} don't have the same size")
             #    continue
 
-            # TODO currently only one
+            # TODO currently only a single mask. make it possible to have several.
             for indic, classes in mask_fun.items():
 
-                for class_name, min_max in classes.items():
-
-                    (min_val, max_val) = min_max
+                for class_name, mf in classes.items():
 
                     # Create a boolean mask based on the condition
-                    #TODO use generic lambda function instead
-                    class_mask = (classes_clipped >= min_val) & (classes_clipped < max_val)
+                    class_mask = mask_fun(classes_clipped)
 
                     # Apply the class_mask to the values array
                     # only consider the values where the class_mask is True
