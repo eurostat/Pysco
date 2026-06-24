@@ -149,11 +149,11 @@ for su in sus.keys():
 
         # compute percentages
         if True:
-            # Get the totals (ACCESS_INDIC='T') for each GEO/TIME combination
-            totals = df[df['ACCESS_INDIC'] == 'T'][['GEO', 'TIME', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+            # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
+            totals = df[df['ACCESS_INDIC'] == 'T'][['GEO', 'TIME', 'AGE', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
             # Merge totals back onto the full dataframe
-            df_merged = df.merge(totals, on=['GEO', 'TIME'])
+            df_merged = df.merge(totals, on=['GEO', 'TIME', 'AGE'])
 
             # Build the percentage rows
             pc_rows = df_merged.copy()
