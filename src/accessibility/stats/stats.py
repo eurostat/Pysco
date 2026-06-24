@@ -5,7 +5,7 @@ import os
 import pandas as pd
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
-from utils.raster_class_pop import zonal_sum_by_class
+from utils.raster_class_pop import zonal_sum_by_class,zonal_sum_by_class2
 from accessibility.utils import get_countries_covered
 from utils.csvutils import hypercube_csv_to_timeseries_csv
 
@@ -89,22 +89,29 @@ for su in sus.keys():
     for service in acc_grids_versions.keys():
 
         if True:
-            out = []
+            #out = []
+            df = None
             for year in acc_grids_versions[service].keys():
-                print(datetime.now(), service, su, year, res)
-                file_name = output_folder + service + "_" + su + "_" + year
+                for class_name, min_max in classes.items():
+                    print(datetime.now(), service, su, year, res, class_name)
 
-                df = zonal_sum_by_class(
-                    classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-                    values_path = pop_rasters[res],
-                    zonal_path = sus[su]["path"],
-                    zonal_filter = zonal_filter(id_att, service, year),
-                    classes = classes[service],
-                    id_att= id_att,
-                    verbose = False,
-                    clean_zonal_attributes = True
-                ).drop(columns=['geometry'])
+                    df_ = zonal_sum_by_class2(
+                        classes_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
+                        values_path = pop_rasters[res],
+                        zonal_path = sus[su]["path"],
+                        zonal_filter = zonal_filter(id_att, service, year),
+                        class_name=class_name,
+                        min_max=min_max,
+                        id_att= id_att,
+                        verbose = False,
+                        clean_zonal_attributes = True
+                    ).drop(columns=['geometry'])
 
+                    df_["TIME"] = year
+                    df_["INDIC"] = class_name
+                    df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
+
+                '''
                 print(datetime.now(), "compute percentages")
                 for att in classes[service].keys():
                     if att == "pop_T": continue
@@ -126,13 +133,22 @@ for su in sus.keys():
                         ob['INDIC'] = k.replace("pop_","").replace("pct_","")
                         ob['VALUE'] = row[k]
                         out.append(ob)
+                '''
 
             # sort by NUTS level and alphabetic order
             #df = df.sort_values(id_att, key=lambda s: s.apply(lambda x: (len(x), x)))
+            #print(datetime.now(), "save compiled file")
+            #pd.DataFrame(out).to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
+            df["UNIT"] = 'NR'
+            #df = df.rename(columns={id_att: 'GEO', 'dim': 'INDIC', 'value': 'VALUE'})[["GEO","TIME","UNIT","INDIC","VALUE"]]
+
+            # TODO compute percentages
+
+            # TODO sort ?
             print(datetime.now(), "save compiled file")
-            pd.DataFrame(out).to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
+            df.to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
 
-
+        '''
         if True:
             print(datetime.now(), "decompose by time series")
 
@@ -146,7 +162,7 @@ for su in sus.keys():
             for f in os.listdir(out_folder_d):
                 if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
                 if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
-
+        '''
 
 
 
