@@ -105,7 +105,6 @@ for su in sus.keys():
                     min_max = min_max,
                     region_id_att = id_att,
                     verbose = False,
-                    clean_zonal_attributes = True
                 )
 
                 df_["TIME"] = year
