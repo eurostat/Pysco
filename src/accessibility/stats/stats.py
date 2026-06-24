@@ -28,7 +28,7 @@ output_folder = "/home/juju/gisco/accessibility/stats/"
 acc_grids_folder = "/home/juju/gisco/accessibility/"
 
 # resolution of the grids to use
-res = "1000"
+res = "100"
 
 
 # the statistical units

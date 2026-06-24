@@ -21,7 +21,7 @@ def grid2stat(
     verbose:bool = True,
 ) -> pd.DataFrame:
 
-    # load regions
+    # load regions, if not specified
     if regions is None:
         regions = gpd.read_file(region_path)
         if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
