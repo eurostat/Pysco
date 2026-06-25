@@ -70,6 +70,7 @@ def grid2stat(
                 population_clipped, _ = mask(src_population, geometry, crop=True, filled=True, nodata=population_nodata)
                 mask_clipped, _ = mask(src_mask, geometry, crop=True, filled=True)
             except Exception as e:
+                if type(e).__name__ == "ValueError": continue
                 print(f"Failed clipping {region[region_id_att]}: {e}")
                 continue
 
