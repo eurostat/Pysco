@@ -120,7 +120,7 @@ for su in sus.keys():
     geo = su + "_" + sus[su]["version"]
     for service in acc_grids_versions.keys():
 
-        if False:
+        if True:
             # make a single csv hypercube file per statunit and service
             df = None
 
