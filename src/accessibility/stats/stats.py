@@ -120,7 +120,7 @@ for su in sus.keys():
     geo = su + "_" + sus[su]["version"]
     for service in acc_grids_versions.keys():
 
-        if False:
+        if True:
             # make a single csv hypercube file per statunit and service
             df = None
 
@@ -150,7 +150,7 @@ for su in sus.keys():
             df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","ACCESS_INDIC","UNIT","VALUE"]]
 
             # compute percentages
-            if False:
+            if True:
                 # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
                 totals = df[df['ACCESS_INDIC'] == 'T'][['GEO', 'TIME', 'AGE', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
