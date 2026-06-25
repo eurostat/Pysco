@@ -12,7 +12,6 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
-# stats by age group: educ for young, healthcare for old
 # filter correctly countries: remove those without population (AL, etc.)
 # advance multiple mask: test stat with geotiff mask pre-process - no: better do it on-the-fly ?
 # stats by degree of urbanisation
@@ -76,7 +75,7 @@ access_classes = {
     },
 }
 
-#use code DEG_URB
+# use code DEG_URB
 '''
 TOTAL		Total		Y
 DEG1_DEG2		Urban areas		Y
@@ -97,9 +96,9 @@ UNK		Unknown		Y
 '''
 degurba_classes = {
     "TOTAL": lambda v:True,
-    "DEG1": lambda v: v<200,
-    "DEG2": lambda v: (v>200) & (v<300),
-    "DEG3": lambda v: (v>310),
+    "DEG1": lambda v: v<200, # Cities
+    "DEG2": lambda v: (v>200) & (v<300), # Towns and suburbs
+    "DEG3": lambda v: (v>310), # Rural areas
 }
 
 # function to determine the countries not covered by service and year
@@ -121,55 +120,57 @@ for su in sus.keys():
     geo = su + "_" + sus[su]["version"]
     for service in acc_grids_versions.keys():
 
-        df = None
-        for year in acc_grids_versions[service].keys():
-            for age_group in age_group_to_band.keys():
-                res = res_default if age_group == "T" else "1000"
+        if False:
+            # make a single csv hypercube file per statunit and service
+            df = None
 
-                print(datetime.now(), service, su, year, age_group, res)
+            for year in acc_grids_versions[service].keys():
+                for age_group in age_group_to_band.keys():
+                    res = res_default if age_group == "T" else "1000"
 
-                df_ = grid2stat(
-                    region_path = sus[su]["path"],
-                    region_filter = region_filter(region_id_att, service, year),
-                    region_id_att = region_id_att,
-                    population_path = pop_rasters[res],
-                    population_band = age_group_to_band[age_group]-1,
-                    mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-                    mask_fun = { "ACCESS_INDIC": access_classes[service] }, # "DEG_URB": degurba_classes
-                    mask_band = 1,
-                    verbose = False,
-                )
-                df_["AGE"] = age_group
-                df_["TIME"] = year
-                df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
+                    print(datetime.now(), su, service, year, age_group, res)
 
-        # modify columns
-        df["UNIT"] = 'NR'
-        df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","ACCESS_INDIC","UNIT","VALUE"]]
+                    df_ = grid2stat(
+                        region_path = sus[su]["path"],
+                        region_filter = region_filter(region_id_att, service, year),
+                        region_id_att = region_id_att,
+                        population_path = pop_rasters[res],
+                        population_band = age_group_to_band[age_group]-1,
+                        mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
+                        mask_fun = { "ACCESS_INDIC": access_classes[service] }, # "DEG_URB": degurba_classes
+                        mask_band = 1,
+                        verbose = False,
+                    )
+                    df_["AGE"] = age_group
+                    df_["TIME"] = year
+                    df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
-        # compute percentages
-        if True:
-            # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
-            totals = df[df['ACCESS_INDIC'] == 'T'][['GEO', 'TIME', 'AGE', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+            # modify columns
+            df["UNIT"] = 'NR'
+            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","ACCESS_INDIC","UNIT","VALUE"]]
 
-            # Merge totals back onto the full dataframe
-            df_merged = df.merge(totals, on=['GEO', 'TIME', 'AGE'])
+            # compute percentages
+            if False:
+                # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
+                totals = df[df['ACCESS_INDIC'] == 'T'][['GEO', 'TIME', 'AGE', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
-            # Build the percentage rows
-            pc_rows = df_merged.copy()
-            pc_rows['VALUE'] = (pc_rows['VALUE'] / pc_rows['TOTAL'] * 100).round(2)
-            pc_rows['UNIT'] = 'PC'
+                # Merge totals back onto the full dataframe
+                df_merged = df.merge(totals, on=['GEO', 'TIME', 'AGE'])
 
-            # Drop the helper column and append
-            pc_rows = pc_rows.drop(columns=['TOTAL']).query("ACCESS_INDIC != 'T'")
-            df = pd.concat([df, pc_rows], ignore_index=True)
+                # Build the percentage rows
+                pc_rows = df_merged.copy()
+                pc_rows['VALUE'] = (pc_rows['VALUE'] / pc_rows['TOTAL'] * 100).round(2)
+                pc_rows['UNIT'] = 'PC'
 
-        # TODO sort ?
+                # Drop the helper column and append
+                pc_rows = pc_rows.drop(columns=['TOTAL']).query("ACCESS_INDIC != 'T'")
+                df = pd.concat([df, pc_rows], ignore_index=True)
 
-        print(datetime.now(), "save compiled file")
-        df.to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
+            # TODO sort ?
 
-        '''
+            print(datetime.now(), "save compiled file")
+            df.to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
+
         if True:
             print(datetime.now(), "decompose by time series")
 
@@ -180,10 +181,9 @@ for su in sus.keys():
                 output_file_name_fun = lambda f: "euro_access_" + service + "_" + geo + "__" + f)
 
             # delete NR files (not usefull) and rename files (remove PC)
-            for f in os.listdir(out_folder_d):
-                if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
-                if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
-        '''
+            #for f in os.listdir(out_folder_d):
+            #    if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
+            #    if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
 
 
 
