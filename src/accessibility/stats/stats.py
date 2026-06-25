@@ -1,10 +1,8 @@
+import pandas as pd
 from datetime import datetime
-from math import isnan
+
 import sys
 import os
-import pandas as pd
-import geopandas as gpd
-
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.grid2stat import grid2stat
 from accessibility.utils import get_countries_covered
@@ -12,7 +10,7 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
-# filter correctly countries: remove those without population (AL, etc.)
+# fix bug with population by age
 # advance multiple mask: test stat with geotiff mask pre-process - no: better do it on-the-fly ?
 # stats by degree of urbanisation
 # stats by average to the X nearest
@@ -40,12 +38,24 @@ pop_rasters = {
     "1000": "/home/juju/gisco/census_2021_v3_production/ESTAT_Census_2021_V3.tiff",
     "100": "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox.tif"
 }
+
+
+'''
+Band 1: T
+Band 2: M
+Band 3: F
+Band 4: Y_LT15
+Band 5: Y_1564
+Band 6: Y_GE65
+'''
 age_group_to_band = {
-    "T":0,
-    "Y_LT15":3,
-    "Y_1564":4,
-    "Y_GE65":5,
+    "T":1,
+    "Y_LT15":4,
+    "Y_1564":5,
+    "Y_GE65":6,
 }
+
+
 
 # accessibility grids
 acc_grids_versions = {

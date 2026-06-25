@@ -24,12 +24,22 @@ def grid2stat(
     regions = gpd.read_file(region_path)
     if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
     regions = regions[[region_id_att, 'geometry']]
+    print(len(regions))
 
     # output data
     out = []
 
     # Open raster files
     with rasterio.open(mask_path) as src_mask, rasterio.open(population_path) as src_population:
+
+        for dataset in [src_population, src_mask]:
+            print(dataset)
+            # Get all band names as a tuple
+            band_names = dataset.descriptions
+            print("Band names:", band_names)
+            # Pair each 1-based band index with its name
+            for idx, name in zip(dataset.indexes, dataset.descriptions):
+                print(f"Band {idx}: {name}")
 
         # Test if rasters are compatible
         if src_mask.crs != src_population.crs:    
@@ -50,7 +60,7 @@ def grid2stat(
         values_nodata = src_population.nodata if src_population.nodata is not None else -9999 
 
         # Process each region
-        for index, region in regions.iterrows():
+        for _, region in regions.iterrows():
 
             # Clip rasters by region geometry
             geometry = [mapping(region.geometry)]
