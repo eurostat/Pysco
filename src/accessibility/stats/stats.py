@@ -60,8 +60,8 @@ age_group_to_band = {
 # accessibility grids
 acc_grids_versions = {
     "healthcare" : { "2020": "v2026_04", "2023": "v2026_04", },
-    #"education" : { "2020": "v2026_04", "2023": "v2026_04", },
-    #"evrp" : { "2023": "v2026_05", "2024": "v2026_05", "2025": "v2026_06", },
+    "education" : { "2020": "v2026_04", "2023": "v2026_04", },
+    "evrp" : { "2023": "v2026_05", "2024": "v2026_05", "2025": "v2026_06", },
 }
 
 # classes
@@ -72,8 +72,6 @@ access_classes = {
         "LT_20_MIN": lambda v: (v<=20*60) & (v>=0),
         "LT_45_MIN": lambda v: (v<=45*60) & (v>=0),
     },
-}
-'''
     "education" : {
         "T": lambda v:True,
         "LT_2_MIN": lambda v: (v<=2*60) & (v>=0),
@@ -85,7 +83,7 @@ access_classes = {
         "LT_500_M": lambda v: (v<=500) & (v>=0),
         "LT_5000_M": lambda v: (v<=5000) & (v>=0),
     },
-'''
+}
 
 
 # use code DEG_URB
@@ -164,7 +162,7 @@ for su in sus.keys():
             df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","ACCESS_INDIC","UNIT","VALUE"]]
 
             # compute percentages
-            if False:
+            if True:
                 # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
                 totals = df[df['ACCESS_INDIC'] == 'T'][['GEO', 'TIME', 'AGE', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
