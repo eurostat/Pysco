@@ -60,8 +60,8 @@ age_group_to_band = {
 # accessibility grids
 acc_grids_versions = {
     "healthcare" : { "2020": "v2026_04", "2023": "v2026_04", },
-    "education" : { "2020": "v2026_04", "2023": "v2026_04", },
-    "evrp" : { "2023": "v2026_05", "2024": "v2026_05", "2025": "v2026_06", },
+    #"education" : { "2020": "v2026_04", "2023": "v2026_04", },
+    #"evrp" : { "2023": "v2026_05", "2024": "v2026_05", "2025": "v2026_06", },
 }
 
 # classes
@@ -72,7 +72,8 @@ access_classes = {
         "LT_20_MIN": lambda v: (v<=20*60) & (v>=0),
         "LT_45_MIN": lambda v: (v<=45*60) & (v>=0),
     },
-    '''
+}
+'''
     "education" : {
         "T": lambda v:True,
         "LT_2_MIN": lambda v: (v<=2*60) & (v>=0),
@@ -84,8 +85,8 @@ access_classes = {
         "LT_500_M": lambda v: (v<=500) & (v>=0),
         "LT_5000_M": lambda v: (v<=5000) & (v>=0),
     },
-    '''
-}
+'''
+
 
 # use code DEG_URB
 '''
@@ -143,13 +144,13 @@ for su in sus.keys():
                     print(datetime.now(), su, service, year, age_group, res)
 
                     df_ = grid2stat(
-                        region_path = sus[su]["path"],
-                        region_filter = region_filter(region_id_att, service, year),
-                        region_id_att = region_id_att,
-                        
                         population_path = pop_rasters[res],
                         population_band = age_group_to_band[age_group],
-                        
+
+                        region_path = sus[su]["path"],
+                        region_id_att = region_id_att,
+                        region_filter = region_filter(region_id_att, service, year),
+
                         mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
                         mask_fun = { "ACCESS_INDIC": access_classes[service] }, # "DEG_URB": degurba_classes
                         mask_band = 1,
@@ -158,8 +159,8 @@ for su in sus.keys():
                     df_["TIME"] = year
                     df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
-            # modify columns
             df["UNIT"] = 'NR'
+            # rename and sort columns
             df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","ACCESS_INDIC","UNIT","VALUE"]]
 
             # compute percentages

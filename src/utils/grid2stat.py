@@ -7,12 +7,11 @@ from typing import Dict
 from math import isnan
 
 
-
-
 def grid2stat(
     population_path: str,
     population_band:int = 1,
-    region_path: str = None, region_id_att:str="id",
+    region_path: str = None,
+    region_id_att:str="id",
     region_filter = None,
     mask_path: str = None,
     mask_fun = None,
@@ -68,16 +67,16 @@ def grid2stat(
             # Clip rasters by region geometry
             geometry = [mapping(region.geometry)]
             try:
-                population_clipped, _ = mask(src_population, geometry, crop=True, filled=True)
+                population_clipped, _ = mask(src_population, geometry, crop=True, filled=True, nodata=population_nodata)
                 mask_clipped, _ = mask(src_mask, geometry, crop=True, filled=True)
-            except:
-                #print("Failed clipping", row[id_att])
+            except Exception as e:
+                print(f"Failed clipping {region[region_id_att]}: {e}")
                 continue
 
             # keep band
             #TODO do before clipping ? at src level ?
-            population_clipped = population_clipped[population_band]
-            mask_clipped = mask_clipped[mask_band]
+            population_clipped = population_clipped[population_band-1]
+            mask_clipped = mask_clipped[mask_band-1]
 
             # Ensure that the two clipped rasters have the same size
             #if values_clipped.shape != classes_clipped.shape:
@@ -86,7 +85,6 @@ def grid2stat(
 
             # TODO currently only a single mask. make it possible to have several.
             for indic, classes in mask_fun.items():
-
                 for class_name, mf in classes.items():
 
                     # Create a boolean mask based on the mask function
@@ -119,7 +117,6 @@ def zonal_sum_by_class(
     classes_path: str, classes: Dict[str, tuple],
     zonal_path: str, id_att:str="id",
     zonal_filter = None,
-    verbose:bool = True,
     values_band:int = 0,
     classes_band:int = 0,
     clean_zonal_attributes:bool = False,
