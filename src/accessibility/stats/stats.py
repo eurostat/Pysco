@@ -144,12 +144,13 @@ for su in sus.keys():
                         region_path = sus[su]["path"],
                         region_filter = region_filter(region_id_att, service, year),
                         region_id_att = region_id_att,
+                        
                         population_path = pop_rasters[res],
                         population_band = age_group_to_band[age_group],
+                        
                         mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
                         mask_fun = { "ACCESS_INDIC": access_classes[service] }, # "DEG_URB": degurba_classes
                         mask_band = 1,
-                        verbose = False,
                     )
                     df_["AGE"] = age_group
                     df_["TIME"] = year

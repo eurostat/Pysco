@@ -11,13 +11,12 @@ from math import isnan
 
 def grid2stat(
     population_path: str,
-    population_band:int = 0,
+    population_band:int = 1,
     region_path: str = None, region_id_att:str="id",
     region_filter = None,
     mask_path: str = None,
     mask_fun = None,
-    mask_band:int = 0,
-    verbose:bool = True,
+    mask_band:int = 1,
 ) -> pd.DataFrame:
 
     # load regions, if not specified
@@ -59,8 +58,9 @@ def grid2stat(
             print(src_population.res)
 
 
-        # Manage NoData for values
-        values_nodata = src_population.nodata if src_population.nodata is not None else -9999 
+        # Manage NoData
+        population_nodata = src_population.nodata if src_population.nodata is not None else -9999 
+        #mask_nodata = src_mask.nodata if src_mask.nodata is not None else -9999 
 
         # Process each region
         for _, region in regions.iterrows():
@@ -89,26 +89,25 @@ def grid2stat(
 
                 for class_name, mf in classes.items():
 
-                    # Create a boolean mask based on the condition
-                    class_mask = mf(mask_clipped)
+                    # Create a boolean mask based on the mask function
+                    m = mf(mask_clipped)
 
-                    # Apply the class_mask to the values array
-                    # only consider the values where the class_mask is True
-                    values_in_class = population_clipped[class_mask]
+                    # Apply mask to the pop array: only keep pop values where the mask is True
+                    pop = population_clipped[m]
 
                     # Filter NoData values 
-                    valid_values = values_in_class[values_in_class != values_nodata]
+                    pop = pop[pop != population_nodata]
 
-                    #if valid_values.size == 0: continue
+                    #if pop.size == 0: continue
 
                     # Agregation : compute the sum and make data item
-                    ob = { "value" : valid_values.sum() if valid_values.size > 0 else None }
+                    ob = { "value" : pop.sum() if pop.size > 0 else None }
                     ob[region_id_att] = region[region_id_att]
                     ob[indic] = class_name
                     out.append(ob)
 
-
     return pd.DataFrame(out)
+
 
 
 
