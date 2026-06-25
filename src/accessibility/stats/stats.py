@@ -32,7 +32,7 @@ res_default = "100"
 sus = {
     #"URAU": { "path": "/home/juju/geodata/gisco/URAU_RG_100K_2024_3035.gpkg" , "id": "URAU_CODE", "version":"2024" },
     "NUTS": { "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg", "id": "NUTS_ID", "version":"2024" },
-    "LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID", "version":"2024" },
+    #"LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID", "version":"2024" },
 }
 
 # population rasters
@@ -120,7 +120,7 @@ for su in sus.keys():
     geo = su + "_" + sus[su]["version"]
     for service in acc_grids_versions.keys():
 
-        if True:
+        if False:
             # make a single csv hypercube file per statunit and service
             df = None
 
@@ -171,7 +171,7 @@ for su in sus.keys():
             print(datetime.now(), "save compiled file")
             df.to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
 
-        if True:
+        if False:
             print(datetime.now(), "decompose by time series", su, service)
 
             out_folder_d = output_folder + "decomposed/"
