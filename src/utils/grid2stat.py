@@ -33,6 +33,7 @@ def grid2stat(
     with rasterio.open(mask_path) as src_mask, rasterio.open(population_path) as src_population:
 
         '''
+        # show information on bands and band names
         for dataset in [src_population, src_mask]:
             print(dataset)
             # Get all band names as a tuple
@@ -98,13 +99,14 @@ def grid2stat(
                     # Filter NoData values 
                     valid_values = values_in_class[values_in_class != values_nodata]
 
-                    if valid_values.size == 0: continue
+                    #if valid_values.size == 0: continue
 
                     # Agregation : compute the sum and make data item
-                    ob = { "value" : valid_values.sum() }
+                    ob = { "value" : valid_values.sum() if valid_values.size > 0 else None }
                     ob[region_id_att] = region[region_id_att]
                     ob[indic] = class_name
                     out.append(ob)
+
 
     return pd.DataFrame(out)
 
@@ -150,9 +152,6 @@ def zonal_sum_by_class(
         # Add class as you need
     }   
     result_gdf=zonal_sum_by_class(RASTER_CLASSES_PATH,RASTER_VALUES_PATH,ZONAL_FILE,DICT_CLASSES)
-
-
-
     """
     # Load zones
     zonal = gpd.read_file(zonal_path)
