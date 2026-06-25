@@ -24,7 +24,7 @@ def grid2stat(
     regions = gpd.read_file(region_path)
     if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
     regions = regions[[region_id_att, 'geometry']]
-    print(len(regions))
+    #print(len(regions))
 
     # output data
     out = []
@@ -32,6 +32,7 @@ def grid2stat(
     # Open raster files
     with rasterio.open(mask_path) as src_mask, rasterio.open(population_path) as src_population:
 
+        '''
         for dataset in [src_population, src_mask]:
             print(dataset)
             # Get all band names as a tuple
@@ -40,6 +41,7 @@ def grid2stat(
             # Pair each 1-based band index with its name
             for idx, name in zip(dataset.indexes, dataset.descriptions):
                 print(f"Band {idx}: {name}")
+        '''
 
         # Test if rasters are compatible
         if src_mask.crs != src_population.crs:    
