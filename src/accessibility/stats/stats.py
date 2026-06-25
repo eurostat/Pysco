@@ -169,16 +169,16 @@ for su in sus.keys():
             # TODO sort ?
 
             print(datetime.now(), "save compiled file")
-            df.to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
+            df.to_csv(output_folder + "euro_access_" + geo + "_" + service + ".csv", index=False)
 
         if True:
             print(datetime.now(), "decompose by time series", su, service)
 
             out_folder_d = output_folder + "decomposed/"
             hypercube_csv_to_timeseries_csv(
-                output_folder + "euro_access_" geo + "_" + service + ".csv",
+                output_folder + "euro_access_" + geo + "_" + service + ".csv",
                 out_folder_d,
-                output_file_name_fun = lambda f: "euro_access_" + service + "_" + geo + "__" + f)
+                output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "__" + f)
 
             # delete NR files (not usefull) and rename files (remove PC)
             #for f in os.listdir(out_folder_d):
