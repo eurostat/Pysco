@@ -41,10 +41,10 @@ pop_rasters = {
     "100": "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox.tif"
 }
 age_group_to_band = {
-    "T":1,
-    "Y_LT15":4,
-    "Y_1564":5,
-    "Y_GE65":6,
+    "T":0,
+    "Y_LT15":3,
+    "Y_1564":4,
+    "Y_GE65":5,
 }
 
 # accessibility grids
@@ -135,7 +135,7 @@ for su in sus.keys():
                         region_filter = region_filter(region_id_att, service, year),
                         region_id_att = region_id_att,
                         population_path = pop_rasters[res],
-                        population_band = age_group_to_band[age_group]-1,
+                        population_band = age_group_to_band[age_group],
                         mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
                         mask_fun = { "ACCESS_INDIC": access_classes[service] }, # "DEG_URB": degurba_classes
                         mask_band = 1,
