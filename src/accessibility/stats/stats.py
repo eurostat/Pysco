@@ -171,12 +171,12 @@ for su in sus.keys():
             print(datetime.now(), "save compiled file")
             df.to_csv(output_folder + "euro_access_" + service + "_" + geo + ".csv", index=False)
 
-        if False:
+        if True:
             print(datetime.now(), "decompose by time series", su, service)
 
             out_folder_d = output_folder + "decomposed/"
             hypercube_csv_to_timeseries_csv(
-                output_folder + "euro_access_" + service + "_" + geo + ".csv",
+                output_folder + "euro_access_" geo + "_" + service + ".csv",
                 out_folder_d,
                 output_file_name_fun = lambda f: "euro_access_" + service + "_" + geo + "__" + f)
 
