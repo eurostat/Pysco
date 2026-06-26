@@ -153,7 +153,7 @@ for su in sus.keys():
                     for age_group in age_group_to_band.keys():
                         res = res_default if age_group == "T" else "1000"
 
-                        print(datetime.now(), su, service, year, age_group, res)
+                        print(datetime.now(), su, service, ai, year, age_group, res)
 
                         # compute aggregated statistics, with masks
                         df_ = grid2stat(
