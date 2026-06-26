@@ -128,7 +128,7 @@ def region_filter(id_att:str, service:str, year:str):
     cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
             "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
             "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO", "CH" ]
-    if service != "CH": cnts.append("CH")
+    if service != "education": cnts.append("CH")
     def out(r):
         id = r[id_att]
         # skip special ones for education
