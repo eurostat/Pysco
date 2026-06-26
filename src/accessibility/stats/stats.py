@@ -10,6 +10,7 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
+# remove indic access T
 # advance multiple mask: test stat with geotiff mask pre-process - no: better do it on-the-fly ?
 # stats by degree of urbanisation
 # stats by average to the X nearest
@@ -185,7 +186,7 @@ for su in sus.keys():
         if True:
             print(datetime.now(), "decompose by time series", su, service)
 
-            out_folder_d = output_folder + "decomposed/"
+            out_folder_d = output_folder + "as_timeseries/"
             hypercube_csv_to_timeseries_csv(
                 output_folder + "euro_access_" + geo + "_" + service + ".csv",
                 out_folder_d,
