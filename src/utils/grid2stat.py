@@ -66,7 +66,7 @@ def grid2stat(
         population_nodata = src_population.nodata if src_population.nodata is not None else -9999 
 
         # Process each region
-        for region in regions.itertuples():
+        for _, region in regions.iterrows():
 
             # Clip rasters by region geometry
             geometry = [mapping(region.geometry)]
