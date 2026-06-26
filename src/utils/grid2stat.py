@@ -15,15 +15,7 @@ def grid2stat(
     region_id_att:str="id",
     region_filter = None,
 
-    mask_path1: str = None,
-    mask_dim_name1 = None,
-    mask_fun1 = None,
-    mask_band1:int = 1,
-
-    mask_path2: str = None,
-    mask_dim_name2 = None,
-    mask_fun2 = None,
-    mask_band2:int = 1,
+    masks = [],
 ) -> pd.DataFrame:
 
     # load regions, if not specified
@@ -31,6 +23,20 @@ def grid2stat(
     if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
     regions = regions[[region_id_att, 'geometry']]
     #print(len(regions))
+
+    #TODO make more generic
+    mask1 = masks[0]
+    mask_path1 = mask1["path"]
+    mask_dim_name1 = mask1["dim_name"]
+    mask_fun1 = mask1["fun"]
+    mask_band1 = mask1["band"]
+
+    mask2 = masks[1]
+    mask_path2 = mask2["path"]
+    mask_dim_name2 = mask2["dim_name"]
+    mask_fun2 = mask2["fun"]
+    mask_band2 = mask2["band"]
+
 
     # output data
     out = []
