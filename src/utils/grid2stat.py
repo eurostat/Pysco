@@ -13,9 +13,9 @@ def grid2stat(
     region_path: str = None,
     region_id_att:str="id",
     region_filter = None,
-    mask_path: str = None,
-    mask_fun = None,
-    mask_band:int = 1,
+    mask_path1: str = None,
+    mask_fun1 = None,
+    mask_band1:int = 1,
     mask_path2: str = None,
     mask_fun2 = None,
     mask_band2:int = 1,
@@ -32,7 +32,9 @@ def grid2stat(
 
     # Open raster files
     src_population = rasterio.open(population_path)
-    src_mask = rasterio.open(mask_path)
+    # masks = [] TODO
+    if mask_path1: src_mask1 = rasterio.open(mask_path1)
+    if mask_path2: src_mask2 = rasterio.open(mask_path2)
 
     try:
 
@@ -48,19 +50,20 @@ def grid2stat(
                 print(f"Band {idx}: {name}")
         '''
 
-        # Test if rasters are compatible
-        if src_mask.crs != src_population.crs:    
-            print("Error: Rasters have different CRSs")
-            print(src_mask.crs)
-            print(src_population.crs)
-        if src_mask.transform != src_population.transform:    
-            print("Error: Rasters have different Transform")
-            print(src_mask.transform)
-            print(src_population.transform)
-        if src_mask.res[0] != src_population.res[0] or src_mask.res[1] != src_population.res[1]:
-            print("Error: Rasters have different resolutions")
-            print(src_mask.res)
-            print(src_population.res)
+        # Test if rasters are compatible - only the first TODO
+        if src_mask1:
+            if src_mask1.crs != src_population.crs:    
+                print("Error: Rasters have different CRSs")
+                print(src_mask1.crs)
+                print(src_population.crs)
+            if src_mask1.transform != src_population.transform:    
+                print("Error: Rasters have different Transform")
+                print(src_mask1.transform)
+                print(src_population.transform)
+            if src_mask1.res[0] != src_population.res[0] or src_mask1.res[1] != src_population.res[1]:
+                print("Error: Rasters have different resolutions")
+                print(src_mask1.res)
+                print(src_population.res)
 
 
         # Manage NoData
@@ -74,7 +77,8 @@ def grid2stat(
             geometry = [mapping(region.geometry)]
             try:
                 population_clipped, _ = mask(src_population, geometry, crop=True, filled=True, nodata=population_nodata)
-                mask_clipped, _ = mask(src_mask, geometry, crop=True, filled=True)
+                if src_mask1: mask_clipped1, _ = mask(src_mask1, geometry, crop=True, filled=True)
+                if src_mask2: mask_clipped2, _ = mask(src_mask2, geometry, crop=True, filled=True)
             except Exception as e:
                 if type(e).__name__ == "ValueError": continue
                 print(f"Failed clipping {region[region_id_att]}: {e}")
@@ -83,36 +87,44 @@ def grid2stat(
             # keep band
             #TODO do before clipping ? at src level ?
             population_clipped = population_clipped[population_band-1]
-            mask_clipped = mask_clipped[mask_band-1]
+            if mask_clipped1: mask_clipped1 = mask_clipped1[mask_band1-1]
+            if mask_clipped2: mask_clipped2 = mask_clipped2[mask_band2-1]
 
             # Ensure that the two clipped rasters have the same size
             #if values_clipped.shape != classes_clipped.shape:
             #    if verbose: print(f"Warning: the clipped raster for the polygon {index} don't have the same size")
             #    continue
 
-            # TODO currently only a single mask. make it possible to have several.
-            for indic, classes in mask_fun.items():
-                for class_name, mf in classes.items():
+            # TODO currently only a single mask. make it possible to have several ?
+            for indic1, classes1 in mask_fun1.items():
+                for indic2, classes2 in mask_fun2.items():
+                    for class_name1, mf1 in classes1.items():
+                        for class_name2, mf2 in classes2.items():
 
-                    # Create a boolean mask based on the mask function
-                    m = mf(mask_clipped)
+                            # Create a boolean mask based on the mask function
+                            if mask_clipped1: m1 = mf1(mask_clipped1) if mf1 is not None else mask_clipped1
+                            if mask_clipped2: m2 = mf2(mask_clipped2) if mf2 is not None else mask_clipped2
 
-                    # Apply mask to the pop array: only keep pop values where the mask is True
-                    pop = population_clipped[m]
+                            # and apply mask to the pop array: only keep pop values where the mask is True
+                            p = population_clipped
+                            if m1: p = p[m1]
+                            if m2: p = p[m2]
 
-                    # Filter NoData values 
-                    pop = pop[pop != population_nodata]
+                            # Filter NoData values 
+                            p = p[p != population_nodata]
 
-                    #if pop.size == 0: continue
+                            #if pop.size == 0: continue
 
-                    # Agregation : compute the sum and make data item
-                    ob = { "value" : pop.sum() if pop.size > 0 else None }
-                    ob[region_id_att] = region[region_id_att]
-                    ob[indic] = class_name
-                    out.append(ob)
+                            # Agregation : compute the sum and make data item
+                            ob = { "value" : p.sum() if p.size > 0 else None }
+                            ob[region_id_att] = region[region_id_att]
+                            if class_name1: ob[indic1] = class_name1
+                            if class_name2: ob[indic2] = class_name2
+                            out.append(ob)
     finally:
         src_population.close()
-        src_mask.close()
+        if src_mask1: src_mask1.close()
+        if src_mask2: src_mask2.close()
 
     return pd.DataFrame(out)
 

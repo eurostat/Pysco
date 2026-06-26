@@ -149,9 +149,9 @@ for su in sus.keys():
                         region_id_att = region_id_att,
                         region_filter = region_filter(region_id_att, service, year),
 
-                        mask_path = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-                        mask_fun = { "ACCESS_INDIC": access_classes[service] }, # "DEG_URB": degurba_classes
-                        mask_band = 1,
+                        mask_path1 = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
+                        mask_fun1 = { "ACCESS_INDIC": access_classes[service] }, # "DEG_URB": degurba_classes
+                        mask_band1 = 1,
                     )
                     df_["AGE"] = age_group
                     df_["TIME"] = year
