@@ -9,7 +9,6 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
-# better filter country/regions
 # degurba for 100m case
 # make it possible that population raster is finer than class grid
 
@@ -25,8 +24,8 @@ res_default = "1000"
 
 # the statistical units
 sus = {
-    "URAU": { "path": "/home/juju/geodata/gisco/URAU_RG_100K_2024_3035.gpkg" , "id": "URAU_CODE", "version":"2024" },
     "NUTS": { "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg", "id": "NUTS_ID", "version":"2024" },
+    "URAU": { "path": "/home/juju/geodata/gisco/URAU_RG_100K_2024_3035.gpkg" , "id": "URAU_CODE", "version":"2024" },
     "LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID", "version":"2024" },
 }
 
