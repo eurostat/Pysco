@@ -16,6 +16,9 @@ def grid2stat(
     mask_path: str = None,
     mask_fun = None,
     mask_band:int = 1,
+    mask_path2: str = None,
+    mask_fun2 = None,
+    mask_band2:int = 1,
 ) -> pd.DataFrame:
 
     # load regions, if not specified
@@ -28,7 +31,10 @@ def grid2stat(
     out = []
 
     # Open raster files
-    with rasterio.open(mask_path) as src_mask, rasterio.open(population_path) as src_population:
+    src_population = rasterio.open(population_path)
+    src_mask = rasterio.open(mask_path)
+
+    try:
 
         '''
         # show information on bands and band names
@@ -104,6 +110,9 @@ def grid2stat(
                     ob[region_id_att] = region[region_id_att]
                     ob[indic] = class_name
                     out.append(ob)
+    finally:
+        src_population.close()
+        src_mask.close()
 
     return pd.DataFrame(out)
 
