@@ -104,9 +104,6 @@ def grid2stat(
                     # Filter NoData values 
                     p = p[p != population_nodata]
 
-                    #if pop.size == 0: continue
-                    if p.sum() == 0: print(region[region_id_att])
-
                     # Agregation : compute the sum and make data item
                     ob = { "value" : p.sum() if p.size > 0 else None }
                     ob[region_id_att] = region[region_id_att]

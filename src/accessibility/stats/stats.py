@@ -9,10 +9,8 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
-# fix 0 values
-# CH for education
+# handle generic mask list
 # degurba for 100m case
-# make it possible that population raster is finer than class grid
 
 
 # output folder
