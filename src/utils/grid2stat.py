@@ -22,33 +22,16 @@ def grid2stat(
     regions = gpd.read_file(region_path)
     if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
     regions = regions[[region_id_att, 'geometry']]
-    #print(len(regions))
-
-    #TODO make more generic
-    mask1 = masks[0]
-    mask_path1 = mask1["path"]
-    mask_dim_name1 = mask1["dim_name"]
-    mask_fun1 = mask1["fun"]
-    mask_band1 = mask1["band"]
-
-    mask2 = masks[1]
-    mask_path2 = mask2["path"]
-    mask_dim_name2 = mask2["dim_name"]
-    mask_fun2 = mask2["fun"]
-    mask_band2 = mask2["band"]
-
 
     # output data
     out = []
 
-    # Open raster files
+    # Open raster files: population and masks
     src_population = rasterio.open(population_path)
-    src_mask = []
-    if mask_path1: src_mask.append(rasterio.open(mask_path1))
-    if mask_path2: src_mask.append(rasterio.open(mask_path2))
+    src_mask = [ rasterio.open(mask["path"]) for mask in masks ]
 
-    #
-    mask_band = [ mask_band1, mask_band2 ]
+    # list bands
+    mask_band = [ mask["band"] for mask in masks ]
 
     try:
 
@@ -81,42 +64,42 @@ def grid2stat(
 
         # Manage NoData
         population_nodata = src_population.nodata if src_population.nodata is not None else -9999 
-        #mask_nodata = src_mask.nodata if src_mask.nodata is not None else -9999 
 
         # Process each region
-        for _, region in regions.iterrows():
+        for region in regions.itertuples():
 
             # Clip rasters by region geometry
             geometry = [mapping(region.geometry)]
             try:
-                # clip population
-                population_clipped, _ = mask(src_population, geometry, crop=True, filled=True, nodata=population_nodata)
-
-                # clip masks
-                mask_clipped = []
-                for sm in src_mask:
-                    mc, _ = mask(sm, geometry, crop=True, filled=True)
-                    mask_clipped.append(mc)
+                # clip population and masks
+                population_clipped = mask(src_population, geometry, crop=True, filled=True, nodata=population_nodata)[0]
+                mask_clipped = [ mask(sm, geometry, crop=True, filled=True)[0] for sm in src_mask ]
             except Exception as e:
                 if type(e).__name__ == "ValueError": continue
                 print(f"Failed clipping {region[region_id_att]}: {e}")
                 continue
 
-            # keep usefull bands TODO do that earlier? before clipping ? at src level ?
+            # keep only usefull bands TODO do that earlier? before clipping ? at src level ?
             population_clipped = population_clipped[population_band-1]
             mask_clipped = [ mc[band-1] for mc, band in zip(mask_clipped, mask_band) ]
 
-            for class_name1, mf1 in mask_fun1.items():
-                for class_name2, mf2 in mask_fun2.items():
+            #TODO adapt that so that it works for any number of masks, not only case with exactly 2 !
+            #TODO get caretsian product of keys
+            for class_name0 in masks[0]["fun"].keys():
+                for class_name1 in masks[1]["fun"].keys():
+
+                    mf0 = masks[0]["fun"][class_name0]
+                    mf1 = masks[1]["fun"][class_name1]
 
                     # Create a boolean mask based on the mask functions
-                    m1 = mf1(mask_clipped[0])
-                    m2 = mf2(mask_clipped[1])
-                    m = m1 & m2
+                    m = None
+                    m0 = mf0(mask_clipped[0])
+                    m1 = mf1(mask_clipped[1])
+                    m = m0 & m1
 
                     # and apply mask to the pop array: only keep pop values where the mask is True
                     p = population_clipped
-                    p = p[m]
+                    if m is not None: p = p[m]
 
                     # Filter NoData values 
                     p = p[p != population_nodata]
@@ -126,8 +109,8 @@ def grid2stat(
                     # Agregation : compute the sum and make data item
                     ob = { "value" : p.sum() if p.size > 0 else None }
                     ob[region_id_att] = region[region_id_att]
-                    ob[mask_dim_name1] = class_name1
-                    ob[mask_dim_name2] = class_name2
+                    ob[masks[0]["dim_name"]] = class_name0
+                    ob[masks[1]["dim_name"]] = class_name1
                     out.append(ob)
     finally:
         # close population file

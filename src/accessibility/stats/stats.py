@@ -9,6 +9,8 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
+# fix 0 values
+# CH for education
 # degurba for 100m case
 # make it possible that population raster is finer than class grid
 
@@ -126,10 +128,11 @@ def region_filter(id_att:str, service:str, year:str):
     cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
             "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
             "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO", "CH" ]
+    if service != "CH": cnts.append("CH")
     def out(r):
         id = r[id_att]
         # skip special ones for education
-        if service == "education" and id in ["CH", "ES51", "ES511", "ES512", "ES513", "ES514", "ITC2", "ITH1", "ITC20", "ITH10", "ITH2", "ITH20"]:
+        if service == "education" and id in ["ES51", "ES511", "ES512", "ES513", "ES514", "ITC2", "ITH1", "ITC20", "ITH10", "ITH2", "ITH20"]:
             return False
         # if the id contains on of the country codes covered, then keep, else exclude
         for cnt in cnts:
