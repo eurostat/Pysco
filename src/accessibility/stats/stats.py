@@ -83,13 +83,13 @@ access_classes = {
         "LT_45_MIN": lambda v: (v<=45*60) & (v>=0),
     },
     "education" : {
-        "T": lambda v:True,
+        "NONE": lambda v:True,
         "LT_2_MIN": lambda v: (v<=2*60) & (v>=0),
         "LT_10_MIN": lambda v: (v<=10*60) & (v>=0),
         "LT_20_MIN": lambda v: (v<=20*60) & (v>=0),
     },
     "evrp" : {
-        "T": lambda v:True,
+        "NONE": lambda v:True,
         "LT_500_M": lambda v: (v<=500) & (v>=0),
         "LT_5000_M": lambda v: (v<=5000) & (v>=0),
     },
@@ -189,9 +189,10 @@ for su in sus.keys():
                 # rename and sort columns
                 df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","VALUE"]]
 
+
             # compute percentages
             if True:
-                # Get the totals (THRESHOLD='NONE') for each GEO/TIME/AGE/... combination
+                # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
                 totals = df[df['THRESHOLD'] == 'NONE'][['GEO', 'TIME', 'AGE', "DEG_URB", "ACCESS_INDIC", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
                 # Merge totals back onto the full dataframe
