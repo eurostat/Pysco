@@ -185,10 +185,9 @@ for su in sus.keys():
                         df_["ACCESS_INDIC"] = ai
                         df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
-                df["UNIT"] = 'NR'
-                # rename and sort columns
-                df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","VALUE"]]
-
+            df["UNIT"] = 'NR'
+            # rename and sort columns
+            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","VALUE"]]
 
             # compute percentages
             if True:
