@@ -164,11 +164,13 @@ for su in sus.keys():
                             region_filter = region_filter(region_id_att, service, year),
 
                             mask_path1 = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-                            mask_fun1 = { "THRESHOLD": access_classes[service] },
+                            mask_dim_name1 = "THRESHOLD",
+                            mask_fun1 = access_classes[service],
                             mask_band1 = access_indicator_to_band[ai],
 
                             mask_path2 = degurba_grid_path,
-                            mask_fun2 = { "DEG_URB": degurba_classes },
+                            mask_dim_name2 = "DEG_URB",
+                            mask_fun2 = degurba_classes,
                             mask_band2 = 1,
                         )
                         df_["TIME"] = year

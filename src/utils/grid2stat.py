@@ -10,13 +10,18 @@ from math import isnan
 def grid2stat(
     population_path: str,
     population_band:int = 1,
+
     region_path: str = None,
     region_id_att:str="id",
     region_filter = None,
+
     mask_path1: str = None,
+    mask_dim_name1 = None,
     mask_fun1 = None,
     mask_band1:int = 1,
+
     mask_path2: str = None,
+    mask_dim_name2 = None,
     mask_fun2 = None,
     mask_band2:int = 1,
 ) -> pd.DataFrame:
@@ -95,37 +100,29 @@ def grid2stat(
             population_clipped = population_clipped[population_band-1]
             mask_clipped = [ mc[band-1] for mc, band in zip(mask_clipped, mask_band) ]
 
-            # Ensure that the two clipped rasters have the same size
-            #if values_clipped.shape != classes_clipped.shape:
-            #    if verbose: print(f"Warning: the clipped raster for the polygon {index} don't have the same size")
-            #    continue
+            for class_name1, mf1 in mask_fun1.items():
+                for class_name2, mf2 in mask_fun2.items():
 
-            # TODO currently only a single mask. make it possible to have several ?
-            for indic1, classes1 in mask_fun1.items():
-                for indic2, classes2 in mask_fun2.items():
-                    for class_name1, mf1 in classes1.items():
-                        for class_name2, mf2 in classes2.items():
+                    # Create a boolean mask based on the mask functions
+                    m1 = mf1(mask_clipped[0])
+                    m2 = mf2(mask_clipped[1])
+                    m = m1 & m2
 
-                            # Create a boolean mask based on the mask functions
-                            m1 = mf1(mask_clipped[0])
-                            m2 = mf2(mask_clipped[1])
-                            m = m1 & m2
+                    # and apply mask to the pop array: only keep pop values where the mask is True
+                    p = population_clipped
+                    p = p[m]
 
-                            # and apply mask to the pop array: only keep pop values where the mask is True
-                            p = population_clipped
-                            p = p[m]
+                    # Filter NoData values 
+                    p = p[p != population_nodata]
 
-                            # Filter NoData values 
-                            p = p[p != population_nodata]
+                    #if pop.size == 0: continue
 
-                            #if pop.size == 0: continue
-
-                            # Agregation : compute the sum and make data item
-                            ob = { "value" : p.sum() if p.size > 0 else None }
-                            ob[region_id_att] = region[region_id_att]
-                            if class_name1: ob[indic1] = class_name1
-                            if class_name2: ob[indic2] = class_name2
-                            out.append(ob)
+                    # Agregation : compute the sum and make data item
+                    ob = { "value" : p.sum() if p.size > 0 else None }
+                    ob[region_id_att] = region[region_id_att]
+                    ob[mask_dim_name1] = class_name1
+                    ob[mask_dim_name2] = class_name2
+                    out.append(ob)
     finally:
         # close population file
         src_population.close()
