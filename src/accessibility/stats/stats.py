@@ -5,15 +5,11 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.grid2stat import grid2stat
-from accessibility.utils import get_countries_covered
 from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
-# CHECK stats by average to the X nearest
-# remove indic access T
 # better filter country/regions
-
 # degurba for 100m case
 # make it possible that population raster is finer than class grid
 
@@ -51,9 +47,9 @@ Band 6: Y_GE65
 '''
 age_group_to_band = {
     "T":1,
-    #"Y_LT15":4,
-    #"Y_1564":5,
-    #"Y_GE65":6,
+    "Y_LT15":4,
+    "Y_1564":5,
+    "Y_GE65":6,
 }
 
 access_indicator_to_band = {
@@ -124,13 +120,19 @@ degurba_classes = {
 }
 
 
+
+
 # function to determine the countries not covered by service and year
 def region_filter(id_att:str, service:str, year:str):
-    cnts = get_countries_covered(service, year)
+    cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
+            "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
+            "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO", "CH" ]
     def out(r):
-        if cnts == "all": return True
-        # if the id contains on of the country codes covered, then keep, else exclude
         id = r[id_att]
+        # skip special ones for education
+        if service == "education" and id in ["CH", "ES51", "ES511", "ES512", "ES513", "ES514", "ITC2", "ITH1", "ITC20", "ITH10", "ITH2", "ITH20"]:
+            return False
+        # if the id contains on of the country codes covered, then keep, else exclude
         for cnt in cnts:
             if cnt in id: return True
         return False
