@@ -12,7 +12,6 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 # TODO
 # CHECK stats by average to the X nearest
 # remove indic access T
-# advance multiple mask: test stat with geotiff mask pre-process - no: better do it on-the-fly ?
 # better filter country/regions
 
 # degurba for 100m case
@@ -52,9 +51,9 @@ Band 6: Y_GE65
 '''
 age_group_to_band = {
     "T":1,
-    "Y_LT15":4,
-    "Y_1564":5,
-    "Y_GE65":6,
+    #"Y_LT15":4,
+    #"Y_1564":5,
+    #"Y_GE65":6,
 }
 
 access_indicator_to_band = {
