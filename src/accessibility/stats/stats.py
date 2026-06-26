@@ -14,6 +14,7 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 # advance multiple mask: test stat with geotiff mask pre-process - no: better do it on-the-fly ?
 # stats by degree of urbanisation
 # stats by average to the X nearest
+# degurba for 100m case
 # make it possible that population raster is finer than class grid
 
 
@@ -23,7 +24,7 @@ output_folder = "/home/juju/gisco/accessibility/stats/"
 acc_grids_folder = "/home/juju/gisco/accessibility/"
 
 # resolution of the grids to use
-res_default = "100"
+res_default = "1000"
 
 
 # the statistical units
