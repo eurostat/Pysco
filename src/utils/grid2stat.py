@@ -106,14 +106,14 @@ def grid2stat(
                     for class_name1, mf1 in classes1.items():
                         for class_name2, mf2 in classes2.items():
 
-                            # Create a boolean mask based on the mask function
+                            # Create a boolean mask based on the mask functions
                             m1 = mf1(mask_clipped[0])
                             m2 = mf2(mask_clipped[1])
+                            m = m1 & m2
 
                             # and apply mask to the pop array: only keep pop values where the mask is True
                             p = population_clipped
-                            if m1: p = p[m1]
-                            if m2: p = p[m2]
+                            p = p[m]
 
                             # Filter NoData values 
                             p = p[p != population_nodata]

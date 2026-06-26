@@ -166,15 +166,15 @@ for su in sus.keys():
 
             df["UNIT"] = 'NR'
             # rename and sort columns
-            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","ACCESS_INDIC","UNIT","VALUE"]]
+            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","DEG_URB","ACCESS_INDIC","UNIT","VALUE"]]
 
             # compute percentages
             if True:
                 # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
-                totals = df[df['ACCESS_INDIC'] == 'T'][['GEO', 'TIME', 'AGE', 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+                totals = df[df['ACCESS_INDIC'] == 'T'][['GEO', 'TIME', 'AGE', "DEG_URB", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
                 # Merge totals back onto the full dataframe
-                df_merged = df.merge(totals, on=['GEO', 'TIME', 'AGE'])
+                df_merged = df.merge(totals, on=['GEO', 'TIME', 'AGE', "DEG_URB"])
 
                 # Build the percentage rows
                 pc_rows = df_merged.copy()
