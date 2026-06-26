@@ -105,12 +105,14 @@ UNK		Unknown		Y
 311 = Very low density rural grid cell (was 11)
 310 = Water
 '''
+degurba_grid_path = "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2021/DGUR_LEVEL2_GRD_1KM_2021_extended.tif"
 degurba_classes = {
     "TOTAL": lambda v:True,
     "DEG1": lambda v: v<200, # Cities
     "DEG2": lambda v: (v>200) & (v<300), # Towns and suburbs
     "DEG3": lambda v: (v>310), # Rural areas
 }
+
 
 # function to determine the countries not covered by service and year
 def region_filter(id_att:str, service:str, year:str):
@@ -150,8 +152,12 @@ for su in sus.keys():
                         region_filter = region_filter(region_id_att, service, year),
 
                         mask_path1 = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-                        mask_fun1 = { "ACCESS_INDIC": access_classes[service] }, # "DEG_URB": degurba_classes
+                        mask_fun1 = { "ACCESS_INDIC": access_classes[service] },
                         mask_band1 = 1,
+
+                        mask_path2 = degurba_grid_path,
+                        mask_fun2 = { "DEG_URB": degurba_classes },
+                        mask_band2 = 1,
                     )
                     df_["AGE"] = age_group
                     df_["TIME"] = year

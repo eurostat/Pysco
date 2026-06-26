@@ -32,9 +32,12 @@ def grid2stat(
 
     # Open raster files
     src_population = rasterio.open(population_path)
-    # masks = [] TODO
-    if mask_path1: src_mask1 = rasterio.open(mask_path1)
-    if mask_path2: src_mask2 = rasterio.open(mask_path2)
+    src_mask = []
+    if mask_path1: src_mask.append(rasterio.open(mask_path1))
+    if mask_path2: src_mask.append(rasterio.open(mask_path2))
+
+    #
+    mask_band = [ mask_band1, mask_band2 ]
 
     try:
 
@@ -50,21 +53,20 @@ def grid2stat(
                 print(f"Band {idx}: {name}")
         '''
 
-        # Test if rasters are compatible - only the first TODO
-        if src_mask1:
-            if src_mask1.crs != src_population.crs:    
+        # Test if mask rasters are compatible with population raster
+        for sm in src_mask:
+            if sm.crs != src_population.crs:    
                 print("Error: Rasters have different CRSs")
-                print(src_mask1.crs)
+                print(sm.crs)
                 print(src_population.crs)
-            if src_mask1.transform != src_population.transform:    
+            if sm.transform != src_population.transform:    
                 print("Error: Rasters have different Transform")
-                print(src_mask1.transform)
+                print(sm.transform)
                 print(src_population.transform)
-            if src_mask1.res[0] != src_population.res[0] or src_mask1.res[1] != src_population.res[1]:
+            if sm.res[0] != src_population.res[0] or sm.res[1] != src_population.res[1]:
                 print("Error: Rasters have different resolutions")
-                print(src_mask1.res)
+                print(sm.res)
                 print(src_population.res)
-
 
         # Manage NoData
         population_nodata = src_population.nodata if src_population.nodata is not None else -9999 
@@ -76,19 +78,22 @@ def grid2stat(
             # Clip rasters by region geometry
             geometry = [mapping(region.geometry)]
             try:
+                # clip population
                 population_clipped, _ = mask(src_population, geometry, crop=True, filled=True, nodata=population_nodata)
-                if src_mask1: mask_clipped1, _ = mask(src_mask1, geometry, crop=True, filled=True)
-                if src_mask2: mask_clipped2, _ = mask(src_mask2, geometry, crop=True, filled=True)
+
+                # clip masks
+                mask_clipped = []
+                for sm in src_mask:
+                    mc, _ = mask(sm, geometry, crop=True, filled=True)
+                    mask_clipped.append(mc)
             except Exception as e:
                 if type(e).__name__ == "ValueError": continue
                 print(f"Failed clipping {region[region_id_att]}: {e}")
                 continue
 
-            # keep band
-            #TODO do before clipping ? at src level ?
+            # keep usefull bands TODO do that earlier? before clipping ? at src level ?
             population_clipped = population_clipped[population_band-1]
-            if mask_clipped1: mask_clipped1 = mask_clipped1[mask_band1-1]
-            if mask_clipped2: mask_clipped2 = mask_clipped2[mask_band2-1]
+            mask_clipped = [ mc[band-1] for mc, band in zip(mask_clipped, mask_band) ]
 
             # Ensure that the two clipped rasters have the same size
             #if values_clipped.shape != classes_clipped.shape:
@@ -102,8 +107,8 @@ def grid2stat(
                         for class_name2, mf2 in classes2.items():
 
                             # Create a boolean mask based on the mask function
-                            if mask_clipped1: m1 = mf1(mask_clipped1) if mf1 is not None else mask_clipped1
-                            if mask_clipped2: m2 = mf2(mask_clipped2) if mf2 is not None else mask_clipped2
+                            m1 = mf1(mask_clipped[0])
+                            m2 = mf2(mask_clipped[1])
 
                             # and apply mask to the pop array: only keep pop values where the mask is True
                             p = population_clipped
@@ -122,9 +127,10 @@ def grid2stat(
                             if class_name2: ob[indic2] = class_name2
                             out.append(ob)
     finally:
+        # close population file
         src_population.close()
-        if src_mask1: src_mask1.close()
-        if src_mask2: src_mask2.close()
+        # close mask files
+        for sm in src_mask: sm.close()
 
     return pd.DataFrame(out)
 
