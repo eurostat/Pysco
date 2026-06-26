@@ -10,10 +10,11 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
+# CHECK stats by average to the X nearest
 # remove indic access T
 # advance multiple mask: test stat with geotiff mask pre-process - no: better do it on-the-fly ?
-# stats by degree of urbanisation
-# stats by average to the X nearest
+# better filter country/regions
+
 # degurba for 100m case
 # make it possible that population raster is finer than class grid
 
@@ -56,7 +57,16 @@ age_group_to_band = {
     "Y_GE65":6,
 }
 
-
+access_indicator_to_band = {
+    "N1":1,
+    "AN3":2,
+    "AN5":2,
+}
+service_to_access_indicator = {
+    "healthcare" : ["N1","AN3"],
+    "education" : ["N1","AN3"],
+    "evrp" : ["N1","AN5"],
+}
 
 # accessibility grids
 acc_grids_versions = {
@@ -68,7 +78,7 @@ acc_grids_versions = {
 # classes
 access_classes = {
     "healthcare" : {
-        "T": lambda v:True,
+        "NONE": lambda v:True,
         "LT_5_MIN": lambda v: (v<=5*60) & (v>=0),
         "LT_20_MIN": lambda v: (v<=20*60) & (v>=0),
         "LT_45_MIN": lambda v: (v<=45*60) & (v>=0),
@@ -138,43 +148,45 @@ for su in sus.keys():
             # make a single csv hypercube file per statunit and service
             df = None
 
-            for year in acc_grids_versions[service].keys():
-                for age_group in age_group_to_band.keys():
-                    res = res_default if age_group == "T" else "1000"
+            for ai in service_to_access_indicator[service]:
+                for year in acc_grids_versions[service].keys():
+                    for age_group in age_group_to_band.keys():
+                        res = res_default if age_group == "T" else "1000"
 
-                    print(datetime.now(), su, service, year, age_group, res)
+                        print(datetime.now(), su, service, year, age_group, res)
 
-                    df_ = grid2stat(
-                        population_path = pop_rasters[res],
-                        population_band = age_group_to_band[age_group],
+                        df_ = grid2stat(
+                            population_path = pop_rasters[res],
+                            population_band = age_group_to_band[age_group],
 
-                        region_path = sus[su]["path"],
-                        region_id_att = region_id_att,
-                        region_filter = region_filter(region_id_att, service, year),
+                            region_path = sus[su]["path"],
+                            region_id_att = region_id_att,
+                            region_filter = region_filter(region_id_att, service, year),
 
-                        mask_path1 = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
-                        mask_fun1 = { "ACCESS_INDIC": access_classes[service] },
-                        mask_band1 = 1,
+                            mask_path1 = acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
+                            mask_fun1 = { "THRESHOLD": access_classes[service] },
+                            mask_band1 = access_indicator_to_band[ai],
 
-                        mask_path2 = degurba_grid_path,
-                        mask_fun2 = { "DEG_URB": degurba_classes },
-                        mask_band2 = 1,
-                    )
-                    df_["AGE"] = age_group
-                    df_["TIME"] = year
-                    df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
+                            mask_path2 = degurba_grid_path,
+                            mask_fun2 = { "DEG_URB": degurba_classes },
+                            mask_band2 = 1,
+                        )
+                        df_["TIME"] = year
+                        df_["AGE"] = age_group
+                        df_["ACCESS_INDIC"] = ai
+                        df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
-            df["UNIT"] = 'NR'
-            # rename and sort columns
-            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","DEG_URB","ACCESS_INDIC","UNIT","VALUE"]]
+                df["UNIT"] = 'NR'
+                # rename and sort columns
+                df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","VALUE"]]
 
             # compute percentages
             if True:
-                # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
-                totals = df[df['ACCESS_INDIC'] == 'T'][['GEO', 'TIME', 'AGE', "DEG_URB", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+                # Get the totals (THRESHOLD='NONE') for each GEO/TIME/AGE/... combination
+                totals = df[df['THRESHOLD'] == 'NONE'][['GEO', 'TIME', 'AGE', "DEG_URB", "ACCESS_INDIC", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
                 # Merge totals back onto the full dataframe
-                df_merged = df.merge(totals, on=['GEO', 'TIME', 'AGE', "DEG_URB"])
+                df_merged = df.merge(totals, on=['GEO', 'TIME', 'AGE', "DEG_URB", "ACCESS_INDIC"])
 
                 # Build the percentage rows
                 pc_rows = df_merged.copy()
@@ -182,7 +194,7 @@ for su in sus.keys():
                 pc_rows['UNIT'] = 'PC'
 
                 # Drop the helper column and append
-                pc_rows = pc_rows.drop(columns=['TOTAL']).query("ACCESS_INDIC != 'T'")
+                pc_rows = pc_rows.drop(columns=['TOTAL']).query("THRESHOLD != 'NONE'")
                 df = pd.concat([df, pc_rows], ignore_index=True)
 
             # TODO sort ?
@@ -229,7 +241,7 @@ for su in sus.keys():
                         ob = { "GEO":row[id_att], "TIME":year }
                         if 'pop' in k: ob['UNIT'] = "NR"
                         else: ob['UNIT'] = "PC"
-                        ob['ACCESS_INDIC'] = k.replace("pop_","").replace("pct_","")
+                        ob['THRESHOLD'] = k.replace("pop_","").replace("pct_","")
                         ob['VALUE'] = row[k]
                         out.append(ob)
         '''
