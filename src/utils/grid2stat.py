@@ -16,6 +16,8 @@ def grid2stat(
     region_filter = None,
 
     masks = [],
+
+    value_when_no_population = 0,
 ) -> pd.DataFrame:
 
     # load regions, if not specified
@@ -105,7 +107,7 @@ def grid2stat(
                     p = p[p != population_nodata]
 
                     # Agregation : compute the sum and make data item
-                    ob = { "value" : p.sum() if p.size > 0 else None }
+                    ob = { "value" : p.sum() if p.size > 0 else value_when_no_population }
                     ob[region_id_att] = region[region_id_att]
                     ob[masks[0]["dim_name"]] = class_name0
                     ob[masks[1]["dim_name"]] = class_name1
