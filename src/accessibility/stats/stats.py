@@ -210,6 +210,7 @@ for su in sus.keys():
                 df = pd.concat([df, pc_rows], ignore_index=True)
 
             # TODO sort ?
+            # TODO remove no data rows ?
 
             print(datetime.now(), "save compiled file")
             df.to_csv(output_folder + "euro_access_" + geo + "_" + service + ".csv", index=False)
