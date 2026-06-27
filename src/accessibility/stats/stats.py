@@ -209,8 +209,10 @@ for su in sus.keys():
                 pc_rows = pc_rows.drop(columns=['TOTAL']).query("THRESHOLD != 'NONE'")
                 df = pd.concat([df, pc_rows], ignore_index=True)
 
-            # TODO sort ?
             # TODO remove no data rows ?
+
+            # sort
+            df.sort_values(["GEO","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
             df.to_csv(output_folder + "euro_access_" + geo + "_" + service + ".csv", index=False)
