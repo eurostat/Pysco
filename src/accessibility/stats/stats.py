@@ -73,20 +73,20 @@ acc_grids_versions = {
 access_classes = {
     "healthcare" : {
         "NONE": lambda v:True,
-        "LT_5_MIN": lambda v: (v<=5*60) & (v>=0),
-        "LT_20_MIN": lambda v: (v<=20*60) & (v>=0),
-        "LT_45_MIN": lambda v: (v<=45*60) & (v>=0),
+        "GT_5_MIN": lambda v: (v>=5*60), # & (v>=0),
+        "GT_20_MIN": lambda v: (v>=20*60), # & (v>=0),
+        "GT_45_MIN": lambda v: (v>=45*60), # & (v>=0),
     },
     "education" : {
         "NONE": lambda v:True,
-        "LT_2_MIN": lambda v: (v<=2*60) & (v>=0),
-        "LT_10_MIN": lambda v: (v<=10*60) & (v>=0),
-        "LT_20_MIN": lambda v: (v<=20*60) & (v>=0),
+        "GT_2_MIN": lambda v: (v>=2*60), # & (v>=0),
+        "GT_10_MIN": lambda v: (v>=10*60), # & (v>=0),
+        "GT_20_MIN": lambda v: (v>=20*60), # & (v>=0),
     },
     "evrp" : {
         "NONE": lambda v:True,
-        "LT_500_M": lambda v: (v<=500) & (v>=0),
-        "LT_5000_M": lambda v: (v<=5000) & (v>=0),
+        "GT_500_M": lambda v: (v>=500), # & (v>=0),
+        "GT_5000_M": lambda v: (v>=5000), # & (v>=0),
     },
 }
 
