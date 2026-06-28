@@ -4,130 +4,143 @@ import pandas as pd
 from rasterio.mask import mask
 from shapely.geometry import mapping
 from typing import Dict
-from math import isnan
+from itertools import product
 
 
 def grid2stat(
     population_path: str,
-    population_band:int = 1,
+    population_band: int = 1,
 
     region_path: str = None,
-    region_id_att:str="id",
-    region_filter = None,
+    region_id_att: str = "id",
+    region_filter=None,
 
-    masks = [],
+    masks: list = None,
 
-    value_when_no_population = 0,
+    value_when_no_population=0,
 ) -> pd.DataFrame:
+    """
+    Compute population statistics per region and mask configuration.
 
-    # load regions, if not specified
+    Args:
+        population_path:        Path to the population raster file.
+        population_band:        Band index (1-based) to read from the population raster.
+        region_path:            Path to the regions vector file.
+        region_id_att:          Attribute name used as region identifier.
+        region_filter:          Optional callable(row) -> bool to filter regions.
+        masks:                  List of mask dicts with keys: 'path', 'band', 'fun', 'dim_name'.
+        value_when_no_population: Value to use when no population pixels are found.
+
+    Returns:
+        DataFrame with one row per (region, mask configuration).
+    """
+    if masks is None:
+        masks = []
+
+    # --- Load and optionally filter regions ---
     regions = gpd.read_file(region_path)
-    if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
-    regions = regions[[region_id_att, 'geometry']]
+    if region_filter:
+        regions = regions[regions.apply(region_filter, axis=1)]
+    regions = regions[[region_id_att, "geometry"]]
 
-    # output data
+    if regions.empty:
+        raise ValueError("No regions found after filtering.")
+
+    # Precompute cartesian product of all mask configurations
+    configurations = list(product(*(m["fun"].keys() for m in masks))) if masks else [()]
+
     out = []
 
-    # Open raster files: population and masks
+    # --- Open rasters ---
     src_population = rasterio.open(population_path)
-    src_mask = [ rasterio.open(mask["path"]) for mask in masks ]
-
-    # list bands
-    mask_band = [ mask["band"] for mask in masks ]
+    src_masks = [rasterio.open(m["path"]) for m in masks]
 
     try:
+        _validate_rasters(src_population, src_masks)
 
-        '''
-        # show information on bands and band names
-        for dataset in [src_population, src_mask]:
-            print(dataset)
-            # Get all band names as a tuple
-            band_names = dataset.descriptions
-            print("Band names:", band_names)
-            # Pair each 1-based band index with its name
-            for idx, name in zip(dataset.indexes, dataset.descriptions):
-                print(f"Band {idx}: {name}")
-        '''
+        population_nodata = src_population.nodata if src_population.nodata is not None else -9999
 
-        # Test if mask rasters are compatible with population raster
-        for sm in src_mask:
-            if sm.crs != src_population.crs:    
-                print("Error: Rasters have different CRSs")
-                print(sm.crs)
-                print(src_population.crs)
-            if sm.transform != src_population.transform:    
-                print("Error: Rasters have different Transform")
-                print(sm.transform)
-                print(src_population.transform)
-            if sm.res[0] != src_population.res[0] or sm.res[1] != src_population.res[1]:
-                print("Error: Rasters have different resolutions")
-                print(sm.res)
-                print(src_population.res)
-
-        # Manage NoData
-        population_nodata = src_population.nodata if src_population.nodata is not None else -9999 
-
-        # Process each region
+        # --- Process each region ---
         for _, region in regions.iterrows():
-
-            # Clip rasters by region geometry
+            region_id = region[region_id_att]
             geometry = [mapping(region.geometry)]
+
+            # Clip rasters to region extent
             try:
-                # clip population and masks
-                population_clipped = mask(src_population, geometry, crop=True, filled=True, nodata=population_nodata)[0]
-                mask_clipped = [ mask(sm, geometry, crop=True, filled=True)[0] for sm in src_mask ]
+                pop_clipped, mask_clipped = _clip_rasters(
+                    src_population, src_masks, masks, geometry,
+                    population_band, population_nodata
+                )
+            except SkipRegion:
+                continue
             except Exception as e:
-                if type(e).__name__ == "ValueError": continue
-                print(f"Failed clipping {region[region_id_att]}: {e}")
+                print(f"[{region_id}] Clipping failed: {e}")
                 continue
 
-            # keep only usefull bands TODO do that earlier? before clipping ? at src level ?
-            population_clipped = population_clipped[population_band-1]
-            mask_clipped = [ mc[band-1] for mc, band in zip(mask_clipped, mask_band) ]
+            # --- Handle each mask configuration ---
+            for conf in configurations:
+                combined_mask = _build_combined_mask(conf, masks, mask_clipped)
 
-            #TODO adapt that so that it works for any number of masks, not only case with exactly 2 !
-            #TODO get caretsian product of keys
-            mask_nb = len(masks)
-            for class_name0 in masks[0]["fun"].keys():
-                for class_name1 in masks[1]["fun"].keys():
+                pop = pop_clipped if combined_mask is None else pop_clipped[combined_mask]
+                pop = pop[pop != population_nodata]
 
-                    conf = [class_name0, class_name1]
+                row = {region_id_att: region_id}
+                row["value"] = pop.sum() if pop.size > 0 else value_when_no_population
+                for i, m in enumerate(masks):
+                    row[m["dim_name"]] = conf[i]
+                out.append(row)
 
-                    # Create a boolean mask as combination of various mask functions
-                    m = None
-                    for i in range(mask_nb):
-                        # get mask function i
-                        mf = masks[i]["fun"][conf[i]]
-                        if mf is None: continue
-                        m_ = mf(mask_clipped[i])
-                        if m_ is None: continue
-                        # apply mask i
-                        m = m_ if m is None else m & m_
-
-                    # and apply mask to the pop array: only keep pop values where the mask is True
-                    p = population_clipped
-                    if m is not None: p = p[m]
-
-                    # Filter NoData values 
-                    p = p[p != population_nodata]
-
-                    # Agregation : compute the sum and make data item
-                    ob = { "value" : p.sum() if p.size > 0 else value_when_no_population }
-                    ob[region_id_att] = region[region_id_att]
-                    ob[masks[0]["dim_name"]] = class_name0
-                    ob[masks[1]["dim_name"]] = class_name1
-                    out.append(ob)
     finally:
-        # close population file
         src_population.close()
-        # close mask files
-        for sm in src_mask: sm.close()
+        for sm in src_masks:
+            sm.close()
 
     return pd.DataFrame(out)
 
 
+# ── Helpers ────────────────────────────────────────────────────────────────────
+
+class SkipRegion(Exception):
+    """Raised when a region has no valid data and should be silently skipped."""
 
 
+def _validate_rasters(src_population, src_masks: list) -> None:
+    """Check that all mask rasters are compatible with the population raster."""
+    for sm in src_masks:
+        if sm.crs != src_population.crs:
+            raise ValueError(f"CRS mismatch: population={src_population.crs}, mask={sm.crs}")
+        if sm.transform != src_population.transform:
+            raise ValueError(f"Transform mismatch: population={src_population.transform}, mask={sm.transform}")
+        if sm.res != src_population.res:
+            raise ValueError(f"Resolution mismatch: population={src_population.res}, mask={sm.res}")
+
+
+def _clip_rasters(src_population, src_masks, masks, geometry, population_band, population_nodata):
+    """Clip population and mask rasters to a region geometry."""
+    try:
+        pop_clipped = mask(src_population, geometry, crop=True, filled=True, nodata=population_nodata)[0]
+        mask_clipped = [
+            mask(sm, geometry, crop=True, filled=True)[0][m["band"] - 1]
+            for sm, m in zip(src_masks, masks)
+        ]
+    except ValueError:
+        raise SkipRegion()
+
+    return pop_clipped[population_band - 1], mask_clipped
+
+
+def _build_combined_mask(conf, masks, mask_clipped):
+    """Combine individual mask functions into a single boolean mask."""
+    combined = None
+    for i, (key, mask_data) in enumerate(zip(conf, masks)):
+        mf = mask_data["fun"].get(key)
+        if mf is None:
+            continue
+        m = mf(mask_clipped[i])
+        if m is None:
+            continue
+        combined = m if combined is None else combined & m
+    return combined
 
 
 
