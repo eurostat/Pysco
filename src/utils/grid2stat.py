@@ -99,7 +99,7 @@ def grid2stat(
                         # get mask function i
                         mf = masks[i]["fun"][conf[i]]
                         if mf is None: continue
-                        m_ = mf[i](mask_clipped[i])
+                        m_ = mf(mask_clipped[i])
                         if m_ is None: continue
                         # apply mask i
                         m = m_ if m is None else m & m_
