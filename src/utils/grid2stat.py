@@ -87,17 +87,22 @@ def grid2stat(
 
             #TODO adapt that so that it works for any number of masks, not only case with exactly 2 !
             #TODO get caretsian product of keys
+            mask_nb = len(masks)
             for class_name0 in masks[0]["fun"].keys():
                 for class_name1 in masks[1]["fun"].keys():
 
-                    mf0 = masks[0]["fun"][class_name0]
-                    mf1 = masks[1]["fun"][class_name1]
+                    conf = [class_name0, class_name1]
 
-                    # Create a boolean mask based on the mask functions
+                    # Create a boolean mask as combination of various mask functions
                     m = None
-                    m0 = mf0(mask_clipped[0])
-                    m1 = mf1(mask_clipped[1])
-                    m = m0 & m1
+                    for i in range(mask_nb):
+                        # get mask function i
+                        mf = masks[i]["fun"][conf[i]]
+                        if mf is None: continue
+                        m_ = mf[i](mask_clipped[i])
+                        if m_ is None: continue
+                        # apply mask i
+                        m = m_ if m is None else m & m_
 
                     # and apply mask to the pop array: only keep pop values where the mask is True
                     p = population_clipped
