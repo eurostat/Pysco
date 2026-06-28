@@ -9,7 +9,6 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
-# zero/nodata
 # handle generic mask list
 # degurba for 100m case
 
