@@ -214,12 +214,15 @@ for su in sus.keys():
             df.sort_values(["GEO","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
+            os.makedirs(output_folder, exist_ok=True)
             df.to_csv(output_folder + "euro_access_" + geo + "_" + service + ".csv", index=False)
 
         if True:
             print(datetime.now(), "decompose by time series", su, service)
 
             out_folder_d = output_folder + "as_timeseries/"
+            os.makedirs(out_folder_d, exist_ok=True)
+
             hypercube_csv_to_timeseries_csv(
                 output_folder + "euro_access_" + geo + "_" + service + ".csv",
                 out_folder_d,
