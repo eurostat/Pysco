@@ -20,7 +20,8 @@ def grid2stat(
     value_when_no_population=0,
 ) -> pd.DataFrame:
     """
-    Compute population statistics per region and mask configuration.
+    Compute population statistics per region. It is the sum of the geotiff values for all the cells whose centre lies within the region.
+    It can optionaly apply various masks to compute statistics, for example, by degurba level 2, by CLC class, etc.
 
     Args:
         population_path:        Path to the population raster file.
@@ -37,7 +38,7 @@ def grid2stat(
     if masks is None:
         masks = []
 
-    # --- Load and optionally filter regions ---
+    # Load and optionally filter regions
     regions = gpd.read_file(region_path)
     if region_filter:
         regions = regions[regions.apply(region_filter, axis=1)]
@@ -47,43 +48,47 @@ def grid2stat(
         raise ValueError("No regions found after filtering.")
 
     # Precompute cartesian product of all mask configurations
+    # One stat value item will be produced for each of these configurations, for each region
     configurations = list(product(*(m["fun"].keys() for m in masks))) if masks else [()]
 
-    out = []
-
-    # --- Open rasters ---
+    # Open rasters: population and masks
     src_population = rasterio.open(population_path)
     src_masks = [rasterio.open(m["path"]) for m in masks]
 
+    out = []
     try:
+        # Check rasters are compatible
         _validate_rasters(src_population, src_masks)
 
+        # Set no data value for population
         population_nodata = src_population.nodata if src_population.nodata is not None else -9999
 
-        # --- Process each region ---
+        # Process each region
         for _, region in regions.iterrows():
+
+            # get region id and geometry
             region_id = region[region_id_att]
             geometry = [mapping(region.geometry)]
 
-            # Clip rasters to region extent
+            # Clip rasters to region geometry
             try:
-                pop_clipped, mask_clipped = _clip_rasters(
-                    src_population, src_masks, masks, geometry,
-                    population_band, population_nodata
-                )
-            except SkipRegion:
-                continue
+                pop_clipped, mask_clipped = _clip_rasters( src_population, src_masks, masks, geometry,population_band, population_nodata)
+            except SkipRegion: continue
             except Exception as e:
                 print(f"[{region_id}] Clipping failed: {e}")
                 continue
 
-            # --- Handle each mask configuration ---
+            # handle each mask configuration
             for conf in configurations:
+
+                # get boolean mask
                 combined_mask = _build_combined_mask(conf, masks, mask_clipped)
 
+                # apply mask on population data
                 pop = pop_clipped if combined_mask is None else pop_clipped[combined_mask]
                 pop = pop[pop != population_nodata]
 
+                # make data item
                 row = {region_id_att: region_id}
                 row["value"] = pop.sum() if pop.size > 0 else value_when_no_population
                 for i, m in enumerate(masks):
@@ -91,14 +96,13 @@ def grid2stat(
                 out.append(row)
 
     finally:
+        # close all files
         src_population.close()
         for sm in src_masks:
             sm.close()
 
     return pd.DataFrame(out)
 
-
-# ── Helpers ────────────────────────────────────────────────────────────────────
 
 class SkipRegion(Exception):
     """Raised when a region has no valid data and should be silently skipped."""
@@ -123,8 +127,7 @@ def _clip_rasters(src_population, src_masks, masks, geometry, population_band, p
             mask(sm, geometry, crop=True, filled=True)[0][m["band"] - 1]
             for sm, m in zip(src_masks, masks)
         ]
-    except ValueError:
-        raise SkipRegion()
+    except ValueError: raise SkipRegion()
 
     return pop_clipped[population_band - 1], mask_clipped
 
@@ -134,13 +137,14 @@ def _build_combined_mask(conf, masks, mask_clipped):
     combined = None
     for i, (key, mask_data) in enumerate(zip(conf, masks)):
         mf = mask_data["fun"].get(key)
-        if mf is None:
-            continue
+        if mf is None: continue
         m = mf(mask_clipped[i])
-        if m is None:
-            continue
+        if m is None: continue
         combined = m if combined is None else combined & m
     return combined
+
+
+
 
 
 
