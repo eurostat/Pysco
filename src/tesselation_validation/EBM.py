@@ -8,7 +8,7 @@ from tesselation_validation.validation import validate_polygonal_tesselation, ch
 
 
 folder = "/home/juju/geodata/eurogeographics/EBM/"
-version = "2026"
+version = "2026_2"
 out_folder = "/home/juju/Bureau/EBM_"+version+"_validation/"
 os.makedirs(out_folder, exist_ok=True)
 
@@ -20,7 +20,7 @@ if True:
         check_geometry_type(folder + "EBM_"+case+"_"+version+".gpkg", "Polygon" if case=="A" else "MultiPolygon")
 
 
-if False:
+if True:
     #for case in ["NUTS_1", "NUTS_2", "NUTS_3", "LAU", "A"]:
     for case in ["A", "NUTS_1", "NUTS_2", "NUTS_3", "LAU"]:
         print(datetime.now(), "*******", case)
