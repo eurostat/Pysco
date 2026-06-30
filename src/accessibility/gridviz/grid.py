@@ -8,7 +8,7 @@ from rasterio.enums import Resampling
 from datetime import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.geotiff import resample_geotiff_aligned
-from accessibility.utils import out_folder, target_folder, dataset_versions
+from accessibility.euro_access import out_folder, target_folder, dataset_versions
 
 folder_pop_tiff = "/home/juju/geodata/census/2021/aggregated_tiff/"
 
