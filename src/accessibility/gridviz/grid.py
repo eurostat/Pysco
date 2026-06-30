@@ -26,8 +26,8 @@ if not os.path.exists(folder_gridviz): os.makedirs(folder_gridviz)
 # aggregate at various resolutions - median
 if aggregate:
     print(datetime.now(), "aggregate")
-    for service in dataset_versions.keys():
-        for year in dataset_versions[service].keys():
+    for service in ["evrp"]: #dataset_versions.keys():
+        for year in ["2023"]: #dataset_versions[service].keys():
 
             # it is better to resample all resolution from 100m one. Otherwise, we do medians of medians which may create some biais around places with many nodata pixels
             for resolution in resolutions:
@@ -40,7 +40,7 @@ if aggregate:
 if tiling:
     print(datetime.now(), "tiling")
     for resolution in resolutions:
-        for service in dataset_versions.keys():
+        for service in ["evrp"]: #dataset_versions.keys():
 
             print(datetime.now(), "Tiling", service, resolution)
 
@@ -69,7 +69,7 @@ if tiling:
             
 if zip_move:
     # move/copy tiffs
-    for service in dataset_versions.keys():
+    for service in ["evrp"]: ##dataset_versions.keys():
 
         # zip and move tiles
         print(datetime.now(), "Zip tiles", service)
