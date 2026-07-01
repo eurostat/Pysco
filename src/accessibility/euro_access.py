@@ -1,7 +1,13 @@
 import json
 from datetime import datetime
-from 1_grid_computation import compute_accessibility_grids
-from 2_combine_to_geotiff import combine_to_geotiff
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from accessibility.step1_grid_computation import compute_accessibility_grids
+from accessibility.step2_combine_to_geotiff import combine_to_geotiff
+#from  import compute_accessibility_grids
+#from 2_combine_to_geotiff import combine_to_geotiff
 
 # TODO
 # accessibility to schools by walking
