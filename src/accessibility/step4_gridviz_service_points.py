@@ -1,12 +1,14 @@
 import os
 import pandas as pd
+from datetime import datetime
+import shutil
 from pygridmap import gridtiler
 
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import gpkg_point_to_csv
 
-def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, aggregate=True, tiling=True):
+def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, aggregate=True, tiling=True, zip_deploy=True):
 
     #
     out_folder = params["out_folder"] + "gridviz/pois/"
@@ -21,11 +23,10 @@ def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, a
 
         years_ = params["pois_datasets"][service].keys() if years is None else years
         for year in years_:
-            print(service, year)
             csv_file = "tmp/" + service + "_" + year + "_10" + ".csv"
 
             if prepare_csv:
-                print("prepare csv")
+                print(datetime.now(), "prepare csv", service, year)
                 pois_path = params["pois_datasets"][service][year]
                 gpkg_point_to_csv(pois_path,
                                 csv_file,
@@ -40,13 +41,12 @@ def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, a
                     pd.read_csv(csv_file).rename(columns={"hospital_name": "name"}).to_csv(csv_file, index=False)
 
 
-
             for a in [2, 5, 10, 20, 50, 100, 200]:
                 resolution = a*10
                 csva = "tmp/" + service + "_" + year + "_" + str(resolution) + ".csv"
 
                 if aggregate and a>1:
-                    print("aggregate",service, year, resolution)
+                    print(datetime.now(), "aggregate", service, year, resolution)
 
                     def aggregation_single_value(values, _): return values[0]
 
@@ -60,7 +60,7 @@ def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, a
 
 
                 if tiling:
-                    print("tiling", service, year, resolution)
+                    print(datetime.now(), "tiling", service, year, resolution)
 
                     # Create output folder
                     folder = out_folder + service + '/' + year + '/' + str(resolution)
@@ -77,4 +77,9 @@ def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, a
                         format = "parquet"
                     )
 
-    
+    if zip_deploy:
+        # zip and move tiles
+        print(datetime.now(), "Zip tiles")
+        shutil.make_archive(out_folder, "zip", out_folder + "/")
+        print(datetime.now(), "Move zip file")
+        shutil.move(out_folder + ".zip", params["zip_deploy_target_folder"])
