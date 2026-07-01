@@ -1,87 +1,81 @@
 import os
 import pandas as pd
-import json
 from pygridmap import gridtiler
 
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import gpkg_point_to_csv
 
-prepare_csv = True
-aggregate = True
-tiling = True
 
-# Load parameters from JSON file
-params_file = '/home/juju/workspace/Pysco/src/accessibility/params_julien.json'
-with open(params_file, 'r') as f: params = json.load(f)
+def gridviz_tiling_points(params, services=None, prepare_csv=True, aggregate=True, tiling=True):
 
-#
-out_folder = params["out_folder"] + "gridviz/pois/"
+    #
+    out_folder = params["out_folder"] + "gridviz/pois/"
 
-# make missing folders
-if not os.path.exists(out_folder): os.makedirs(out_folder)
-if not os.path.exists("tmp/"): os.makedirs("tmp/")
+    # make missing folders
+    if not os.path.exists(out_folder): os.makedirs(out_folder)
+    if not os.path.exists("tmp/"): os.makedirs("tmp/")
 
-for service in ["evrp"]: #, "healthcare", "education"]:
+    for service in ["evrp"]: #, "healthcare", "education"]:
 
-    services_path = "/home/juju/geodata/gisco/recharging_points/" if service == "evrp" else "/home/juju/geodata/gisco/basic_services/from_website/"
-    #years = ["2023", "2020"] if service != "evrp" else ["2023", "2024", "2025"]
-    years = ["2023"]
+        services_path = "/home/juju/geodata/gisco/recharging_points/" if service == "evrp" else "/home/juju/geodata/gisco/basic_services/from_website/"
+        #years = ["2023", "2020"] if service != "evrp" else ["2023", "2024", "2025"]
+        years = ["2023"]
 
-    for year in years:
-        print(service, year)
-        csv_file = "tmp/" + service + "_" + year + "_10" + ".csv"
+        for year in years:
+            print(service, year)
+            csv_file = "tmp/" + service + "_" + year + "_10" + ".csv"
 
-        if prepare_csv:
-            print("prepare csv")
-            gpkg_point_to_csv(services_path + service + "_" + year + "_3035.gpkg",
-                            csv_file,
-                            attributes_to_keep= ["name"] if service == "education" else ["hospital_name"] if service == "healthcare" else [],
-                            rounding_precision=-1)
+            if prepare_csv:
+                print("prepare csv")
+                gpkg_point_to_csv(services_path + service + "_" + year + "_3035.gpkg",
+                                csv_file,
+                                attributes_to_keep= ["name"] if service == "education" else ["hospital_name"] if service == "healthcare" else [],
+                                rounding_precision=-1)
 
-            # remove rows without coordinates
-            pd.read_csv(csv_file).dropna(subset=['x']).dropna(subset=['y']).to_csv(csv_file, index=False)
+                # remove rows without coordinates
+                pd.read_csv(csv_file).dropna(subset=['x']).dropna(subset=['y']).to_csv(csv_file, index=False)
 
-            #rename column for hospitals
-            if service == "healthcare":
-                pd.read_csv(csv_file).rename(columns={"hospital_name": "name"}).to_csv(csv_file, index=False)
+                #rename column for hospitals
+                if service == "healthcare":
+                    pd.read_csv(csv_file).rename(columns={"hospital_name": "name"}).to_csv(csv_file, index=False)
 
 
 
-        for a in [2, 5, 10, 20, 50, 100, 200]:
-            resolution = a*10
-            csva = "tmp/" + service + "_" + year + "_" + str(resolution) + ".csv"
+            for a in [2, 5, 10, 20, 50, 100, 200]:
+                resolution = a*10
+                csva = "tmp/" + service + "_" + year + "_" + str(resolution) + ".csv"
 
-            if aggregate and a>1:
-                print("aggregate",service, year, resolution)
+                if aggregate and a>1:
+                    print("aggregate",service, year, resolution)
 
-                def aggregation_single_value(values, _): return values[0]
+                    def aggregation_single_value(values, _): return values[0]
 
-                gridtiler.grid_aggregation(
-                    csv_file,
-                    10,
-                    csva,
-                    a,
-                    aggregation_fun = {} if service == "evrp" else   { "name": aggregation_single_value },
-                )
+                    gridtiler.grid_aggregation(
+                        csv_file,
+                        10,
+                        csva,
+                        a,
+                        aggregation_fun = {} if service == "evrp" else   { "name": aggregation_single_value },
+                    )
 
 
-            if tiling:
-                print("tiling", service, year, resolution)
+                if tiling:
+                    print("tiling", service, year, resolution)
 
-                # Create output folder
-                folder = out_folder + service + '/' + year + '/' + str(resolution)
-                if not os.path.exists(folder): os.makedirs(folder)
+                    # Create output folder
+                    folder = out_folder + service + '/' + year + '/' + str(resolution)
+                    if not os.path.exists(folder): os.makedirs(folder)
 
-                gridtiler.grid_tiling(
-                    csva,
-                    folder,
-                    resolution,
-                    tile_size_cell = 1024 if a>10 else 2048,
-                    x_origin = -4100000,
-                    y_origin = -3300000,
-                    crs = "EPSG:3035",
-                    format = "parquet"
-                )
+                    gridtiler.grid_tiling(
+                        csva,
+                        folder,
+                        resolution,
+                        tile_size_cell = 1024 if a>10 else 2048,
+                        x_origin = -4100000,
+                        y_origin = -3300000,
+                        crs = "EPSG:3035",
+                        format = "parquet"
+                    )
 
- 
+    
