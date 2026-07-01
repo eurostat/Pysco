@@ -1,0 +1,48 @@
+{
+    "out_folder": "/home/juju/gisco/accessibility/",
+    "pois_datasets": {
+        "healthcare": {
+            "2023": "/home/juju/geodata/gisco/basic_services/healthcare_2023_3035_20260421.gpkg",
+            "2020": "/home/juju/geodata/gisco/basic_services/healthcare_2020_3035_20260421.gpkg"
+        },
+        "education": {
+            "2023": "/home/juju/geodata/gisco/basic_services/education_2023_3035_20260421.gpkg",
+            "2020": "/home/juju/geodata/gisco/basic_services/education_2020_3035_20260421.gpkg"
+        },
+        "evrp": {
+            "2023": "/home/juju/geodata/gisco/recharging_points/evrp_2023_3035.gpkg",
+            "2024": "/home/juju/geodata/gisco/recharging_points/evrp_2024_3035.gpkg",
+            "2025": "/home/juju/geodata/gisco/recharging_points/evrp_2025_3035.gpkg"
+        }
+    },
+    "dataset_versions": {
+        "education": {
+            "2020": "v2026_04",
+            "2023": "v2026_04"
+        },
+        "healthcare": {
+            "2020": "v2026_04",
+            "2023": "v2026_04"
+        },
+        "evrp": {
+            "2023": "v2026_07",
+            "2024": "v2026_05",
+            "2025": "v2026_06"
+        }
+    },
+    "tomtom_datasets": {
+        "2020": "/home/juju/geodata/tomtom/tomtom201912.gpkg",
+        "2023": "/home/juju/geodata/tomtom/tomtom202312.gpkg",
+        "2024": "/home/juju/geodata/tomtom/tomtom202312.gpkg",
+        "2025": "/home/juju/geodata/tomtom/tomtom202512.gpkg"
+    },
+    "bbox": [
+        900000,
+        900000,
+        6600000,
+        5500000
+    ],
+    "country_gpkg": "/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg",
+    "nuts_gpkg": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
+    "target_folder": "/home/juju/pCloudDrive"
+}

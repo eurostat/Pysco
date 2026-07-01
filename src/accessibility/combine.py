@@ -5,7 +5,6 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.convert import parquet_grid_to_geotiff
 from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
-from accessibility.euro_access import dataset_versions, get_countries_covered, out_folder, country_gpkg, nuts_gpkg, bbox
 
 
 do_combination = True
