@@ -1,4 +1,7 @@
+from datetime import datetime
 import numpy as np
+import shutil
+
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -19,7 +22,7 @@ def get_countries_covered(service:str, year:str):
     return cnts
 
 
-def combine_to_geotiff(params, services=None, years=None, do_combination = True, resolutions=[100]):
+def combine_to_geotiff(params, services=None, years=None, do_combination = True, resolutions=[100], zip_deploy=True):
 
     if services is None: services = params["accessibility_grid_versions"].keys()
 
@@ -31,7 +34,7 @@ def combine_to_geotiff(params, services=None, years=None, do_combination = True,
             if years is None: years = params["pois_datasets"][service].keys()
 
             for year in years:
-                print(resolution, service, year)
+                print(datetime.now(), resolution, service, year)
 
                 # ouput folder
                 out_folder_service_year = params["out_folder"] + "out_" + service + "_" + year + "_" + str(resolution) + "m/"
@@ -42,7 +45,7 @@ def combine_to_geotiff(params, services=None, years=None, do_combination = True,
 
                 # check if tiff file was already produced
                 if os.path.isfile(geotiff) and do_combination:
-                    print("Combined file already produced")
+                    print(datetime.now(), "Combined file already produced")
                     continue
 
                 if do_combination:
@@ -52,7 +55,7 @@ def combine_to_geotiff(params, services=None, years=None, do_combination = True,
                         print("No file to combine")
                         continue
 
-                    print(resolution, service, year, "transforming", len(files), "parquet files into tif for", service, year)
+                    print(datetime.now(), resolution, service, year, "transforming", len(files), "parquet files into tif for", service, year)
                     parquet_grid_to_geotiff(
                         files,
                         geotiff,
@@ -66,7 +69,7 @@ def combine_to_geotiff(params, services=None, years=None, do_combination = True,
                     files.clear()
                     files = None
 
-                print(resolution, service, year, "apply mask to force some countries to nodata")
+                print(datetime.now(), resolution, service, year, "apply mask to force some countries to nodata")
                 if service != "evrp":
                     geotiff_mask_by_countries(
                         geotiff,
@@ -78,7 +81,7 @@ def combine_to_geotiff(params, services=None, years=None, do_combination = True,
                     )
 
                 if service == "education":
-                    print(resolution, service, year, "apply mask to force some nuts regions to nodata")
+                    print(datetime.now(), resolution, service, year, "apply mask to force some nuts regions to nodata")
                     geotiff_mask_by_countries(
                         geotiff,
                         geotiff,
@@ -89,5 +92,9 @@ def combine_to_geotiff(params, services=None, years=None, do_combination = True,
                         invert=True,
                     )
 
-                print(resolution, service, year, "rename tiff bands")
+                print(datetime.now(), resolution, service, year, "rename tiff bands")
                 rename_geotiff_bands(geotiff, ["n1", "n" + str(k)])
+
+                if zip_deploy:
+                        print(datetime.now(), "Move zip file", service)
+                        shutil.move(geotiff, params["zip_deploy_target_folder"])

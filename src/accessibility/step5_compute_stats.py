@@ -1,5 +1,6 @@
 import pandas as pd
 from datetime import datetime
+import shutil
 
 import sys
 import os
@@ -93,8 +94,7 @@ def region_filter(id_att:str, service:str, year:str):
     return out
 
 
-
-def compute_statistics(params, services=None, decompose_timeseries=True, compute_percentages=True):
+def compute_statistics(params, services=None, decompose_timeseries=True, compute_percentages=True, zip_deploy=True):
 
     sus = params["stat_units"]
     pop_rasters = params["pop_rasters"]
@@ -181,7 +181,12 @@ def compute_statistics(params, services=None, decompose_timeseries=True, compute
             df.sort_values(["GEO","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
-            df.to_csv(output_folder + "euro_access_" + geo + "_" + service + ".csv", index=False)
+            ofo = output_folder + "euro_access_" + geo + "_" + service + ".csv"
+            df.to_csv(ofo, index=False)
+
+            if zip_deploy:
+                print(datetime.now(), "deploy file")
+                shutil.copy(ofo, params["zip_deploy_target_folder"])
 
             if decompose_timeseries:
                 print(datetime.now(), "decompose by time series", su, service)

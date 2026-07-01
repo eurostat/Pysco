@@ -11,7 +11,7 @@ from accessibility.step4_gridviz_service_points import gridviz_tiling_points
 from accessibility.step5_compute_stats import compute_statistics
 
 # TODO
-# review move
+# review zip deploy
 # stats: add version code !
 # accessibility to schools by walking
 # secondary education services accessibility
@@ -27,7 +27,7 @@ with open(params_file, 'r') as f: params = json.load(f)
 # 2
 #combine_to_geotiff(params, do_combination=True, resolutions=[100])
 # 3
-#gridviz_tiling(params, aggregate=True, tiling=True, zip_move=True)
+#gridviz_tiling(params, aggregate=True, tiling=True, zip_deploy=True)
 # 4
 #gridviz_tiling_points(params, services=["evrp"])
 # 5

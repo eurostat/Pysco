@@ -11,7 +11,7 @@ from utils.geotiff import resample_geotiff_aligned
 
 
 
-def gridviz_tiling(params, services=None, aggregate=True, tiling=True, zip_move=True):
+def gridviz_tiling(params, services=None, aggregate=True, tiling=True, zip_deploy=True):
 
     if services is None: services = params["pois_datasets"].keys()
     get_k = lambda service: 5 if service == "evrp" else 3
@@ -34,11 +34,14 @@ def gridviz_tiling(params, services=None, aggregate=True, tiling=True, zip_move=
                                             folder_gridviz+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m_"+params["accessibility_grid_versions"][service][year]+".tif",
                                             resolution, Resampling.med)
 
+                # copy and deploy 1000m version
+                shutil.copy(folder_gridviz+"euro_access_"+service+"_"+year+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["out_folder"])
+                if zip_deploy:
+                    shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["zip_deploy_target_folder"])
 
     if tiling:
-        print(datetime.now(), "tiling")
-        for resolution in resolutions:
-            for service in services:
+        for service in services:
+            for resolution in resolutions:
 
                 print(datetime.now(), "Tiling", service, resolution)
 
@@ -64,22 +67,11 @@ def gridviz_tiling(params, services=None, aggregate=True, tiling=True, zip_move=
                     num_processors_to_use = 10,
                     modif_fun = round,
                     )
-                
-    if zip_move:
-        # move/copy tiffs
-        for service in services:
 
+    if zip_deploy:
+        for service in services:
             # zip and move tiles
             print(datetime.now(), "Zip tiles", service)
             shutil.make_archive(folder_gridviz + service, "zip", folder_gridviz + service + "/")
             print(datetime.now(), "Move zip file", service)
             shutil.move(folder_gridviz + service + ".zip", params["zip_deploy_target_folder"])
-
-            for year in params["accessibility_grid_versions"][service].keys():
-                print(datetime.now(), "Copy tiff files", service, year)
-
-                # 100m
-                shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_100m_"+params["accessibility_grid_versions"][service][year]+".tif", params["zip_deploy_target_folder"])
-                # 1000m
-                shutil.copy(folder_gridviz+"euro_access_"+service+"_"+year+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["out_folder"])
-                shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["zip_deploy_target_folder"])
