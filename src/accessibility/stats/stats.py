@@ -1,4 +1,5 @@
 import pandas as pd
+import json
 from datetime import datetime
 
 import sys
@@ -9,32 +10,21 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 # TODO
-# handle generic mask list
-# degurba for 100m case
+# degurba for 100m case ?
 
+# Load parameters from JSON file
+params_file = '/home/juju/workspace/Pysco/src/accessibility/params_julien.json'
+with open(params_file, 'r') as f: params = json.load(f)
+
+sus = params["stat_units"]
+pop_rasters = params["pop_rasters"]
 
 # output folder
-output_folder = "/home/juju/gisco/accessibility/stats/"
-# accessiblity grids folder
-acc_grids_folder = "/home/juju/gisco/accessibility/"
+output_folder = params["out_folder"] + "stats/"
+os.makedirs(output_folder, exist_ok=True)
 
 # resolution of the grids to use
 res_default = "1000"
-
-
-# the statistical units
-sus = {
-    "NUTS": { "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg", "id": "NUTS_ID", "version":"2024" },
-    "URAU": { "path": "/home/juju/geodata/gisco/URAU_RG_100K_2024_3035.gpkg" , "id": "URAU_CODE", "version":"2024" },
-    "LAU": { "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg" , "id": "GISCO_ID", "version":"2024" },
-}
-
-# population rasters
-pop_rasters = {
-    "1000": "/home/juju/gisco/census_2021_v3_production/ESTAT_Census_2021_V3.tiff",
-    "100": "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox.tif"
-}
-
 
 '''
 Band 1: T
@@ -138,8 +128,6 @@ def region_filter(id_att:str, service:str, year:str):
         return False
     return out
 
-
-
 for su in sus.keys():
     region_id_att = sus[su]["id"]
     geo = su + "_" + sus[su]["version"]
@@ -168,7 +156,7 @@ for su in sus.keys():
                             masks = [
                                 # accessibility threshold classes
                                 {
-                                    "path" : acc_grids_folder + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
+                                    "path" : params["out_folder"] + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
                                     "dim_name" : "THRESHOLD",
                                     "fun" : access_classes[service],
                                     "band" : access_indicator_to_band[ai],
@@ -214,7 +202,6 @@ for su in sus.keys():
             df.sort_values(["GEO","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
-            os.makedirs(output_folder, exist_ok=True)
             df.to_csv(output_folder + "euro_access_" + geo + "_" + service + ".csv", index=False)
 
         if True:
