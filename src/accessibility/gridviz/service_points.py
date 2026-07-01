@@ -22,10 +22,11 @@ out_folder = params["out_folder"] + "gridviz/pois/"
 if not os.path.exists(out_folder): os.makedirs(out_folder)
 if not os.path.exists("tmp/"): os.makedirs("tmp/")
 
-for service in ["evrp", "healthcare", "education"]:
+for service in ["evrp"]: #, "healthcare", "education"]:
 
     services_path = "/home/juju/geodata/gisco/recharging_points/" if service == "evrp" else "/home/juju/geodata/gisco/basic_services/from_website/"
-    years = ["2023", "2020"] if service != "evrp" else ["2023", "2024", "2025"]
+    #years = ["2023", "2020"] if service != "evrp" else ["2023", "2024", "2025"]
+    years = ["2023"]
 
     for year in years:
         print(service, year)

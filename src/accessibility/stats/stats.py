@@ -64,8 +64,8 @@ service_to_access_indicator = {
 
 # accessibility grids
 acc_grids_versions = {
-    "healthcare" : { "2020": "v2026_04", "2023": "v2026_04", },
-    "education" : { "2020": "v2026_04", "2023": "v2026_04", },
+    #"healthcare" : { "2020": "v2026_04", "2023": "v2026_04", },
+    #"education" : { "2020": "v2026_04", "2023": "v2026_04", },
     "evrp" : { "2023": "v2026_05", "2024": "v2026_05", "2025": "v2026_06", },
 }
 
