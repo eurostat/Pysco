@@ -6,8 +6,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import gpkg_point_to_csv
 
-
-def gridviz_tiling_points(params, services=None, prepare_csv=True, aggregate=True, tiling=True):
+def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, aggregate=True, tiling=True):
 
     #
     out_folder = params["out_folder"] + "gridviz/pois/"
@@ -16,19 +15,19 @@ def gridviz_tiling_points(params, services=None, prepare_csv=True, aggregate=Tru
     if not os.path.exists(out_folder): os.makedirs(out_folder)
     if not os.path.exists("tmp/"): os.makedirs("tmp/")
 
-    for service in ["evrp"]: #, "healthcare", "education"]:
+    if services is None: services = params["pois_datasets"].keys()
 
-        services_path = "/home/juju/geodata/gisco/recharging_points/" if service == "evrp" else "/home/juju/geodata/gisco/basic_services/from_website/"
-        #years = ["2023", "2020"] if service != "evrp" else ["2023", "2024", "2025"]
-        years = ["2023"]
+    for service in services:
 
-        for year in years:
+        years_ = params["pois_datasets"][service].keys() if years is None else years
+        for year in years_:
             print(service, year)
             csv_file = "tmp/" + service + "_" + year + "_10" + ".csv"
 
             if prepare_csv:
                 print("prepare csv")
-                gpkg_point_to_csv(services_path + service + "_" + year + "_3035.gpkg",
+                pois_path = params["pois_datasets"][service][year]
+                gpkg_point_to_csv(pois_path,
                                 csv_file,
                                 attributes_to_keep= ["name"] if service == "education" else ["hospital_name"] if service == "healthcare" else [],
                                 rounding_precision=-1)

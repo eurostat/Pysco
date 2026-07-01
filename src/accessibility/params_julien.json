@@ -15,12 +15,12 @@
             "2025": "/home/juju/geodata/gisco/recharging_points/evrp_2025_3035.gpkg"
         }
     },
-    "dataset_versions": {
-        "education": {
+    "accessibility_grid_versions": {
+        "healthcare": {
             "2020": "v2026_04",
             "2023": "v2026_04"
         },
-        "healthcare": {
+        "education": {
             "2020": "v2026_04",
             "2023": "v2026_04"
         },
@@ -45,7 +45,7 @@
     "country_gpkg": "/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg",
     "nuts_gpkg": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
     "folder_pop_tiff": "/home/juju/geodata/census/2021/aggregated_tiff/",
-    "target_folder": "/home/juju/pCloudDrive",
+    "zip_deploy_target_folder": "/home/juju/pCloudDrive",
     "stat_units": {
         "NUTS": {
             "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
@@ -66,5 +66,6 @@
     "pop_rasters": {
         "1000": "/home/juju/gisco/census_2021_v3_production/ESTAT_Census_2021_V3.tiff",
         "100": "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox.tif"
-    }
+    },
+    "degurba_grid_path": "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2021/DGUR_LEVEL2_GRD_1KM_2021_extended.tif"
 }

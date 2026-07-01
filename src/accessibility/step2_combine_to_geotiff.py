@@ -21,7 +21,7 @@ def get_countries_covered(service:str, year:str):
 
 def combine_to_geotiff(params, services=None, years=None, do_combination = True, resolutions=[100]):
 
-    if services is None: services = params["dataset_versions"].keys()
+    if services is None: services = params["accessibility_grid_versions"].keys()
 
     for resolution in resolutions:
 
@@ -38,7 +38,7 @@ def combine_to_geotiff(params, services=None, years=None, do_combination = True,
                 if not os.path.exists(out_folder_service_year): continue
 
                 # combine parquet files to a single tiff file
-                geotiff = params["out_folder"] + "euro_access_" + service + "_" + year + "_" + str(resolution) + "m_"+ params["dataset_versions"][service][year] +".tif"
+                geotiff = params["out_folder"] + "euro_access_" + service + "_" + year + "_" + str(resolution) + "m_"+ params["accessibility_grid_versions"][service][year] +".tif"
 
                 # check if tiff file was already produced
                 if os.path.isfile(geotiff) and do_combination:

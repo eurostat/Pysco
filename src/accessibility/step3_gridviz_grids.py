@@ -25,13 +25,13 @@ def gridviz_tiling(params, services=None, aggregate=True, tiling=True, zip_move=
     if aggregate:
         print(datetime.now(), "aggregate")
         for service in services:
-            for year in params["dataset_versions"][service].keys():
+            for year in params["accessibility_grid_versions"][service].keys():
 
                 # it is better to resample all resolution from 100m one. Otherwise, we do medians of medians which may create some biais around places with many nodata pixels
                 for resolution in resolutions:
                     print(datetime.now(), service, year, resolution)
-                    resample_geotiff_aligned(params["out_folder"] + "euro_access_"+service+"_"+year+"_100m_"+params["dataset_versions"][service][year]+".tif",
-                                            folder_gridviz+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m_"+params["dataset_versions"][service][year]+".tif",
+                    resample_geotiff_aligned(params["out_folder"] + "euro_access_"+service+"_"+year+"_100m_"+params["accessibility_grid_versions"][service][year]+".tif",
+                                            folder_gridviz+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m_"+params["accessibility_grid_versions"][service][year]+".tif",
                                             resolution, Resampling.med)
 
 
@@ -49,9 +49,9 @@ def gridviz_tiling(params, services=None, aggregate=True, tiling=True, zip_move=
                 # prepare dict for geotiff bands
                 dict = {}
                 k = get_k(service)
-                for year in params["dataset_versions"][service].keys():
-                    dict["dt_1_" + year] = {"file":folder_gridviz+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+params["dataset_versions"][service][year]+".tif", "band":1}
-                    dict["dt_a"+str(k)+"_" + year] = {"file":folder_gridviz+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+params["dataset_versions"][service][year]+".tif", "band":2}
+                for year in params["accessibility_grid_versions"][service].keys():
+                    dict["dt_1_" + year] = {"file":folder_gridviz+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+params["accessibility_grid_versions"][service][year]+".tif", "band":1}
+                    dict["dt_a"+str(k)+"_" + year] = {"file":folder_gridviz+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+params["accessibility_grid_versions"][service][year]+".tif", "band":2}
                     dict["POP_2021"] = { "file":params["folder_pop_tiff"]+"pop_2021_"+str(resolution)+".tif", "band":1 }
 
                 # launch tiling
@@ -73,13 +73,13 @@ def gridviz_tiling(params, services=None, aggregate=True, tiling=True, zip_move=
             print(datetime.now(), "Zip tiles", service)
             shutil.make_archive(folder_gridviz + service, "zip", folder_gridviz + service + "/")
             print(datetime.now(), "Move zip file", service)
-            shutil.move(folder_gridviz + service + ".zip", params["target_folder"])
+            shutil.move(folder_gridviz + service + ".zip", params["zip_deploy_target_folder"])
 
-            for year in params["dataset_versions"][service].keys():
+            for year in params["accessibility_grid_versions"][service].keys():
                 print(datetime.now(), "Copy tiff files", service, year)
 
                 # 100m
-                shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_100m_"+params["dataset_versions"][service][year]+".tif", params["target_folder"])
+                shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_100m_"+params["accessibility_grid_versions"][service][year]+".tif", params["zip_deploy_target_folder"])
                 # 1000m
-                shutil.copy(folder_gridviz+"euro_access_"+service+"_"+year+"_1000m_"+params["dataset_versions"][service][year]+".tif", params["out_folder"])
-                shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_1000m_"+params["dataset_versions"][service][year]+".tif", params["target_folder"])
+                shutil.copy(folder_gridviz+"euro_access_"+service+"_"+year+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["out_folder"])
+                shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["zip_deploy_target_folder"])

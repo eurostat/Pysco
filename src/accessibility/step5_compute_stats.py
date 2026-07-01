@@ -7,19 +7,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.grid2stat import grid2stat
 from utils.csvutils import hypercube_csv_to_timeseries_csv
 
-
-# TODO
-# degurba for 100m case ?
-
-
-'''
-Band 1: T
-Band 2: M
-Band 3: F
-Band 4: Y_LT15
-Band 5: Y_1564
-Band 6: Y_GE65
-'''
 age_group_to_band = {
     "T":1,
     "Y_LT15":4,
@@ -38,14 +25,6 @@ service_to_access_indicator = {
     "evrp" : ["N1","AN5"],
 }
 
-# accessibility grids
-acc_grids_versions = {
-    "healthcare" : { "2020": "v2026_04", "2023": "v2026_04", },
-    "education" : { "2020": "v2026_04", "2023": "v2026_04", },
-    "evrp" : { "2023": "v2026_07", "2024": "v2026_05", "2025": "v2026_06", },
-}
-
-# classes
 access_classes = {
     "healthcare" : {
         "NONE": lambda v:True,
@@ -86,7 +65,6 @@ UNK		Unknown		Y
 311 = Very low density rural grid cell (was 11)
 310 = Water
 '''
-degurba_grid_path = "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2021/DGUR_LEVEL2_GRD_1KM_2021_extended.tif"
 degurba_classes = {
     "TOTAL": lambda v:True,
     "DEG1": lambda v: v<200, # Cities
@@ -125,7 +103,7 @@ def compute_statistics(params, services=None, decompose_timeseries=True, compute
     output_folder = params["out_folder"] + "stats/"
     os.makedirs(output_folder, exist_ok=True)
 
-    if services is None: services = acc_grids_versions.keys()
+    if services is None: services = params["accessibility_grid_versions"].keys()
 
     # resolution of the grids to use
     res_default = "1000"
@@ -139,7 +117,7 @@ def compute_statistics(params, services=None, decompose_timeseries=True, compute
             df = None
 
             for ai in service_to_access_indicator[service]:
-                for year in acc_grids_versions[service].keys():
+                for year in params["accessibility_grid_versions"][service].keys():
                     for age_group in age_group_to_band.keys():
                         res = res_default if age_group == "T" else "1000"
 
@@ -157,14 +135,14 @@ def compute_statistics(params, services=None, decompose_timeseries=True, compute
                             masks = [
                                 # accessibility threshold classes
                                 {
-                                    "path" : params["out_folder"] + "euro_access_" + service + "_" + year + "_" + res + "m_" + acc_grids_versions[service][year] + ".tif",
+                                    "path" : params["out_folder"] + "euro_access_" + service + "_" + year + "_" + res + "m_" + params["accessibility_grid_versions"][service][year] + ".tif",
                                     "dim_name" : "THRESHOLD",
                                     "fun" : access_classes[service],
                                     "band" : access_indicator_to_band[ai],
                                 },
                                 # degurba classes
                                 {
-                                    "path" : degurba_grid_path,
+                                    "path" : params["degurba_grid_path"],
                                     "dim_name" : "DEG_URB",
                                     "fun" : degurba_classes,
                                     "band" : 1,
