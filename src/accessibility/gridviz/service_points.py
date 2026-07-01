@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import json
 from pygridmap import gridtiler
 
 import sys
@@ -10,8 +11,12 @@ prepare_csv = True
 aggregate = True
 tiling = True
 
+# Load parameters from JSON file
+params_file = '/home/juju/workspace/Pysco/src/accessibility/params_julien.json'
+with open(params_file, 'r') as f: params = json.load(f)
+
 #
-out_folder = "/home/juju/gisco/accessibility/gridviz/pois/"
+out_folder = params["out_folder"] + "gridviz/pois/"
 
 # make missing folders
 if not os.path.exists(out_folder): os.makedirs(out_folder)
