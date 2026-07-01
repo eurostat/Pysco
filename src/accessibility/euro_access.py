@@ -12,23 +12,9 @@ from utils.tomtomutils import weight_function, weight_function_length, is_not_sn
 # secondary education services accessibility
 
 
-# Load JSON from a file
-with open('params_julien.json', 'r') as f: params = json.load(f)
-print(params)
-
-
-
-# define country codes for the countries covered, depending on the country and the year
-def get_countries_covered(service:str, year:str):
-    if service == "evrp": return "all"
-    cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
-            "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
-            "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO" ]
-    #exclude: ["CH", "RS", "BA", "MK", "AL", "ME", "MD"],
-    if service == "healthcare": cnts.append("CH")
-    if year == "2023": cnts.append("AL")
-    return cnts
-
+# Load parameters from JSON file
+params_file = '/home/juju/workspace/Pysco/src/accessibility/params_julien.json'
+with open(params_file, 'r') as f: params = json.load(f)
 
 
 

@@ -1,4 +1,5 @@
 import numpy as np
+import json
 
 import sys
 import os
@@ -9,22 +10,39 @@ from utils.geotiff import geotiff_mask_by_countries, rename_geotiff_bands
 
 do_combination = True
 
+# Load parameters from JSON file
+params_file = '/home/juju/workspace/Pysco/src/accessibility/params_julien.json'
+with open(params_file, 'r') as f: params = json.load(f)
+
+
+# define country codes for the countries covered, depending on the country and the year
+def get_countries_covered(service:str, year:str):
+    if service == "evrp": return "all"
+    cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
+            "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
+            "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO" ]
+    #exclude: ["CH", "RS", "BA", "MK", "AL", "ME", "MD"],
+    if service == "healthcare": cnts.append("CH")
+    if year == "2023": cnts.append("AL")
+    return cnts
+
+
 
 for resolution in [100]:
 
-    for service in dataset_versions.keys():
+    for service in params["dataset_versions"].keys():
 
         k = 5 if service == "evrp" else 3
 
-        for year in dataset_versions[service].keys():
+        for year in params["dataset_versions"][service].keys():
             print(resolution, service, year)
 
             # ouput folder
-            out_folder_service_year = out_folder + "out_" + service + "_" + year + "_" + str(resolution) + "m/"
+            out_folder_service_year = params["out_folder"] + "out_" + service + "_" + year + "_" + str(resolution) + "m/"
             if not os.path.exists(out_folder_service_year): continue
 
             # combine parquet files to a single tiff file
-            geotiff = out_folder + "euro_access_" + service + "_" + year + "_" + str(resolution) + "m_"+ dataset_versions[service][year] +".tif"
+            geotiff = params["out_folder"] + "euro_access_" + service + "_" + year + "_" + str(resolution) + "m_"+ params["dataset_versions"][service][year] +".tif"
 
             # check if tiff file was already produced
             if os.path.isfile(geotiff) and do_combination:
@@ -42,7 +60,7 @@ for resolution in [100]:
                 parquet_grid_to_geotiff(
                     files,
                     geotiff,
-                    bbox = bbox,
+                    bbox = params["bbox"],
                     attributes=["cost_1", "cost_average_" + str(k)],
                     parquet_nodata_values=[-1],
                     dtype = np.int32 if service=="evrp" else np.int16,
@@ -57,7 +75,7 @@ for resolution in [100]:
                 geotiff_mask_by_countries(
                     geotiff,
                     geotiff,
-                    gpkg = country_gpkg,
+                    gpkg = params["country_gpkg"],
                     gpkg_column = 'CNTR_ID',
                     values = get_countries_covered(service, year),
                     compress="deflate",
@@ -68,13 +86,12 @@ for resolution in [100]:
                 geotiff_mask_by_countries(
                     geotiff,
                     geotiff,
-                    gpkg = nuts_gpkg,
+                    gpkg = params["nuts_gpkg"],
                     gpkg_column = 'NUTS_ID',
                     values = ["ES51", "ITC2", "ITH1", "ITH2"],
                     compress="deflate",
                     invert=True,
                 )
-
 
             print(resolution, service, year, "rename tiff bands")
             rename_geotiff_bands(geotiff, ["n1", "n" + str(k)])
