@@ -30,7 +30,7 @@ if not os.path.exists(folder_gridviz): os.makedirs(folder_gridviz)
 if aggregate:
     print(datetime.now(), "aggregate")
     for service in ["evrp"]: #dataset_versions.keys():
-        for year in ["2023"]: #dataset_versions[service].keys():
+        for year in params["dataset_versions"][service].keys():
 
             # it is better to resample all resolution from 100m one. Otherwise, we do medians of medians which may create some biais around places with many nodata pixels
             for resolution in resolutions:
@@ -78,7 +78,7 @@ if zip_move:
         print(datetime.now(), "Zip tiles", service)
         shutil.make_archive(folder_gridviz + service, "zip", folder_gridviz + service + "/")
         print(datetime.now(), "Move zip file", service)
-        shutil.move(folder_gridviz + service + ".zip", target_folder)
+        shutil.move(folder_gridviz + service + ".zip", params["target_folder"])
 
         for year in params["dataset_versions"][service].keys():
             print(datetime.now(), "Copy tiff files", service, year)
