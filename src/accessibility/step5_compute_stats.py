@@ -1,5 +1,4 @@
 import pandas as pd
-import json
 from datetime import datetime
 
 import sys
@@ -12,19 +11,6 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 # TODO
 # degurba for 100m case ?
 
-# Load parameters from JSON file
-params_file = '/home/juju/workspace/Pysco/src/accessibility/params_julien.json'
-with open(params_file, 'r') as f: params = json.load(f)
-
-sus = params["stat_units"]
-pop_rasters = params["pop_rasters"]
-
-# output folder
-output_folder = params["out_folder"] + "stats/"
-os.makedirs(output_folder, exist_ok=True)
-
-# resolution of the grids to use
-res_default = "1000"
 
 '''
 Band 1: T
@@ -54,9 +40,9 @@ service_to_access_indicator = {
 
 # accessibility grids
 acc_grids_versions = {
-    #"healthcare" : { "2020": "v2026_04", "2023": "v2026_04", },
-    #"education" : { "2020": "v2026_04", "2023": "v2026_04", },
-    "evrp" : { "2023": "v2026_05", "2024": "v2026_05", "2025": "v2026_06", },
+    "healthcare" : { "2020": "v2026_04", "2023": "v2026_04", },
+    "education" : { "2020": "v2026_04", "2023": "v2026_04", },
+    "evrp" : { "2023": "v2026_07", "2024": "v2026_05", "2025": "v2026_06", },
 }
 
 # classes
@@ -128,12 +114,27 @@ def region_filter(id_att:str, service:str, year:str):
         return False
     return out
 
-for su in sus.keys():
-    region_id_att = sus[su]["id"]
-    geo = su + "_" + sus[su]["version"]
-    for service in acc_grids_versions.keys():
 
-        if True:
+
+def compute_statistics(params, services=None, decompose_timeseries=True, compute_percentages=True):
+
+    sus = params["stat_units"]
+    pop_rasters = params["pop_rasters"]
+
+    # output folder
+    output_folder = params["out_folder"] + "stats/"
+    os.makedirs(output_folder, exist_ok=True)
+
+    if services is None: services = acc_grids_versions.keys()
+
+    # resolution of the grids to use
+    res_default = "1000"
+
+    for su in sus.keys():
+        region_id_att = sus[su]["id"]
+        geo = su + "_" + sus[su]["version"]
+        for service in services:
+
             # make a single csv hypercube file per statunit and service
             df = None
 
@@ -180,7 +181,7 @@ for su in sus.keys():
             df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","VALUE"]]
 
             # compute percentages
-            if True:
+            if compute_percentages:
                 # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
                 totals = df[df['THRESHOLD'] == 'NONE'][['GEO', 'TIME', 'AGE', "DEG_URB", "ACCESS_INDIC", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
@@ -204,19 +205,19 @@ for su in sus.keys():
             print(datetime.now(), "save compiled file")
             df.to_csv(output_folder + "euro_access_" + geo + "_" + service + ".csv", index=False)
 
-        if True:
-            print(datetime.now(), "decompose by time series", su, service)
+            if decompose_timeseries:
+                print(datetime.now(), "decompose by time series", su, service)
 
-            out_folder_d = output_folder + "as_timeseries/"
-            os.makedirs(out_folder_d, exist_ok=True)
+                out_folder_d = output_folder + "as_timeseries/"
+                os.makedirs(out_folder_d, exist_ok=True)
 
-            hypercube_csv_to_timeseries_csv(
-                output_folder + "euro_access_" + geo + "_" + service + ".csv",
-                out_folder_d,
-                output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "__" + f)
+                hypercube_csv_to_timeseries_csv(
+                    output_folder + "euro_access_" + geo + "_" + service + ".csv",
+                    out_folder_d,
+                    output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "__" + f)
 
-            # delete NR files (not usefull) and rename files (remove PC)
-            #for f in os.listdir(out_folder_d):
-            #    if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
-            #    if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
+                # delete NR files (not usefull) and rename files (remove PC)
+                #for f in os.listdir(out_folder_d):
+                #    if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
+                #    if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
 

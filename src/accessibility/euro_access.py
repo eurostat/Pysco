@@ -7,7 +7,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from accessibility.step1_grid_computation import compute_accessibility_grids
 from accessibility.step2_combine_to_geotiff import combine_to_geotiff
 from accessibility.step3_gridviz_grids import gridviz_tiling
-from accessibility.step4_gridviz_service_points import gridviz_tiling_service_points
+from accessibility.step4_gridviz_service_points import gridviz_tiling_points
+from accessibility.step5_compute_stats import compute_statistics
 
 # TODO
 # TODO review move
@@ -20,15 +21,19 @@ params_file = '/home/juju/workspace/Pysco/src/accessibility/params_julien.json'
 with open(params_file, 'r') as f: params = json.load(f)
 
 # 1
-compute_accessibility_grids(params)
+#compute_accessibility_grids(params)
 
 # 2
-combine_to_geotiff(params, do_combination=True, resolutions=[100])
+#combine_to_geotiff(params, do_combination=True, resolutions=[100])
 
 # 3
-gridviz_tiling(params, aggregate=True, tiling=True, zip_move=True)
+#gridviz_tiling(params, aggregate=True, tiling=True, zip_move=True)
 
 # 4
-gridviz_tiling_service_points(params, aggregate=True, tiling=True, zip_move=True)
+#gridviz_tiling_points(params, services=["evrp"])
 
 # 5
+compute_statistics(params, decompose_timeseries=True, compute_percentages=True,
+                   services=["evrp"]
+                   )
+
