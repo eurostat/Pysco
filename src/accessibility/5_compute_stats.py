@@ -4,7 +4,7 @@ from datetime import datetime
 
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.grid2stat import grid2stat
 from utils.csvutils import hypercube_csv_to_timeseries_csv
 

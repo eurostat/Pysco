@@ -7,7 +7,7 @@ import json
 import shutil
 from rasterio.enums import Resampling
 from datetime import datetime
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.geotiff import resample_geotiff_aligned
 
 # Load parameters from JSON file

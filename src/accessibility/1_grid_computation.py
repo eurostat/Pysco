@@ -2,22 +2,12 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-import json
 from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra_parallel
 from utils.featureutils import iter_features
 from utils.tomtomutils import weight_function, weight_function_length, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun, is_start_blocked, is_end_blocked
 
-# TODO
-# accessibility to schools by walking
-# secondary education services accessibility
 
-
-# Load parameters from JSON file
-params_file = '/home/juju/workspace/Pysco/src/accessibility/params_julien.json'
-with open(params_file, 'r') as f: params = json.load(f)
-
-
-def compute_accessibility_grids(params, services=["evrp"], years=["2023"], resolutions=[100]):
+def compute_accessibility_grids(params, services=None, years=None, resolutions=[100]):
 
     if services is None: services = params["pois_datasets"].keys()
 
