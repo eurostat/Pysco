@@ -69,8 +69,9 @@ def gridviz_tiling(params, services=None, aggregate=True, tiling=True, zip_deplo
                     )
 
     if zip_deploy:
-        # zip and move tiles
-        print(datetime.now(), "Zip tiles")
-        shutil.make_archive(folder_gridviz, "zip", folder_gridviz + "/")
-        print(datetime.now(), "Move zip file")
-        shutil.move(folder_gridviz + ".zip", params["zip_deploy_target_folder"])
+        for service in services:
+            # zip and move tiles
+            print(datetime.now(), service, "Zip tiles")
+            shutil.make_archive(folder_gridviz + service, "zip", folder_gridviz + service + "/")
+            print(datetime.now(), service, "Move zip file")
+            shutil.move(folder_gridviz + service + ".zip", params["zip_deploy_target_folder"])
