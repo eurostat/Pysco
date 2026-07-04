@@ -11,6 +11,7 @@ from accessibility.step4_gridviz_service_points import gridviz_tiling_points
 from accessibility.step5_compute_stats import compute_statistics
 
 # TODO
+# params stats versions
 # review zip deploy
 # stats: add version code !
 # accessibility to schools by walking
@@ -18,9 +19,13 @@ from accessibility.step5_compute_stats import compute_statistics
 # stats compute stats with 100m resolution ?
 
 # Load parameters from JSON file
-params_file = sys.argv[1]
-#params_file = '/home/juju/workspace/Pysco/src/accessibility/params_julien.json'
-with open(params_file, 'r') as f: params = json.load(f)
+params_paths_file = sys.argv[1]
+params_output_file = sys.argv[2]
+
+with open(params_paths_file, 'r') as f: params = json.load(f)
+with open(params_output_file, 'r') as f:
+    params_ = json.load(f)
+    for k in params_.keys(): params[k] = params_[k]
 
 # 1
 #compute_accessibility_grids(params)
