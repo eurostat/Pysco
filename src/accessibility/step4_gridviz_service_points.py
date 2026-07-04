@@ -82,4 +82,4 @@ def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, a
         print(datetime.now(), "Zip tiles")
         shutil.make_archive(out_folder, "zip", out_folder + "/")
         print(datetime.now(), "Move zip file")
-        shutil.move(out_folder + ".zip", params["zip_deploy_target_folder"])
+        shutil.move(out_folder + ".zip", params["deploy_target_folder"])

@@ -186,7 +186,7 @@ def compute_statistics(params, services=None, decompose_timeseries=True, compute
 
             if zip_deploy:
                 print(datetime.now(), "deploy file")
-                shutil.copy(ofo, params["zip_deploy_target_folder"])
+                shutil.copy(ofo, params["deploy_target_folder"])
 
             if decompose_timeseries:
                 print(datetime.now(), "decompose by time series", su, service)

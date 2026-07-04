@@ -37,7 +37,7 @@ def gridviz_tiling(params, services=None, aggregate=True, tiling=True, zip_deplo
                 # copy and deploy 1000m version
                 shutil.copy(folder_gridviz+"euro_access_"+service+"_"+year+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["out_folder"])
                 if zip_deploy:
-                    shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["zip_deploy_target_folder"])
+                    shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["deploy_target_folder"])
 
     if tiling:
         for service in services:
@@ -74,4 +74,5 @@ def gridviz_tiling(params, services=None, aggregate=True, tiling=True, zip_deplo
             print(datetime.now(), service, "Zip tiles")
             shutil.make_archive(folder_gridviz + service, "zip", folder_gridviz + service + "/")
             print(datetime.now(), service, "Move zip file")
-            shutil.move(folder_gridviz + service + ".zip", params["zip_deploy_target_folder"])
+            shutil.move(folder_gridviz + service + ".zip", params["deploy_target_folder"])
+

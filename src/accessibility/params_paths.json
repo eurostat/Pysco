@@ -1,0 +1,48 @@
+{
+    "pois_datasets": {
+        "healthcare": {
+            "2023": "/home/juju/geodata/gisco/basic_services/healthcare_2023_3035_20260421.gpkg",
+            "2020": "/home/juju/geodata/gisco/basic_services/healthcare_2020_3035_20260421.gpkg"
+        },
+        "education": {
+            "2023": "/home/juju/geodata/gisco/basic_services/education_2023_3035_20260421.gpkg",
+            "2020": "/home/juju/geodata/gisco/basic_services/education_2020_3035_20260421.gpkg"
+        },
+        "evrp": {
+            "2023": "/home/juju/geodata/gisco/recharging_points/evrp_2023_3035.gpkg",
+            "2024": "/home/juju/geodata/gisco/recharging_points/evrp_2024_3035.gpkg",
+            "2025": "/home/juju/geodata/gisco/recharging_points/evrp_2025_3035.gpkg"
+        }
+    },
+    "tomtom_datasets": {
+        "2020": "/home/juju/geodata/tomtom/tomtom201912.gpkg",
+        "2023": "/home/juju/geodata/tomtom/tomtom202312.gpkg",
+        "2024": "/home/juju/geodata/tomtom/tomtom202312.gpkg",
+        "2025": "/home/juju/geodata/tomtom/tomtom202512.gpkg"
+    },
+    "country_gpkg": "/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg",
+    "nuts_gpkg": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
+    "folder_pop_tiff": "/home/juju/geodata/census/2021/aggregated_tiff/",
+    "stat_units": {
+        "NUTS": {
+            "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
+            "id": "NUTS_ID",
+            "version": "2024"
+        },
+        "URAU": {
+            "path": "/home/juju/geodata/gisco/URAU_RG_100K_2024_3035.gpkg",
+            "id": "URAU_CODE",
+            "version": "2024"
+        },
+        "LAU": {
+            "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg",
+            "id": "GISCO_ID",
+            "version": "2024"
+        }
+    },
+    "pop_rasters": {
+        "1000": "/home/juju/gisco/census_2021_v3_production/ESTAT_Census_2021_V3.tiff",
+        "100": "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox.tif"
+    },
+    "degurba_grid_path": "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2021/DGUR_LEVEL2_GRD_1KM_2021_extended.tif"
+}

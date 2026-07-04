@@ -97,4 +97,4 @@ def combine_to_geotiff(params, services=None, years=None, do_combination = True,
 
                 if zip_deploy:
                         print(datetime.now(), "Move zip file", service)
-                        shutil.move(geotiff, params["zip_deploy_target_folder"])
+                        shutil.move(geotiff, params["deploy_target_folder"])
