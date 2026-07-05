@@ -22,7 +22,7 @@ def get_countries_covered(service:str, year:str):
     return cnts
 
 
-def combine_to_geotiff(params, services=None, years=None, do_combination = True, resolutions=[100], zip_deploy=True):
+def combine_to_geotiff(params, services=None, years=None, do_combination = True, resolutions=[100], deploy=True):
 
     if services is None: services = params["accessibility_grid_versions"].keys()
 
@@ -95,6 +95,6 @@ def combine_to_geotiff(params, services=None, years=None, do_combination = True,
                 print(datetime.now(), resolution, service, year, "rename tiff bands")
                 rename_geotiff_bands(geotiff, ["n1", "n" + str(k)])
 
-                if zip_deploy:
+                if deploy:
                         print(datetime.now(), "Move zip file", service)
                         shutil.move(geotiff, params["deploy_target_folder"])

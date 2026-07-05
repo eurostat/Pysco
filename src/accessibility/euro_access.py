@@ -28,14 +28,13 @@ with open(params_output_file, 'r') as f:
     for k in params_.keys(): params[k] = params_[k]
 
 # 1
-#compute_accessibility_grids(params)
+compute_accessibility_grids(params, services=params["services"], years=params["years"])
 # 2
-#combine_to_geotiff(params, do_combination=True, resolutions=[100])
+combine_to_geotiff(params, services=params["services"], years=params["years"], do_combination=True)
 # 3
-#gridviz_tiling(params, aggregate=True, tiling=True, zip_deploy=True)
+gridviz_tiling(params, services=params["services"], aggregate=True, tiling=True, deploy=True)
 # 4
-#gridviz_tiling_points(params, services=["evrp"])
+gridviz_tiling_points(params, services=params["services"], years=params["years"])
 # 5
-compute_statistics(params, decompose_timeseries=True, compute_percentages=True,
-                   services=["evrp"]
-                   )
+compute_statistics(params, services=params["services"], years=params["years"], decompose_timeseries=True, compute_percentages=True )
+
