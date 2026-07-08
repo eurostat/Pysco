@@ -3,15 +3,13 @@ import rasterio
 from rasterio.transform import from_bounds, Affine
 from rasterio.windows import Window, from_bounds as window_from_bounds
 from rasterio.enums import Resampling
-#from rasterio.warp import reproject
+import rasterio.warp
 from rasterio.features import rasterize
 import numpy as np
 import os
 import fiona
 import geopandas as gpd
 from shapely.geometry import shape
-
-
 
 
 def rasterise_tesselation_gpkg(
@@ -329,6 +327,94 @@ def add_ratio_band(input_path, numerator_band, denominator_band, ratio_band_name
 
 
 
+def _is_multiple(a, b, tol=1e-6):
+    """Check if a is (approximately) an integer multiple of b."""
+    ratio = a / b
+    return abs(ratio - round(ratio)) < tol
+
+
+def resample_geotiff_aligned(input_path, output_path, new_resolution,
+                              resampling=Resampling.average, dtype=np.float64):
+    """
+    Resamples a GeoTIFF to a new resolution (must be a multiple of the original),
+    and aligns the origin point to a multiple of the new resolution.
+
+    Parameters:
+        input_path (str): Path to the input GeoTIFF file.
+        output_path (str): Path to save the resampled GeoTIFF.
+        new_resolution (float): Desired resolution (pixel size, e.g. in meters).
+        resampling (): Resampling method.
+        dtype: Output dtype. If None, keeps the source dtype. Defaults to
+            float64, which is generally advisable for averaging-type
+            resampling methods but will upcast integer rasters.
+    """
+    with rasterio.open(input_path) as src:
+        # Original resolution
+        original_res_x = src.transform.a
+        original_res_y = -src.transform.e
+
+        # Check that new resolution is a multiple of original (tolerant of float error)
+        if not _is_multiple(new_resolution, original_res_x) or \
+           not _is_multiple(new_resolution, original_res_y):
+            raise ValueError("New resolution must be a multiple of the original resolution.")
+
+        # Original bounds
+        bounds = src.bounds
+
+        # Align the origin to a multiple of new_resolution
+        aligned_minx = floor(bounds.left  / new_resolution) * new_resolution
+        aligned_maxy = ceil (bounds.top   / new_resolution) * new_resolution
+        aligned_maxx = ceil (bounds.right / new_resolution) * new_resolution
+        aligned_miny = floor(bounds.bottom/ new_resolution) * new_resolution
+
+        # New dimensions
+        new_width  = int((aligned_maxx - aligned_minx) / new_resolution)
+        new_height = int((aligned_maxy - aligned_miny) / new_resolution)
+
+        # New transform
+        new_transform = Affine(
+            new_resolution, 0.0, aligned_minx,
+            0.0, -new_resolution, aligned_maxy
+        )
+
+        # Preserve nodata (needed both for reprojection correctness and profile)
+        src_nodata = src.nodata
+
+        # Preserve band descriptions (names), if any
+        band_descriptions = src.descriptions  # tuple, len == src.count, entries may be None
+
+        # Update profile
+        profile = src.profile
+        profile.update({
+            'height': new_height,
+            'width': new_width,
+            'transform': new_transform,
+        })
+
+        if dtype is not None:
+            profile.update({'dtype': dtype})
+
+        with rasterio.open(output_path, 'w', **profile) as dst:
+            for i in range(1, src.count + 1):
+                rasterio.warp.reproject(
+                    source=rasterio.band(src, i),
+                    destination=rasterio.band(dst, i),
+                    src_transform=src.transform,
+                    src_crs=src.crs,
+                    dst_transform=new_transform,
+                    dst_crs=src.crs,
+                    resampling=resampling,
+                    src_nodata=src_nodata,
+                    dst_nodata=src_nodata,
+                    dtype=dtype,
+                )
+
+                # Restore this band's name/description, if it had one
+                if band_descriptions[i - 1] is not None:
+                    dst.set_band_description(i, band_descriptions[i - 1])
+
+
+'''
 def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling=Resampling.average, dtype=np.float64):
     """
     Resamples a GeoTIFF to a new resolution (must be a multiple of the original),
@@ -392,7 +478,7 @@ def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling
                     resampling=resampling,
                     dtype=dtype
                 )
-
+'''
 
 
 
