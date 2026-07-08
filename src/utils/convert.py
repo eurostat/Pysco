@@ -317,7 +317,7 @@ def gpkg_grid_to_geotiff(
     print("Populating raster bands...")
 
     crs = None
-    bbox_ = (bbox[0], bbox[1], bbox[2], bbox[3])
+    bbox_ = (minx, miny, maxx, maxy)
     for gpkg in input_gpkgs:
         print(datetime.now(), gpkg)
         with fiona.open(gpkg, bbox=bbox_) as src:
@@ -346,8 +346,8 @@ def gpkg_grid_to_geotiff(
                 col = int((x - minx) / resolution)
                 row = int((maxy - y) / resolution)-1
 
-                if col <0 or col > width: continue
-                if row <0 or row > height: continue
+                if col <0 or col >= width: continue
+                if row <0 or row >= height: continue
 
                 # set raster values at pixel position
                 for a in attributes:

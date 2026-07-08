@@ -11,7 +11,7 @@ if True:
         "/home/juju/geodata/census/pop_20XX_1000m.tif",
         grid_id_field="GRD_ID",
         attributes=["TOT_P_2006","TOT_P_2011","TOT_P_2018","TOT_P_2021"],
-        #bbox=[ 900000, 900000, 6600000, 5500000 ],
+        bbox=[ 900000, 900000, 6600000, 5500000 ],
         compress="DEFLATE",
         dtype="int32",
         tiff_nodata_value=-9999
