@@ -327,6 +327,7 @@ def add_ratio_band(input_path, numerator_band, denominator_band, ratio_band_name
 
 
 
+
 def _is_multiple(a, b, tol=1e-6):
     """Check if a is (approximately) an integer multiple of b."""
     ratio = a / b
@@ -413,7 +414,6 @@ def resample_geotiff_aligned(input_path, output_path, new_resolution,
                 if band_descriptions[i - 1] is not None:
                     dst.set_band_description(i, band_descriptions[i - 1])
 
-
 '''
 def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling=Resampling.average, dtype=np.float64):
     """
@@ -465,6 +465,8 @@ def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling
         if dtype is not None:
             profile.update({ 'dtype': dtype })
 
+        # Preserve band descriptions (names), if any
+        band_descriptions = src.descriptions  # tuple, len == src.count, entries may be None
 
         with rasterio.open(output_path, 'w', **profile) as dst:
             for i in range(1, src.count + 1):
@@ -478,8 +480,11 @@ def resample_geotiff_aligned(input_path, output_path, new_resolution, resampling
                     resampling=resampling,
                     dtype=dtype
                 )
-'''
 
+                # Restore this band's name/description, if it had one
+                if band_descriptions[i - 1] is not None:
+                    dst.set_band_description(i, band_descriptions[i - 1])
+'''
 
 
 def crop_extend_bbox(input_path, bbox, output_path, fill_value=None):
