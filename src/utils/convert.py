@@ -273,17 +273,6 @@ def gpkg_grid_to_geotiff(
         if resolution is not None: break
     #print(f"Grid resolution: {resolution}")
 
-    # Determine attributes to export
-    # It is assumed all GPKG files have the same structure
-    if attributes is None:
-        for gpkg in input_gpkgs:
-            with fiona.open(gpkg) as src:
-                for f in src:
-                    attributes = [key for key in f['properties'].keys() if key != grid_id_field]
-                    break
-            if attributes is not None: break
-        print(f"Attributes to export: {attributes}")
-
     # Determine the bounding box
     # here it is assumed the grid cells have a geometry and it is a polygon.
     # This may be based on the grid_id but it would require checking all cell ids individually and thus take long.
@@ -300,6 +289,18 @@ def gpkg_grid_to_geotiff(
                 except: pass
         bbox = [minx, miny, maxx, maxy]
         print(f"Extent: {bbox}")
+
+    # Determine attributes to export
+    # It is assumed all GPKG files have the same structure
+    if attributes is None:
+        bbox_ = (bbox[0], bbox[1], bbox[2], bbox[3])
+        for gpkg in input_gpkgs:
+            with fiona.open(gpkg, bbox=bbox_) as src:
+                for f in src:
+                    attributes = [key for key in f['properties'].keys() if key != grid_id_field]
+                    break
+            if attributes is not None: break
+        print(f"Attributes to export: {attributes}")
 
     # Compute raster dimensions
     [minx, miny, maxx, maxy] = bbox
