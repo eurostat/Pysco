@@ -293,9 +293,8 @@ def gpkg_grid_to_geotiff(
     # Determine attributes to export
     # It is assumed all GPKG files have the same structure
     if attributes is None:
-        bbox_ = (bbox[0], bbox[1], bbox[2], bbox[3])
         for gpkg in input_gpkgs:
-            with fiona.open(gpkg, bbox=bbox_) as src:
+            with fiona.open(gpkg) as src:
                 for f in src:
                     attributes = [key for key in f['properties'].keys() if key != grid_id_field]
                     break
@@ -318,9 +317,10 @@ def gpkg_grid_to_geotiff(
     print("Populating raster bands...")
 
     crs = None
+    bbox_ = (bbox[0], bbox[1], bbox[2], bbox[3])
     for gpkg in input_gpkgs:
         print(datetime.now(), gpkg)
-        with fiona.open(gpkg) as src:
+        with fiona.open(gpkg, bbox=bbox_) as src:
 
             # retrieve CRS
             if crs is None: crs = src.crs
