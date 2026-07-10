@@ -1,5 +1,5 @@
 {
-    "services": ["healthcare","education","evrp"],
+    "services": ["evrp"],
     "years": null,
     "out_folder": "/home/juju/gisco/accessibility/",
     "deploy_target_folder": "/home/juju/pCloudDrive",
