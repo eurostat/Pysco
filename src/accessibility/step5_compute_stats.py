@@ -182,7 +182,7 @@ def compute_statistics(params, services=None, decompose_timeseries=True, compute
             df.sort_values(["GEO","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
-            ofo = output_folder + "euro_access_" + geo + "_" + service
+            ofo = output_folder + "euro_access_" + geo + "_" + service + "_" + params["stats_versions"][service]
             df.to_csv(ofo + ".csv", index=False)
             df.to_parquet(ofo + ".parquet")
 

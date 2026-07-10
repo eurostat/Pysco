@@ -8,7 +8,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.gridutils import gpkg_point_to_csv
 
-def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, aggregate=True, tiling=True, zip_deploy=True):
+def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, aggregate=True, tiling=True):
 
     #
     out_folder = params["out_folder"] + "gridviz/pois/"
@@ -77,7 +77,7 @@ def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, a
                         format = "parquet"
                     )
 
-    if zip_deploy:
+    if "deploy_target_folder" in params:
         # zip and move tiles
         print(datetime.now(), "Zip tiles")
         shutil.make_archive(out_folder, "zip", out_folder + "/")

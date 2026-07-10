@@ -11,7 +11,7 @@ from utils.geotiff import resample_geotiff_aligned
 
 
 
-def gridviz_tiling(params, services=None, aggregate=True, tiling=True, zip_deploy=True):
+def gridviz_tiling(params, services=None, aggregate=True, tiling=True):
 
     if services is None: services = params["pois_datasets"].keys()
     get_k = lambda service: 5 if service == "evrp" else 3
@@ -36,7 +36,7 @@ def gridviz_tiling(params, services=None, aggregate=True, tiling=True, zip_deplo
 
                 # copy and deploy 1000m version
                 shutil.copy(folder_gridviz+"euro_access_"+service+"_"+year+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["out_folder"])
-                if zip_deploy:
+                if "deploy_target_folder" in params:
                     shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["deploy_target_folder"])
 
     if tiling:
@@ -68,7 +68,7 @@ def gridviz_tiling(params, services=None, aggregate=True, tiling=True, zip_deplo
                     modif_fun = round,
                     )
 
-    if zip_deploy:
+    if "deploy_target_folder" in params:
         for service in services:
             # zip and move tiles
             print(datetime.now(), service, "Zip tiles")

@@ -1,5 +1,6 @@
 {
-    "services": ["evrp"],
+    "steps": [6],
+    "services": null,
     "years": null,
     "out_folder": "/home/juju/gisco/accessibility/",
     "deploy_target_folder": "/home/juju/pCloudDrive",
@@ -17,6 +18,11 @@
             "2024": "v2026_05",
             "2025": "v2026_06"
         }
+    },
+    "stats_versions": {
+        "healthcare": "v2026_07",
+        "education": "v2026_04",
+        "evrp": "v2026_07"
     },
     "bbox": [
         900000,
