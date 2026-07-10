@@ -42,6 +42,7 @@ access_classes = {
     "evrp" : {
         "NONE": lambda v:True,
         "GT_500_M": lambda v: (v>=500), # & (v>=0),
+        "GT_2000_M": lambda v: (v>=2000), # & (v>=0),
         "GT_5000_M": lambda v: (v>=5000), # & (v>=0),
     },
 }
