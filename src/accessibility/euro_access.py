@@ -36,5 +36,5 @@ with open(params_output_file, 'r') as f:
 # 4
 #gridviz_tiling_points(params, services=params["services"], years=params["years"])
 # 5
-compute_statistics(params, services=params["services"], years=params["years"], decompose_timeseries=True, compute_percentages=True )
+compute_statistics(params, services=params["services"], decompose_timeseries=True, compute_percentages=True )
 
