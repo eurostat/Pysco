@@ -198,7 +198,7 @@ def compute_statistics(params, services=None, decompose_timeseries=True, compute
                 os.makedirs(out_folder_d, exist_ok=True)
 
                 hypercube_csv_to_timeseries_csv(
-                    output_folder + "euro_access_" + geo + "_" + service + ".csv",
+                    ofo + ".csv",
                     out_folder_d,
                     output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "__" + f)
 
