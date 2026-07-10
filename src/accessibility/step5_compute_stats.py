@@ -95,7 +95,7 @@ def region_filter(id_att:str, service:str, year:str):
     return out
 
 
-def compute_statistics(params, services=None, decompose_timeseries=True, compute_percentages=True, zip_deploy=True):
+def compute_statistics(params, services=None, decompose_timeseries=True, compute_percentages=True):
 
     sus = params["stat_units"]
     pop_rasters = params["pop_rasters"]
@@ -182,12 +182,14 @@ def compute_statistics(params, services=None, decompose_timeseries=True, compute
             df.sort_values(["GEO","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
-            ofo = output_folder + "euro_access_" + geo + "_" + service + ".csv"
-            df.to_csv(ofo, index=False)
+            ofo = output_folder + "euro_access_" + geo + "_" + service
+            df.to_csv(ofo + ".csv", index=False)
+            df.to_parquet(ofo + ".parquet")
 
-            if zip_deploy:
+            if "deploy_target_folder" in params:
                 print(datetime.now(), "deploy file")
-                shutil.copy(ofo, params["deploy_target_folder"])
+                shutil.copy(ofo + ".csv", params["deploy_target_folder"])
+                shutil.copy(ofo + ".parquet", params["deploy_target_folder"])
 
             if decompose_timeseries:
                 print(datetime.now(), "decompose by time series", su, service)
