@@ -202,7 +202,6 @@ def compute_statistics(params, services=None, decompose_timeseries=True, compute
                     out_folder_d,
                     output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "__" + f)
 
-
                 # delete NR files (not usefull) and rename files (remove PC)
                 #for f in os.listdir(out_folder_d):
                 #    if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
