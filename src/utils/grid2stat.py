@@ -1,10 +1,17 @@
 import rasterio
 import geopandas as gpd
+import numpy as np
 import pandas as pd
 from rasterio.mask import mask
 from shapely.geometry import mapping
 from typing import Dict
 from itertools import product
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.utils import weighted_median
+
 
 
 def grid2stat(
@@ -104,6 +111,136 @@ def grid2stat(
     return pd.DataFrame(out)
 
 
+
+
+
+def grid2stat_weighted_average(
+    indic_path: str,
+    weight_path: str,
+
+    indic_band: int = 1,
+    weight_band: int = 1,
+
+    region_path: str = None,
+    region_id_att: str = "id",
+    region_filter=None,
+
+    masks: list = None,
+) -> pd.DataFrame:
+    """
+    Compute weighted average stats on regions from raster data, one with the indicator to average, and another one with the weight (i.e. population).
+
+    Args:
+        indic_path:             Path to the indicator raster file.
+        weight_path:            Path to the weight raster file.
+        indic_band:             Band index (1-based) to read from the indicator raster.
+        weight_band:            Band index (1-based) to read from the weights raster.
+        region_path:            Path to the regions vector file.
+        region_id_att:          Attribute name used as region identifier.
+        region_filter:          Optional callable(row) -> bool to filter regions.
+        masks:                  List of mask dicts with keys: 'path', 'band', 'fun', 'dim_name'.
+
+    Returns:
+        DataFrame with one row per (region, mask configuration).
+    """
+    if masks is None:
+        masks = []
+
+    # Load and optionally filter regions
+    regions = gpd.read_file(region_path)
+    if region_filter:
+        regions = regions[regions.apply(region_filter, axis=1)]
+    regions = regions[[region_id_att, "geometry"]]
+
+    if regions.empty:
+        raise ValueError("No regions found after filtering.")
+
+    # Precompute cartesian product of all mask configurations
+    # One stat value item will be produced for each of these configurations, for each region
+    configurations = list(product(*(m["fun"].keys() for m in masks))) if masks else [()]
+
+    # Open rasters: indic, weights and masks
+    src_indic = rasterio.open(indic_path)
+    src_weight = rasterio.open(weight_path)
+    src_masks = [rasterio.open(m["path"]) for m in masks]
+
+    out = []
+    try:
+        # Check rasters are compatible
+        _validate_rasters(src_indic, [src_weight] + src_masks)
+
+        # Set no data value for population
+        indic_nodata = src_indic.nodata if src_indic.nodata is not None else -9999
+
+        # function to make a row template
+        def make_row(region_id, value, type, conf):
+            row = {region_id_att: region_id, "INDIC": type}
+            row["value"] = value
+            for i, m in enumerate(masks):
+                row[m["dim_name"]] = conf[i]
+
+        # Process each region
+        for _, region in regions.iterrows():
+
+            # get region id and geometry
+            region_id = region[region_id_att]
+            geometry = [mapping(region.geometry)]
+
+            # Clip rasters to region geometry
+            try:
+                indic_clipped = mask(src_indic, geometry, crop=True, filled=True, nodata=indic_nodata)[0][indic_band - 1]
+                weight_clipped = mask(src_weight, geometry, crop=True, filled=True)[0][weight_band - 1]
+                mask_clipped = [
+                    mask(sm, geometry, crop=True, filled=True)[0][m["band"] - 1]
+                    for sm, m in zip(src_masks, masks)
+                ]
+            except SkipRegion: continue
+            except Exception as e:
+                print(f"[{region_id}] Clipping failed: {e}")
+                continue
+
+            # handle each mask configuration
+            for conf in configurations:
+
+                # get boolean mask
+                combined_mask = _build_combined_mask(conf, masks, mask_clipped)
+
+                # apply combined mask identically to indic and weight
+                indic  = indic_clipped  if combined_mask is None else indic_clipped[combined_mask]
+                weight = weight_clipped if combined_mask is None else weight_clipped[combined_mask]
+
+                # keep only pixels where indic is valid (same boolean reused for both)
+                #valid = indic != indic_nodata
+                valid = ~np.isnan(indic) if np.isnan(indic_nodata) else (indic != indic_nodata) & (weight != src_weight.nodata)
+                indic = indic[valid]
+                weight = weight[valid]
+
+                # compute weighted average
+                wa = (indic * weight).sum() / weight.sum()
+
+                # compute median
+                wmed = weighted_median(indic, weight)
+
+                # make data item
+                row = make_row(region_id, wa, "WEIGHTED_AVERAGE", conf)
+                out.append(row)
+                row = make_row(region_id, wmed, "WEIGHTED_MEDIAN", conf)
+                out.append(row)
+
+    finally:
+        # close all files
+        src_indic.close()
+        src_weight.close()
+        for sm in src_masks:
+            sm.close()
+
+    return pd.DataFrame(out)
+
+
+
+
+
+
 class SkipRegion(Exception):
     """Raised when a region has no valid data and should be silently skipped."""
 
@@ -122,14 +259,14 @@ def _validate_rasters(src_population, src_masks: list) -> None:
 def _clip_rasters(src_population, src_masks, masks, geometry, population_band, population_nodata):
     """Clip population and mask rasters to a region geometry."""
     try:
-        pop_clipped = mask(src_population, geometry, crop=True, filled=True, nodata=population_nodata)[0]
+        pop_clipped = mask(src_population, geometry, crop=True, filled=True, nodata=population_nodata)[0][population_band - 1]
         mask_clipped = [
             mask(sm, geometry, crop=True, filled=True)[0][m["band"] - 1]
             for sm, m in zip(src_masks, masks)
         ]
     except ValueError: raise SkipRegion()
 
-    return pop_clipped[population_band - 1], mask_clipped
+    return pop_clipped, mask_clipped
 
 
 def _build_combined_mask(conf, masks, mask_clipped):
