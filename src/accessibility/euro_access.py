@@ -29,17 +29,14 @@ if "steps" in params and 1 in params["steps"]:
     compute_accessibility_grids(params, services=params["services"], years=params["years"])
 
 if "steps" in params and 2 in params["steps"]:
-    compute_accessibility_grids(params, services=params["services"], years=params["years"])
-
-if "steps" in params and 3 in params["steps"]:
     combine_to_geotiff(params, services=params["services"], years=params["years"], do_combination=True)
 
-if "steps" in params and 4 in params["steps"]:
+if "steps" in params and 3 in params["steps"]:
     gridviz_tiling(params, services=params["services"], aggregate=True, tiling=True, deploy=True)
 
-if "steps" in params and 5 in params["steps"]:
+if "steps" in params and 4 in params["steps"]:
     gridviz_tiling_points(params, services=params["services"], years=params["years"])
 
-if "steps" in params and 6 in params["steps"]:
+if "steps" in params and 5 in params["steps"]:
     compute_statistics(params, services=params["services"], decompose_timeseries=True, compute_percentages=True )
 
