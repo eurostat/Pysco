@@ -1,5 +1,5 @@
 {
-    "steps": [1,2,3,4,5,6],
+    "steps": [1,2,3,4,5],
     "services": ["evrp"],
     "years": ["2025"],
     "out_folder": "/home/juju/gisco/accessibility/",
