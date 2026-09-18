@@ -308,7 +308,6 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
 
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "get source POIs")
 
-
     # function call
     data = accessiblity_grid_k_nearest_dijkstra(
         bbox = bbox,
