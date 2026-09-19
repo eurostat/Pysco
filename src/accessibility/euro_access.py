@@ -32,7 +32,7 @@ if "steps" in params and 2 in params["steps"]:
     combine_to_geotiff(params, services=params["services"], years=params["years"], do_combination=True)
 
 if "steps" in params and 3 in params["steps"]:
-    gridviz_tiling(params, services=params["services"], aggregate=True, tiling=True, deploy=True)
+    gridviz_tiling(params, services=params["services"], aggregate=True, tiling=True)
 
 if "steps" in params and 4 in params["steps"]:
     gridviz_tiling_points(params, services=params["services"], years=params["years"])
