@@ -26,17 +26,22 @@ with open(params_output_file, 'r') as f:
     for k in params_.keys(): params[k] = params_[k]
 
 if "steps" in params and 1 in params["steps"]:
+    print("****** step 1 - compute accessibility grids")
     compute_accessibility_grids(params, services=params["services"], years=params["years"])
 
 if "steps" in params and 2 in params["steps"]:
+    print("****** step 2 - combine to geotiff")
     combine_to_geotiff(params, services=params["services"], years=params["years"], do_combination=True)
 
 if "steps" in params and 3 in params["steps"]:
+    print("****** step 3 - aggregation and tiling")
     gridviz_tiling(params, services=params["services"], aggregate=True, tiling=True)
 
 if "steps" in params and 4 in params["steps"]:
+    print("****** step 4 - points tiling")
     gridviz_tiling_points(params, services=params["services"], years=params["years"])
 
 if "steps" in params and 5 in params["steps"]:
+    print("****** step 5 - compute statistics")
     compute_statistics(params, services=params["services"], decompose_timeseries=True, compute_percentages=True )
 
