@@ -11,6 +11,7 @@ from accessibility.step4_gridviz_service_points import gridviz_tiling_points
 from accessibility.step5_compute_stats import compute_statistics
 
 # TODO
+# use new JRC 100m population grid
 # stats: average / median weighted by population
 # accessibility to schools by walking
 # secondary education services accessibility
