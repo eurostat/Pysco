@@ -15,7 +15,7 @@ from accessibility.step5_compute_stats import compute_statistics
 # stats: average / median weighted by population
 # accessibility to schools by walking
 # secondary education services accessibility
-# stats compute stats with 100m resolution ?
+# stats: compute stats with 100m resolution ?
 
 # Load parameters from JSON file
 params_paths_file = sys.argv[1]

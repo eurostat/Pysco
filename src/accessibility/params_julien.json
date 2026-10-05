@@ -1,7 +1,7 @@
 {
-    "steps": [3,4,5],
-    "services": ["evrp"],
-    "years": ["2025"],
+    "steps": [5],
+    "services": ["evrp","education","heatlhcare"],
+    "years": null,
     "out_folder": "/home/juju/gisco/accessibility/",
     "deploy_target_folder": "/home/juju/pCloudDrive",
     "accessibility_grid_versions": {
