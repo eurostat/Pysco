@@ -72,6 +72,13 @@ degurba_classes = {
     "DEG1": lambda v: v<200, # Cities
     "DEG2": lambda v: (v>200) & (v<300), # Towns and suburbs
     "DEG3": lambda v: (v>310), # Rural areas
+    "DEG_130": lambda v: v==130,
+    "DEG_223": lambda v: v==223,
+    "DEG_222": lambda v: v==222,
+    "DEG_221": lambda v: v==221,
+    "DEG_313": lambda v: v==313,
+    "DEG_312": lambda v: v==312,
+    "DEG_311": lambda v: v==311,
 }
 
 
