@@ -20,7 +20,8 @@
         "2020": "/home/juju/geodata/tomtom/tomtom201912.gpkg",
         "2023": "/home/juju/geodata/tomtom/tomtom202312.gpkg",
         "2024": "/home/juju/geodata/tomtom/tomtom202312.gpkg",
-        "2025": "/home/juju/geodata/tomtom/tomtom202512.gpkg"
+        "2025": "/home/juju/geodata/tomtom/tomtom202512.gpkg",
+        "2026": "/home/juju/geodata/tomtom/tomtom202512.gpkg"
     },
     "country_gpkg": "/home/juju/geodata/gisco/CNTR_RG_100K_2024_3035.gpkg",
     "nuts_gpkg": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
