@@ -1,17 +1,17 @@
 {
-    "steps": [5],
-    "services": ["healthcare", "education", "evrp"],
-    "years": null,
+    "steps": [1,2],
+    "services": ["healthcare", "education"],
+    "years": ["2026"],
     "out_folder": "/home/juju/gisco/accessibility/",
     "deploy_target_folder": "/home/juju/pCloudDrive",
     "accessibility_grid_versions": {
         "healthcare": {
-            "2020": "v2026_04",
-            "2023": "v2026_04"
+            "2020": "v2026_10",
+            "2023": "v2026_10"
         },
         "education": {
-            "2020": "v2026_04",
-            "2023": "v2026_04"
+            "2020": "v2026_10",
+            "2023": "v2026_10"
         },
         "evrp": {
             "2023": "v2026_07",
@@ -20,8 +20,8 @@
         }
     },
     "stats_versions": {
-        "healthcare": "v2026_07",
-        "education": "v2026_04",
+        "healthcare": "v2026_10",
+        "education": "v2026_10",
         "evrp": "v2026_09"
     },
     "bbox": [

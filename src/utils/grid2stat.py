@@ -169,8 +169,9 @@ def grid2stat_weighted_average(
         # Check rasters are compatible
         _validate_rasters(src_indic, [src_weight] + src_masks)
 
-        # Set no data value for population
+        # Set no data value for indic and weight
         indic_nodata = src_indic.nodata if src_indic.nodata is not None else -9999
+        weight_nodata = src_weight.nodata if src_weight.nodata is not None else -9999
 
         # function to make a row template
         def make_row(region_id, value, type, conf):
@@ -186,10 +187,9 @@ def grid2stat_weighted_average(
             region_id = region[region_id_att]
             geometry = [mapping(region.geometry)]
 
-            # Clip rasters to region geometry
             try:
                 indic_clipped = mask(src_indic, geometry, crop=True, filled=True, nodata=indic_nodata)[0][indic_band - 1]
-                weight_clipped = mask(src_weight, geometry, crop=True, filled=True)[0][weight_band - 1]
+                weight_clipped = mask(src_weight, geometry, crop=True, filled=True, nodata=weight_nodata)[0][weight_band - 1]
                 mask_clipped = [
                     mask(sm, geometry, crop=True, filled=True)[0][m["band"] - 1]
                     for sm, m in zip(src_masks, masks)
@@ -287,6 +287,7 @@ def _build_combined_mask(conf, masks, mask_clipped):
 
 
 
+# DEPRECATED
 def zonal_sum_by_class(
     values_path: str,
     classes_path: str, classes: Dict[str, tuple],
