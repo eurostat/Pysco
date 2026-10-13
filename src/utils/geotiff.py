@@ -645,3 +645,8 @@ def replace_tiff_value(input_path, output_path, old_value, new_value):
     with rasterio.open(output_path, "w", **profile) as dst:
         dst.write(data)
 
+
+
+#crop_extend_bbox("/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-ESTAT_Census_Population_2021_100m_rev0726.tif",
+#                 bbox=(        900000,        900000,        6600000,        5500000),
+#                 output_path="/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox_rev0726.tif")
