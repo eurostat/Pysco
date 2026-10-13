@@ -1,5 +1,5 @@
 {
-    "steps": [2],
+    "steps": [1,2],
     "services": ["education", "healthcare"],
     "years": ["2026"],
     "out_folder": "/home/juju/gisco/accessibility/",
