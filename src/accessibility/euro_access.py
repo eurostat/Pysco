@@ -6,9 +6,10 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from accessibility.step1_grid_computation import compute_accessibility_grids
 from accessibility.step2_combine_to_geotiff import combine_to_geotiff
-from accessibility.step3_compute_stats import compute_statistics
-from accessibility.step4_gridviz_grids import gridviz_tiling
-from accessibility.step5_gridviz_service_points import gridviz_tiling_points
+from accessibility.step3_aggregate import aggregate
+from accessibility.step4_compute_stats import compute_statistics
+from accessibility.step5_gridviz_grids import gridviz_tiling
+from accessibility.step6_gridviz_service_points import gridviz_tiling_points
 
 # TODO
 # stats: average / median weighted by population
@@ -33,15 +34,17 @@ if "steps" in params and 2 in params["steps"]:
     print("****** step 2 - combine to geotiff")
     combine_to_geotiff(params, services=params["services"], years=params["years"], do_combination=True)
 
-if "steps" in params and 3 in params["steps"]:
-    print("****** step 3 - compute statistics")
-    compute_statistics(params, services=params["services"], decompose_timeseries=True, compute_percentages=True )
+#TODO: step 3 - aggregation
 
 if "steps" in params and 4 in params["steps"]:
-    print("****** step 4 - aggregation and tiling")
-    gridviz_tiling(params, services=params["services"], aggregate=True, tiling=True)
+    print("****** step 4 - compute statistics")
+    compute_statistics(params, services=params["services"], decompose_timeseries=True, compute_percentages=True )
 
 if "steps" in params and 5 in params["steps"]:
-    print("****** step 5 - points tiling")
+    print("****** step 5 - tiling")
+    gridviz_tiling(params, services=params["services"], aggregate=True, tiling=True)
+
+if "steps" in params and 6 in params["steps"]:
+    print("****** step 6 - points tiling")
     gridviz_tiling_points(params, services=params["services"], years=params["years"])
 
