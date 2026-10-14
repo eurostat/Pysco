@@ -2,10 +2,11 @@ import rasterio
 import geopandas as gpd
 import numpy as np
 import pandas as pd
-from rasterio.mask import mask
+from rasterio.mask import mask,raster_geometry_mask
 from shapely.geometry import mapping
 from typing import Dict
 from itertools import product
+from contextlib import ExitStack
 
 import sys
 import os
@@ -113,129 +114,108 @@ def grid2stat(
 
 
 
-
 def grid2stat_weighted_average(
     indic_path: str,
     weight_path: str,
-
     indic_band: int = 1,
     weight_band: int = 1,
-
     region_path: str = None,
     region_id_att: str = "id",
     region_filter=None,
-
     masks: list = None,
 ) -> pd.DataFrame:
     """
-    Compute weighted average stats on regions from raster data, one with the indicator to average, and another one with the weight (i.e. population).
+    Compute weighted average and weighted median of an indicator raster over regions,
+    using a weight raster (e.g. population). Masks are applied identically to both.
 
-    Args:
-        indic_path:             Path to the indicator raster file.
-        weight_path:            Path to the weight raster file.
-        indic_band:             Band index (1-based) to read from the indicator raster.
-        weight_band:            Band index (1-based) to read from the weights raster.
-        region_path:            Path to the regions vector file.
-        region_id_att:          Attribute name used as region identifier.
-        region_filter:          Optional callable(row) -> bool to filter regions.
-        masks:                  List of mask dicts with keys: 'path', 'band', 'fun', 'dim_name'.
-
-    Returns:
-        DataFrame with one row per (region, mask configuration).
+    masks: list of dicts with keys:
+        'path'     : mask raster path (same grid as indicator/weight)
+        'band'     : 1-based band index
+        'fun'      : dict {label: callable(array) -> boolean array (True = keep) or None}
+        'dim_name' : output column name holding the label
     """
-    if masks is None:
-        masks = []
+    masks = masks or []
 
-    # Load and optionally filter regions
+    # Load / filter regions
     regions = gpd.read_file(region_path)
     if region_filter:
         regions = regions[regions.apply(region_filter, axis=1)]
     regions = regions[[region_id_att, "geometry"]]
-
     if regions.empty:
         raise ValueError("No regions found after filtering.")
 
-    # Precompute cartesian product of all mask configurations
-    # One stat value item will be produced for each of these configurations, for each region
+    # One output item per combination of mask labels, per region
     configurations = list(product(*(m["fun"].keys() for m in masks))) if masks else [()]
 
-    # Open rasters: indic, weights and masks
-    src_indic = rasterio.open(indic_path)
-    src_weight = rasterio.open(weight_path)
-    src_masks = [rasterio.open(m["path"]) for m in masks]
+    def make_row(region_id, value, indic_type, conf):
+        row = {region_id_att: region_id, "INDIC": indic_type, "value": value}
+        for i, m in enumerate(masks):
+            row[m["dim_name"]] = conf[i]
+        return row
 
     out = []
-    try:
-        # Check rasters are compatible
+    with ExitStack() as stack:
+        src_indic = stack.enter_context(rasterio.open(indic_path))
+        src_weight = stack.enter_context(rasterio.open(weight_path))
+        src_masks = [stack.enter_context(rasterio.open(m["path"])) for m in masks]
+
         _validate_rasters(src_indic, [src_weight] + src_masks)
 
-        # Set no data value for indic and weight
-        indic_nodata = src_indic.nodata if src_indic.nodata is not None else -9999
-        weight_nodata = src_weight.nodata if src_weight.nodata is not None else -9999
+        # Reproject regions to raster CRS if needed
+        if regions.crs is not None and src_indic.crs is not None and regions.crs != src_indic.crs:
+            regions = regions.to_crs(src_indic.crs)
 
-        # function to make a row template
-        def make_row(region_id, value, type, conf):
-            row = {region_id_att: region_id, "INDIC": type}
-            row["value"] = value
-            for i, m in enumerate(masks):
-                row[m["dim_name"]] = conf[i]
-
-        # Process each region
         for _, region in regions.iterrows():
-
-            # get region id and geometry
             region_id = region[region_id_att]
             geometry = [mapping(region.geometry)]
 
             try:
-                indic_clipped = mask(src_indic, geometry, crop=True, filled=True, nodata=indic_nodata)[0][indic_band - 1]
-                weight_clipped = mask(src_weight, geometry, crop=True, filled=True, nodata=weight_nodata)[0][weight_band - 1]
-                mask_clipped = [
-                    mask(sm, geometry, crop=True, filled=True)[0][m["band"] - 1]
+                # shape_mask: True OUTSIDE the geometry; window: crop window (same grid for all rasters)
+                shape_mask, _, window = raster_geometry_mask(src_indic, geometry, crop=True)
+
+                # masked=True -> nodata pixels are masked automatically
+                indic_arr = src_indic.read(indic_band, window=window, masked=True)
+                weight_arr = src_weight.read(weight_band, window=window, masked=True)
+                mask_arrays = [
+                    sm.read(m["band"], window=window)
                     for sm, m in zip(src_masks, masks)
                 ]
-            except SkipRegion: continue
+            except ValueError:
+                # typically "Input shapes do not overlap raster"
+                continue
             except Exception as e:
                 print(f"[{region_id}] Clipping failed: {e}")
                 continue
 
-            # handle each mask configuration
+            # Base validity: inside polygon, not nodata, finite, non-negative weight
+            indic_f = indic_arr.astype("float64").filled(np.nan)
+            weight_f = weight_arr.astype("float64").filled(np.nan)
+            base_valid = (
+                ~shape_mask
+                & np.isfinite(indic_f)
+                & np.isfinite(weight_f)
+                & (weight_f >= 0)
+            )
+            if not base_valid.any():
+                continue
+
             for conf in configurations:
+                combined = _build_combined_mask(conf, masks, mask_arrays)
+                valid = base_valid if combined is None else (base_valid & combined)
 
-                # get boolean mask
-                combined_mask = _build_combined_mask(conf, masks, mask_clipped)
+                indic = indic_f[valid]
+                weight = weight_f[valid]
 
-                # apply combined mask identically to indic and weight
-                indic  = indic_clipped  if combined_mask is None else indic_clipped[combined_mask]
-                weight = weight_clipped if combined_mask is None else weight_clipped[combined_mask]
+                if indic.size == 0 or weight.sum() <= 0:
+                    wa, wmed = np.nan, np.nan
+                else:
+                    wa = float((indic * weight).sum() / weight.sum())
+                    wmed = weighted_median(indic, weight)
 
-                # keep only pixels where indic is valid (same boolean reused for both)
-                #valid = indic != indic_nodata
-                valid = ~np.isnan(indic) if np.isnan(indic_nodata) else (indic != indic_nodata) & (weight != src_weight.nodata)
-                indic = indic[valid]
-                weight = weight[valid]
-
-                # compute weighted average
-                wa = (indic * weight).sum() / weight.sum()
-
-                # compute median
-                wmed = weighted_median(indic, weight)
-
-                # make data item
-                row = make_row(region_id, wa, "WEIGHTED_AVERAGE", conf)
-                out.append(row)
-                row = make_row(region_id, wmed, "WEIGHTED_MEDIAN", conf)
-                out.append(row)
-
-    finally:
-        # close all files
-        src_indic.close()
-        src_weight.close()
-        for sm in src_masks:
-            sm.close()
+                out.append(make_row(region_id, wa, "WEIGHTED_AVERAGE", conf))
+                out.append(make_row(region_id, wmed, "WEIGHTED_MEDIAN", conf))
 
     return pd.DataFrame(out)
-
 
 
 
@@ -245,15 +225,19 @@ class SkipRegion(Exception):
     """Raised when a region has no valid data and should be silently skipped."""
 
 
-def _validate_rasters(src_population, src_masks: list) -> None:
-    """Check that all mask rasters are compatible with the population raster."""
-    for sm in src_masks:
-        if sm.crs != src_population.crs:
-            raise ValueError(f"CRS mismatch: population={src_population.crs}, mask={sm.crs}")
-        if sm.transform != src_population.transform:
-            raise ValueError(f"Transform mismatch: population={src_population.transform}, mask={sm.transform}")
-        if sm.res != src_population.res:
-            raise ValueError(f"Resolution mismatch: population={src_population.res}, mask={sm.res}")
+
+def _validate_rasters(ref, others: list) -> None:
+    """Check that all rasters share the same grid as the reference raster."""
+    for s in others:
+        if s.crs != ref.crs:
+            raise ValueError(f"CRS mismatch: {ref.crs} vs {s.crs}")
+        if s.transform != ref.transform:
+            raise ValueError(f"Transform mismatch: {ref.transform} vs {s.transform}")
+        if s.res != ref.res:
+            raise ValueError(f"Resolution mismatch: {ref.res} vs {s.res}")
+        if (s.width, s.height) != (ref.width, ref.height):
+            raise ValueError(f"Shape mismatch: {(ref.width, ref.height)} vs {(s.width, s.height)}")
+
 
 
 def _clip_rasters(src_population, src_masks, masks, geometry, population_band, population_nodata):
@@ -269,18 +253,33 @@ def _clip_rasters(src_population, src_masks, masks, geometry, population_band, p
     return pop_clipped, mask_clipped
 
 
-def _build_combined_mask(conf, masks, mask_clipped):
-    """Combine individual mask functions into a single boolean mask."""
+def _build_combined_mask(conf, masks, mask_arrays):
+    """Combine individual mask functions into a single boolean mask (True = keep)."""
     combined = None
-    for i, (key, mask_data) in enumerate(zip(conf, masks)):
-        mf = mask_data["fun"].get(key)
-        if mf is None: continue
-        m = mf(mask_clipped[i])
-        if m is None: continue
-        combined = m if combined is None else combined & m
+    for i, (key, m) in enumerate(zip(conf, masks)):
+        mf = m["fun"].get(key)
+        if mf is None:
+            continue
+        res = mf(mask_arrays[i])
+        if res is None:
+            continue
+        res = np.asarray(res, dtype=bool)
+        combined = res if combined is None else (combined & res)
     return combined
 
 
+
+def weighted_median(values: np.ndarray, weights: np.ndarray) -> float:
+    """Weighted median: smallest value whose cumulative weight reaches half the total."""
+    if values.size == 0:
+        return np.nan
+    order = np.argsort(values)
+    v, w = values[order], weights[order]
+    cum = np.cumsum(w)
+    total = cum[-1]
+    if total <= 0:
+        return np.nan
+    return float(v[np.searchsorted(cum, 0.5 * total)])
 
 
 
