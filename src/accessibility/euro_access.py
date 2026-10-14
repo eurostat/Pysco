@@ -44,7 +44,7 @@ if "steps" in params and 4 in params["steps"]:
 
 if "steps" in params and 5 in params["steps"]:
     print("****** step 5 - tiling")
-    gridviz_tiling(params, services=params["services"], aggregate=True, tiling=True)
+    gridviz_tiling(params, services=params["services"])
 
 if "steps" in params and 6 in params["steps"]:
     print("****** step 6 - points tiling")
