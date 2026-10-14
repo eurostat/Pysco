@@ -36,29 +36,3 @@ def aggregate_geotiff(params, services, years):
             if "deploy_target_folder" in params:
                 shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["deploy_target_folder"])
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # TODO
-    for service in services:
-        for year in years:
-            print(datetime.now(), service, year)
-            combine_to_geotiff(
-                params=params,
-                services=[service],
-                years=[year],
-                do_combination=False,
-                do_aggregation=True
-            )
