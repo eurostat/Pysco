@@ -102,7 +102,7 @@ def region_filter(id_att:str, service:str, year:str):
     return out
 
 
-def compute_statistics(params, services=None, decompose_timeseries=True, compute_percentages=True):
+def compute_statistics(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
 
     sus = params["stat_units"]
     pop_rasters = params["pop_rasters"]
@@ -125,7 +125,9 @@ def compute_statistics(params, services=None, decompose_timeseries=True, compute
             df = None
 
             for ai in service_to_access_indicator[service]:
-                for year in params["accessibility_grid_versions"][service].keys():
+
+                if years is None: years = params["accessibility_grid_versions"][service].keys()
+                for year in years:
                     for age_group in age_group_to_band.keys():
                         res = res_default if age_group == "T" else "1000"
 

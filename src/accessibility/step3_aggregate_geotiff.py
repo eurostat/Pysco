@@ -20,8 +20,8 @@ def aggregate_geotiff(params, services, years):
     # aggregate at various resolutions - median
     print(datetime.now(), "aggregate")
     for service in services:
-        if years is None: years = params["accessibility_grid_versions"][service].keys()
 
+        if years is None: years = params["accessibility_grid_versions"][service].keys()
         for year in years:
 
             # it is better to resample all resolution from 100m one. Otherwise, we do medians of medians which may create some biais around places with many nodata pixels

@@ -40,7 +40,7 @@ if "steps" in params and 3 in params["steps"]:
 
 if "steps" in params and 4 in params["steps"]:
     print("****** step 4 - compute statistics")
-    compute_statistics(params, services=params["services"], decompose_timeseries=True, compute_percentages=True )
+    compute_statistics(params, services=params["services"], years=params["years"], decompose_timeseries=True, compute_percentages=True )
 
 if "steps" in params and 5 in params["steps"]:
     print("****** step 5 - tiling")
