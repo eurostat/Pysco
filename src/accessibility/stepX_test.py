@@ -25,6 +25,7 @@ df = grid2stat_weighted_average(
 )
 
 
+
 """""
 df = grid2stat_weighted_average(
     indic_path = "/home/juju/gisco/accessibility/euro_access_education_2023_1000m_v2026_04.tif",
