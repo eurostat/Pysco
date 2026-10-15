@@ -22,7 +22,7 @@ def get_countries_covered(service:str, year:str):
     return cnts
 
 
-def combine_to_geotiff(params, services=None, years=None, do_combination = True, resolutions=[100]):
+def combine_to_geotiff(params, services=None, years=None, resolutions=[100]):
 
     if services is None: services = params["accessibility_grid_versions"].keys()
 
@@ -44,30 +44,29 @@ def combine_to_geotiff(params, services=None, years=None, do_combination = True,
                 geotiff = params["out_folder"] + "euro_access_" + service + "_" + year + "_" + str(resolution) + "m_"+ params["accessibility_grid_versions"][service][year] +".tif"
 
                 # check if tiff file was already produced
-                if os.path.isfile(geotiff) and do_combination:
+                if os.path.isfile(geotiff):
                     print(datetime.now(), "Combined file already produced")
                     continue
 
-                if do_combination:
-                    # get all parquet files in the output folder
-                    files = [os.path.join(out_folder_service_year, f) for f in os.listdir(out_folder_service_year) if f.endswith('.parquet')]
-                    if len(files)==0:
-                        print("No file to combine")
-                        continue
+                # get all parquet files in the output folder
+                files = [os.path.join(out_folder_service_year, f) for f in os.listdir(out_folder_service_year) if f.endswith('.parquet')]
+                if len(files)==0:
+                    print("No file to combine")
+                    continue
 
-                    print(datetime.now(), resolution, service, year, "transforming", len(files), "parquet files into tif for", service, year)
-                    parquet_grid_to_geotiff(
-                        files,
-                        geotiff,
-                        bbox = params["bbox"],
-                        attributes=["cost_1", "cost_average_" + str(k)],
-                        parquet_nodata_values=[-1],
-                        dtype = np.int32 if service=="evrp" else np.int16,
-                        value_fun= (lambda v:v) if service=="evrp" else (lambda v: (v if v<32767 else 32767)), # np.int16(v),
-                        compress='deflate'
-                    )
-                    files.clear()
-                    files = None
+                print(datetime.now(), resolution, service, year, "transforming", len(files), "parquet files into tif for", service, year)
+                parquet_grid_to_geotiff(
+                    files,
+                    geotiff,
+                    bbox = params["bbox"],
+                    attributes=["cost_1", "cost_average_" + str(k)],
+                    parquet_nodata_values=[-1],
+                    dtype = np.int32 if service=="evrp" else np.int16,
+                    value_fun= (lambda v:v) if service=="evrp" else (lambda v: (v if v<32767 else 32767)), # np.int16(v),
+                    compress='deflate'
+                )
+                files.clear()
+                files = None
 
                 print(datetime.now(), resolution, service, year, "apply mask to force some countries to nodata")
                 if service != "evrp":
