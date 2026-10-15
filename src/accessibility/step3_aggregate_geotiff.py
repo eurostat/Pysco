@@ -27,8 +27,12 @@ def aggregate_geotiff(params, services, years):
             # it is better to resample all resolution from 100m one. Otherwise, we do medians of medians which may create some biais around places with many nodata pixels
             for resolution in resolutions:
                 print(datetime.now(), service, year, resolution)
+
+                agg_tiff = folder_aggregated+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m_"+params["accessibility_grid_versions"][service][year]+".tif"
+                if os.path.exists(agg_tiff): continue
+
                 resample_geotiff_aligned(params["out_folder"] + "euro_access_"+service+"_"+year+"_100m_"+params["accessibility_grid_versions"][service][year]+".tif",
-                                        folder_aggregated+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m_"+params["accessibility_grid_versions"][service][year]+".tif",
+                                        agg_tiff,
                                         resolution, Resampling.med)
 
             # copy and deploy 1000m version
