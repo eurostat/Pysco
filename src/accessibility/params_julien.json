@@ -1,6 +1,6 @@
 {
     "steps": [1, 2, 3, 4, 5, 6],
-    "services": ["education"],
+    "services": ["education", "healthcare"],
     "years": null,
     "out_folder": "/home/juju/gisco/accessibility/",
     "deploy_target_folder": "/home/juju/pCloudDrive"
