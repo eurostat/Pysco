@@ -121,6 +121,9 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
         geo = su + "_" + sus[su]["version"]
         for service in services:
 
+            ofo = output_folder + "euro_access_" + geo + "_" + service + "_" + params["stats_versions"][service]
+            if os.path.exists(ofo + ".csv"): continue
+
             # make a single csv hypercube file per statunit and service
             df = None
 
@@ -191,7 +194,6 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
             df.sort_values(["GEO","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
-            ofo = output_folder + "euro_access_" + geo + "_" + service + "_" + params["stats_versions"][service]
             df.to_csv(ofo + ".csv", index=False)
             df.to_parquet(ofo + ".parquet")
 
