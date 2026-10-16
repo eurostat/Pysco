@@ -65,7 +65,7 @@ def weight_function_length(feature, length):
 
     # ferry case: force 20 kph
     if fow==-1 and p['FEATTYP']==4130: return [length,length]
-    # very slow cases, for pedestrian areas
+    # for pedestrian areas
     if fow in [14,15,17,18]: return [length,length]
     # stairs
     if fow==19: return [None,None]
@@ -81,6 +81,31 @@ def weight_function_length(feature, length):
         w_pos = None if kph_pos == None else length
         w_neg = None if kph_neg == None else length
         return [ w_pos, w_neg ]
+
+
+
+
+def weight_function_length_walk_bike(feature, length):
+    p = feature['properties']
+    fow = p['FOW']
+
+    # ferry case: force 20 kph
+    if fow==-1 and p['FEATTYP']==4130: return [length,length]
+    # pedestrian areas
+    if fow in [14,15,17,18]: return [length,length]
+    # stairs
+    if fow==19: return [length,length]
+    # road for authorities
+    if fow==20: return [None,None]
+
+    # get average speed
+    kph_pos = p['AVERAGE_SPEED_POS']
+    kph_neg = p['AVERAGE_SPEED_NEG']
+
+    # general case: both directions allowed
+    return [ length, length ]
+
+
 
 
 
