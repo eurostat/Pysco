@@ -25,7 +25,7 @@ FOW
 22 : Cul-de-Sac
 '''
 
-def weight_function(feature, length):
+def weight_function_driving_time(feature, length):
     p = feature['properties']
     fow = p['FOW']
 
@@ -59,7 +59,7 @@ def weight_function(feature, length):
         return [ w_pos, w_neg ]
 
 
-def weight_function_length(feature, length):
+def weight_function_driving_distance(feature, length):
     p = feature['properties']
     fow = p['FOW']
 
@@ -84,8 +84,7 @@ def weight_function_length(feature, length):
 
 
 
-
-def weight_function_length_walk_bike(feature, length):
+def weight_function_walking_biking_distance(feature, length):
     p = feature['properties']
     fow = p['FOW']
 

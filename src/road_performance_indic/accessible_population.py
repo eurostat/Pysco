@@ -11,7 +11,7 @@ import graph_tool.all as gt
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.utils import cartesian_product_comp
 from utils.netutils import ___graph_adjacency_list_from_geodataframe, distance_to_node, node_coordinate, nodes_spatial_index_adjacendy_list
-from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function
+from utils.tomtomutils import direction_fun, final_node_level_fun, initial_node_level_fun, is_not_snappable_fun, weight_function_driving_time
 from utils.featureutils import iter_features
 from utils.gridutils import get_cell_xy_from_id
 from utils.geotiff import read_geotiff_pixels_as_dicts
@@ -443,7 +443,7 @@ for year in ["2021", "2018"]:
                         out_folder = out_folder_year,
                         duration_max_s = duration_max_s,
                         distance_max_m = distance_max_m,
-                        weight_function = weight_function,
+                        weight_function = weight_function_driving_time,
                         direction_fun = direction_fun,
                         is_not_snappable_fun = is_not_snappable_fun,
                         initial_node_level_fun = initial_node_level_fun,
