@@ -22,7 +22,9 @@ def compute_accessibility_grids(params, services=None, years=None, resolutions=[
         cell_id_fun_ = partial(cell_id_fun, grid_resolution=grid_resolution)
 
         for service in services:
-            modes = ["driving_time", "walking_biking_distance"] if service == "education" else ["drive_time"] if service == "healthcare" else ["drive_time"]
+
+            # get modes TODO move to params
+            modes = ["driving_time", "walking_biking_distance"] if service == "education" else ["driving_time"] if service == "healthcare" else ["driving_distance"]
 
             for mode in modes:
 
@@ -32,7 +34,7 @@ def compute_accessibility_grids(params, services=None, years=None, resolutions=[
                     print(grid_resolution, service, year)
 
                     # define and create ouput folder, depending on year, service, resolution
-                    out_folder_service_year = params["out_folder"] + "out_" + service + "_" + year + "_" + str(grid_resolution) + "m/"
+                    out_folder_service_year = params["out_folder"] + "out_" + service + "_" + year + "_" + mode + "_" + str(grid_resolution) + "m/"
                     os.makedirs(out_folder_service_year, exist_ok=True)
 
                     # define tomtom loader
@@ -52,7 +54,7 @@ def compute_accessibility_grids(params, services=None, years=None, resolutions=[
                         bbox = params["bbox"],
                         out_folder = out_folder_service_year,
                         k = 5 if service == "evrp" else 3,
-                        weight_function = weight_function_driving_distance if service == "evrp" else weight_function_driving_time,
+                        weight_function = weight_function_driving_distance if mode == "driving_distance" else weight_function_driving_time if mode == "driving_time" else weight_function_walking_biking_distance,
                         is_not_snappable_fun = is_not_snappable_fun,
                         initial_node_level_fun = initial_node_level_fun,
                         is_start_blocked = is_start_blocked,
