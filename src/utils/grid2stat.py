@@ -167,6 +167,7 @@ def grid2stat_weighted_average(
 
         for _, region in regions.iterrows():
             region_id = region[region_id_att]
+            print(f"[{region_id}] Processing region...")
             geometry = [mapping(region.geometry)]
 
             try:
@@ -214,6 +215,8 @@ def grid2stat_weighted_average(
 
                 out.append(make_row(region_id, wa, "WEIGHTED_AVERAGE", conf))
                 out.append(make_row(region_id, wmed, "WEIGHTED_MEDIAN", conf))
+
+                print(f"[{region_id}] {conf}: WA={wa}, WM={wmed}")
 
     return pd.DataFrame(out)
 
