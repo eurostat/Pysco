@@ -216,7 +216,7 @@ def grid2stat_weighted_average(
                 out.append(make_row(region_id, wa, "WEIGHTED_AVERAGE", conf))
                 out.append(make_row(region_id, wmed, "WEIGHTED_MEDIAN", conf))
 
-                print(f"[{region_id}] {conf}: WA={wa}, WM={wmed}")
+                print(f"[{region_id}]: WA={wa}, WM={wmed}")
 
     return pd.DataFrame(out)
 
