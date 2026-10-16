@@ -47,6 +47,11 @@
             "2025": "v2026_09"
         }
     },
+    "modes" : {
+        "healthcare": ["driving_time"],
+        "education": ["driving_time", "walking_biking_distance"],
+        "evrp": ["driving_distance"]
+    },
     "stats_versions": {
         "healthcare": "v2026_10",
         "education": "v2026_10",
