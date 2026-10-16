@@ -128,56 +128,58 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
             df = None
 
             for ai in service_to_access_indicator[service]:
+                for mode in params["modes"][service]:
 
-                if years is None: years = params["accessibility_grid_versions"][service].keys()
-                for year in years:
-                    for age_group in age_group_to_band.keys():
-                        res = res_default if age_group == "T" else "1000"
+                    if years is None: years = params["accessibility_grid_versions"][service].keys()
+                    for year in years:
+                        for age_group in age_group_to_band.keys():
+                            res = res_default if age_group == "T" else "1000"
 
-                        print(datetime.now(), su, service, ai, year, age_group, res)
+                            print(datetime.now(), su, service, ai, mode, year, age_group, res)
 
-                        # compute aggregated statistics, with masks
-                        df_ = grid2stat(
-                            population_path = pop_rasters[res],
-                            population_band = age_group_to_band[age_group],
+                            # compute aggregated statistics, with masks
+                            df_ = grid2stat(
+                                population_path = pop_rasters[res],
+                                population_band = age_group_to_band[age_group],
 
-                            region_path = sus[su]["path"],
-                            region_id_att = region_id_att,
-                            region_filter = region_filter(region_id_att, service, year),
+                                region_path = sus[su]["path"],
+                                region_id_att = region_id_att,
+                                region_filter = region_filter(region_id_att, service, year),
 
-                            masks = [
-                                # accessibility threshold classes
-                                {
-                                    "path" : params["out_folder"] + "euro_access_" + service + "_" + year + "_" + res + "m_" + params["accessibility_grid_versions"][service][year] + ".tif",
-                                    "dim_name" : "THRESHOLD",
-                                    "fun" : access_classes[service],
-                                    "band" : access_indicator_to_band[ai],
-                                },
-                                # degurba classes
-                                {
-                                    "path" : params["degurba_grid_path"],
-                                    "dim_name" : "DEG_URB",
-                                    "fun" : degurba_classes,
-                                    "band" : 1,
-                                },
-                            ]
-                        )
-                        df_["TIME"] = year
-                        df_["AGE"] = age_group
-                        df_["ACCESS_INDIC"] = ai
-                        df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
+                                masks = [
+                                    # accessibility threshold classes
+                                    {
+                                        "path" : params["out_folder"] + "euro_access_" + service + "_" + year + "_" + mode + "_" + res + "m_" + params["accessibility_grid_versions"][service][year] + ".tif",
+                                        "dim_name" : "THRESHOLD",
+                                        "fun" : access_classes[service],
+                                        "band" : access_indicator_to_band[ai],
+                                    },
+                                    # degurba classes
+                                    {
+                                        "path" : params["degurba_grid_path"],
+                                        "dim_name" : "DEG_URB",
+                                        "fun" : degurba_classes,
+                                        "band" : 1,
+                                    },
+                                ]
+                            )
+                            df_["TIME"] = year
+                            df_["AGE"] = age_group
+                            df_["ACCESS_INDIC"] = ai
+                            df_["MODE"] = mode
+                            df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
             df["UNIT"] = 'NR'
             # rename and sort columns
-            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","VALUE"]]
+            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","MODE","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","VALUE"]]
 
             # compute percentages
             if compute_percentages:
                 # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
-                totals = df[df['THRESHOLD'] == 'NONE'][['GEO', 'TIME', 'AGE', "DEG_URB", "ACCESS_INDIC", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+                totals = df[df['THRESHOLD'] == 'NONE'][['GEO', 'TIME', 'MODE', 'AGE', "DEG_URB", "ACCESS_INDIC", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
                 # Merge totals back onto the full dataframe
-                df_merged = df.merge(totals, on=['GEO', 'TIME', 'AGE', "DEG_URB", "ACCESS_INDIC"])
+                df_merged = df.merge(totals, on=['GEO', 'TIME', 'MODE', 'AGE', "DEG_URB", "ACCESS_INDIC"])
 
                 # Build the percentage rows
                 pc_rows = df_merged.copy()
@@ -191,7 +193,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
             # TODO remove no data rows ?
 
             # sort
-            df.sort_values(["GEO","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","TIME"])
+            df.sort_values(["GEO","MODE","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
             df.to_csv(ofo + ".csv", index=False)
