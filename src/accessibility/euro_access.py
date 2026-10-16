@@ -12,8 +12,8 @@ from accessibility.step5_gridviz_grids import gridviz_tiling
 from accessibility.step6_gridviz_service_points import gridviz_tiling_points
 
 # TODO
+# accessibility to schools by distance - 2026
 # stats: average / median weighted by population
-# accessibility to schools by walking
 # secondary education services accessibility
 # stats: compute stats with 100m resolution ?
 
