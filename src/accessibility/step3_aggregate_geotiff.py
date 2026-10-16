@@ -23,20 +23,21 @@ def aggregate_geotiff(params, services, years):
 
         if years is None: years = params["accessibility_grid_versions"][service].keys()
         for year in years:
+            for mode in params["modes"][service]:
 
-            # it is better to resample all resolution from 100m one. Otherwise, we do medians of medians which may create some biais around places with many nodata pixels
-            for resolution in resolutions:
-                print(datetime.now(), service, year, resolution)
+                # it is better to resample all resolution from 100m one. Otherwise, we do medians of medians which may create some biais around places with many nodata pixels
+                for resolution in resolutions:
+                    print(datetime.now(), service, year, mode, resolution)
 
-                agg_tiff = folder_aggregated+"euro_access_"+service+"_" + year+"_"+str(resolution) + "m_"+params["accessibility_grid_versions"][service][year]+".tif"
-                if os.path.exists(agg_tiff): continue
+                    agg_tiff = folder_aggregated+"euro_access_"+service+"_" + year+"_"+mode+"_"+str(resolution) + "m_"+params["accessibility_grid_versions"][service][year]+".tif"
+                    if os.path.exists(agg_tiff): continue
 
-                resample_geotiff_aligned(params["out_folder"] + "euro_access_"+service+"_"+year+"_100m_"+params["accessibility_grid_versions"][service][year]+".tif",
-                                        agg_tiff,
-                                        resolution, Resampling.med)
+                    resample_geotiff_aligned(params["out_folder"] + "euro_access_"+service+"_"+year+"_"+mode+"_100m_"+params["accessibility_grid_versions"][service][year]+".tif",
+                                            agg_tiff,
+                                            resolution, Resampling.med)
 
-            # copy and deploy 1000m version
-            shutil.copy(folder_aggregated+"euro_access_"+service+"_"+year+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["out_folder"])
-            if "deploy_target_folder" in params:
-                shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["deploy_target_folder"])
+                # copy and deploy 1000m version
+                shutil.copy(folder_aggregated+"euro_access_"+service+"_"+year+"_"+mode+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["out_folder"])
+                if "deploy_target_folder" in params:
+                    shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_"+mode+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["deploy_target_folder"])
 

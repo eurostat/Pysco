@@ -27,7 +27,7 @@ def compute_accessibility_grids(params, services=None, years=None, resolutions=[
                 if years is None: years = params["pois_datasets"][service].keys()
 
                 for year in years:
-                    print(grid_resolution, service, year)
+                    print(grid_resolution, service, year, mode)
 
                     # define and create ouput folder, depending on year, service, resolution
                     out_folder_service_year = params["out_folder"] + "out_" + service + "_" + year + "_" + mode + "_" + str(grid_resolution) + "m/"
