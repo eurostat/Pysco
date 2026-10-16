@@ -22,11 +22,7 @@ def compute_accessibility_grids(params, services=None, years=None, resolutions=[
         cell_id_fun_ = partial(cell_id_fun, grid_resolution=grid_resolution)
 
         for service in services:
-
-            # get modes TODO move to params
-            modes = ["driving_time", "walking_biking_distance"] if service == "education" else ["driving_time"] if service == "healthcare" else ["driving_distance"]
-
-            for mode in modes:
+            for mode in params["modes"][service]:
 
                 if years is None: years = params["pois_datasets"][service].keys()
 
