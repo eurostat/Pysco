@@ -213,7 +213,7 @@ def grid2stat_weighted_average(
                     wa = float((indic * weight).sum() / weight.sum())
                     wmed = weighted_median(indic, weight)
 
-                out.append(make_row(region_id, wa, "WEIGHTED_AVERAGE", conf))
+                #out.append(make_row(region_id, wa, "WEIGHTED_AVERAGE", conf))
                 out.append(make_row(region_id, wmed, "WEIGHTED_MEDIAN", conf))
 
                 print(f"[{region_id}]: WA={wa}, WM={wmed}")
