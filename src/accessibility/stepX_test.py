@@ -11,36 +11,16 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 df = grid2stat_weighted_average(
-    "temperature.tif", "population.tif",
-    region_path="regions.gpkg", region_id_att="NUTS_ID",
-    region_filter=lambda r: r["LEVL_CODE"] == 2,
-    masks=[{
-        "path": "landcover.tif", "band": 1, "dim_name": "area",
-        "fun": {
-            "all": lambda x: None,          # no masking
-            "urban": lambda x: x == 1,
-            "rural": lambda x: x != 1,
-        },
-    }],
-)
-
-
-
-"""""
-df = grid2stat_weighted_average(
-    indic_path = "/home/juju/gisco/accessibility/euro_access_education_2023_1000m_v2026_04.tif",
+    indic_path = "/home/juju/gisco/accessibility/euro_access_education_2023_1000m_v2026_10.tif",
     weight_path = "/home/juju/gisco/census_2021_v3_production/ESTAT_Census_2021_V3.tiff",
-
+    region_path="/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
     indic_band = 1,
     weight_band = 1,
-
-    region_path = "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
-    region_id_att = "NUTS_ID",
-    region_filter = None,
-
-    #masks: list = None,
+    region_id_att="NUTS_ID",
+    region_filter=None,
+    masks=None,
 )
 
 print(df)
 df.to_csv("/home/juju/Bureau/output.csv", index=False)
-"""
+

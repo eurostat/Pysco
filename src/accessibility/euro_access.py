@@ -50,3 +50,4 @@ if "steps" in params and 6 in params["steps"]:
     print("****** step 6 - points tiling")
     gridviz_tiling_points(params, services=params["services"], years=params["years"])
 
+
