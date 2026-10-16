@@ -14,8 +14,9 @@ from accessibility.step6_gridviz_service_points import gridviz_tiling_points
 # TODO
 # accessibility to schools by distance - 2026
 # stats: average / median weighted by population
-# secondary education services accessibility
+# stats: filter out regions with no data
 # stats: compute stats with 100m resolution ?
+# secondary education services accessibility
 
 # Load parameters from JSON file
 params_paths_file = sys.argv[1]

@@ -97,10 +97,6 @@ def weight_function_walking_biking_distance(feature, length):
     # road for authorities
     if fow==20: return [None,None]
 
-    # get average speed
-    kph_pos = p['AVERAGE_SPEED_POS']
-    kph_neg = p['AVERAGE_SPEED_NEG']
-
     # general case: both directions allowed
     return [ length, length ]
 
