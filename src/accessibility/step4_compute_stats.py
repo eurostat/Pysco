@@ -171,7 +171,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
 
             df["UNIT"] = 'NR'
             # rename and sort columns
-            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME","AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","VALUE"]]
+            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME",'MODE',"AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","VALUE"]]
 
             # compute percentages
             if compute_percentages:
@@ -193,7 +193,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
             # TODO remove no data rows ?
 
             # sort
-            df.sort_values(["GEO","AGE",'MODE',"DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","TIME"])
+            df.sort_values(["GEO",'MODE',"AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
             df.to_csv(ofo + ".csv", index=False)
