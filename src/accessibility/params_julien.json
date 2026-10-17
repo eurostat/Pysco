@@ -1,7 +1,7 @@
 {
     "steps": [1, 2, 3, 4],
     "services": ["healthcare", "education"],
-    "years": ["2026"],
+    "years": ["2026","2023","2020"],
     "out_folder": "/home/juju/gisco/accessibility/",
     "deploy_target_folder": "/home/juju/pCloudDrive"
 }
