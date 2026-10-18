@@ -5,7 +5,7 @@ import shutil
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.grid2stat import grid2stat, grid2stat_weighted_average
+from utils.grid2stat import grid2stat_threshold, grid2stat_weighted_average
 from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 age_group_to_band = {
@@ -143,7 +143,7 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
                             print(datetime.now(), su, service, ai, mode, year, age_group, res)
 
                             # compute aggregated statistics, with masks
-                            df_ = grid2stat(
+                            df_ = grid2stat_threshold(
                                 population_path = pop_rasters[res],
                                 population_band = age_group_to_band[age_group],
 

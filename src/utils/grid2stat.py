@@ -15,7 +15,7 @@ from utils.utils import weighted_median
 
 
 
-def grid2stat(
+def grid2stat_threshold(
     population_path: str,
     population_band: int = 1,
 
