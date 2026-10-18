@@ -29,15 +29,15 @@ service_to_access_indicator = {
 access_classes = {
     "healthcare" : {
         "NONE": lambda v:True,
-        "GT_5_MIN": lambda v: (v>=5*60), # & (v>=0),
-        "GT_20_MIN": lambda v: (v>=20*60), # & (v>=0),
-        "GT_45_MIN": lambda v: (v>=45*60), # & (v>=0),
+        "GT_5_MN": lambda v: (v>=5*60), # & (v>=0),
+        "GT_20_MN": lambda v: (v>=20*60), # & (v>=0),
+        "GT_45_MN": lambda v: (v>=45*60), # & (v>=0),
     },
     "education" : {
         "NONE": lambda v:True,
-        "GT_2_MIN": lambda v: (v>=2*60), # & (v>=0),
-        "GT_10_MIN": lambda v: (v>=10*60), # & (v>=0),
-        "GT_20_MIN": lambda v: (v>=20*60), # & (v>=0),
+        "GT_2_MN": lambda v: (v>=2*60), # & (v>=0),
+        "GT_10_MN": lambda v: (v>=10*60), # & (v>=0),
+        "GT_20_MN": lambda v: (v>=20*60), # & (v>=0),
     },
     "evrp" : {
         "NONE": lambda v:True,
@@ -106,7 +106,7 @@ def region_filter(id_att:str, service:str, year:str):
 def compute_statistics_threshold(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
     """
     Compute statistics for accessibility thresholds and save to CSV and Parquet files.
-    GEO,MODE,TIME,AGE,DEG_URB,ACCESS_INDIC,THRESHOLD,UNIT,VALUE
+    GEO,TRA_MODE,TIME,AGE,DEG_URB,ACCESS_INDIC,THRESHOLD,UNIT,VALUE
     """
 
     sus = params["stat_units"]
@@ -169,22 +169,22 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
                                 ]
                             )
                             df_["TIME"] = year
-                            df_["MODE"] = mode
+                            df_["TRA_MODE"] = mode.split("_")[0]
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
             df["UNIT"] = 'NR'
             # rename and sort columns
-            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME",'MODE',"AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","VALUE"]]
+            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","VALUE"]]
 
             # compute percentages
             if compute_percentages:
                 # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
-                totals = df[df['THRESHOLD'] == 'NONE'][['GEO', 'TIME', 'MODE', 'AGE', "DEG_URB", "ACCESS_INDIC", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+                totals = df[df['THRESHOLD'] == 'NONE'][['GEO', 'TIME', 'TRA_MODE', 'AGE', "DEG_URB", "ACCESS_INDIC", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
                 # Merge totals back onto the full dataframe
-                df_merged = df.merge(totals, on=['GEO', 'TIME', 'MODE', 'AGE', "DEG_URB", "ACCESS_INDIC"])
+                df_merged = df.merge(totals, on=['GEO', 'TIME', 'TRA_MODE', 'AGE', "DEG_URB", "ACCESS_INDIC"])
 
                 # Build the percentage rows
                 pc_rows = df_merged.copy()
@@ -198,7 +198,7 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
             # TODO remove no data rows ?
 
             # sort
-            df.sort_values(["GEO",'MODE',"AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","TIME"])
+            df.sort_values(["GEO",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
             df.to_csv(ofo + ".csv", index=False)
@@ -234,7 +234,7 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
 def compute_statistics_average(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
     """
     Compute statistics for accessibility averages and save to CSV and Parquet files.
-    GEO,MODE,TIME,AGE,DEG_URB,ACCESS_INDIC,STATINFO,UNIT,VALUE
+    GEO,TRA_MODE,TIME,AGE,DEG_URB,ACCESS_INDIC,STATINFO,UNIT,VALUE
     """
 
     sus = params["stat_units"]
@@ -291,24 +291,18 @@ def compute_statistics_average(params, services=None, years=None, decompose_time
                             )
 
                             df_["TIME"] = year
-                            df_["MODE"] = mode
+                            df_["TRA_MODE"] = mode.split("_")[0]
+                            df_["UNIT"] = mode.split("_")[1]
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
 
-                            # TODO
-                            df_["STATINFO"] = "MED"
-                            df_["STATINFO"] = "AVG"
-
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
-            # set unit
-            df_["UNIT"] = "S" if mode == "CAR_S" else "M"
-
             # rename and sort columns
-            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME",'MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","VALUE"]]
+            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","VALUE"]]
 
             # sort
-            df.sort_values(["GEO",'MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME"])
+            df.sort_values(["GEO",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
             df.to_csv(ofo + ".csv", index=False)

@@ -148,7 +148,7 @@ def grid2stat_weighted_average(
     configurations = list(product(*(m["fun"].keys() for m in masks))) if masks else [()]
 
     def make_row(region_id, value, indic_type, conf):
-        row = {region_id_att: region_id, "INDIC": indic_type, "value": value}
+        row = {region_id_att: region_id, "STATINFO": indic_type, "value": value}
         for i, m in enumerate(masks):
             row[m["dim_name"]] = conf[i]
         return row
@@ -167,7 +167,7 @@ def grid2stat_weighted_average(
 
         for _, region in regions.iterrows():
             region_id = region[region_id_att]
-            print(f"[{region_id}] Processing region...")
+            #print(f"[{region_id}] Processing region...")
             geometry = [mapping(region.geometry)]
 
             try:
@@ -213,10 +213,10 @@ def grid2stat_weighted_average(
                     wa = float((indic * weight).sum() / weight.sum())
                     wmed = weighted_median(indic, weight)
 
-                #out.append(make_row(region_id, wa, "WEIGHTED_AVERAGE", conf))
-                out.append(make_row(region_id, wmed, "WEIGHTED_MEDIAN", conf))
+                out.append(make_row(region_id, wa, "AVG", conf))
+                out.append(make_row(region_id, wmed, "MED", conf))
 
-                print(f"[{region_id}]: WA={wa}, WM={wmed}")
+                #print(f"[{region_id}]: WA={wa}, WM={wmed}")
 
     return pd.DataFrame(out)
 
