@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra_parallel
 from utils.featureutils import iter_features
-from utils.tomtomutils import weight_function_driving_time, weight_function_driving_distance, weight_function_walking_biking_distance, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun, is_start_blocked, is_end_blocked
+from utils.tomtomutils import weight_function_CAR_S, weight_function_CAR_M, weight_function_walking_biking_distance, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun, is_start_blocked, is_end_blocked
 
 
 def pois_loader(bbox, pois_dataset): return iter_features(pois_dataset, bbox=bbox) #, where="levels IS NULL or levels!='0'" if service=="education" else "")
@@ -50,7 +50,7 @@ def compute_accessibility_grids(params, services=None, years=None, resolutions=[
                         bbox = params["bbox"],
                         out_folder = out_folder_service_year,
                         k = 5 if service == "evrp" else 3,
-                        weight_function = weight_function_driving_distance if mode == "driving_distance" else weight_function_driving_time if mode == "driving_time" else weight_function_walking_biking_distance,
+                        weight_function = weight_function_CAR_M if mode == "CAR_M" else weight_function_CAR_S if mode == "CAR_S" else weight_function_walking_biking_distance,
                         is_not_snappable_fun = is_not_snappable_fun,
                         initial_node_level_fun = initial_node_level_fun,
                         is_start_blocked = is_start_blocked,

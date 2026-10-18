@@ -302,7 +302,7 @@ def compute_statistics_average(params, services=None, years=None, decompose_time
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
             # set unit
-            df_["UNIT"] = "S" if mode == "driving_time" else "M"
+            df_["UNIT"] = "S" if mode == "CAR_S" else "M"
 
             # rename and sort columns
             df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME",'MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","VALUE"]]

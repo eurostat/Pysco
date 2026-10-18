@@ -25,7 +25,7 @@ FOW
 22 : Cul-de-Sac
 '''
 
-def weight_function_driving_time(feature, length):
+def weight_function_CAR_S(feature, length):
     p = feature['properties']
     fow = p['FOW']
 
@@ -59,7 +59,7 @@ def weight_function_driving_time(feature, length):
         return [ w_pos, w_neg ]
 
 
-def weight_function_driving_distance(feature, length):
+def weight_function_CAR_M(feature, length):
     p = feature['properties']
     fow = p['FOW']
 
