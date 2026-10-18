@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from accessibility.step1_grid_computation import compute_accessibility_grids
 from accessibility.step2_combine_to_geotiff import combine_to_geotiff
 from accessibility.step3_aggregate_geotiff import aggregate_geotiff
-from accessibility.step4_5_compute_stats import compute_statistics_threshold
+from accessibility.step4_5_compute_stats import compute_statistics_threshold,compute_statistics_average
 from accessibility.step6_gridviz_grids import gridviz_tiling
 from accessibility.step7_gridviz_service_points import gridviz_tiling_points
 
