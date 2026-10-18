@@ -102,7 +102,7 @@ def region_filter(id_att:str, service:str, year:str):
     return out
 
 
-def compute_statistics(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
+def compute_statistics_threshold(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
 
     sus = params["stat_units"]
     pop_rasters = params["pop_rasters"]
@@ -219,4 +219,11 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                 #for f in os.listdir(out_folder_d):
                 #    if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
                 #    if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
+
+
+
+
+
+def compute_statistics_average(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
+    print("compute_statistics_average - not implemented yet")
 
