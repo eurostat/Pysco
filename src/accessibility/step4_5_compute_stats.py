@@ -234,7 +234,7 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
 def compute_statistics_average(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
     """
     Compute statistics for accessibility averages and save to CSV and Parquet files.
-    GEO,MODE,TIME,AGE,DEG_URB,ACCESS_INDIC,INDIC,UNIT,VALUE
+    GEO,MODE,TIME,AGE,DEG_URB,ACCESS_INDIC,STATINFO,UNIT,VALUE
     """
 
     sus = params["stat_units"]
@@ -296,20 +296,19 @@ def compute_statistics_average(params, services=None, years=None, decompose_time
                             df_["ACCESS_INDIC"] = ai
 
                             # TODO
-                            df_["INDIC"] = "MEDIAN"
-                            df_["INDIC"] = "AVERAGE"
+                            df_["STATINFO"] = "MED"
+                            df_["STATINFO"] = "AVG"
 
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
-            # TODO
-            df_["UNIT"] = "METER"
-            df_["UNIT"] = "SECOND"
+            # set unit
+            df_["UNIT"] = "S" if mode == "driving_time" else "M"
 
             # rename and sort columns
-            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME",'MODE',"AGE","DEG_URB","ACCESS_INDIC","INDIC","UNIT","VALUE"]]
+            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME",'MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","VALUE"]]
 
             # sort
-            df.sort_values(["GEO",'MODE',"AGE","DEG_URB","ACCESS_INDIC","INDIC","UNIT","TIME"])
+            df.sort_values(["GEO",'MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
             df.to_csv(ofo + ".csv", index=False)
