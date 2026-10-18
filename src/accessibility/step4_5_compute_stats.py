@@ -5,7 +5,7 @@ import shutil
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.grid2stat import grid2stat
+from utils.grid2stat import grid2stat, grid2stat_weighted_average
 from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 age_group_to_band = {
@@ -102,7 +102,12 @@ def region_filter(id_att:str, service:str, year:str):
     return out
 
 
+
 def compute_statistics_threshold(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
+    """
+    Compute statistics for accessibility thresholds and save to CSV and Parquet files.
+    GEO,MODE,TIME,AGE,DEG_URB,ACCESS_INDIC,THRESHOLD,UNIT,VALUE
+    """
 
     sus = params["stat_units"]
     pop_rasters = params["pop_rasters"]
@@ -121,7 +126,7 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
         geo = su + "_" + sus[su]["version"]
         for service in services:
 
-            ofo = output_folder + "euro_access_" + geo + "_" + service + "_" + params["stats_versions"][service]
+            ofo = output_folder + "euro_access_" + geo + "_" + service + "_thresholds_" + params["stats_versions"][service]
             if os.path.exists(ofo + ".csv"): continue
 
             # make a single csv hypercube file per statunit and service
@@ -135,7 +140,7 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
                         for age_group in age_group_to_band.keys():
                             res = res_default if age_group == "T" else "1000"
 
-                            print(datetime.now(), su, service, ai, year, age_group, res)
+                            print(datetime.now(), su, service, ai, mode, year, age_group, res)
 
                             # compute aggregated statistics, with masks
                             df_ = grid2stat(
@@ -213,7 +218,7 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
                 hypercube_csv_to_timeseries_csv(
                     ofo + ".csv",
                     out_folder_d,
-                    output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "__" + f)
+                    output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "_threshold_" + f)
 
                 # delete NR files (not usefull) and rename files (remove PC)
                 #for f in os.listdir(out_folder_d):
@@ -223,7 +228,110 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
 
 
 
+# GEO,TIME,AGE,DEG_URB,ACCESS_INDIC,THRESHOLD,UNIT,VALUE
+
 
 def compute_statistics_average(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
-    print("compute_statistics_average - not implemented yet")
+    """
+    Compute statistics for accessibility averages and save to CSV and Parquet files.
+    GEO,MODE,TIME,AGE,DEG_URB,ACCESS_INDIC,INDIC,UNIT,VALUE
+    """
+
+    sus = params["stat_units"]
+    pop_rasters = params["pop_rasters"]
+
+    # output folder
+    output_folder = params["out_folder"] + "stats/"
+    os.makedirs(output_folder, exist_ok=True)
+
+    if services is None: services = params["accessibility_grid_versions"].keys()
+
+    # resolution of the grids to use
+    res_default = "1000"
+
+    for su in sus.keys():
+        region_id_att = sus[su]["id"]
+        geo = su + "_" + sus[su]["version"]
+        for service in services:
+
+            ofo = output_folder + "euro_access_" + geo + "_" + service + "_average_" + params["stats_versions"][service]
+            if os.path.exists(ofo + ".csv"): continue
+
+            # make a single csv hypercube file per statunit and service
+            df = None
+
+            for ai in service_to_access_indicator[service]:
+                for mode in params["modes"][service]:
+
+                    if years is None: years = params["accessibility_grid_versions"][service].keys()
+                    for year in years:
+                        for age_group in age_group_to_band.keys():
+                            res = res_default if age_group == "T" else "1000"
+
+                            print(datetime.now(), su, service, ai, mode, year, age_group, res)
+
+                            # compute aggregated statistics, with masks
+                            df_ = grid2stat_weighted_average(
+                                indic_path = params["out_folder"] + "euro_access_" + service + "_" + year + "_" + mode + "_" + res + "m_" + params["accessibility_grid_versions"][service][year] + ".tif",
+                                indic_band = access_indicator_to_band[ai],
+                                weight_path =  pop_rasters[res],
+                                weight_band = age_group_to_band[age_group],
+                                region_path=sus[su]["path"],
+                                region_id_att=region_id_att,
+                                region_filter=region_filter(region_id_att, service, year),
+                                masks= [
+                                        # degurba classes
+                                        {
+                                            "path" : params["degurba_grid_path"],
+                                            "dim_name" : "DEG_URB",
+                                            "fun" : degurba_classes,
+                                            "band" : 1,
+                                        },
+                                    ]
+                            )
+
+                            df_["TIME"] = year
+                            df_["MODE"] = mode
+                            df_["AGE"] = age_group
+                            df_["ACCESS_INDIC"] = ai
+
+                            # TODO
+                            df_["INDIC"] = "MEDIAN"
+                            df_["INDIC"] = "AVERAGE"
+
+                            df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
+
+            # TODO
+            df_["UNIT"] = "METER"
+            df_["UNIT"] = "SECOND"
+
+            # rename and sort columns
+            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME",'MODE',"AGE","DEG_URB","ACCESS_INDIC","INDIC","UNIT","VALUE"]]
+
+            # sort
+            df.sort_values(["GEO",'MODE',"AGE","DEG_URB","ACCESS_INDIC","INDIC","UNIT","TIME"])
+
+            print(datetime.now(), "save compiled file")
+            df.to_csv(ofo + ".csv", index=False)
+            df.to_parquet(ofo + ".parquet")
+
+            if "deploy_target_folder" in params:
+                print(datetime.now(), "deploy file")
+                shutil.copy(ofo + ".csv", params["deploy_target_folder"])
+                shutil.copy(ofo + ".parquet", params["deploy_target_folder"])
+
+            if decompose_timeseries:
+                print(datetime.now(), "decompose by time series", su, service)
+
+                out_folder_d = output_folder + "as_timeseries/"
+                os.makedirs(out_folder_d, exist_ok=True)
+
+                hypercube_csv_to_timeseries_csv(
+                    ofo + ".csv",
+                    out_folder_d,
+                    output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "_average_" + f)
+
+
+
+
 

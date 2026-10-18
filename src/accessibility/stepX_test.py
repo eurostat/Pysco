@@ -10,6 +10,7 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 
 
+
 df = grid2stat_weighted_average(
     indic_path = "/home/juju/gisco/accessibility/euro_access_education_2023_1000m_v2026_10.tif",
     weight_path = "/home/juju/gisco/census_2021_v3_production/ESTAT_Census_2021_V3.tiff",
