@@ -13,7 +13,6 @@ from accessibility.step6_gridviz_service_points import gridviz_tiling_points
 
 
 # TODO
-# merge files
 # IT remove masks
 # catalinia: test
 # accessibility to schools by distance - 2026
