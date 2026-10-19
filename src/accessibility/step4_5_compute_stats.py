@@ -140,7 +140,7 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
                         for age_group in age_group_to_band.keys():
                             res = res_default if age_group == "T" else "1000"
 
-                            print(datetime.now(), su, service, ai, mode, year, age_group, res)
+                            print(datetime.now(), "threshold", su, service, ai, mode, year, age_group, res)
 
                             # compute aggregated statistics, with masks
                             df_ = grid2stat_threshold(
@@ -268,7 +268,7 @@ def compute_statistics_average(params, services=None, years=None, decompose_time
                         for age_group in age_group_to_band.keys():
                             res = res_default if age_group == "T" else "1000"
 
-                            print(datetime.now(), su, service, ai, mode, year, age_group, res)
+                            print(datetime.now(), "average", su, service, ai, mode, year, age_group, res)
 
                             # compute aggregated statistics, with masks
                             df_ = grid2stat_weighted_average(
