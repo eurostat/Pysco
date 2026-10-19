@@ -11,8 +11,8 @@ from accessibility.step4_5_compute_stats import compute_statistics_threshold,com
 from accessibility.step6_gridviz_grids import gridviz_tiling
 from accessibility.step7_gridviz_service_points import gridviz_tiling_points
 
+
 # TODO
-# degurba codes
 # merge files
 # IT remove masks
 # catalinia: test
