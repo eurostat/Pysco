@@ -42,9 +42,9 @@ if "steps" in params and 3 in params["steps"]:
     print("****** step 3 - aggregation geotiff")
     aggregate_geotiff(params, services=params["services"], years=params["years"])
 
-if "steps" in params and 4 in params["steps"]:
-    print("****** step 4 - compute statistics average")
-    compute_statistics_average(params, services=params["services"], years=params["years"], decompose_timeseries=True, compute_percentages=True )
+#if "steps" in params and 4 in params["steps"]:
+#    print("****** step 4 - compute statistics average")
+#    compute_statistics_average(params, services=params["services"], years=params["years"], decompose_timeseries=True, compute_percentages=True )
 
 if "steps" in params and 5 in params["steps"]:
     print("****** step 5 - compute statistics threshold")

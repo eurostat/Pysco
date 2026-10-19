@@ -126,7 +126,7 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
         geo = su + "_" + sus[su]["version"]
         for service in services:
 
-            ofo = output_folder + "euro_access_" + geo + "_" + service + "_THRESHOLD_" + params["stats_versions"][service]
+            ofo = output_folder + "euro_access_" + geo + "_" + service + "_" + params["stats_versions"][service]
             if os.path.exists(ofo + ".csv"): continue
 
             # make a single csv hypercube file per statunit and service
@@ -196,6 +196,39 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
                             # merge
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
+
+                            # compute averages and median, with masks
+                            df_ = grid2stat_weighted_average(
+                                indic_path = params["out_folder"] + "euro_access_" + service + "_" + year + "_" + mode + "_" + res + "m_" + params["accessibility_grid_versions"][service][year] + ".tif",
+                                indic_band = access_indicator_to_band[ai],
+                                weight_path =  pop_rasters[res],
+                                weight_band = age_group_to_band[age_group],
+                                region_path=sus[su]["path"],
+                                region_id_att=region_id_att,
+                                region_filter=region_filter(region_id_att, service, year),
+                                masks= [
+                                        # degurba classes
+                                        {
+                                            "path" : params["degurba_grid_path"],
+                                            "dim_name" : "DEG_URB",
+                                            "fun" : degurba_classes,
+                                            "band" : 1,
+                                        },
+                                    ]
+                            )
+
+                            df_["TIME"] = year
+                            df_["TRA_MODE"] = mode.split("_")[0]
+                            df_["UNIT"] = mode.split("_")[1]
+                            df_["AGE"] = age_group
+                            df_["ACCESS_INDIC"] = ai
+
+                            df_["VALUE"] = df_["VALUE"].round() #.astype(int)
+
+                            df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
+
+
+
             # sort columns
             df = df[["GEO","TIME",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","VALUE"]]
 
@@ -233,6 +266,8 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
 
 
 
+
+# DEPRECATED
 def compute_statistics_average(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
     """
     Compute statistics for accessibility averages and save to CSV and Parquet files.
