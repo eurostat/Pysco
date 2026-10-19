@@ -35,7 +35,7 @@ def combine_to_geotiff(params, services=None, years=None, resolutions=[100]):
                 if years is None: years = params["pois_datasets"][service].keys()
 
                 for year in years:
-                    print(datetime.now(), resolution, service, year)
+                    print(datetime.now(), resolution, service, year, mode)
 
                     # inpute parquet files folder
                     parquets_folder = params["out_folder"] + "out_" + service + "_" + year + "_" + mode + "_" + str(resolution) + "m/"
