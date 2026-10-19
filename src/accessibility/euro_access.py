@@ -17,7 +17,6 @@ from accessibility.step7_gridviz_service_points import gridviz_tiling_points
 # IT remove masks
 # catalinia: test
 # accessibility to schools by distance - 2026
-# stats: average / median weighted by population
 # stats: filter out regions with no data
 # stats: compute stats with 100m resolution ?
 # secondary education services accessibility

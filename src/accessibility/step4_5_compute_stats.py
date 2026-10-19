@@ -28,19 +28,19 @@ service_to_access_indicator = {
 
 access_classes = {
     "healthcare" : {
-        "NONE": lambda v:True,
+        "TOTAL": lambda v:True,
         "GT_5_MN": lambda v: (v>=5*60), # & (v>=0),
         "GT_20_MN": lambda v: (v>=20*60), # & (v>=0),
         "GT_45_MN": lambda v: (v>=45*60), # & (v>=0),
     },
     "education" : {
-        "NONE": lambda v:True,
+        "TOTAL": lambda v:True,
         "GT_2_MN": lambda v: (v>=2*60), # & (v>=0),
         "GT_10_MN": lambda v: (v>=10*60), # & (v>=0),
         "GT_20_MN": lambda v: (v>=20*60), # & (v>=0),
     },
     "evrp" : {
-        "NONE": lambda v:True,
+        "TOTAL": lambda v:True,
         "GT_500_M": lambda v: (v>=500), # & (v>=0),
         "GT_2000_M": lambda v: (v>=2000), # & (v>=0),
         "GT_5000_M": lambda v: (v>=5000), # & (v>=0),
