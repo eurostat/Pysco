@@ -296,6 +296,8 @@ def compute_statistics_average(params, services=None, years=None, decompose_time
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
 
+                            df_["VALUE"] = df_["VALUE"].round()
+
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
             # rename and sort columns
