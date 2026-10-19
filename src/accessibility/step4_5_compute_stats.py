@@ -72,13 +72,13 @@ degurba_classes = {
     "DEG1": lambda v: v<200, # Cities
     "DEG2": lambda v: (v>200) & (v<300), # Towns and suburbs
     "DEG3": lambda v: (v>310), # Rural areas
-    "DEG_130": lambda v: v==130,
-    "DEG_223": lambda v: v==223,
-    "DEG_222": lambda v: v==222,
-    "DEG_221": lambda v: v==221,
-    "DEG_313": lambda v: v==313,
-    "DEG_312": lambda v: v==312,
-    "DEG_311": lambda v: v==311,
+    "DEG130": lambda v: v==130,
+    "DEG223": lambda v: v==223,
+    "DEG222": lambda v: v==222,
+    "DEG221": lambda v: v==221,
+    "DEG313": lambda v: v==313,
+    "DEG312": lambda v: v==312,
+    "DEG311": lambda v: v==311,
 }
 
 
@@ -172,6 +172,7 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
                             df_["TRA_MODE"] = mode.split("_")[0]
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
+                            df_["VALUE"] = df_["VALUE"].round().astype(int)
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
             df["UNIT"] = 'NR'

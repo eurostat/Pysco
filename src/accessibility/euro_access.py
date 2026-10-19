@@ -12,6 +12,10 @@ from accessibility.step6_gridviz_grids import gridviz_tiling
 from accessibility.step7_gridviz_service_points import gridviz_tiling_points
 
 # TODO
+# degurba codes
+# merge files
+# IT remove masks
+# catalinia: test
 # accessibility to schools by distance - 2026
 # stats: average / median weighted by population
 # stats: filter out regions with no data
