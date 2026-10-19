@@ -218,12 +218,13 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             )
 
                             df_["TIME"] = year
-                            df_["TRA_MODE"] = mode.split("_")[0]
-                            df_["UNIT"] = mode.split("_")[1]
+                            ms = mode.split("_")
+                            df_["TRA_MODE"] = ms[0]
+                            df_["UNIT"] = ms[ms.len(ms)-1]
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
-
                             df_["VALUE"] = df_["VALUE"].round() #.astype(int)
+                            df_ = df_.rename(columns={region_id_att: 'GEO'})
 
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
@@ -261,6 +262,11 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                 #for f in os.listdir(out_folder_d):
                 #    if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
                 #    if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
+
+
+
+
+
 
 
 
