@@ -218,7 +218,7 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
                 hypercube_csv_to_timeseries_csv(
                     ofo + ".csv",
                     out_folder_d,
-                    output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "_threshold_" + f)
+                    output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "__" + f)
 
                 # delete NR files (not usefull) and rename files (remove PC)
                 #for f in os.listdir(out_folder_d):
@@ -324,7 +324,7 @@ def compute_statistics_average(params, services=None, years=None, decompose_time
                 hypercube_csv_to_timeseries_csv(
                     ofo + ".csv",
                     out_folder_d,
-                    output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "_average_" + f)
+                    output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "__" + f)
 
 
 
