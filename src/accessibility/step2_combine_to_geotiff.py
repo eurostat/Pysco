@@ -80,6 +80,7 @@ def combine_to_geotiff(params, services=None, years=None, resolutions=[100]):
                             compress="deflate",
                         )
 
+                    """
                     if service == "education":
                         print(datetime.now(), resolution, service, year, mode, "apply mask to force some nuts regions to nodata")
                         geotiff_mask_by_countries(
@@ -91,6 +92,7 @@ def combine_to_geotiff(params, services=None, years=None, resolutions=[100]):
                             compress="deflate",
                             invert=True,
                         )
+                    """
 
                     print(datetime.now(), resolution, service, year, mode, "rename tiff bands")
                     rename_geotiff_bands(geotiff, ["n1", "n" + str(k)])

@@ -93,8 +93,8 @@ def region_filter(id_att:str, service:str, year:str):
     def out(r):
         id = r[id_att]
         # skip special ones for education
-        if service == "education" and id in ["ES51", "ES511", "ES512", "ES513", "ES514", "ITC2", "ITH1", "ITC20", "ITH10", "ITH2", "ITH20"]:
-            return False
+        #if service == "education" and id in ["ES51", "ES511", "ES512", "ES513", "ES514", "ITC2", "ITH1", "ITC20", "ITH10", "ITH2", "ITH20"]:
+        #    return False
         # if the id contains on of the country codes covered, then keep, else exclude
         for cnt in cnts:
             if cnt in id: return True
