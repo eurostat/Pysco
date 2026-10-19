@@ -36,8 +36,9 @@ def aggregate_geotiff(params, services, years):
                                             agg_tiff,
                                             resolution, Resampling.med)
 
-                # copy and deploy 1000m version
-                shutil.copy(folder_aggregated+"euro_access_"+service+"_"+year+"_"+mode+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["out_folder"])
-                if "deploy_target_folder" in params:
-                    shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_"+mode+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["deploy_target_folder"])
+                    # copy and deploy 1000m version
+                    if resolution == 1000:
+                        shutil.copy(folder_aggregated+"euro_access_"+service+"_"+year+"_"+mode+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["out_folder"])
+                        if "deploy_target_folder" in params:
+                            shutil.copy(params["out_folder"]+"euro_access_"+service+"_"+year+"_"+mode+"_1000m_"+params["accessibility_grid_versions"][service][year]+".tif", params["deploy_target_folder"])
 
