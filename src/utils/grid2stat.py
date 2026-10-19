@@ -98,7 +98,7 @@ def grid2stat_threshold(
 
                 # make data item
                 row = {region_id_att: region_id}
-                row["value"] = pop.sum() if pop.size > 0 else value_when_no_population
+                row["VALUE"] = pop.sum() if pop.size > 0 else value_when_no_population
                 for i, m in enumerate(masks):
                     row[m["dim_name"]] = conf[i]
                 out.append(row)
@@ -148,7 +148,7 @@ def grid2stat_weighted_average(
     configurations = list(product(*(m["fun"].keys() for m in masks))) if masks else [()]
 
     def make_row(region_id, value, indic_type, conf):
-        row = {region_id_att: region_id, "STATINFO": indic_type, "value": value}
+        row = {region_id_att: region_id, "STATINFO": indic_type, "VALUE": value}
         for i, m in enumerate(masks):
             row[m["dim_name"]] = conf[i]
         return row

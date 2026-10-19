@@ -106,7 +106,7 @@ def region_filter(id_att:str, service:str, year:str):
 def compute_statistics_threshold(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
     """
     Compute statistics for accessibility thresholds and save to CSV and Parquet files.
-    GEO,TRA_MODE,TIME,AGE,DEG_URB,ACCESS_INDIC,THRESHOLD,UNIT,VALUE
+    GEO,TRA_MODE,TIME,AGE,DEG_URB,ACCESS_INDIC,STATINFO,UNIT,VALUE
     """
 
     sus = params["stat_units"]
@@ -155,7 +155,7 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
                                     # accessibility threshold classes
                                     {
                                         "path" : params["out_folder"] + "euro_access_" + service + "_" + year + "_" + mode + "_" + res + "m_" + params["accessibility_grid_versions"][service][year] + ".tif",
-                                        "dim_name" : "THRESHOLD",
+                                        "dim_name" : "STATINFO",
                                         "fun" : access_classes[service],
                                         "band" : access_indicator_to_band[ai],
                                     },
@@ -176,12 +176,12 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
 
             df["UNIT"] = 'NR'
             # rename and sort columns
-            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","VALUE"]]
+            df = df.rename(columns={region_id_att: 'GEO'})[["GEO","TIME",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","VALUE"]]
 
             # compute percentages
             if compute_percentages:
                 # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
-                totals = df[df['THRESHOLD'] == 'NONE'][['GEO', 'TIME', 'TRA_MODE', 'AGE', "DEG_URB", "ACCESS_INDIC", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+                totals = df[df['STATINFO'] == 'NONE'][['GEO', 'TIME', 'TRA_MODE', 'AGE', "DEG_URB", "ACCESS_INDIC", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
                 # Merge totals back onto the full dataframe
                 df_merged = df.merge(totals, on=['GEO', 'TIME', 'TRA_MODE', 'AGE', "DEG_URB", "ACCESS_INDIC"])
@@ -192,13 +192,13 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
                 pc_rows['UNIT'] = 'PC'
 
                 # Drop the helper column and append
-                pc_rows = pc_rows.drop(columns=['TOTAL']).query("THRESHOLD != 'NONE'")
+                pc_rows = pc_rows.drop(columns=['TOTAL']).query("STATINFO != 'NONE'")
                 df = pd.concat([df, pc_rows], ignore_index=True)
 
             # TODO remove no data rows ?
 
             # sort
-            df.sort_values(["GEO",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","THRESHOLD","UNIT","TIME"])
+            df.sort_values(["GEO",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
             df.to_csv(ofo + ".csv", index=False)
@@ -227,8 +227,6 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
 
 
 
-
-# GEO,TIME,AGE,DEG_URB,ACCESS_INDIC,THRESHOLD,UNIT,VALUE
 
 
 def compute_statistics_average(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
@@ -296,12 +294,12 @@ def compute_statistics_average(params, services=None, years=None, decompose_time
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
 
-                            df_["value"] = df_["value"].round()
+                            df_["VALUE"] = df_["VALUE"].round()
 
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
             # rename and sort columns
-            df = df.rename(columns={region_id_att: 'GEO', 'value': 'VALUE'})[["GEO","TIME",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","VALUE"]]
+            df = df.rename(columns={region_id_att: 'GEO'})[["GEO","TIME",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","VALUE"]]
 
             # sort
             df.sort_values(["GEO",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME"])
