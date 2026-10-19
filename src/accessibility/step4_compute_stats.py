@@ -220,7 +220,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             df_["TIME"] = year
                             ms = mode.split("_")
                             df_["TRA_MODE"] = ms[0]
-                            df_["UNIT"] = ms[ms.len(ms)-1]
+                            df_["UNIT"] = ms[len(ms)-1]
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
                             df_["VALUE"] = df_["VALUE"].round() #.astype(int)
