@@ -140,7 +140,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                         for age_group in age_group_to_band.keys():
                             res = res_default if age_group == "T" else "1000"
 
-                            print(datetime.now(), "threshold", su, service, ai, mode, year, age_group, res)
+                            print(datetime.now(), su, service, ai, mode, year, age_group, res)
 
                             # compute aggregated statistics, with masks
                             df_ = grid2stat_threshold(
@@ -231,7 +231,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
 
 
             # sort columns
-            df = df[["GEO","TIME",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","VALUE"]]
+            df = df[["GEO",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME","VALUE"]]
 
             # TODO remove no data rows ?
 
