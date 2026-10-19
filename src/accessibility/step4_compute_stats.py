@@ -103,10 +103,10 @@ def region_filter(id_att:str, service:str, year:str):
 
 
 
-def compute_statistics_threshold(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
+def compute_statistics(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
     """
-    Compute statistics for accessibility thresholds and save to CSV and Parquet files.
-    GEO,TRA_MODE,TIME,AGE,DEG_URB,ACCESS_INDIC,STATINFO,UNIT,VALUE
+    Compute statistics for accessibility (thresholds number/percentages, averages and medians) and save to CSV and Parquet files.
+    Structure: GEO,TRA_MODE,TIME,AGE,DEG_URB,ACCESS_INDIC,STATINFO,UNIT,VALUE
     """
 
     sus = params["stat_units"]
