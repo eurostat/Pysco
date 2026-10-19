@@ -126,7 +126,7 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
         geo = su + "_" + sus[su]["version"]
         for service in services:
 
-            ofo = output_folder + "euro_access_" + geo + "_" + service + "_thresholds_" + params["stats_versions"][service]
+            ofo = output_folder + "euro_access_" + geo + "_" + service + "_THRESHOLD_" + params["stats_versions"][service]
             if os.path.exists(ofo + ".csv"): continue
 
             # make a single csv hypercube file per statunit and service
@@ -254,7 +254,7 @@ def compute_statistics_average(params, services=None, years=None, decompose_time
         geo = su + "_" + sus[su]["version"]
         for service in services:
 
-            ofo = output_folder + "euro_access_" + geo + "_" + service + "_average_" + params["stats_versions"][service]
+            ofo = output_folder + "euro_access_" + geo + "_" + service + "_AVG_MED_" + params["stats_versions"][service]
             if os.path.exists(ofo + ".csv"): continue
 
             # make a single csv hypercube file per statunit and service
