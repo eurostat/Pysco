@@ -173,28 +173,31 @@ def compute_statistics_threshold(params, services=None, years=None, decompose_ti
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
                             df_["VALUE"] = df_["VALUE"].round() #.astype(int)
+                            df_["UNIT"] = 'NR'
+                            df_ = df_.rename(columns={region_id_att: 'GEO'})
+
+                            # compute percentages
+                            if compute_percentages:
+                                # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
+                                totals = df_[df_['STATINFO'] == 'NONE'][['GEO', 'TIME', 'TRA_MODE', 'AGE', "DEG_URB", "ACCESS_INDIC", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+
+                                # Merge totals back onto the full dataframe
+                                df_merged = df_.merge(totals, on=['GEO', 'TIME', 'TRA_MODE', 'AGE', "DEG_URB", "ACCESS_INDIC"])
+
+                                # Build the percentage rows
+                                pc_rows = df_merged.copy()
+                                pc_rows['VALUE'] = (pc_rows['VALUE'] / pc_rows['TOTAL'] * 100).round(2)
+                                pc_rows['UNIT'] = 'PC'
+
+                                # Drop the helper column and append
+                                pc_rows = pc_rows.drop(columns=['TOTAL']).query("STATINFO != 'NONE'")
+                                df_ = pd.concat([df_, pc_rows], ignore_index=True)
+
+                            # merge
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
-            df["UNIT"] = 'NR'
-            # rename and sort columns
-            df = df.rename(columns={region_id_att: 'GEO'})[["GEO","TIME",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","VALUE"]]
-
-            # compute percentages
-            if compute_percentages:
-                # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
-                totals = df[df['STATINFO'] == 'NONE'][['GEO', 'TIME', 'TRA_MODE', 'AGE', "DEG_URB", "ACCESS_INDIC", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
-
-                # Merge totals back onto the full dataframe
-                df_merged = df.merge(totals, on=['GEO', 'TIME', 'TRA_MODE', 'AGE', "DEG_URB", "ACCESS_INDIC"])
-
-                # Build the percentage rows
-                pc_rows = df_merged.copy()
-                pc_rows['VALUE'] = (pc_rows['VALUE'] / pc_rows['TOTAL'] * 100).round(2)
-                pc_rows['UNIT'] = 'PC'
-
-                # Drop the helper column and append
-                pc_rows = pc_rows.drop(columns=['TOTAL']).query("STATINFO != 'NONE'")
-                df = pd.concat([df, pc_rows], ignore_index=True)
+            # sort columns
+            df = df[["GEO","TIME",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","VALUE"]]
 
             # TODO remove no data rows ?
 
