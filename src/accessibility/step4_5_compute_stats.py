@@ -296,7 +296,7 @@ def compute_statistics_average(params, services=None, years=None, decompose_time
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
 
-                            df_["VALUE"] = df_["VALUE"].round()
+                            df_["value"] = df_["value"].round()
 
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
 
@@ -325,8 +325,5 @@ def compute_statistics_average(params, services=None, years=None, decompose_time
                     ofo + ".csv",
                     out_folder_d,
                     output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "__" + f)
-
-
-
 
 
