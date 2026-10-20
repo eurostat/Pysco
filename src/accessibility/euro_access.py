@@ -13,9 +13,10 @@ from accessibility.step6_gridviz_service_points import gridviz_tiling_points
 
 
 # TODO
-# check no data stats. Why ?
-# educ: NO 2020 missing ?
+# educ: NO 2020 missing IE ?
+# educ: IE 2023 missing
 # educ: IE NO RO 2026 missing ?
+# check no data stats. Why ?
 
 # stats: filter out regions with no data
 # stats: compute stats with 100m resolution ?
