@@ -13,10 +13,10 @@ from accessibility.step6_gridviz_service_points import gridviz_tiling_points
 
 
 # TODO
-# health 2023 - mask bosnia
-# health 2026: issue ?
+# PC not available !!!
 # educ: NO 2020 missing ?
 # educ: IE NO RO 2026 missing ?
+# check no data stats. Why ?
 
 
 # stats: filter out regions with no data
