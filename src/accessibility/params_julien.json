@@ -3,14 +3,5 @@
     "services": ["healthcare","education"],
     "years": null,
     "out_folder": "/home/juju/gisco/accessibility/",
-    "deploy_target_folder": "/home/juju/pCloudDrive",
-
-    "stat_units": {
-        "URAU": {
-            "path": "/home/juju/geodata/gisco/URAU_RG_100K_2024_3035.gpkg",
-            "id": "URAU_CODE",
-            "version": "2024"
-        }
-    }
-
+    "deploy_target_folder": "/home/juju/pCloudDrive"
 }

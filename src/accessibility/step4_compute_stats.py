@@ -179,7 +179,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             # compute percentages
                             if compute_percentages:
                                 # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
-                                totals = df_[df_['STATINFO'] == 'NONE'][['GEO', 'TIME', 'TRA_MODE', 'AGE', "DEG_URB", "ACCESS_INDIC", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+                                totals = df_[df_['STATINFO'] == 'TOTAL'][['GEO', 'TIME', 'TRA_MODE', 'AGE', "DEG_URB", "ACCESS_INDIC", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
                                 # Merge totals back onto the full dataframe
                                 df_merged = df_.merge(totals, on=['GEO', 'TIME', 'TRA_MODE', 'AGE', "DEG_URB", "ACCESS_INDIC"])
@@ -190,7 +190,8 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                                 pc_rows['UNIT'] = 'PC'
 
                                 # Drop the helper column and append
-                                pc_rows = pc_rows.drop(columns=['TOTAL']).query("STATINFO != 'NONE'")
+                                pc_rows = pc_rows.drop(columns=['TOTAL']).query("STATINFO != 'TOTAL'")
+
                                 df_ = pd.concat([df_, pc_rows], ignore_index=True)
 
                             # merge
