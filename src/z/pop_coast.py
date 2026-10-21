@@ -4,10 +4,10 @@ import pandas as pd
 def population_near_coast(df: pd.DataFrame, dist: float) -> float:
     print(f"Computing population within {dist} m of the coast...")
     mask = (df["DIST_COAST"] < dist)
-    return df.loc[mask, "T"].sum()
+    return df.loc[mask, "TOT_P_2021"].sum()
 
 
-def main(gpkg_path: str, output_csv: str, max: int=50000, step:int=10000, layer: str = None):
+def main(gpkg_path: str, output_csv: str, max: int=50000, step:int=5000, layer: str = None):
     print("Loading points from GeoPackage...")
     df = gpd.read_file(gpkg_path, layer=layer, ignore_geometry=True)
     print(f"Loaded {len(df)} points from {gpkg_path}")
