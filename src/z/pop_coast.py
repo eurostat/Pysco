@@ -9,17 +9,15 @@ def population_near_coast(df: pd.DataFrame, dist: float) -> float:
 
 def main(gpkg_path: str, output_csv: str, max: int=50000, step:int=10000, layer: str = None):
     print("Loading points from GeoPackage...")
-
     df = gpd.read_file(gpkg_path, layer=layer, ignore_geometry=True)
     print(f"Loaded {len(df)} points from {gpkg_path}")
 
-    # Pre-filter on country to speed up the loop
     df = df[df["CNTR_ID"].astype(str).str.contains("PT", na=False)]
-    print(f"Loaded {len(df)} points for Portugal from {gpkg_path}")
+    print(f"Kept {len(df)} points for Portugal from {gpkg_path}")
 
     thresholds = range(0, max, step)
     results = pd.DataFrame({
-        "dist_to_coast_km": thresholds/1000,
+        "dist_to_coast_km": [dist/1000 for dist in thresholds],
         "population": [population_near_coast(df, dist) for dist in thresholds],
     })
 
