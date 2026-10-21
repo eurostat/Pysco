@@ -27,4 +27,6 @@ def main(gpkg_path: str, output_csv: str, max: int=50000, step:int=5000, layer: 
 main(
     "/home/juju/geodata/gisco/grids/grid_1km_point.gpkg",
     "/home/juju/Bureau/pop_coast_PT.csv",
+    max = 250000,
+    step = 1000
 )
