@@ -1,10 +1,10 @@
 import geopandas as gpd
 import pandas as pd
 
-def population_near_coast(df: pd.DataFrame, dist: float) -> float:
-    print(f"Computing population within {dist} m of the coast...")
+def population_near_coast(df: pd.DataFrame, att:str, dist: float) -> float:
+    print(f"Computing population {att} within {dist} m of the coast...")
     mask = (df["DIST_COAST"] < dist)
-    return df.loc[mask, "TOT_P_2021"].sum()
+    return df.loc[mask, att].sum()
 
 
 def main(gpkg_path: str, output_csv: str, max: int=50000, step:int=5000, layer: str = None):
@@ -18,14 +18,17 @@ def main(gpkg_path: str, output_csv: str, max: int=50000, step:int=5000, layer: 
     thresholds = range(0, max, step)
     results = pd.DataFrame({
         "dist_to_coast_km": [dist/1000 for dist in thresholds],
-        "population": [population_near_coast(df, dist) for dist in thresholds],
+        "T": [population_near_coast(df, "T", dist) for dist in thresholds],
+        "Y_LT15": [population_near_coast(df, "Y_LT15", dist) for dist in thresholds],
+        "Y_1564": [population_near_coast(df, "Y_1564", dist) for dist in thresholds],
+        "Y_GE65": [population_near_coast(df, "Y_GE65", dist) for dist in thresholds],
     })
 
     results.to_csv(output_csv, index=False)
     print(results)
 
 main(
-    "/home/juju/geodata/gisco/grids/grid_1km_point.gpkg",
+    "/home/juju/Bureau/PT.gpkg",
     "/home/juju/Bureau/pop_coast_PT.csv",
     max = 250000,
     step = 1000
