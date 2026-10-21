@@ -13,9 +13,9 @@
             "2020": "/home/juju/geodata/gisco/basic_services/healthcare_2020_3035_20261008.gpkg"
         },
         "education": {
-            "2026": "/home/juju/geodata/gisco/basic_services/education_2026_3035_20261020.gpkg",
-            "2023": "/home/juju/geodata/gisco/basic_services/education_2023_3035_20261020.gpkg",
-            "2020": "/home/juju/geodata/gisco/basic_services/education_2020_3035_20261020.gpkg"
+            "2026": "/home/juju/geodata/gisco/basic_services/education_2026_3035_20261021.gpkg",
+            "2023": "/home/juju/geodata/gisco/basic_services/education_2023_3035_20261021.gpkg",
+            "2020": "/home/juju/geodata/gisco/basic_services/education_2020_3035_20261021.gpkg"
         },
         "evrp": {
             "2023": "/home/juju/geodata/gisco/recharging_points/evrp_2023_3035.gpkg",
