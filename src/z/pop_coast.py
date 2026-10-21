@@ -15,6 +15,8 @@ def main(gpkg_path: str, output_csv: str, max: int=50000, step:int=5000, layer: 
     df = df[df["CNTR_ID"].astype(str).str.contains("PT", na=False)]
     print(f"Kept {len(df)} points for Portugal from {gpkg_path}")
 
+    df["DIST_COAST"] = pd.to_numeric(df["DIST_COAST"], errors="coerce")
+
     thresholds = range(0, max, step)
     results = pd.DataFrame({
         "dist_to_coast_km": [dist/1000 for dist in thresholds],
