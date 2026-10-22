@@ -244,7 +244,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
             # TODO remove no data rows ?
 
             # sort
-            df.sort_values(["TRA_MODE","AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME","GEO"])
+            df.sort_values(["GEO","TRA_MODE","AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
             df.to_csv(ofo + ".csv", index=False)
