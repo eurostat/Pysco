@@ -231,7 +231,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             df_["UNIT"] = mode_unit
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
-                            df_["VALUE"] = df_["VALUE"].round() #.astype(int)
+                            df_["VALUE"] = (coeff *df_["VALUE"]).round() #.astype(int)
                             df_ = df_.rename(columns={region_id_att: 'GEO'})
 
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
@@ -244,7 +244,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
             # TODO remove no data rows ?
 
             # sort
-            df.sort_values(["GEO",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME"])
+            df.sort_values(["TRA_MODE","AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME","GEO"])
 
             print(datetime.now(), "save compiled file")
             df.to_csv(ofo + ".csv", index=False)
