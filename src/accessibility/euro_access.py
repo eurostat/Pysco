@@ -13,8 +13,8 @@ from accessibility.step6_gridviz_service_points import gridviz_tiling_points
 
 
 # TODO
-# use FOOT_BIKE
-# GT_XX_MN - fix for FOOT_BIKE and EVRP
+# use FOOT_BIKE code instead of FOOT
+# GT_XX_MN - fix for FOOT_BIKE (same logic as for EVRP). With theresholds 200 500 1000 2000 5000
 # deploy nuts map - check
 # check no data stats. Why ?
 
