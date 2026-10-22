@@ -10,9 +10,9 @@ from utils.csvutils import hypercube_csv_to_timeseries_csv
 
 age_group_to_band = {
     "T":1,
-    #"Y_LT15":4,
-    #"Y_1564":5,
-    #"Y_GE65":6,
+    "Y_LT15":4,
+    "Y_1564":5,
+    "Y_GE65":6,
 }
 
 access_indicator_to_band = {
@@ -22,8 +22,8 @@ access_indicator_to_band = {
 }
 service_to_access_indicator = {
     "healthcare" : ["N1","AN3"],
-    "education" : ["N1"],
-    #"education" : ["N1","AN3"],
+    #"education" : ["N1"],
+    "education" : ["N1","AN3"],
     "evrp" : ["N1","AN5"],
 }
 
@@ -72,16 +72,16 @@ UNK		Unknown		Y
 '''
 degurba_classes = {
     "TOTAL": lambda v:True,
-    #"DEG1": lambda v: v<200, # Cities
-    #"DEG2": lambda v: (v>200) & (v<300), # Towns and suburbs
-    #"DEG3": lambda v: (v>310), # Rural areas
-    #"DEG130": lambda v: v==130,
-    #"DEG223": lambda v: v==223,
-    #"DEG222": lambda v: v==222,
-    #"DEG221": lambda v: v==221,
-    #"DEG313": lambda v: v==313,
-    #"DEG312": lambda v: v==312,
-    #"DEG311": lambda v: v==311,
+    "DEG1": lambda v: v<200, # Cities
+    "DEG2": lambda v: (v>200) & (v<300), # Towns and suburbs
+    "DEG3": lambda v: (v>310), # Rural areas
+    "DEG130": lambda v: v==130,
+    "DEG223": lambda v: v==223,
+    "DEG222": lambda v: v==222,
+    "DEG221": lambda v: v==221,
+    "DEG313": lambda v: v==313,
+    "DEG312": lambda v: v==312,
+    "DEG311": lambda v: v==311,
 }
 
 
