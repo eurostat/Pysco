@@ -264,7 +264,7 @@ def _build_combined_mask(conf, masks, mask_arrays):
         if mf is None:
             continue
         c = m.get("coeff")
-        if c is None: c = 1
+        if c is None: c = 1.0
         res = mf(c * mask_arrays[i])
         if res is None:
             continue
