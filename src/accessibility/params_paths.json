@@ -52,6 +52,15 @@
         "education": ["CAR_S", "FOOT_BIKE_M"],
         "evrp": ["CAR_M"]
     },
+    "modes_stats" : {
+        "healthcare": {"CAR": {"grid":"CAR_S", "coeff":1}},
+        "education": {
+            "CAR": {"grid":"CAR_S", "coeff":1},
+            "FOOT": {"grid":"FOOT_BIKE_M", "coeff":1},
+            "BIKE": {"grid":"FOOT_BIKE_M", "coeff":1}
+        },
+        "evrp": {"CAR": {"grid":"CAR_M", "coeff":1}}
+    },
     "stats_versions": {
         "healthcare": "v2026_10",
         "education": "v2026_10",
