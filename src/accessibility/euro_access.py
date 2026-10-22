@@ -13,8 +13,7 @@ from accessibility.step6_gridviz_service_points import gridviz_tiling_points
 
 
 # TODO
-# educ: RO 2026 missing ?
-# deploy nuts map
+# deploy nuts map - check
 # check no data stats. Why ?
 
 # stats: filter out regions with no data
