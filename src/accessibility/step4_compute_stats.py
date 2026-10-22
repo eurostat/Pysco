@@ -129,18 +129,20 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
         geo = su + "_" + sus[su]["version"]
         for service in services:
 
-            ofo = output_folder + "euro_access_" + geo + "_" + service + "_" + params["stats_versions"][service]
-            if os.path.exists(ofo + ".csv"): continue
+            for mode in params["modes_stats"][service].keys():
+                grid_mode = params["modes_stats"][service][mode]["grid_mode"]
+                mode_unit = params["modes_stats"][service][mode]["mode_unit"]
+                coeff = params["modes_stats"][service][mode]["coeff"]
 
-            # make a single csv hypercube file per statunit and service
-            df = None
+                ofo = output_folder + "euro_access_" + geo + "_" + service + "_" + mode + "_" + mode_unit + "_" + params["stats_versions"][service]
+                if os.path.exists(ofo + ".csv"): continue
 
-            for ai in service_to_access_indicator[service]:
-                for mode in params["modes_stats"][service].keys():
-                    #"CAR": {"grid_mode":"CAR_S", "coeff":1},
-                    grid_mode = params["modes_stats"][service][mode]["grid_mode"]
-                    mode_unit = params["modes_stats"][service][mode]["mode_unit"]
-                    coeff = params["modes_stats"][service][mode]["coeff"]
+                # make a single csv hypercube file per statunit and service
+                df = None
+
+
+
+                for ai in service_to_access_indicator[service]:
 
                     if years is None: years = params["accessibility_grid_versions"][service].keys()
                     for year in years:
@@ -239,40 +241,38 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
 
 
 
-            # sort columns
-            df = df[["GEO",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME","VALUE"]]
+                # sort columns
+                df = df[["GEO",'TRA_MODE',"AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME","VALUE"]]
 
-            # TODO remove no data rows ?
+                # TODO remove no data rows ?
 
-            # sort
-            df = df.sort_values(["GEO","TRA_MODE","AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME"])
+                # sort
+                df = df.sort_values(["GEO","TRA_MODE","AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME"])
 
-            print(datetime.now(), "save compiled file")
-            df.to_csv(ofo + ".csv", index=False)
-            df.to_parquet(ofo + ".parquet")
+                print(datetime.now(), "save compiled file")
+                df.to_csv(ofo + ".csv", index=False)
+                df.to_parquet(ofo + ".parquet")
 
-            if "deploy_target_folder" in params:
-                print(datetime.now(), "deploy file")
-                shutil.copy(ofo + ".csv", params["deploy_target_folder"])
-                shutil.copy(ofo + ".parquet", params["deploy_target_folder"])
+                if "deploy_target_folder" in params:
+                    print(datetime.now(), "deploy file")
+                    shutil.copy(ofo + ".csv", params["deploy_target_folder"])
+                    shutil.copy(ofo + ".parquet", params["deploy_target_folder"])
 
-            if decompose_timeseries:
-                print(datetime.now(), "decompose by time series", su, service)
+                if decompose_timeseries:
+                    print(datetime.now(), "decompose by time series", su, service)
 
-                out_folder_d = output_folder + "as_timeseries/"
-                os.makedirs(out_folder_d, exist_ok=True)
+                    out_folder_d = output_folder + "as_timeseries/"
+                    os.makedirs(out_folder_d, exist_ok=True)
 
-                hypercube_csv_to_timeseries_csv(
-                    ofo + ".csv",
-                    out_folder_d,
-                    output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "__" + f)
+                    hypercube_csv_to_timeseries_csv(
+                        ofo + ".csv",
+                        out_folder_d,
+                        output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "__" + f)
 
-                # delete NR files (not usefull) and rename files (remove PC)
-                #for f in os.listdir(out_folder_d):
-                #    if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
-                #    if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
-
-
+                    # delete NR files (not usefull) and rename files (remove PC)
+                    #for f in os.listdir(out_folder_d):
+                    #    if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
+                    #    if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
 
 
 
