@@ -30,6 +30,7 @@ access_classes = {
     "healthcare" : {
         "TOTAL": lambda v:True,
         "GT_5_MN": lambda v: (v>=5*60), # & (v>=0),
+        "GT_10_MN": lambda v: (v>=10*60), # & (v>=0),
         "GT_20_MN": lambda v: (v>=20*60), # & (v>=0),
         "GT_45_MN": lambda v: (v>=45*60), # & (v>=0),
     },
@@ -37,6 +38,7 @@ access_classes = {
         "TOTAL": lambda v:True,
         "GT_2_MN": lambda v: (v>=2*60), # & (v>=0),
         "GT_10_MN": lambda v: (v>=10*60), # & (v>=0),
+        "GT_15_MN": lambda v: (v>=15*60), # & (v>=0),
         "GT_20_MN": lambda v: (v>=20*60), # & (v>=0),
     },
     "evrp" : {
