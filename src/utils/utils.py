@@ -34,3 +34,9 @@ def weighted_median(values: np.ndarray, weights: np.ndarray) -> float:
     idx = min(idx, len(values_sorted) - 1)  # safety clamp
 
     return values_sorted[idx]
+
+
+def normalize(x):
+    if isinstance(x, float) and x.is_integer():
+        return int(x)
+    return x
