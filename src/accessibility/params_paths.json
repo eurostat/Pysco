@@ -56,8 +56,8 @@
         "healthcare": {"CAR": {"grid":"CAR_S", "coeff":1}},
         "education": {
             "CAR": {"grid":"CAR_S", "coeff":1},
-            "FOOT": {"grid":"FOOT_BIKE_M", "coeff":1},
-            "BIKE": {"grid":"FOOT_BIKE_M", "coeff":1}
+            "FOOT": {"grid":"FOOT_BIKE_M", "coeff":0.9},
+            "BIKE": {"grid":"FOOT_BIKE_M", "coeff":0.24}
         },
         "evrp": {"CAR": {"grid":"CAR_M", "coeff":1}}
     },

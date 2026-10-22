@@ -135,7 +135,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
             df = None
 
             for ai in service_to_access_indicator[service]:
-                for mode in params["modes"][service]:
+                for mode in params["modes_stats"][service].keys():
 
                     if years is None: years = params["accessibility_grid_versions"][service].keys()
                     for year in years:
