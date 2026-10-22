@@ -1,7 +1,7 @@
 {
     "steps": [4],
     "services": ["education"],
-    "years": [2026],
+    "years": ["2026"],
     "out_folder": "/home/juju/gisco/accessibility/",
 
     "stat_units": {
