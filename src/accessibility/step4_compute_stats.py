@@ -231,7 +231,8 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             df_["UNIT"] = mode_unit
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
-                            df_["VALUE"] = (coeff *df_["VALUE"]).round() #.astype(int)
+                            sec_to_mn = 60 if mode_unit == "MN" else 1 # to convert seconds to minutes if needed
+                            df_["VALUE"] = (coeff * df_["VALUE"] / sec_to_mn).round() #.astype(int)
                             df_ = df_.rename(columns={region_id_att: 'GEO'})
 
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
@@ -244,7 +245,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
             # TODO remove no data rows ?
 
             # sort
-            df.sort_values(["GEO","TRA_MODE","AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME"])
+            df = df.sort_values(["GEO","TRA_MODE","AGE","DEG_URB","ACCESS_INDIC","STATINFO","UNIT","TIME"])
 
             print(datetime.now(), "save compiled file")
             df.to_csv(ofo + ".csv", index=False)
@@ -270,6 +271,9 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                 #for f in os.listdir(out_folder_d):
                 #    if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
                 #    if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
+
+
+
 
 
 

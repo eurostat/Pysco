@@ -53,11 +53,11 @@
         "evrp": ["CAR_M"]
     },
     "modes_stats" : {
-        "healthcare": {"CAR": {"grid_mode":"CAR_S", "coeff":1, "mode_unit":"S"}},
+        "healthcare": {"CAR": {"grid_mode":"CAR_S", "coeff":1, "mode_unit":"MN"}},
         "education": {
-            "CAR": {"grid_mode":"CAR_S", "coeff":1, "mode_unit":"S"},
-            "FOOT": {"grid_mode":"FOOT_BIKE_M", "coeff":0.9, "mode_unit":"S"},
-            "BIKE": {"grid_mode":"FOOT_BIKE_M", "coeff":0.24, "mode_unit":"S"}
+            "CAR": {"grid_mode":"CAR_S", "coeff":1, "mode_unit":"MN"},
+            "FOOT": {"grid_mode":"FOOT_BIKE_M", "coeff":0.9, "mode_unit":"MN"},
+            "BIKE": {"grid_mode":"FOOT_BIKE_M", "coeff":0.24, "mode_unit":"MN"}
         },
         "evrp": {"CAR": {"grid_mode":"CAR_M", "coeff":1, "mode_unit":"M"}}
     },
