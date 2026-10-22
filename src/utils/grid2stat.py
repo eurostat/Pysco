@@ -76,6 +76,7 @@ def grid2stat_threshold(
 
             # get region id and geometry
             region_id = region[region_id_att]
+            if region_id is not "AT001F": continue  # DEBUG: skip all but one region
             geometry = [mapping(region.geometry)]
 
             # Clip rasters to region geometry
@@ -167,6 +168,7 @@ def grid2stat_weighted_average(
 
         for _, region in regions.iterrows():
             region_id = region[region_id_att]
+            if region_id is not "AT001F": continue  # DEBUG: skip all but one region
             #print(f"[{region_id}] Processing region...")
             geometry = [mapping(region.geometry)]
 
