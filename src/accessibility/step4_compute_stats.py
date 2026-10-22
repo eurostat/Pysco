@@ -136,6 +136,10 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
 
             for ai in service_to_access_indicator[service]:
                 for mode in params["modes_stats"][service].keys():
+                    #"CAR": {"grid_mode":"CAR_S", "coeff":1},
+                    grid_mode = params["modes_stats"][service][mode]["grid_mode"]
+                    mode_unit = params["modes_stats"][service][mode]["mode_unit"]
+                    coeff = params["modes_stats"][service][mode]["coeff"]
 
                     if years is None: years = params["accessibility_grid_versions"][service].keys()
                     for year in years:
@@ -156,10 +160,11 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                                 masks = [
                                     # accessibility threshold classes
                                     {
-                                        "path" : params["out_folder"] + "euro_access_" + service + "_" + year + "_" + mode + "_" + res + "m_" + params["accessibility_grid_versions"][service][year] + ".tif",
+                                        "path" : params["out_folder"] + "euro_access_" + service + "_" + year + "_" + grid_mode + "_" + res + "m_" + params["accessibility_grid_versions"][service][year] + ".tif",
                                         "dim_name" : "STATINFO",
                                         "fun" : access_classes[service],
                                         "band" : access_indicator_to_band[ai],
+                                        "coeff" : coeff
                                     },
                                     # degurba classes
                                     {
@@ -171,7 +176,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                                 ]
                             )
                             df_["TIME"] = year
-                            df_["TRA_MODE"] = mode.split("_")[0]
+                            df_["TRA_MODE"] = mode
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
                             df_["VALUE"] = df_["VALUE"].round() #.astype(int)
@@ -202,7 +207,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
 
                             # compute averages and median, with masks
                             df_ = grid2stat_weighted_average(
-                                indic_path = params["out_folder"] + "euro_access_" + service + "_" + year + "_" + mode + "_" + res + "m_" + params["accessibility_grid_versions"][service][year] + ".tif",
+                                indic_path = params["out_folder"] + "euro_access_" + service + "_" + year + "_" + grid_mode + "_" + res + "m_" + params["accessibility_grid_versions"][service][year] + ".tif",
                                 indic_band = access_indicator_to_band[ai],
                                 weight_path =  pop_rasters[res],
                                 weight_band = age_group_to_band[age_group],
@@ -221,9 +226,8 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             )
 
                             df_["TIME"] = year
-                            ms = mode.split("_")
-                            df_["TRA_MODE"] = ms[0]
-                            df_["UNIT"] = ms[len(ms)-1]
+                            df_["TRA_MODE"] = mode
+                            df_["UNIT"] = mode_unit
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
                             df_["VALUE"] = df_["VALUE"].round() #.astype(int)
