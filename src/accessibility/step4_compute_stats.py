@@ -232,7 +232,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
                             sec_to_mn = 60 if mode_unit == "MN" else 1 # to convert seconds to minutes if needed
-                            df_["VALUE"] = (coeff * df_["VALUE"] / sec_to_mn).round() #.astype(int)
+                            df_["VALUE"] = (coeff * df_["VALUE"] / sec_to_mn).round(2) #.astype(int)
                             df_ = df_.rename(columns={region_id_att: 'GEO'})
 
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)

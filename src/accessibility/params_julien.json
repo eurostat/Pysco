@@ -1,17 +1,7 @@
 {
     "steps": [4],
     "services": ["education"],
-    "years": ["2026"],
+    "years": null,
     "out_folder": "/home/juju/gisco/accessibility/",
-
-    "stat_units": {
-        "URAU": {
-            "path": "/home/juju/geodata/gisco/URAU_RG_100K_2024_3035.gpkg",
-            "id": "URAU_CODE",
-            "version": "2024"
-        }
-    },
-
-
     "deploy_target_folder": "/home/juju/pCloudDrive"
 }
