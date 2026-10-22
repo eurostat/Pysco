@@ -14,6 +14,7 @@ from accessibility.step6_gridviz_service_points import gridviz_tiling_points
 
 # TODO
 # education: BIKE and WALK time. 15km/h and 4km/h
+# simplify s to min, using coeff
 # deploy nuts map - check
 # check no data stats. Why ?
 
