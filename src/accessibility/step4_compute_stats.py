@@ -141,8 +141,6 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                 # make a single csv hypercube file per statunit and service
                 df = None
 
-
-
                 for ai in service_to_access_indicator[service]:
 
                     if years is None: years = params["accessibility_grid_versions"][service].keys()
@@ -253,6 +251,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                 print(datetime.now(), "save compiled file")
                 df.to_csv(ofo + ".csv", index=False)
                 df.to_parquet(ofo + ".parquet")
+                del df
 
                 if "deploy_target_folder" in params:
                     print(datetime.now(), "deploy file")
