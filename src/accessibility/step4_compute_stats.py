@@ -75,15 +75,15 @@ UNK		Unknown		Y
 degurba_classes = {
     "TOTAL": lambda v:True,
     "DEG1": lambda v: v<200, # Cities
-    #"DEG2": lambda v: (v>200) & (v<300), # Towns and suburbs
-    #"DEG3": lambda v: (v>310), # Rural areas
-    #"DEG130": lambda v: v==130,
-    #"DEG223": lambda v: v==223,
-    #"DEG222": lambda v: v==222,
-    #"DEG221": lambda v: v==221,
-    #"DEG313": lambda v: v==313,
-    #"DEG312": lambda v: v==312,
-    #"DEG311": lambda v: v==311,
+    "DEG2": lambda v: (v>200) & (v<300), # Towns and suburbs
+    "DEG3": lambda v: (v>310), # Rural areas
+    "DEG130": lambda v: v==130,
+    "DEG223": lambda v: v==223,
+    "DEG222": lambda v: v==222,
+    "DEG221": lambda v: v==221,
+    "DEG313": lambda v: v==313,
+    "DEG312": lambda v: v==312,
+    "DEG311": lambda v: v==311,
 }
 
 
