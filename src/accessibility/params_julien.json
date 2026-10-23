@@ -3,5 +3,20 @@
     "services": ["healthcare", "education"],
     "years": null,
     "out_folder": "/home/juju/gisco/accessibility/",
+
+    "stat_units": {
+        "NUTS": {
+            "path": "/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
+            "id": "NUTS_ID",
+            "version": "2024"
+        },
+        "URAU": {
+            "path": "/home/juju/geodata/gisco/URAU_RG_100K_2024_3035.gpkg",
+            "id": "URAU_CODE",
+            "version": "2024"
+        }
+    },
+
+
     "deploy_target_folder": "/home/juju/pCloudDrive"
 }
