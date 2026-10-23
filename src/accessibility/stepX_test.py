@@ -44,15 +44,9 @@ def filter_hypercube(input_path: str, country_codes: list[str], output_path: str
 params_paths_file = sys.argv[1]
 
 with open(params_paths_file, 'r') as f: params = json.load(f)
-with open(params_output_file, 'r') as f:
-    params_ = json.load(f)
-    for k in params_.keys(): params[k] = params_[k]
-
-
 
 country_codes_healthcare = "AT, BE, CY, DE, DK, ES, FR, IE, IT, LV, NL, NO, PL, SE, SK".split(", ")
 country_codes_education = "AT, BE, DE, DK, ES FI, FR, HR, HU, IE, IT, NL, NO, PT, RO, SE, SI, SK".split(", ")
-
 
 folder = params["out_folder"] + "stats/"
 output_folder = folder + "for_regio/"
