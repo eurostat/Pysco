@@ -144,8 +144,9 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
 
                 for ai in service_to_access_indicator[service]:
 
-                    if years is None: years = params["accessibility_grid_versions"][service].keys()
-                    for year in years:
+                    years_ = years if years is not None else params["pois_datasets"][service].keys()
+
+                    for year in years_:
                         for age_group in age_group_to_band.keys():
                             res = res_default if age_group == "T" else "1000"
 
