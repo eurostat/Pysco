@@ -13,8 +13,8 @@ from utils.csvutils import hypercube_to_timeseries
 age_group_to_band = {
     "T":1,
     "Y_LT15":4,
-    #"Y_1564":5,
-    #"Y_GE65":6,
+    "Y_1564":5,
+    "Y_GE65":6,
 }
 
 access_indicator_to_band = {
@@ -24,8 +24,8 @@ access_indicator_to_band = {
 }
 service_to_access_indicator = {
     "healthcare" : ["N1","AN3"],
-    "education" : ["N1"],
-    #"education" : ["N1","AN3"],
+    #"education" : ["N1"],
+    "education" : ["N1","AN3"],
     "evrp" : ["N1","AN5"],
 }
 
@@ -40,9 +40,9 @@ access_classes = {
     "education" : {
         "TOTAL": lambda v:True,
         "GT_2_MN": lambda v: (v>=2*60), # & (v>=0),
-        #"GT_10_MN": lambda v: (v>=10*60), # & (v>=0),
-        #"GT_15_MN": lambda v: (v>=15*60), # & (v>=0),
-        #"GT_20_MN": lambda v: (v>=20*60), # & (v>=0),
+        "GT_10_MN": lambda v: (v>=10*60), # & (v>=0),
+        "GT_15_MN": lambda v: (v>=15*60), # & (v>=0),
+        "GT_20_MN": lambda v: (v>=20*60), # & (v>=0),
     },
     "evrp" : {
         "TOTAL": lambda v:True,
