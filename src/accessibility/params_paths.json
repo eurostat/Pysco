@@ -92,5 +92,5 @@
     },
     "degurba_grid_path": "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2021/DGUR_LEVEL2_GRD_1KM_2021_extended.tif",
 
-    "out_folder": "/home/juju/gisco/accessibility/",
+    "out_folder": "/home/juju/gisco/accessibility/"
 }
