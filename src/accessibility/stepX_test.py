@@ -42,7 +42,12 @@ def filter_hypercube(input_path: str, country_codes: list[str], output_path: str
 
 
 params_paths_file = sys.argv[1]
+
 with open(params_paths_file, 'r') as f: params = json.load(f)
+with open(params_output_file, 'r') as f:
+    params_ = json.load(f)
+    for k in params_.keys(): params[k] = params_[k]
+
 
 
 country_codes_healthcare = "AT, BE, CY, DE, DK, ES, FR, IE, IT, LV, NL, NO, PL, SE, SK".split(", ")
@@ -65,9 +70,9 @@ for su in sus.keys():
         country_codes = country_codes_healthcare if service == "healthcare" else country_codes_education
 
         for mode in params["modes_stats"][service].keys():
-            grid_mode = params["modes_stats"][service][mode]["grid_mode"]
             mode_unit = params["modes_stats"][service][mode]["mode_unit"]
-            coeff = params["modes_stats"][service][mode]["coeff"]
+
+            print(f"Processing {geo} - {service} - {mode} - {mode_unit}")
 
             ofo = "euro_access_" + geo + "_" + service + "_" + mode + "_" + mode_unit + "_" + params["stats_versions"][service] + ".csv"
             if not os.path.exists(folder + ofo): continue
