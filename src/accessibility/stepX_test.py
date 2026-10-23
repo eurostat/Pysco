@@ -56,7 +56,8 @@ os.makedirs(output_folder, exist_ok=True)
 sus = params["stat_units"]
 services = params["accessibility_grid_versions"].keys()
 
-for su in sus.keys():
+
+for su in ["NUTS"]:
     region_id_att = sus[su]["id"]
     geo = su + "_" + sus[su]["version"]
     for service in services:
@@ -66,10 +67,10 @@ for su in sus.keys():
         for mode in params["modes_stats"][service].keys():
             mode_unit = params["modes_stats"][service][mode]["mode_unit"]
 
-            print(f"Processing {geo} - {service} - {mode} - {mode_unit}")
-
             ofo = "euro_access_" + geo + "_" + service + "_" + mode + "_" + mode_unit + "_" + params["stats_versions"][service] + ".csv"
             if not os.path.exists(folder + ofo): continue
+
+            print(f"Processing {geo} - {service} - {mode} - {mode_unit}")
 
             filter_hypercube(folder + ofo, country_codes, output_folder + ofo)
 
