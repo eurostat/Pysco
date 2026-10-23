@@ -14,7 +14,7 @@ def cell_id_fun(x,y,grid_resolution): return "CRS3035RES"+str(grid_resolution)+"
 def cost_simplification_fun(x): return int(round(x))
 
 
-def compute_accessibility_grids(params, services=None, years=None, resolutions=[100]):
+def compute_accessibility_grids(params, services=None, years_=None, resolutions=[100]):
 
     if services is None: services = params["pois_datasets"].keys()
 
@@ -24,7 +24,7 @@ def compute_accessibility_grids(params, services=None, years=None, resolutions=[
         for service in services:
             for mode in params["modes"][service]:
 
-                if years is None: years = params["pois_datasets"][service].keys()
+                years = years_ if years_ is not None else params["pois_datasets"][service].keys()
 
                 for year in years:
                     print(grid_resolution, service, year, mode)
