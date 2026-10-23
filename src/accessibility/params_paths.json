@@ -90,5 +90,7 @@
         "1000": "/home/juju/gisco/census_2021_v3_production/ESTAT_Census_2021_V3.tiff",
         "100": "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox_rev0726.tif"
     },
-    "degurba_grid_path": "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2021/DGUR_LEVEL2_GRD_1KM_2021_extended.tif"
+    "degurba_grid_path": "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2021/DGUR_LEVEL2_GRD_1KM_2021_extended.tif",
+
+    "out_folder": "/home/juju/gisco/accessibility/",
 }

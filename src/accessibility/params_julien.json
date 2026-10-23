@@ -2,7 +2,6 @@
     "steps": [4],
     "services": ["healthcare", "education"],
     "years": null,
-    "out_folder": "/home/juju/gisco/accessibility/",
 
     "stat_units": {
         "NUTS": {
