@@ -1,3 +1,5 @@
+import gc
+
 import pandas as pd
 from datetime import datetime
 import shutil
@@ -238,6 +240,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
 
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
                             del df_
+                            gc.collect()
 
 
 

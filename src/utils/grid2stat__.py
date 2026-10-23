@@ -1,520 +1,144 @@
-"""
-Dependencies
-------------
-    pip install rasterio geopandas shapely numpy pandas
-"""
+# NOTE: not used !!! under development ! stopped.
 
-#import csv
-import pandas as pd
-from collections import defaultdict
-from pathlib import Path
-
-import numpy as np
-import numpy.typing as npt
-import geopandas as gpd
-from typing import Callable
+# functions to aggregate statistics from grid to statistical units.
 
 import rasterio
-from rasterio.windows import Window
-from rasterio.enums import Resampling
-from rasterio.transform import from_bounds
-from rasterio.enums import Compression
-
-from shapely import prepare, contains_xy
-from shapely.geometry import box as shapely_box
-from shapely.strtree import STRtree
-
+import fiona
+from shapely.geometry import shape
+from rasterio.features import geometry_mask
+import pandas as pd
+import numpy as np
 from datetime import datetime
 
+#TODO
+# real test, with accessibility grid - with population. share within short walk/drive (500m,5km). pop weighted average distance (1, 5)
+# get mask values with indices
+# test with aggregation based on several bands, from separate tiffs ?
 
+# array of input geopackages ?
+# use generic iterator instead of gpkg file
+# check what happens when centre exactly on the limit - counted twice ?
+# handle intersection-area weighted case - with exact intersection computation or 10*resampling ?
+# export as parquet
+# export as GPKG ?
 
-def aggregate_geotiff_to_regions(
-    gpkg_path: str,
-    region_id_attr: str,
-    geotiff_path: str,
-    block_size: int = 1024,
-    band: int = 1,
-    geotiff_mask_path: str = None,
-    geotiff_mask_fun = None,
-    mask_band = 1,
-    region_filter = None,
-) -> None:
+def grid2stat(tiffs, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=False):
     """
-    For each region in *gpkg_path*, sum the values of all GeoTIFF pixels
-    whose centre lies within that region, then write results to a CSV.
-
-    Aggregate GeoTIFF pixel values into polygon regions using a point-in-polygon
-    strategy: only the pixel *centres* that fall inside a region are summed.
-
-    Optimisation strategy for large datasets
-    -----------------------------------------
-    1. Spatial index (STRtree) on the region geometries so pixel-centre lookup is
-    O(log n) rather than O(n).
-    2. Windowed / block reading of the GeoTIFF – the raster is never loaded
-    entirely into RAM.  Each block is read once.
-    3. Per-block spatial filter: the block's bounding box is used to pre-filter
-    candidate regions before the inner point-in-polygon test.
-    4. NumPy vectorised coordinate generation inside each block.
-    5. nodata masking applied before any geometry query.
+    Aggregate statistics from grid to statistical units.
 
     Parameters
     ----------
-    gpkg_path : str
-        Path to a GeoPackage (.gpkg) containing (multi-)polygon features.
-    region_id_attr : str
-        Name of the attribute that uniquely identifies each region.
-    geotiff_path : str
-        Path to the input GeoTIFF (single band used; first band if multi-band).
-    output_col_name : str
-        Column name for the aggregated values in the output CSV (default: "sum").
-    block_size : int
-        Width/height of the processing tile in pixels.  Tune to fit available
-        RAM.  1024 is a safe default; raise to 4096+ on memory-rich machines
-        for fewer I/O round-trips.
-    band : int
-        The band number to read from the GeoTIFF (default: 1).
+    tiffs : arr
+        An array with the input grid TIFF files. One element per input tiff. Each element is a pair of the tiff file path and the tiff band number.
+        NB: all tiff files must have the same resolution, geotransform and extent. TODO check
+    stat_gpkg : str
+        Path to the input statistical units GeoPackage file.
+    stat_id : str
+        Name of the identifier column in the statistical units GeoPackage.
+    out_csv : str
+        Path to the output CSV file where aggregated statistics will be saved.
+    out_dict : dict, optional
+        A dictionnary describing the output data. One entry per aggregated indicator. The key is the column name. The value is the aggregation function to use to compute the aggregated value from the cell values.
+        Default is None, in which case it will be the sum of the cell values.
+    Returns
+    -------
+    None
+        The function saves the aggregated statistics to a CSV file.
     """
-    geotiff_path = Path(geotiff_path)
-    if geotiff_mask_path: geotiff_mask_path = Path(geotiff_mask_path)
-
-    # load regions
-    regions = load_prepare_regions(gpkg_path=gpkg_path, region_id_attr=region_id_attr, region_filter=region_filter)
-
-    #
-    return aggregate_geotiff_to_regions_(
-        regions,
-        geotiff_path,
-        block_size,
-        band,
-        geotiff_mask_path,
-        geotiff_mask_fun,
-        mask_band,
-    )
-
-
-
-
-def aggregate_geotiff_to_regions_(
-    regions: dict,
-    geotiff_path: str,
-    block_size: int = 1024,
-    band: int = 1,
-    geotiff_mask_path: str = None,
-    geotiff_mask_fun = None,
-    mask_band = 1,
-) -> None:
-    """
-    For each region in *gpkg_path*, sum the values of all GeoTIFF pixels
-    whose centre lies within that region, then write results to a CSV.
-
-    Aggregate GeoTIFF pixel values into polygon regions using a point-in-polygon
-    strategy: only the pixel *centres* that fall inside a region are summed.
-
-    Optimisation strategy for large datasets
-    -----------------------------------------
-    1. Spatial index (STRtree) on the region geometries so pixel-centre lookup is
-    O(log n) rather than O(n).
-    2. Windowed / block reading of the GeoTIFF – the raster is never loaded
-    entirely into RAM.  Each block is read once.
-    3. Per-block spatial filter: the block's bounding box is used to pre-filter
-    candidate regions before the inner point-in-polygon test.
-    4. NumPy vectorised coordinate generation inside each block.
-    5. nodata masking applied before any geometry query.
-
-    Parameters
-    ----------
-    gpkg_path : str
-        Path to a GeoPackage (.gpkg) containing (multi-)polygon features.
-    region_id_attr : str
-        Name of the attribute that uniquely identifies each region.
-    geotiff_path : str
-        Path to the input GeoTIFF (single band used; first band if multi-band).
-    output_col_name : str
-        Column name for the aggregated values in the output CSV (default: "sum").
-    block_size : int
-        Width/height of the processing tile in pixels.  Tune to fit available
-        RAM.  1024 is a safe default; raise to 4096+ on memory-rich machines
-        for fewer I/O round-trips.
-    band : int
-        The band number to read from the GeoTIFF (default: 1).
-    """
-    geotiff_path = Path(geotiff_path)
-    if geotiff_mask_path: geotiff_mask_path = Path(geotiff_mask_path)
-
-    # Accumulator: region_id -> running sum
-    sums: dict = defaultdict(float)
-    # Ensure every region appears in output even if sum == 0
-    for rid in regions["ids"]:
-        sums[rid] = {}
-        for classe in geotiff_mask_fun.keys():
-            sums[rid][classe] = 0
-
-    # Open tiff
-    if geotiff_mask_path: src_mask = rasterio.open(geotiff_mask_path)
-    with rasterio.open(geotiff_path) as src:
-        transform = src.transform
-        nodata = src.nodata
-        height, width = src.height, src.width
-
-        # check same CRS
-        if regions["crs"] != src.crs: raise ValueError("Different CRS for GPKG and raster")
-
-        # 2. Tile over the raster
-        for row_off in range(0, height, block_size):
-            row_count = min(block_size, height - row_off)
-
-            for col_off in range(0, width, block_size):
-                col_count = min(block_size, width - col_off)
-
-                # get tile raster data
-                window = Window(col_off, row_off, col_count, row_count)
-                data = src.read(band, window=window).astype(np.float64)
-                data_mask = src_mask.read(mask_band, window=window).astype(np.float32)
-
-                # loop through attributes
-                for classe in geotiff_mask_fun.keys():
-
-                    # get masked data
-                    mask_fun = geotiff_mask_fun[classe]
-                    data_mask2 = mask_fun(data_mask)
-                    data2 = np.where(data_mask2, data, nodata)
-
-                    # Mask nodata pixels
-                    if nodata is not None: data2 = ~np.isclose(data2, nodata)
-                    else: data2 = np.ones(data2.shape, dtype=bool)
-
-                    # Skip entirely empty blocks
-                    if not data2.any(): continue
 
-                    # 3. Compute pixel-centre coordinates for valid pixels
-                    rows_idx, cols_idx = np.where(data2)
+    # Open the grid TIFF files
+    grid_data = []
+    grid_transform = []
+    grid_nodata = []
+    for grid_tiff, band in tiffs:
+        if verbose: print(datetime.now(), f"Load {grid_tiff}, band {band}")
+        with rasterio.open(grid_tiff) as grid:
+            grid_data.append(grid.read(band))
+            grid_transform.append(grid.transform)
+            grid_nodata.append(grid.nodata)
+
+    # Prepare default aggregation function
+    aggegation_func_default = lambda arr: np.sum([x for x in arr if x is not None])  # Default to sum if no custom function is provided
+
+    # If not specified, set default to a single column with default aggregation function if no custom dict is provided
+    if out_dict is None: out_dict = { "sum": aggegation_func_default }
+
+    # Initialize a list to store results
+    results = []
+
+    # Loop through each statistical unit and aggregate statistics from the grid
+    with fiona.open(stat_gpkg) as fs:
+        for f in fs:
+            sid = f["properties"][stat_id]
+            if verbose: print(datetime.now(), sid)
+
+            # Make geometry from the feature, for masking the grids
+            g = shape(f["geometry"])
+
+            values = []
+            for i in range(len(grid_data)):
+                # Create mask - True for pixels whose centres fall within the geometry, False otherwise
+                mask = geometry_mask([g], transform=grid_transform[i], invert=True, out_shape=grid_data[i].shape, all_touched=False)
+
+                # get masked values, with indices
+                rows, cols = np.where(mask)
+                v = grid_data[i][rows, cols]
+                #print(len(rows), len(cols))
+
+                # filter to remove no_data values
+                nd = grid_nodata[i]
+                if nd is not None:
+                    v = np.array(v, dtype=object)
+                    v[v == nd] = None
+                    #v = v[v != nd]  
+
+                values.append(v)
+
+            # Structure values as array of arrays, one per band. One element is a list of band values for a pixel.
+            #TODO
+            print(len(values))
+            values2 = []
+            for i in range(len(values[0])):
+                pass
+
+            # Make output result
+            result = { stat_id: str(sid) }
+
+            # Calculate aggregates value
+            for out_col, aggegation_func in out_dict.items():
+                if aggegation_func is None: aggegation_func = aggegation_func_default
+                #agg_value = aggegation_func(masked_values)
+                agg_value = aggegation_func(values[0]) #TODO - handle several bands
+                result[out_col] = agg_value
+            #print(result)
+
+            # Append results to the list
+            results.append(result)
+
+    # Save to CSV
+    pd.DataFrame(results).to_csv(out_csv, index=False)
+
+
+
+# test
+grid2stat(
+        [
+            [ "/home/juju/geodata/census/2021/aggregated_tiff/pop_2021_1000.tif", 1 ],
+            [ "/home/juju/gisco/accessibility/gridviz/euro_access_evrp_2024_1000m_v2026_03.tif", 1 ],
+            #[ "/home/juju/gisco/accessibility/euro_access_evrp_2024_1000m_v2026_03.tif" , 1 ],
+            #[ "/home/juju/gisco/accessibility/euro_access_evrp_2024_1000m_v2026_03.tif" , 2 ]
+        ],
+        "/home/juju/Bureau/test.gpkg",
+        #"/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
+        "NUTS_ID",
+        "/home/juju/Bureau/out.csv",
+        out_dict={
+            "sum": lambda arr: np.sum([x for x in arr if x is not None]),
+            "mean": lambda arr: np.mean([x for x in arr if x is not None]),
+            "max": lambda arr: np.max([x for x in arr if x is not None]),
+            "min": lambda arr: np.min([x for x in arr if x is not None]),
+            "count": lambda arr: len(arr)
+        },
+        verbose=True
+)
 
-                    # Absolute pixel indices within the full raster
-                    abs_rows = rows_idx + row_off
-                    abs_cols = cols_idx + col_off
-
-                    # Pixel centre = top-left corner of raster
-                    #   + (col + 0.5) * pixel_width
-                    #   + (row + 0.5) * pixel_height  (negative for north-up)
-                    xs = transform.c + (abs_cols + 0.5) * transform.a
-                    ys = transform.f + (abs_rows + 0.5) * transform.e
-                    values = data[rows_idx, cols_idx]
-
-                    # 4. Bounding-box pre-filter: which regions overlap this block at all?
-                    block_xmin = transform.c + col_off * transform.a
-                    block_xmax = transform.c + (col_off + col_count) * transform.a
-                    block_ymax = transform.f + row_off * transform.e
-                    block_ymin = transform.f + (row_off + row_count) * transform.e
-                    # Normalise min/max (transform.e is negative for north-up)
-                    bx_min, bx_max = min(block_xmin, block_xmax), max(block_xmin, block_xmax)
-                    by_min, by_max = min(block_ymin, block_ymax), max(block_ymin, block_ymax)
-
-                    block_box = shapely_box(bx_min, by_min, bx_max, by_max)
-                    candidate_indices = regions["index"].query(block_box, predicate="intersects")
-
-                    if len(candidate_indices) == 0:
-                        continue
-
-                    candidate_geoms = [regions["geoms"][i] for i in candidate_indices]
-                    candidate_ids = [regions["ids"][i] for i in candidate_indices]
-
-                    # 5. Point-in-polygon for each candidate region
-                    # Build a MultiPoint for bulk contains queries
-                    # points_xy = np.stack([xs, ys], axis=1)
-
-                    for geom, rid in zip(candidate_geoms, candidate_ids):
-                        # Fast bounding-box pre-check per region
-                        gx_min, gy_min, gx_max, gy_max = geom.bounds
-                        in_bbox = (
-                            (xs >= gx_min) & (xs <= gx_max) &
-                            (ys >= gy_min) & (ys <= gy_max)
-                        )
-                        if not in_bbox.any(): continue
-
-                        bbox_xs = xs[in_bbox]
-                        bbox_ys = ys[in_bbox]
-                        bbox_vals = values[in_bbox]
-
-                        # Vectorised contains via prepared geometry
-                        prepare(geom)
-                        inside = contains_xy(geom, bbox_xs, bbox_ys)
-                        sums[rid][classe] += bbox_vals[inside].sum()
-
-    # prepare output structure
-    out = []
-    for rid in regions["ids"]:
-        for classe in geotiff_mask_fun.keys():
-            ob = { regions["id"]: rid, "dim": classe }
-            ob["value"] = sums[rid][classe]
-            out.append(ob)
-
-    # export
-    return pd.DataFrame(out)
-
-
-
-
-
-def load_prepare_regions(
-    gpkg_path: str,
-    region_id_attr: str,
-    region_filter = None,
-) -> dict:
-
-    # Load regions
-    gpkg_path = Path(gpkg_path)
-    regions = gpd.read_file(gpkg_path)
-
-    # apply filter
-    if region_filter: regions = regions[regions.apply(region_filter, axis=1)]
-
-    # keep only usefull columns
-    regions = regions[["geometry", region_id_attr]]
-
-    regions = {
-        "ids" : list(regions[region_id_attr]),
-        "geoms" : list(regions.geometry),
-        "crs": regions.crs,
-        "id" : region_id_attr,
-    }
-
-    # Build a fast spatial index over region geometries
-    regions["index"] = STRtree(regions["geoms"])
-    return regions
-
-
-
-
-
-
-def conditional_raster(
-    raster1_path: str,
-    raster2_path: str,
-    output_path: str,
-    condition,
-    nodata_value=np.nan,
-):
-    """
-    Creates a new raster with values from raster1 where raster2 satisfies a condition.
-
-    Parameters
-    ----------
-    raster1_path   : path to the source raster (values to keep)
-    raster2_path   : path to the condition raster (values to test)
-    output_path    : path for the output GeoTIFF
-    condition      : callable that takes a numpy array and returns a boolean mask
-                     e.g.  lambda x: x > 100
-                           lambda x: (x >= 0) & (x < 50)
-                           lambda x: x != -9999
-    nodata_value   : value written where the condition is False (default: nan)
-    """
-    with rasterio.open(raster1_path) as src1, rasterio.open(raster2_path) as src2:
-        profile = src1.profile.copy()
-        profile.update(
-            dtype=rasterio.float32,
-            nodata=nodata_value,
-            compress=Compression.deflate,
-        )
-
-        with rasterio.open(output_path, "w", **profile) as dst:
-            for band_idx in range(1, src1.count + 1):
-                data1 = src1.read(band_idx).astype(np.float32)
-                data2 = src2.read(band_idx).astype(np.float32)
-
-                mask = condition(data2)          # boolean array
-                result = np.where(mask, data1, nodata_value)
-
-                dst.write(result, band_idx)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-def transform_geotiff(
-    input_path: str,
-    output_path: str,
-    func: Callable[[npt.NDArray], npt.NDArray],
-    output_dtype: str = None,
-    band: int = 1,
-    compress: str = "lzw",
-) -> None:
-    """
-    Apply a lambda/function to each pixel of a GeoTIFF band and write the result
-    to a new GeoTIFF, preserving spatial metadata.
- 
-    Parameters
-    ----------
-    input_path : str
-        Path to the input GeoTIFF file.
-    output_path : str
-        Path where the output GeoTIFF will be written.
-    func : Callable
-        A function (or lambda) applied element-wise to the pixel array.
-        Receives a NumPy array and must return a NumPy array of the same shape.
-        Example: lambda x: x * 2 + 1
-    output_dtype : str, optional
-        NumPy/GDAL dtype string for the output raster (e.g. 'float32', 'uint8',
-        'int16', 'float64'). Defaults to the input band's dtype when not provided.
-    band : int, optional
-        1-based band index to read from the input file. Defaults to 1.
- 
-    Raises
-    ------
-    ValueError
-        If the requested band index is out of range.
-    """
-    with rasterio.open(input_path) as src:
-        data = src.read(band)                          # shape: (height, width)
-        profile = src.profile.copy()
- 
-    # Apply the user-supplied function
-    result: npt.NDArray = func(data)
- 
-    if result.shape != data.shape:
-        raise ValueError(
-            f"The function returned an array with shape {result.shape}, "
-            f"but the input shape is {data.shape}. Shapes must match."
-        )
- 
-    # Resolve output dtype
-    resolved_dtype = output_dtype if output_dtype is not None else str(data.dtype)
-    result = result.astype(resolved_dtype)
-
-    # Update profile for a single-band output
-    profile.update(
-        dtype=resolved_dtype,
-        count=1,
-        compress=compress,
-    )
- 
-    with rasterio.open(output_path, "w", **profile) as dst:
-        dst.write(result, 1)
-
-
-
-def multiply_geotiffs(
-    path_a: str,
-    path_b: str,
-    output_path: str,
-    band_a: int = 1,
-    band_b: int = 1,
-    output_dtype: str | None = None,
-) -> None:
-    """
-    Compute the pixel-wise product of two GeoTIFF files and write the result
-    to a new GeoTIFF.
-    Both inputs must share the same CRS, extent, and pixel grid.
-    Where either input pixel is no-data the output pixel is also no-data.
-    
-    This is usefull to compute weighted average statistics, e.g. population-weighted accessibility:
-    1. Multiply an accessibility raster (e.g. travel time to nearest hospital) by a population raster (e.g. population count per pixel).
-    2. Sum the resulting "population-weighted accessibility" values within each region.
-    3. Divide the total population-weighted accessibility by the total population in that region to get the population-weighted average accessibility.
- 
-    Parameters
-    ----------
-    path_a : str
-        Path to the first GeoTIFF.
-    path_b : str
-        Path to the second GeoTIFF.
-    output_path : str
-        Path for the output GeoTIFF (created or overwritten).
-    band_a : int, optional
-        1-based band index to read from the first file (default: 1).
-    band_b : int, optional
-        1-based band index to read from the second file (default: 1).
-    output_dtype : str or None, optional
-        NumPy/rasterio dtype for the output band, e.g. ``"float32"``.
-        Defaults to ``float64`` so that integer products don't overflow.
-    """
-    with rasterio.open(path_a) as src_a, rasterio.open(path_b) as src_b:
- 
-        # ------------------------------------------------------------------ #
-        # Read data and no-data values                                        #
-        # ------------------------------------------------------------------ #
-        data_a = src_a.read(band_a).astype(np.float64)
-        data_b = src_b.read(band_b).astype(np.float64)
- 
-        nodata_a = src_a.nodata
-        nodata_b = src_b.nodata
- 
-        # ------------------------------------------------------------------ #
-        # Build no-data masks (True where the pixel IS no-data)              #
-        # ------------------------------------------------------------------ #
-        if nodata_a is not None and np.isnan(nodata_a):
-            mask_a = np.isnan(data_a)
-        elif nodata_a is not None:
-            mask_a = data_a == nodata_a
-        else:
-            mask_a = np.zeros(data_a.shape, dtype=bool)
- 
-        if nodata_b is not None and np.isnan(nodata_b):
-            mask_b = np.isnan(data_b)
-        elif nodata_b is not None:
-            mask_b = data_b == nodata_b
-        else:
-            mask_b = np.zeros(data_b.shape, dtype=bool)
- 
-        combined_nodata_mask = mask_a | mask_b
- 
-        # ------------------------------------------------------------------ #
-        # Compute product                                                     #
-        # ------------------------------------------------------------------ #
-        product = data_a * data_b
- 
-        # ------------------------------------------------------------------ #
-        # Choose output dtype and no-data sentinel                           #
-        # ------------------------------------------------------------------ #
-        if output_dtype is None:
-            output_dtype = "float64"
- 
-        # Use NaN as the output no-data sentinel for float types; fall back
-        # to the first file's no-data value (or -9999) for integer types.
-        np_dtype = np.dtype(output_dtype)
-        if np.issubdtype(np_dtype, np.floating):
-            out_nodata = float("nan")
-        else:
-            # For integer outputs pick a sentinel: prefer source A's value
-            out_nodata = nodata_a if nodata_a is not None else -9999
-            out_nodata = int(out_nodata)
- 
-        product = product.astype(np_dtype)
-        product[combined_nodata_mask] = out_nodata
- 
-        # ------------------------------------------------------------------ #
-        # Write output GeoTIFF (copy spatial metadata from file A)          #
-        # ------------------------------------------------------------------ #
-        profile = src_a.profile.copy()
-        profile.update(
-            dtype=output_dtype,
-            count=1,
-            nodata=out_nodata,
-            compress="lzw",          # lossless, widely supported
-            predictor=2,             # horizontal differencing – good for floats
-            tiled=True,
-            blockxsize=256,
-            blockysize=256,
-        )
- 
-        with rasterio.open(output_path, "w", **profile) as dst:
-            dst.write(product[np.newaxis, :, :])   # shape (1, rows, cols)
- 

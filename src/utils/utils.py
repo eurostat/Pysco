@@ -14,7 +14,24 @@ def cartesian_product_comp(minx, miny, maxx, maxy, step=1):
     return pairs
 
 
+
+
 def weighted_median(values: np.ndarray, weights: np.ndarray) -> float:
+    """Weighted median: smallest value whose cumulative weight reaches half the total."""
+    if values.size == 0:
+        return np.nan
+    order = np.argsort(values)
+    v, w = values[order], weights[order]
+    cum = np.cumsum(w)
+    total = cum[-1]
+    if total <= 0:
+        return np.nan
+    return float(v[np.searchsorted(cum, 0.5 * total)])
+
+
+
+# deprecated, use weighted_median instead
+def weighted_median___(values: np.ndarray, weights: np.ndarray) -> float:
     """
     Compute the weighted median of `values`, weighted by `weights`.
     Assumes both are 1D arrays of the same length, already cleaned of nodata.

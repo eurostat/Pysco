@@ -1,144 +1,276 @@
-# NOTE: not used !!! under development ! stopped.
-
-# functions to aggregate statistics from grid to statistical units.
-
 import rasterio
-import fiona
-from shapely.geometry import shape
-from rasterio.features import geometry_mask
-import pandas as pd
+import geopandas as gpd
 import numpy as np
-from datetime import datetime
+import pandas as pd
+from rasterio.mask import mask,raster_geometry_mask
+from shapely.geometry import mapping
+from typing import Dict
+from itertools import product
+from contextlib import ExitStack
 
-#TODO
-# real test, with accessibility grid - with population. share within short walk/drive (500m,5km). pop weighted average distance (1, 5)
-# get mask values with indices
-# test with aggregation based on several bands, from separate tiffs ?
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utils.utils import weighted_median
 
-# array of input geopackages ?
-# use generic iterator instead of gpkg file
-# check what happens when centre exactly on the limit - counted twice ?
-# handle intersection-area weighted case - with exact intersection computation or 10*resampling ?
-# export as parquet
-# export as GPKG ?
 
-def grid2stat(tiffs, stat_gpkg, stat_id, out_csv, out_dict=None, verbose=False):
+
+def grid2stat_threshold(
+    population_path: str,
+    population_band: int = 1,
+
+    region_path: str = None,
+    region_id_att: str = "id",
+    region_filter=None,
+
+    masks: list = None,
+
+    value_when_no_population=0,
+) -> pd.DataFrame:
     """
-    Aggregate statistics from grid to statistical units.
+    Compute population statistics per region. It is the sum of the geotiff values for all the cells whose centre lies within the region.
+    It can optionaly apply various masks to compute statistics, for example, by degurba level 2, by CLC class, etc.
 
-    Parameters
-    ----------
-    tiffs : arr
-        An array with the input grid TIFF files. One element per input tiff. Each element is a pair of the tiff file path and the tiff band number.
-        NB: all tiff files must have the same resolution, geotransform and extent. TODO check
-    stat_gpkg : str
-        Path to the input statistical units GeoPackage file.
-    stat_id : str
-        Name of the identifier column in the statistical units GeoPackage.
-    out_csv : str
-        Path to the output CSV file where aggregated statistics will be saved.
-    out_dict : dict, optional
-        A dictionnary describing the output data. One entry per aggregated indicator. The key is the column name. The value is the aggregation function to use to compute the aggregated value from the cell values.
-        Default is None, in which case it will be the sum of the cell values.
-    Returns
-    -------
-    None
-        The function saves the aggregated statistics to a CSV file.
+    Args:
+        population_path:        Path to the population raster file.
+        population_band:        Band index (1-based) to read from the population raster.
+        region_path:            Path to the regions vector file.
+        region_id_att:          Attribute name used as region identifier.
+        region_filter:          Optional callable(row) -> bool to filter regions.
+        masks:                  List of mask dicts with keys: 'path', 'band', 'fun', 'dim_name'.
+        value_when_no_population: Value to use when no population pixels are found.
+
+    Returns:
+        DataFrame with one row per (region, mask configuration).
     """
+    if masks is None:
+        masks = []
 
-    # Open the grid TIFF files
-    grid_data = []
-    grid_transform = []
-    grid_nodata = []
-    for grid_tiff, band in tiffs:
-        if verbose: print(datetime.now(), f"Load {grid_tiff}, band {band}")
-        with rasterio.open(grid_tiff) as grid:
-            grid_data.append(grid.read(band))
-            grid_transform.append(grid.transform)
-            grid_nodata.append(grid.nodata)
+    # Load and optionally filter regions
+    regions = gpd.read_file(region_path)
+    if region_filter:
+        regions = regions[regions.apply(region_filter, axis=1)]
+    regions = regions[[region_id_att, "geometry"]]
 
-    # Prepare default aggregation function
-    aggegation_func_default = lambda arr: np.sum([x for x in arr if x is not None])  # Default to sum if no custom function is provided
+    if regions.empty:
+        raise ValueError("No regions found after filtering.")
 
-    # If not specified, set default to a single column with default aggregation function if no custom dict is provided
-    if out_dict is None: out_dict = { "sum": aggegation_func_default }
+    # Precompute cartesian product of all mask configurations
+    # One stat value item will be produced for each of these configurations, for each region
+    configurations = list(product(*(m["fun"].keys() for m in masks))) if masks else [()]
 
-    # Initialize a list to store results
-    results = []
+    # Open rasters: population and masks
+    src_population = rasterio.open(population_path)
+    src_masks = [rasterio.open(m["path"]) for m in masks]
 
-    # Loop through each statistical unit and aggregate statistics from the grid
-    with fiona.open(stat_gpkg) as fs:
-        for f in fs:
-            sid = f["properties"][stat_id]
-            if verbose: print(datetime.now(), sid)
+    out = []
+    try:
+        # Check rasters are compatible
+        _validate_rasters(src_population, src_masks)
 
-            # Make geometry from the feature, for masking the grids
-            g = shape(f["geometry"])
+        # Set no data value for population
+        population_nodata = src_population.nodata if src_population.nodata is not None else -9999
 
-            values = []
-            for i in range(len(grid_data)):
-                # Create mask - True for pixels whose centres fall within the geometry, False otherwise
-                mask = geometry_mask([g], transform=grid_transform[i], invert=True, out_shape=grid_data[i].shape, all_touched=False)
+        # Process each region
+        for _, region in regions.iterrows():
 
-                # get masked values, with indices
-                rows, cols = np.where(mask)
-                v = grid_data[i][rows, cols]
-                #print(len(rows), len(cols))
+            # get region id and geometry
+            region_id = region[region_id_att]
+            #if region_id != "AT001F": continue  # DEBUG: skip all but one region
+            geometry = [mapping(region.geometry)]
 
-                # filter to remove no_data values
-                nd = grid_nodata[i]
-                if nd is not None:
-                    v = np.array(v, dtype=object)
-                    v[v == nd] = None
-                    #v = v[v != nd]  
+            # Clip rasters to region geometry
+            try:
+                pop_clipped, mask_clipped = _clip_rasters( src_population, src_masks, masks, geometry,population_band, population_nodata)
+            except SkipRegion: continue
+            except Exception as e:
+                print(f"[{region_id}] Clipping failed: {e}")
+                continue
 
-                values.append(v)
+            # handle each mask configuration
+            for conf in configurations:
 
-            # Structure values as array of arrays, one per band. One element is a list of band values for a pixel.
-            #TODO
-            print(len(values))
-            values2 = []
-            for i in range(len(values[0])):
-                pass
+                # get boolean mask
+                combined_mask = _build_combined_mask(conf, masks, mask_clipped)
 
-            # Make output result
-            result = { stat_id: str(sid) }
+                # apply mask on population data
+                pop = pop_clipped if combined_mask is None else pop_clipped[combined_mask]
+                pop = pop[pop != population_nodata]
 
-            # Calculate aggregates value
-            for out_col, aggegation_func in out_dict.items():
-                if aggegation_func is None: aggegation_func = aggegation_func_default
-                #agg_value = aggegation_func(masked_values)
-                agg_value = aggegation_func(values[0]) #TODO - handle several bands
-                result[out_col] = agg_value
-            #print(result)
+                # make data item
+                row = {region_id_att: region_id}
+                row["VALUE"] = pop.sum() if pop.size > 0 else value_when_no_population
+                for i, m in enumerate(masks):
+                    row[m["dim_name"]] = conf[i]
+                out.append(row)
 
-            # Append results to the list
-            results.append(result)
+    finally:
+        # close all files
+        src_population.close()
+        for sm in src_masks:
+            sm.close()
 
-    # Save to CSV
-    pd.DataFrame(results).to_csv(out_csv, index=False)
+    return pd.DataFrame(out)
 
 
 
-# test
-grid2stat(
-        [
-            [ "/home/juju/geodata/census/2021/aggregated_tiff/pop_2021_1000.tif", 1 ],
-            [ "/home/juju/gisco/accessibility/gridviz/euro_access_evrp_2024_1000m_v2026_03.tif", 1 ],
-            #[ "/home/juju/gisco/accessibility/euro_access_evrp_2024_1000m_v2026_03.tif" , 1 ],
-            #[ "/home/juju/gisco/accessibility/euro_access_evrp_2024_1000m_v2026_03.tif" , 2 ]
-        ],
-        "/home/juju/Bureau/test.gpkg",
-        #"/home/juju/geodata/gisco/NUTS_RG_100K_2024_3035.gpkg",
-        "NUTS_ID",
-        "/home/juju/Bureau/out.csv",
-        out_dict={
-            "sum": lambda arr: np.sum([x for x in arr if x is not None]),
-            "mean": lambda arr: np.mean([x for x in arr if x is not None]),
-            "max": lambda arr: np.max([x for x in arr if x is not None]),
-            "min": lambda arr: np.min([x for x in arr if x is not None]),
-            "count": lambda arr: len(arr)
-        },
-        verbose=True
-)
+
+def grid2stat_weighted_average(
+    indic_path: str,
+    weight_path: str,
+    indic_band: int = 1,
+    weight_band: int = 1,
+    region_path: str = None,
+    region_id_att: str = "id",
+    region_filter=None,
+    masks: list = None,
+) -> pd.DataFrame:
+    """
+    Compute weighted average and weighted median of an indicator raster over regions,
+    using a weight raster (e.g. population). Masks are applied identically to both.
+
+    masks: list of dicts with keys:
+        'path'     : mask raster path (same grid as indicator/weight)
+        'band'     : 1-based band index
+        'fun'      : dict {label: callable(array) -> boolean array (True = keep) or None}
+        'dim_name' : output column name holding the label
+    """
+    masks = masks or []
+
+    # Load / filter regions
+    regions = gpd.read_file(region_path)
+    if region_filter:
+        regions = regions[regions.apply(region_filter, axis=1)]
+    regions = regions[[region_id_att, "geometry"]]
+    if regions.empty:
+        raise ValueError("No regions found after filtering.")
+
+    # One output item per combination of mask labels, per region
+    configurations = list(product(*(m["fun"].keys() for m in masks))) if masks else [()]
+
+    def make_row(region_id, value, indic_type, conf):
+        row = {region_id_att: region_id, "STATINFO": indic_type, "VALUE": value}
+        for i, m in enumerate(masks):
+            row[m["dim_name"]] = conf[i]
+        return row
+
+    out = []
+    with ExitStack() as stack:
+        src_indic = stack.enter_context(rasterio.open(indic_path))
+        src_weight = stack.enter_context(rasterio.open(weight_path))
+        src_masks = [stack.enter_context(rasterio.open(m["path"])) for m in masks]
+
+        _validate_rasters(src_indic, [src_weight] + src_masks)
+
+        # Reproject regions to raster CRS if needed
+        if regions.crs is not None and src_indic.crs is not None and regions.crs != src_indic.crs:
+            regions = regions.to_crs(src_indic.crs)
+
+        for _, region in regions.iterrows():
+            region_id = region[region_id_att]
+            #if region_id != "AT001F": continue  # DEBUG: skip all but one region
+            #print(f"[{region_id}] Processing region...")
+            geometry = [mapping(region.geometry)]
+
+            try:
+                # shape_mask: True OUTSIDE the geometry; window: crop window (same grid for all rasters)
+                shape_mask, _, window = raster_geometry_mask(src_indic, geometry, crop=True)
+
+                # masked=True -> nodata pixels are masked automatically
+                indic_arr = src_indic.read(indic_band, window=window, masked=True)
+                weight_arr = src_weight.read(weight_band, window=window, masked=True)
+                mask_arrays = [
+                    sm.read(m["band"], window=window)
+                    for sm, m in zip(src_masks, masks)
+                ]
+            except ValueError:
+                # typically "Input shapes do not overlap raster"
+                continue
+            except Exception as e:
+                print(f"[{region_id}] Clipping failed: {e}")
+                continue
+
+            # Base validity: inside polygon, not nodata, finite, non-negative weight
+            indic_f = indic_arr.astype("float64").filled(np.nan)
+            weight_f = weight_arr.astype("float64").filled(np.nan)
+            base_valid = (
+                ~shape_mask
+                & np.isfinite(indic_f)
+                & np.isfinite(weight_f)
+                & (weight_f >= 0)
+            )
+            if not base_valid.any():
+                continue
+
+            for conf in configurations:
+                combined = _build_combined_mask(conf, masks, mask_arrays)
+                valid = base_valid if combined is None else (base_valid & combined)
+
+                indic = indic_f[valid]
+                weight = weight_f[valid]
+
+                if indic.size == 0 or weight.sum() <= 0:
+                    wa, wmed = np.nan, np.nan
+                else:
+                    wa = float((indic * weight).sum() / weight.sum())
+                    wmed = weighted_median(indic, weight)
+
+                out.append(make_row(region_id, wa, "AVG", conf))
+                out.append(make_row(region_id, wmed, "MED", conf))
+
+                #print(f"[{region_id}]: WA={wa}, WM={wmed}")
+
+    return pd.DataFrame(out)
+
+
+
+
+
+class SkipRegion(Exception):
+    """Raised when a region has no valid data and should be silently skipped."""
+
+
+
+def _validate_rasters(ref, others: list) -> None:
+    """Check that all rasters share the same grid as the reference raster."""
+    for s in others:
+        if s.crs != ref.crs:
+            raise ValueError(f"CRS mismatch: {ref.crs} vs {s.crs}")
+        if s.transform != ref.transform:
+            raise ValueError(f"Transform mismatch: {ref.transform} vs {s.transform}")
+        if s.res != ref.res:
+            raise ValueError(f"Resolution mismatch: {ref.res} vs {s.res}")
+        if (s.width, s.height) != (ref.width, ref.height):
+            raise ValueError(f"Shape mismatch: {(ref.width, ref.height)} vs {(s.width, s.height)}")
+
+
+
+def _clip_rasters(src_population, src_masks, masks, geometry, population_band, population_nodata):
+    """Clip population and mask rasters to a region geometry."""
+    try:
+        pop_clipped = mask(src_population, geometry, crop=True, filled=True, nodata=population_nodata)[0][population_band - 1]
+        mask_clipped = [
+            mask(sm, geometry, crop=True, filled=True)[0][m["band"] - 1]
+            for sm, m in zip(src_masks, masks)
+        ]
+    except ValueError: raise SkipRegion()
+
+    return pop_clipped, mask_clipped
+
+
+def _build_combined_mask(conf, masks, mask_arrays):
+    """Combine individual mask functions into a single boolean mask (True = keep)."""
+    combined = None
+    for i, (key, m) in enumerate(zip(conf, masks)):
+        mf = m["fun"].get(key)
+        if mf is None:
+            continue
+        c = m.get("coeff")
+        if c is None: c = 1.0
+        res = mf(c * mask_arrays[i])
+        if res is None:
+            continue
+        res = np.asarray(res, dtype=bool)
+        combined = res if combined is None else (combined & res)
+    return combined
 
