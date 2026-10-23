@@ -237,6 +237,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             df_ = df_.rename(columns={region_id_att: 'GEO'})
 
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
+                            del df_
 
 
 
