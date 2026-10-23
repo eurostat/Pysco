@@ -49,7 +49,7 @@ country_codes_healthcare = "AT, BE, CY, DE, DK, ES, FR, IE, IT, LV, NL, NO, PL, 
 country_codes_education = "AT, BE, DE, DK, ES FI, FR, HR, HU, IE, IT, NL, NO, PT, RO, SE, SI, SK".split(", ")
 
 folder = params["out_folder"] + "stats/"
-output_folder = folder + "for_regio/"
+output_folder = folder + "extraction_for_regio_10_2026/"
 os.makedirs(output_folder, exist_ok=True)
 
 

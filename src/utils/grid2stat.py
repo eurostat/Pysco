@@ -59,14 +59,18 @@ def grid2stat_threshold(
     # One stat value item will be produced for each of these configurations, for each region
     configurations = list(product(*(m["fun"].keys() for m in masks))) if masks else [()]
 
-    # Open rasters: population and masks
-    src_population = rasterio.open(population_path)
-    src_masks = [rasterio.open(m["path"]) for m in masks]
-
     out = []
-    try:
+    with ExitStack() as stack:
+        # Open rasters: population and masks
+        src_population = stack.enter_context(rasterio.open(population_path))
+        src_masks = [stack.enter_context(rasterio.open(m["path"])) for m in masks]
+
         # Check rasters are compatible
         _validate_rasters(src_population, src_masks)
+
+        # Reproject regions to raster CRS if needed
+        if regions.crs is not None and src_population.crs is not None and regions.crs != src_population.crs:
+            regions = regions.to_crs(src_population.crs)
 
         # Set no data value for population
         population_nodata = src_population.nodata if src_population.nodata is not None else -9999
@@ -103,12 +107,6 @@ def grid2stat_threshold(
                 for i, m in enumerate(masks):
                     row[m["dim_name"]] = conf[i]
                 out.append(row)
-
-    finally:
-        # close all files
-        src_population.close()
-        for sm in src_masks:
-            sm.close()
 
     return pd.DataFrame(out)
 
