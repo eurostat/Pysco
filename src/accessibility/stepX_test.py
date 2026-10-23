@@ -7,7 +7,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.grid2stat import grid2stat_weighted_average
-from utils.csvutils import hypercube_csv_to_timeseries_csv
+from utils.csvutils import hypercube_to_timeseries
 
 
 

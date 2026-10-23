@@ -3,13 +3,12 @@ import gc
 import pandas as pd
 from datetime import datetime
 import shutil
-from utils.utils import normalize
 
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.grid2stat import grid2stat_threshold, grid2stat_weighted_average
-from utils.csvutils import hypercube_csv_to_timeseries_csv
+from utils.csvutils import hypercube_to_timeseries
 
 age_group_to_band = {
     "T":1,
@@ -183,7 +182,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             df_["TRA_MODE"] = mode
                             df_["AGE"] = age_group
                             df_["ACCESS_INDIC"] = ai
-                            df_["VALUE"] = normalize(df_["VALUE"].round())
+                            df_["VALUE"] = df_["VALUE"].round()
                             df_["UNIT"] = 'NR'
                             df_ = df_.rename(columns={region_id_att: 'GEO'})
 
@@ -240,8 +239,6 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
 
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
                             del df_
-                            gc.collect()
-
 
 
                 # sort columns
@@ -255,7 +252,6 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                 print(datetime.now(), "save compiled file")
                 df.to_csv(ofo + ".csv", index=False)
                 df.to_parquet(ofo + ".parquet")
-                del df
 
                 if "deploy_target_folder" in params:
                     print(datetime.now(), "deploy file")
@@ -268,16 +264,13 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                     out_folder_d = output_folder + "as_timeseries/"
                     os.makedirs(out_folder_d, exist_ok=True)
 
-                    hypercube_csv_to_timeseries_csv(
-                        ofo + ".csv",
+                    hypercube_to_timeseries(
+                        df,
                         out_folder_d,
                         output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "__" + f)
 
-                    # delete NR files (not usefull) and rename files (remove PC)
-                    #for f in os.listdir(out_folder_d):
-                    #    if "__UNIT_NR" in f: os.remove(os.path.join(out_folder_d, f))
-                    #    if "__UNIT_PC" in f: os.rename(os.path.join(out_folder_d, f), os.path.join(out_folder_d, f.replace("__UNIT_PC", "")))
-
+                del df
+                gc.collect()
 
 
 
@@ -380,7 +373,7 @@ def compute_statistics_average(params, services=None, years=None, decompose_time
                 out_folder_d = output_folder + "as_timeseries/"
                 os.makedirs(out_folder_d, exist_ok=True)
 
-                hypercube_csv_to_timeseries_csv(
+                hypercube_to_timeseries(
                     ofo + ".csv",
                     out_folder_d,
                     output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "__" + f)

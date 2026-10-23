@@ -136,10 +136,8 @@ def join_csv_files(
 
 
 
-
-
-def hypercube_csv_to_timeseries_csv(
-        input_csv: str,
+def hypercube_to_timeseries(
+        df,
         output_folder: str,
         id_columns:str = "GEO",
         value_column:str = "VALUE",
@@ -164,9 +162,8 @@ def hypercube_csv_to_timeseries_csv(
     -------
     List of paths to the files that were written.
     """
+  
     os.makedirs(output_folder, exist_ok=True)
- 
-    df = pd.read_csv(input_csv)
  
     # Identify the dimension columns (everything except value_column)
     dim_cols = [c for c in df.columns if c != value_column]
