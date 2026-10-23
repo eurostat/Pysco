@@ -46,7 +46,7 @@ def combine_to_geotiff(params, services=None, years=None, resolutions=[100]):
 
                     # check if tiff file was already produced
                     if os.path.isfile(geotiff):
-                        print(datetime.now(), "Combined file already produced")
+                        #print(datetime.now(), "Combined file already produced")
                         continue
 
                     # get all parquet files in the output folder
