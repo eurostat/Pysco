@@ -144,19 +144,18 @@ def hypercube_to_timeseries(
         time_column:str = "TIME",
         output_file_name_fun = None,
         verbose: bool = False,
-) -> list[str]:
+):
     """
     Decompose a hypercube CSV into one file per geo entity with one colmun per time values, and one file for other dimension combinations.
     (do pivot table)
  
     Each output file has the structure:
-        id_columns, <time1>, <time2>, ...
+        id_column, <time1>, <time2>, ...
 
     Parameters
     ----------
-    input_csv     : path to the input CSV file
-    output_folder : directory where output CSV files will be written
-                    (created if it does not exist)
+    df     : input dataframe
+    output_file_name_fun : A function that returns an output file name from a string with dimension info. Without ".csv" extension.
  
     Returns
     -------

@@ -1,6 +1,6 @@
 {
     "steps": [1,2,3,4],
-    "services": ["education", "healthcare"],
+    "services": ["education", "healthcare", "evrp"],
     "years": null,
     "deploy_target_folder": "/home/juju/pCloudDrive"
 }
