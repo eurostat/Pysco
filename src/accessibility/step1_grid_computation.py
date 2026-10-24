@@ -59,7 +59,7 @@ def compute_accessibility_grids(params, services=None, years=None, resolutions=[
                         cell_id_fun = cell_id_fun_,
                         grid_resolution= grid_resolution,
                         cell_network_max_distance= 1500,
-                        to_network_speed_ms= 1 if service == "evrp" else 15 / 3.6,
+                        to_network_speed_ms= 1 if mode == "FOOT_BIKE_M" or mode == "CAR_M" else 15 / 3.6,
                         file_size = 200000 if grid_resolution == 100 else 500000,
                         extention_buffer = 20000 if service in ["education", "evrp"] else 60000,
                         detailled = True,
