@@ -15,9 +15,10 @@ def get_countries_covered(service:str, year:str):
     if service == "evrp": return "all"
     cnts = ["AT", "BE", "BG", "HR", "CY", "CZ", "DE", "DK", "EE", "FI", "FR",
             "EL", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL",
-            "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO" ]
+            "PL", "PT", "RO", "SK", "SI", "ES", "SE", "NO", "CH" ]
     #exclude: ["CH", "RS", "BA", "MK", "AL", "ME", "MD"],
-    if service == "healthcare": cnts.append("CH")
+    if service == "education": cnts.remove("CH")
+    if service == "education": cnts.remove("MT")
     if year == "2023": cnts.append("AL")
     return cnts
 
