@@ -263,13 +263,12 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                     if decompose_timeseries:
                         print(datetime.now(), "decompose by time series", su, service)
 
-                        out_folder_d = output_folder + "as_timeseries/" + su + "/" + ai + "_" + mode + "_" + mode_unit + "/"
+                        out_folder_d = output_folder + "as_timeseries/" + geo + "/" + service + "_" + ai + "_" + mode + "_" + mode_unit + "/"
                         os.makedirs(out_folder_d, exist_ok=True)
 
-                        hypercube_to_timeseries(
-                            df,
+                        hypercube_to_timeseries(df,
                             out_folder_d,
-                            output_file_name_fun = lambda f: "euro_access_" + geo + "_" + service + "__" + f)
+                            output_file_name_fun = lambda f: f)
 
                     del df
                     gc.collect()
