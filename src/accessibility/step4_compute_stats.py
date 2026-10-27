@@ -139,7 +139,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                     mode_unit = params["modes_stats"][service][mode]["mode_unit"]
                     coeff = params["modes_stats"][service][mode]["coeff"]
 
-                    ofo = output_folder + "euro_access_" + geo + "_" + service + "_" + mode + "_" + ai + "_" + mode_unit + "_" + params["stats_versions"][service]
+                    ofo = output_folder + "euro_access_" + geo + "_" + service + "_" + ai + "_" + mode + "_" + mode_unit + "_" + params["stats_versions"][service]
                     if os.path.exists(ofo + ".csv"): continue
 
                     # make a single csv hypercube file per statunit and service
