@@ -254,7 +254,8 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
             df = df.sort_values(["GEO", "TIME"])
 
             print(datetime.now(), "save compiled file")
-            if(su != "LAU"): df.to_csv(ofo + ".csv", index=False)
+            if(su != "LAU"):
+                df.to_csv(ofo + ".csv", index=False)
             df.to_parquet(ofo + ".parquet")
 
             if "deploy_target_folder" in params:
