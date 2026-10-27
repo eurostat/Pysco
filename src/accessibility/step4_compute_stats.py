@@ -266,9 +266,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                         out_folder_d = output_folder + "as_timeseries/" + geo + "/" + service + "_" + ai + "_" + mode + "_" + mode_unit + "/"
                         os.makedirs(out_folder_d, exist_ok=True)
 
-                        hypercube_to_timeseries(df,
-                            out_folder_d,
-                            output_file_name_fun = lambda f: f)
+                        hypercube_to_timeseries(df, out_folder_d)
 
                     del df
                     gc.collect()
