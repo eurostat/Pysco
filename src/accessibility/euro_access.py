@@ -13,6 +13,7 @@ from accessibility.step6_gridviz_service_points import gridviz_tiling_points
 
 
 # TODO
+# tiff ban code: N1 AN3 AN5
 # decompose LAU - fix for less memory usage
 # simplify s to min, using coeff
 # round values
