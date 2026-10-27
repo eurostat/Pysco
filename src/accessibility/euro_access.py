@@ -13,7 +13,6 @@ from accessibility.step6_gridviz_service_points import gridviz_tiling_points
 
 
 # TODO
-# MT educ missing - 2020 2023 2026
 # decompose LAU - fix for less memory usage
 # simplify s to min, using coeff
 # round values
