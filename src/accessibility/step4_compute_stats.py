@@ -129,23 +129,25 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
 
     for su in sus.keys():
         region_id_att = sus[su]["id"]
-        geo = su + "_" + sus[su]["version"]
+        geo = su + sus[su]["version"]
         for service in services:
 
+            ofo = output_folder + "euro_access_" + service + "_" + geo + "_" + params["stats_versions"][service]
+            if os.path.exists(ofo + ".csv"): continue
+
+            # make a single csv hypercube file per statunit and service
+            df = None
+
+            years_ = years if years is not None else params["pois_datasets"][service].keys()
+
+
             for mode in params["modes_stats"][service].keys():
+
+                grid_mode = params["modes_stats"][service][mode]["grid_mode"]
+                mode_unit = params["modes_stats"][service][mode]["mode_unit"]
+                coeff = params["modes_stats"][service][mode]["coeff"]
+
                 for ai in service_to_access_indicator[service]:
-
-                    grid_mode = params["modes_stats"][service][mode]["grid_mode"]
-                    mode_unit = params["modes_stats"][service][mode]["mode_unit"]
-                    coeff = params["modes_stats"][service][mode]["coeff"]
-
-                    ofo = output_folder + "euro_access_" + geo + "_" + service + "_" + ai + "_" + mode + "_" + mode_unit + "_" + params["stats_versions"][service]
-                    if os.path.exists(ofo + ".csv"): continue
-
-                    # make a single csv hypercube file per statunit and service
-                    df = None
-
-                    years_ = years if years is not None else params["pois_datasets"][service].keys()
 
                     for year in years_:
                         for age_group in age_group_to_band.keys():
@@ -181,9 +183,9 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                                 ]
                             )
                             df_["TIME"] = year
-                            #df_["TRA_MODE"] = mode
+                            df_["TRA_MODE"] = mode
                             df_["AGE"] = age_group
-                            #df_["ACCESS_INDIC"] = ai
+                            df_["ACCESS_INDIC"] = ai
                             df_["VALUE"] = df_["VALUE"].round()
                             df_["UNIT"] = 'NR'
                             df_ = df_.rename(columns={region_id_att: 'GEO'})
@@ -191,10 +193,10 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             # compute percentages
                             if compute_percentages:
                                 # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
-                                totals = df_[df_['STATINFO'] == 'TOTAL'][['GEO', 'TIME', 'AGE', "DEG_URB", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+                                totals = df_[df_['STATINFO'] == 'TOTAL'][['GEO', 'TIME', "ACCESS_INDIC", "TRA_MODE", 'AGE', "DEG_URB", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
                                 # Merge totals back onto the full dataframe
-                                df_merged = df_.merge(totals, on=['GEO', 'TIME', 'AGE', "DEG_URB"])
+                                df_merged = df_.merge(totals, on=['GEO', 'TIME', "ACCESS_INDIC","TRA_MODE", 'AGE', "DEG_URB"])
 
                                 # Build the percentage rows
                                 pc_rows = df_merged.copy()
@@ -231,10 +233,10 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             )
 
                             df_["TIME"] = year
-                            #df_["TRA_MODE"] = mode
+                            df_["TRA_MODE"] = mode
                             df_["UNIT"] = mode_unit
                             df_["AGE"] = age_group
-                            #df_["ACCESS_INDIC"] = ai
+                            df_["ACCESS_INDIC"] = ai
                             sec_to_mn = 60 if mode_unit == "MN" else 1 # to convert seconds to minutes if needed
                             df_["VALUE"] = (coeff * df_["VALUE"] / sec_to_mn).round(2)
                             df_ = df_.rename(columns={region_id_att: 'GEO'})
@@ -243,31 +245,31 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             del df_
 
 
-                    # sort columns
-                    df = df[["GEO","AGE","DEG_URB","STATINFO","UNIT","TIME","VALUE"]]
+            # sort columns
+            df = df[["GEO","ACCESS_INDIC","TRA_MODE","AGE","DEG_URB","STATINFO","UNIT","TIME","VALUE"]]
 
-                    # TODO remove no data rows ?
+            # TODO remove no data rows ?
 
-                    # sort rows
-                    df = df.sort_values(["GEO", "TIME"])
+            # sort rows
+            df = df.sort_values(["GEO", "TIME"])
 
-                    print(datetime.now(), "save compiled file")
-                    df.to_csv(ofo + ".csv", index=False)
-                    df.to_parquet(ofo + ".parquet")
+            print(datetime.now(), "save compiled file")
+            df.to_csv(ofo + ".csv", index=False)
+            df.to_parquet(ofo + ".parquet")
 
-                    if "deploy_target_folder" in params:
-                        print(datetime.now(), "deploy file")
-                        shutil.copy(ofo + ".csv", params["deploy_target_folder"])
-                        shutil.copy(ofo + ".parquet", params["deploy_target_folder"])
+            if "deploy_target_folder" in params:
+                print(datetime.now(), "deploy file")
+                shutil.copy(ofo + ".csv", params["deploy_target_folder"])
+                shutil.copy(ofo + ".parquet", params["deploy_target_folder"])
 
-                    if decompose_timeseries:
-                        print(datetime.now(), "decompose by time series", su, service)
+            if decompose_timeseries:
+                print(datetime.now(), "decompose by time series", su, service)
 
-                        out_folder_d = output_folder + "as_timeseries/" + geo + "/" + service + "_" + ai + "_" + mode + "_" + mode_unit + "/"
-                        os.makedirs(out_folder_d, exist_ok=True)
+                out_folder_d = output_folder + "as_timeseries/" + geo + "/" + service + "_" + ai + "_" + mode + "_" + mode_unit + "/"
+                os.makedirs(out_folder_d, exist_ok=True)
 
-                        hypercube_to_timeseries(df, out_folder_d)
+                hypercube_to_timeseries(df, out_folder_d)
 
-                    del df
-                    gc.collect()
+            del df
+            gc.collect()
 
