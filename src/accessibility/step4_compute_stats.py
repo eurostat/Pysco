@@ -129,7 +129,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
 
     for su in sus.keys():
         region_id_att = sus[su]["id"]
-        geo = su + sus[su]["version"]
+        geo = su + "_" + sus[su]["version"]
         for service in services:
 
             ofo = output_folder + "euro_access_" + service + "_" + geo + "_" + params["stats_versions"][service]
