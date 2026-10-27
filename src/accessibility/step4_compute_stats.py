@@ -181,9 +181,9 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                                 ]
                             )
                             df_["TIME"] = year
-                            df_["TRA_MODE"] = mode
+                            #df_["TRA_MODE"] = mode
                             df_["AGE"] = age_group
-                            df_["ACCESS_INDIC"] = ai
+                            #df_["ACCESS_INDIC"] = ai
                             df_["VALUE"] = df_["VALUE"].round()
                             df_["UNIT"] = 'NR'
                             df_ = df_.rename(columns={region_id_att: 'GEO'})
@@ -231,10 +231,10 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             )
 
                             df_["TIME"] = year
-                            df_["TRA_MODE"] = mode
+                            #df_["TRA_MODE"] = mode
                             df_["UNIT"] = mode_unit
                             df_["AGE"] = age_group
-                            df_["ACCESS_INDIC"] = ai
+                            #df_["ACCESS_INDIC"] = ai
                             sec_to_mn = 60 if mode_unit == "MN" else 1 # to convert seconds to minutes if needed
                             df_["VALUE"] = (coeff * df_["VALUE"] / sec_to_mn).round(2)
                             df_ = df_.rename(columns={region_id_att: 'GEO'})
