@@ -1,6 +1,6 @@
 {
     "steps": [1,2,3,4],
-    "services": ["healthcare", "education", "evrp"],
+    "services": ["healthcare", "evrp", "education"],
     "years": null,
 
     "stat_units": {
