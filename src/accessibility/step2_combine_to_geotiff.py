@@ -96,7 +96,7 @@ def combine_to_geotiff(params, services=None, years=None, resolutions=[100]):
                     """
 
                     print(datetime.now(), resolution, service, year, mode, "rename tiff bands")
-                    rename_geotiff_bands(geotiff, ["n1", "n" + str(k)])
+                    rename_geotiff_bands(geotiff, ["N1", "AN" + str(k)])
 
                     if "deploy_target_folder" in params:
                             print(datetime.now(), "Move zip file", service)
