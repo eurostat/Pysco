@@ -140,7 +140,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                 coeff = params["modes_stats"][service][mode]["coeff"]
 
                 ofo = output_folder + "euro_access_" + service + "_" + geo + "_" + mode + "_" + mode_unit + "_" + params["stats_versions"][service]
-                if os.path.exists(ofo + ".csv"): continue
+                if os.path.exists(ofo + ".parquet"): continue
                 df = None
 
                 for ai in service_to_access_indicator[service]:
