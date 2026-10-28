@@ -35,7 +35,7 @@ def decompose_statistics_timeseries(params, services=None):
                 df = pd.read_parquet(ofo + ".parquet")
                 if len(df) == 0: continue
 
-                out_folder_d = output_folder + "stats_as_timeseries/" + geo + "/" + service + "_" + mode + "_" + mode_unit + "/"
+                out_folder_d = output_folder + "stats_as_timeseries/" + geo + "_" + service + "/"
                 os.makedirs(out_folder_d, exist_ok=True)
 
                 hypercube_to_timeseries(df, out_folder_d)
