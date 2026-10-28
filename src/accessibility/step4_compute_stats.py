@@ -139,7 +139,7 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                 mode_unit = params["modes_stats"][service][mode]["mode_unit"]
                 coeff = params["modes_stats"][service][mode]["coeff"]
 
-                ofo = output_folder + "euro_access_" + service + "_" + geo + "_" + mode_unit + "_" + params["stats_versions"][service]
+                ofo = output_folder + "euro_access_" + service + "_" + geo + "_" + mode + "_" + mode_unit + "_" + params["stats_versions"][service]
                 if os.path.exists(ofo + ".csv"): continue
                 df = None
 
