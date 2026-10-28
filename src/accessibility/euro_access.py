@@ -8,6 +8,7 @@ from accessibility.step1_grid_computation import compute_accessibility_grids
 from accessibility.step2_combine_to_geotiff import combine_to_geotiff
 from accessibility.step3_aggregate_geotiff import aggregate_geotiff
 from accessibility.step4_compute_stats import compute_statistics
+from accessibility.step4_x_decompose_timeseries import decompose_statistics_timeseries
 from accessibility.step5_gridviz_grids import gridviz_tiling
 from accessibility.step6_gridviz_service_points import gridviz_tiling_points
 
@@ -54,3 +55,4 @@ if "steps" in params and 6 in params["steps"]:
     gridviz_tiling_points(params, services=params["services"], years=params["years"])
 
 
+decompose_statistics_timeseries(params)
