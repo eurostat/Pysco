@@ -39,3 +39,4 @@ def decompose_statistics_timeseries(params, services=None):
                 os.makedirs(out_folder_d, exist_ok=True)
 
                 hypercube_to_timeseries(df, out_folder_d)
+
