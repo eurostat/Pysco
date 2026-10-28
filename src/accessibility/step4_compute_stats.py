@@ -132,20 +132,16 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
         geo = su + "_" + sus[su]["version"]
         for service in services:
 
-            ofo = output_folder + "euro_access_" + service + "_" + geo + "_" + params["stats_versions"][service]
-            if os.path.exists(ofo + ".csv"): continue
-
-            # make a single csv hypercube file per statunit and service
-            df = None
-
             years_ = years if years is not None else params["pois_datasets"][service].keys()
 
-
             for mode in params["modes_stats"][service].keys():
-
                 grid_mode = params["modes_stats"][service][mode]["grid_mode"]
                 mode_unit = params["modes_stats"][service][mode]["mode_unit"]
                 coeff = params["modes_stats"][service][mode]["coeff"]
+
+                ofo = output_folder + "euro_access_" + service + "_" + geo + "_" + mode_unit + "_" + params["stats_versions"][service]
+                if os.path.exists(ofo + ".csv"): continue
+                df = None
 
                 for ai in service_to_access_indicator[service]:
 
@@ -245,30 +241,32 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             del df_
 
 
-            if(su != "LAU"):
-                print(datetime.now(), "sort columns")
-                df = df[["GEO","ACCESS_INDIC","TRA_MODE","AGE","DEG_URB","STATINFO","UNIT","TIME","VALUE"]]
-                print(datetime.now(), "sort rows")
-                df = df.sort_values(["GEO", "TIME"])
+                if(su != "LAU"):
+                    #TODO check which one fails for LAU
+                    print(datetime.now(), "sort columns")
+                    df = df[["GEO","ACCESS_INDIC","TRA_MODE","AGE","DEG_URB","STATINFO","UNIT","TIME","VALUE"]]
+                    print(datetime.now(), "sort rows")
+                    df = df.sort_values(["GEO", "TIME"])
 
-            print(datetime.now(), "save compiled file")
-            if(su != "LAU"):
-                df.to_csv(ofo + ".csv", index=False)
-            df.to_parquet(ofo + ".parquet")
+                print(datetime.now(), "save compiled file")
+                if(su != "LAU"):
+                    df.to_csv(ofo + ".csv", index=False)
+                df.to_parquet(ofo + ".parquet")
 
-            if "deploy_target_folder" in params:
-                print(datetime.now(), "deploy file")
-                shutil.copy(ofo + ".csv", params["deploy_target_folder"])
-                shutil.copy(ofo + ".parquet", params["deploy_target_folder"])
+                if "deploy_target_folder" in params:
+                    print(datetime.now(), "deploy file")
+                    shutil.copy(ofo + ".csv", params["deploy_target_folder"])
+                    shutil.copy(ofo + ".parquet", params["deploy_target_folder"])
 
-            if decompose_timeseries:
-                print(datetime.now(), "decompose by time series", su, service)
+                #TODO move that
+                if decompose_timeseries:
+                    print(datetime.now(), "decompose by time series", su, service)
 
-                out_folder_d = output_folder + "stats_as_timeseries/" + geo + "/" + service + "_" + ai + "_" + mode + "_" + mode_unit + "/"
-                os.makedirs(out_folder_d, exist_ok=True)
+                    out_folder_d = output_folder + "stats_as_timeseries/" + geo + "/" + service + "_" + ai + "_" + mode + "_" + mode_unit + "/"
+                    os.makedirs(out_folder_d, exist_ok=True)
 
-                hypercube_to_timeseries(df, out_folder_d)
+                    hypercube_to_timeseries(df, out_folder_d)
 
-            del df
-            gc.collect()
+                del df
+                gc.collect()
 
