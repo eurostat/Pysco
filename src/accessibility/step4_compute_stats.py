@@ -250,14 +250,14 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
 
                 print(datetime.now(), "save compiled file")
                 df.to_parquet(ofo + ".parquet")
-                #if(su != "LAU"):
-                df.to_csv(ofo + ".csv", index=False)
+                if(su != "LAU"):
+                    df.to_csv(ofo + ".csv", index=False)
 
                 if "deploy_target_folder" in params:
                     print(datetime.now(), "deploy file")
                     shutil.copy(ofo + ".parquet", params["deploy_target_folder"])
-                    #if(su != "LAU"):
-                    shutil.copy(ofo + ".csv", params["deploy_target_folder"])
+                    if(su != "LAU"):
+                        shutil.copy(ofo + ".csv", params["deploy_target_folder"])
 
                 #TODO move that
                 if decompose_timeseries:

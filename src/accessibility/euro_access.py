@@ -16,7 +16,7 @@ from accessibility.step6_gridviz_service_points import gridviz_tiling_points
 # simplify s to min, using coeff
 # round values
 
-# stats: filter out regions with no data
+# stats: filter out regions with no data ?
 # stats: compute stats with 100m resolution ?
 # secondary education services accessibility
 
