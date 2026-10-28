@@ -28,9 +28,9 @@ def decompose_statistics_timeseries(params, services=None):
         for service in services:
 
             for mode in params["modes_stats"][service].keys():
+                mode_unit = params["modes_stats"][service][mode]["mode_unit"]
                 print(datetime.now(), "decompose by time series", geo, service, mode, mode_unit)
 
-                mode_unit = params["modes_stats"][service][mode]["mode_unit"]
                 ofo = output_folder + "euro_access_" + service + "_" + geo + "_" + mode + "_" + mode_unit + "_" + params["stats_versions"][service]
 
                 df = pd.open(ofo + ".parquet")
