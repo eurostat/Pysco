@@ -55,4 +55,5 @@ if "steps" in params and 6 in params["steps"]:
     gridviz_tiling_points(params, services=params["services"], years=params["years"])
 
 
+# additional steps - to be activated on-demand
 decompose_statistics_timeseries(params)
