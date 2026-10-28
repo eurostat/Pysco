@@ -109,7 +109,7 @@ def region_filter(id_att:str, service:str, year:str):
 
 
 
-def compute_statistics(params, services=None, years=None, decompose_timeseries=True, compute_percentages=True):
+def compute_statistics(params, services=None, years=None):
     """
     Compute statistics for accessibility (thresholds number/percentages, averages and medians) and save to CSV and Parquet files.
     Structure: GEO,TIME,AGE,DEG_URB,STATINFO,UNIT,VALUE
@@ -186,23 +186,26 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
                             df_["UNIT"] = 'NR'
                             df_ = df_.rename(columns={region_id_att: 'GEO'})
 
+
+
                             # compute percentages
-                            if compute_percentages:
-                                # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
-                                totals = df_[df_['STATINFO'] == 'TOTAL'][['GEO', 'TIME', "ACCESS_INDIC", "TRA_MODE", 'AGE', "DEG_URB", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
+                            # Get the totals (ACCESS_INDIC='T') for each GEO/TIME/AGE combination
+                            totals = df_[df_['STATINFO'] == 'TOTAL'][['GEO', 'TIME', "ACCESS_INDIC", "TRA_MODE", 'AGE', "DEG_URB", 'VALUE']].rename(columns={'VALUE': 'TOTAL'})
 
-                                # Merge totals back onto the full dataframe
-                                df_merged = df_.merge(totals, on=['GEO', 'TIME', "ACCESS_INDIC","TRA_MODE", 'AGE', "DEG_URB"])
+                            # Merge totals back onto the full dataframe
+                            df_merged = df_.merge(totals, on=['GEO', 'TIME', "ACCESS_INDIC","TRA_MODE", 'AGE', "DEG_URB"])
 
-                                # Build the percentage rows
-                                pc_rows = df_merged.copy()
-                                pc_rows['VALUE'] = (pc_rows['VALUE'] / pc_rows['TOTAL'] * 100).round(2)
-                                pc_rows['UNIT'] = 'PC'
+                            # Build the percentage rows
+                            pc_rows = df_merged.copy()
+                            pc_rows['VALUE'] = (pc_rows['VALUE'] / pc_rows['TOTAL'] * 100).round(2)
+                            pc_rows['UNIT'] = 'PC'
 
-                                # Drop the helper column and append
-                                pc_rows = pc_rows.drop(columns=['TOTAL']).query("STATINFO != 'TOTAL'")
+                            # Drop the helper column and append
+                            pc_rows = pc_rows.drop(columns=['TOTAL']).query("STATINFO != 'TOTAL'")
 
-                                df_ = pd.concat([df_, pc_rows], ignore_index=True)
+                            df_ = pd.concat([df_, pc_rows], ignore_index=True)
+
+
 
                             # merge
                             df = df_ if df is None else pd.concat([df, df_], ignore_index=True)
