@@ -32,8 +32,7 @@ def decompose_statistics_timeseries(params, services=None):
                 print(datetime.now(), "decompose by time series", geo, service, mode, mode_unit)
 
                 ofo = output_folder + "euro_access_" + service + "_" + geo + "_" + mode + "_" + mode_unit + "_" + params["stats_versions"][service]
-
-                df = pd.open(ofo + ".parquet")
+                df = pd.read_parquet(ofo + ".parquet")
                 if len(df) == 0: continue
 
                 out_folder_d = output_folder + "stats_as_timeseries/" + geo + "/" + service + "_" + mode + "_" + mode_unit + "/"
