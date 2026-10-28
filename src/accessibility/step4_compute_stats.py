@@ -246,9 +246,9 @@ def compute_statistics(params, services=None, years=None, decompose_timeseries=T
 
 
             if(su != "LAU"):
-                # sort columns
+                print(datetime.now(), "sort columns")
                 df = df[["GEO","ACCESS_INDIC","TRA_MODE","AGE","DEG_URB","STATINFO","UNIT","TIME","VALUE"]]
-                # sort rows
+                print(datetime.now(), "sort rows")
                 df = df.sort_values(["GEO", "TIME"])
 
             print(datetime.now(), "save compiled file")
