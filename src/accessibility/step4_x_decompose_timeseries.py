@@ -24,6 +24,11 @@ def decompose_statistics_timeseries(params, services=None):
     if services is None: services = params["accessibility_grid_versions"].keys()
 
     for su in sus.keys():
+
+        if su == "LAU":
+            print("skip LAU")
+            continue
+
         geo = su + "_" + sus[su]["version"]
         for service in services:
 
