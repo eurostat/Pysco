@@ -1,6 +1,6 @@
 import os
 import sys
- 
+import tempfile
 import pandas as pd
 import csv
 
@@ -136,10 +136,120 @@ def join_csv_files(
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def hypercube_to_timeseries_large(
+    source,                               # path to CSV, or an already-loaded DataFrame
+    output_folder: str,
+    id_column: str = "GEO",
+    value_column: str = "VALUE",
+    time_column: str = "TIME",
+    output_file_name_fun=None,
+    chunksize: int = 1_000_000,
+    verbose: bool = False,
+):
+    """
+    Decompose a hypercube into one pivoted CSV per combination of the other
+    dimensions (rows = id_column, columns = time values).
+
+    Memory-friendly: pass 1 streams the input in chunks and appends each row to
+    a temporary partition file (one per dimension combination); pass 2 pivots
+    one partition at a time. Peak memory ~ one chunk, or the largest single
+    partition, whichever is bigger.
+
+    Parameters
+    ----------
+    source : str | os.PathLike | pd.DataFrame
+        CSV path (recommended for large data) or a DataFrame.
+    output_file_name_fun : callable, optional
+        Maps the label string (e.g. "UNIT_NR__INDIC_T") to a file name
+        without the ".csv" extension.
+    chunksize : int
+        Rows per chunk when reading the CSV.
+    """
+    os.makedirs(output_folder, exist_ok=True)
+
+    # ---- chunk iterator (everything read as str: no dtype guessing, exact output)
+    if isinstance(source, pd.DataFrame):
+        def chunks():
+            for start in range(0, len(source), chunksize):
+                yield source.iloc[start:start + chunksize]
+        header_cols = list(source.columns)
+    else:
+        header_cols = list(pd.read_csv(source, nrows=0).columns)
+
+        def chunks():
+            yield from pd.read_csv(source, dtype=str, chunksize=chunksize)
+
+    group_cols = [c for c in header_cols
+                  if c not in {value_column, id_column, time_column}]
+    keep_cols = [id_column, time_column, value_column]
+
+    with tempfile.TemporaryDirectory() as tmp:
+        partitions = {}   # key tuple -> temp file path
+
+        # ---------- Pass 1: partition rows by dimension combination ----------
+        for chunk in chunks():
+            chunk = chunk.astype({c: str for c in group_cols})
+            if group_cols:
+                grouped = chunk.groupby(group_cols, sort=False, observed=True)
+            else:
+                grouped = [((), chunk)]
+
+            for keys, g in grouped:
+                if not isinstance(keys, tuple):
+                    keys = (keys,)
+                path = partitions.get(keys)
+                new = path is None
+                if new:
+                    path = os.path.join(tmp, f"part_{len(partitions)}.csv")
+                    partitions[keys] = path
+                # append mode keeps original row order -> "first" semantics preserved
+                g[keep_cols].to_csv(path, mode="a", header=False, index=False)
+            del chunk
+
+        # ---------- Pass 2: pivot one partition at a time ----------
+        for keys, path in partitions.items():
+            part = pd.read_csv(path, names=keep_cols, dtype=str)
+
+            # equivalent of aggfunc="first", but far cheaper than pivot_table
+            part = part.drop_duplicates(subset=[id_column, time_column], keep="first")
+
+            pivoted = part.pivot(index=id_column, columns=time_column, values=value_column)
+            pivoted = pivoted.reindex(sorted(pivoted.columns), axis=1).reset_index()
+            pivoted.columns.name = None
+            pivoted.columns = [str(c) for c in pivoted.columns]
+
+            label = "__".join(f"{col}_{val}" for col, val in zip(group_cols, keys))
+            name = output_file_name_fun(label) if output_file_name_fun else label
+            out_path = os.path.join(output_folder, f"{name}.csv")
+            pivoted.to_csv(out_path, index=False)
+
+            if verbose:
+                print(f"Written: {out_path}  ({len(pivoted)} rows, {pivoted.shape[1]} columns)")
+
+            os.remove(path)
+            del part, pivoted
+
+
+
+
 def hypercube_to_timeseries(
         df,
         output_folder: str,
-        id_columns:str = "GEO",
+        id_column:str = "GEO",
         value_column:str = "VALUE",
         time_column:str = "TIME",
         output_file_name_fun = None,
@@ -156,10 +266,7 @@ def hypercube_to_timeseries(
     ----------
     df     : input dataframe
     output_file_name_fun : A function that returns an output file name from a string with dimension info. Without ".csv" extension.
- 
-    Returns
-    -------
-    List of paths to the files that were written.
+
     """
   
     os.makedirs(output_folder, exist_ok=True)
@@ -167,7 +274,7 @@ def hypercube_to_timeseries(
     # Identify the dimension columns (everything except value_column)
     dim_cols = [c for c in df.columns if c != value_column]
     pivot_col = time_column
-    group_cols = [c for c in dim_cols if c not in {id_columns, pivot_col}]
+    group_cols = [c for c in dim_cols if c not in {id_column, pivot_col}]
   
     for keys, group in df.groupby(group_cols):
         # Build a tidy label like "UNIT_NR__INDIC_T"
@@ -178,13 +285,13 @@ def hypercube_to_timeseries(
         # Pivot TIME → columns
         pivoted = (
             group
-            .pivot_table(index=id_columns, columns=pivot_col, values=value_column, aggfunc="first")
+            .pivot_table(index=id_column, columns=pivot_col, values=value_column, aggfunc="first")
             .reset_index()
         )
  
         # Rename columns
         pivoted.columns.name = None
-        pivoted = pivoted.rename( columns=lambda c: f"{c}" if c != id_columns else c)
+        pivoted = pivoted.rename( columns=lambda c: f"{c}" if c != id_column else c)
  
         out_path = "__".join(label_parts)
         if output_file_name_fun: out_path = output_file_name_fun(out_path)
