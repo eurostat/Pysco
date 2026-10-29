@@ -5,7 +5,7 @@ import pandas as pd
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.csvutils import hypercube_to_timeseries
+from utils.csvutils import hypercube_to_timeseries_large
 
 
 
@@ -38,5 +38,6 @@ def decompose_statistics_timeseries(params, services=None):
                 out_folder_d = output_folder + "stats_as_timeseries/" + geo + "_" + service + "/"
                 os.makedirs(out_folder_d, exist_ok=True)
 
-                hypercube_to_timeseries(df, out_folder_d)
+                #hypercube_to_timeseries(df, out_folder_d)
+                hypercube_to_timeseries_large(df, out_folder_d)
 
