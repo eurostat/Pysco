@@ -45,8 +45,6 @@ def decompose_statistics_timeseries(params, services=None):
                     print(len(df))
                     df = df[df["ACCESS_INDIC"] == "N1"].drop(columns="ACCESS_INDIC")
                     print(len(df))
-                    df = df.drop(columns="UNIT")
-                    print(len(df))
                     #GEO,ACCESS_INDIC,TRA_MODE,AGE,DEG_URB,STATINFO,UNIT,TIME,VALUE
                     #AT001C,N1,CAR,T,TOTAL,TOTAL,NR,2023,1984002.0
 
