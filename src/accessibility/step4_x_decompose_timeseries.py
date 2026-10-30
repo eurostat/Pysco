@@ -34,16 +34,16 @@ def decompose_statistics_timeseries(params, services=None):
 
                 ofo = output_folder + "euro_access_" + service + "_" + geo + "_" + mode + "_" + mode_unit + "_" + params["stats_versions"][service]
                 df = pd.read_parquet(ofo + ".parquet")
+                print(len(df))
 
                 if su == "LAU":
-                    print(len(df))
-                    df = df[df["ACCESS_INDIC"] == "N1"].drop(columns="ACCESS_INDIC")
+                    df = df[df["DEG_URB"] == "TOTAL"].drop(columns="DEG_URB")
                     print(len(df))
                     df = df[df["AGE"] == "T"].drop(columns="AGE")
                     print(len(df))
-                    df = df[df["DEG_URB"] == "TOTAL"].drop(columns="DEG_URB")
+                    df = df[df["STATINFO"].isin(["AVG", "MED"])]
                     print(len(df))
-                    df = df[df["STATINFO"].isin(["AVG", "MED"])].drop(columns="STATINFO")
+                    df = df[df["ACCESS_INDIC"] == "N1"].drop(columns="ACCESS_INDIC")
                     print(len(df))
                     df = df.drop(columns="UNIT")
                     print(len(df))
