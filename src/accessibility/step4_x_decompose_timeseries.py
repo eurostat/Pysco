@@ -39,8 +39,8 @@ def decompose_statistics_timeseries(params, services=None):
                     df = df[df["ACCESS_INDIC"] == "N1"].drop(columns="ACCESS_INDIC")
                     df = df[df["AGE"] == "T"].drop(columns="AGE")
                     df = df[df["DEG_URB"] == "TOTAL"].drop(columns="DEG_URB")
-                    df = df[df["STATINFO"] == "AVG" or df["STATINFO"] == "MED"].drop(columns="STATINFO")
-                    #df = df.drop(columns="UNIT")
+                    df = df[df["STATINFO"].isin(["AVG", "MED"])].drop(columns="STATINFO")
+                    df = df.drop(columns="UNIT")
                     #GEO,ACCESS_INDIC,TRA_MODE,AGE,DEG_URB,STATINFO,UNIT,TIME,VALUE
                     #AT001C,N1,CAR,T,TOTAL,TOTAL,NR,2023,1984002.0
 

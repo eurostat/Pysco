@@ -2,5 +2,14 @@
     "steps": [1,2,3,4],
     "services": null,
     "years": null,
+
+    "stat_units": {
+        "LAU": {
+            "path": "/home/juju/geodata/gisco/LAU_RG_100K_2024_3035.gpkg",
+            "id": "GISCO_ID",
+            "version": "2024"
+        }
+    },
+
     "deploy_target_folder": "/home/juju/pCloudDrive"
 }
