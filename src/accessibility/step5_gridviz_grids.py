@@ -57,8 +57,7 @@ def gridviz_tiling(params, services=None):
             for mode in params["modes_stats"][service].keys():
 
                 f = folder_gridviz + service + "_" + mode
-                if os.path.exists(f+".zip"):
-                    continue
+                if os.path.exists(f+".zip"): continue
 
                 print(datetime.now(), service, mode, "Zip tiles")
 
