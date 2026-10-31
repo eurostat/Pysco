@@ -17,38 +17,41 @@ def gridviz_tiling(params, services=None):
     if not os.path.exists(folder_gridviz): os.makedirs(folder_gridviz)
 
     for service in services:
-        for resolution in resolutions:
+        for mode in params["modes_stats"][service].keys():
+            for resolution in resolutions:
 
-            print(datetime.now(), "Tiling", service, resolution)
+                print(datetime.now(), "Tiling", service, mode, resolution)
 
-            # make folder for resolution
-            folder_ = folder_gridviz + service + "/" + str(resolution) + "/"
-            if not os.path.exists(folder_): os.makedirs(folder_)
+                # make folder
+                folder_ = folder_gridviz + service + "_" + mode + "/" + str(resolution) + "/"
+                if not os.path.exists(folder_): os.makedirs(folder_)
 
-            # prepare dict for geotiff bands
-            dict = {}
-            k = get_k(service)
-            for year in params["accessibility_grid_versions"][service].keys():
-                dict["dt_1_" + year] = {"file":folder_aggregated+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+params["accessibility_grid_versions"][service][year]+".tif", "band":1}
-                dict["dt_a"+str(k)+"_" + year] = {"file":folder_aggregated+"euro_access_"+service+"_"+year+"_"+str(resolution)+"m_"+params["accessibility_grid_versions"][service][year]+".tif", "band":2}
-                dict["POP_2021"] = { "file":params["folder_pop_tiff"]+"pop_2021_"+str(resolution)+".tif", "band":1 }
+                # prepare dict for geotiff bands
+                dict = {}
+                k = get_k(service)
+                for year in params["accessibility_grid_versions"][service].keys():
+                    dict["dt_1_" + year] = {"file":folder_aggregated+"euro_access_"+service+"_"+year+"_"+mode+"_"+str(resolution)+"m_"+params["accessibility_grid_versions"][service][year]+".tif", "band":1}
+                    dict["dt_a"+str(k)+"_" + year] = {"file":folder_aggregated+"euro_access_"+service+"_"+year+"_"+mode+"_"+str(resolution)+"m_"+params["accessibility_grid_versions"][service][year]+".tif", "band":2}
+                    dict["POP_2021"] = { "file":params["folder_pop_tiff"]+"pop_2021_"+str(resolution)+".tif", "band":1 }
 
-            # launch tiling
-            gridtiler_raster.tiling_raster(
-                dict,
-                folder_,
-                crs="EPSG:3035",
-                tile_size_cell = 256,
-                format="parquet",
-                num_processors_to_use = 10,
-                modif_fun = round,
-                )
+                # launch tiling
+                gridtiler_raster.tiling_raster(
+                    dict,
+                    folder_,
+                    crs="EPSG:3035",
+                    tile_size_cell = 256,
+                    format="parquet",
+                    num_processors_to_use = 10,
+                    modif_fun = round,
+                    )
 
     if "deploy_target_folder" in params:
         for service in services:
-            # zip and move tiles
-            print(datetime.now(), service, "Zip tiles")
-            shutil.make_archive(folder_gridviz + service, "zip", folder_gridviz + service + "/")
-            print(datetime.now(), service, "Move zip file")
-            shutil.move(folder_gridviz + service + ".zip", params["deploy_target_folder"])
+            for mode in params["modes_stats"][service].keys():
+                # zip and move tiles
+                print(datetime.now(), service, mode, "Zip tiles")
+                f = folder_gridviz + service + "_" + mode
+                shutil.make_archive(f, "zip", f + "/")
+                print(datetime.now(), service, "Move zip file")
+                shutil.move(f + ".zip", params["deploy_target_folder"])
 
