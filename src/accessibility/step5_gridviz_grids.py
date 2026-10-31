@@ -18,6 +18,7 @@ def gridviz_tiling(params, services=None):
 
     for service in services:
         for mode in params["modes_stats"][service].keys():
+            mode = params["modes_stats"][service][mode]["grid_mode"]
             for resolution in resolutions:
 
                 print(datetime.now(), "Tiling", service, mode, resolution)
