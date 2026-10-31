@@ -17,8 +17,7 @@ def gridviz_tiling(params, services=None):
     if not os.path.exists(folder_gridviz): os.makedirs(folder_gridviz)
 
     for service in services:
-        for mode in params["modes_stats"][service].keys():
-            mode = params["modes_stats"][service][mode]["grid_mode"]
+        for mode in params["modes"][service].keys():
             for resolution in resolutions:
 
                 folder_ = folder_gridviz + service + "_" + mode + "/" + str(resolution) + "/"
@@ -51,11 +50,8 @@ def gridviz_tiling(params, services=None):
                     modif_fun = round,
                     )
 
-    # zip and move tiles
-    if "deploy_target_folder" in params:
-        for service in services:
-            for mode in params["modes_stats"][service].keys():
-
+            # zip and move tiles
+            if "deploy_target_folder" in params:
                 f = folder_gridviz + service + "_" + mode
                 if os.path.exists(f+".zip"): continue
 
