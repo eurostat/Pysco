@@ -21,11 +21,16 @@ def gridviz_tiling(params, services=None):
             mode = params["modes_stats"][service][mode]["grid_mode"]
             for resolution in resolutions:
 
+                folder_ = folder_gridviz + service + "_" + mode + "/" + str(resolution) + "/"
+
+                # skip if already there
+                if os.path.exists(folder_):
+                    continue
+                    
                 print(datetime.now(), "Tiling", service, mode, resolution)
 
                 # make folder
-                folder_ = folder_gridviz + service + "_" + mode + "/" + str(resolution) + "/"
-                if not os.path.exists(folder_): os.makedirs(folder_)
+                os.makedirs(folder_)
 
                 # prepare dict for geotiff bands
                 dict = {}
