@@ -51,13 +51,19 @@ def gridviz_tiling(params, services=None):
                     modif_fun = round,
                     )
 
+    # zip and move tiles
     if "deploy_target_folder" in params:
         for service in services:
             for mode in params["modes_stats"][service].keys():
-                # zip and move tiles
-                print(datetime.now(), service, mode, "Zip tiles")
+
                 f = folder_gridviz + service + "_" + mode
+                if os.path.exists(f+".zip"):
+                    continue
+
+                print(datetime.now(), service, mode, "Zip tiles")
+
                 shutil.make_archive(f, "zip", f + "/")
-                print(datetime.now(), service, "Move zip file")
+
+                print(datetime.now(), service, mode, "Move zip file")
                 shutil.move(f + ".zip", params["deploy_target_folder"])
 
