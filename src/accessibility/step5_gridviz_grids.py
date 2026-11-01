@@ -17,7 +17,7 @@ def gridviz_tiling(params, services=None):
     if not os.path.exists(folder_gridviz): os.makedirs(folder_gridviz)
 
     for service in services:
-        for mode in params["modes"][service].keys():
+        for mode in params["modes"][service]:
             for resolution in resolutions:
 
                 folder_ = folder_gridviz + service + "_" + mode + "/" + str(resolution) + "/"

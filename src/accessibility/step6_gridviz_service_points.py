@@ -26,7 +26,11 @@ def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, a
             csv_file = "tmp/" + service + "_" + year + "_10" + ".csv"
 
             if prepare_csv:
+                # skip if already there
+                if os.path.exists(csv_file): continue
+
                 print(datetime.now(), "prepare csv", service, year)
+
                 pois_path = params["pois_datasets"][service][year]
                 gpkg_point_to_csv(pois_path,
                                 csv_file,
@@ -46,6 +50,10 @@ def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, a
                 csva = "tmp/" + service + "_" + year + "_" + str(resolution) + ".csv"
 
                 if aggregate and a>1:
+
+                    # skip if already there
+                    if os.path.exists(csva): continue
+
                     print(datetime.now(), "aggregate", service, year, resolution)
 
                     def aggregation_single_value(values, _): return values[0]
@@ -64,7 +72,9 @@ def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, a
 
                     # Create output folder
                     folder = out_folder + service + '/' + year + '/' + str(resolution)
-                    if not os.path.exists(folder): os.makedirs(folder)
+                    if os.path.exists(folder): continue
+
+                    os.makedirs(folder)
 
                     gridtiler.grid_tiling(
                         csva,
@@ -77,10 +87,12 @@ def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, a
                         format = "parquet"
                     )
 
-    if "deploy_target_folder" in params:
-        # zip and move tiles
-        print(datetime.now(), "Zip tiles")
-        shutil.make_archive(out_folder + service +"_point", "zip", out_folder + "/")
-        print(datetime.now(), "Move zip file")
-        shutil.move(out_folder + service +"_point.zip", params["deploy_target_folder"])
+            if "deploy_target_folder" in params:
+                ozip = out_folder + service + "_" + year +"_point.zip"
+                if os.path.exists(ozip): continue
+
+                print(datetime.now(), service, year, "Zip tiles")
+                shutil.make_archive(out_folder + service + "_" + year +"_point", "zip", out_folder + "/")
+                print(datetime.now(), service, year, "Move zip file")
+                shutil.move(ozip, params["deploy_target_folder"])
 
