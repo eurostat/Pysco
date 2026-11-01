@@ -47,6 +47,11 @@
             "2025": "v2026_09"
         }
     },
+    "access_indicator" : {
+        "healthcare" : ["N1","AN3"],
+        "education" : ["N1","AN3"],
+        "evrp" : ["N1","AN5"]
+    },
     "modes" : {
         "healthcare": ["CAR_S"],
         "education": ["CAR_S", "FOOT_BIKE_M"],
