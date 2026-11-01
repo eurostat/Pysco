@@ -25,9 +25,7 @@ def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, a
         for year in years_:
             csv_file = "tmp/" + service + "_" + year + "_10" + ".csv"
 
-            if prepare_csv:
-                # skip if already there
-                if os.path.exists(csv_file): continue
+            if prepare_csv and not os.path.exists(csv_file):
 
                 print(datetime.now(), "prepare csv", service, year)
 
@@ -94,5 +92,5 @@ def gridviz_tiling_points(params, services=None, years=None, prepare_csv=True, a
                 print(datetime.now(), service, year, "Zip tiles")
                 shutil.make_archive(out_folder + service + "_" + year +"_point", "zip", out_folder + "/")
                 print(datetime.now(), service, year, "Move zip file")
-                shutil.move(ozip, params["deploy_target_folder"])
+                shutil.copy(ozip, params["deploy_target_folder"])
 
