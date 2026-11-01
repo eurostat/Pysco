@@ -37,7 +37,7 @@ def gridviz_tiling(params, services=None):
                     dict = {}
                     band = 1 if ai == "N1" else 2
                     for year in params["accessibility_grid_versions"][service].keys():
-                        dict["dt_" + year] = {"file":folder_aggregated+"euro_access_"+service+"_"+year+"_"+mode+"_"+str(resolution)+"m_"+params["accessibility_grid_versions"][service][year]+".tif", "band":band}
+                        dict["dt_" + ai + "_" + year] = {"file":folder_aggregated+"euro_access_"+service+"_"+year+"_"+mode+"_"+str(resolution)+"m_"+params["accessibility_grid_versions"][service][year]+".tif", "band":band}
                         dict["POP_2021"] = { "file":params["folder_pop_tiff"]+"pop_2021_"+str(resolution)+".tif", "band":1 }
 
                     # launch tiling
