@@ -22,12 +22,6 @@ access_indicator_to_band = {
     "AN3":2,
     "AN5":2,
 }
-service_to_access_indicator = {
-    "healthcare" : ["N1","AN3"],
-    #"education" : ["N1"],
-    "education" : ["N1","AN3"],
-    "evrp" : ["N1","AN5"],
-}
 
 access_classes = {
     "healthcare" : {
@@ -143,7 +137,7 @@ def compute_statistics(params, services=None, years=None):
                 if os.path.exists(ofo + ".parquet"): continue
                 df = None
 
-                for ai in service_to_access_indicator[service]:
+                for ai in params["access_indicator"][service]:
 
                     for year in years_:
                         for age_group in age_group_to_band.keys():
