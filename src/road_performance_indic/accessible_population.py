@@ -78,7 +78,7 @@ def build_graph_tool_graph_fast(graph):
 
 
 
-def accessiblity_population(xy,
+def accessibility_population(xy,
             out_folder,
             duration_max_s,
             distance_max_m,
@@ -323,7 +323,7 @@ def accessiblity_population(xy,
 
 
 
-def accessiblity_population_parallel(
+def accessibility_population_parallel(
                        road_network_loader,
                        population_grid_loader,
                        pop_col,
@@ -379,7 +379,7 @@ def accessiblity_population_parallel(
         ]
 
     print(datetime.now(), "launch", len(processes_params), "process(es) on", num_processors_to_use, "processor(s)")
-    Pool(num_processors_to_use).starmap(accessiblity_population, processes_params)
+    Pool(num_processors_to_use).starmap(accessibility_population, processes_params)
 
 
 #TODO compare figures
@@ -435,7 +435,7 @@ for year in ["2021", "2018"]:
     tomtom_year = "2023" if year == "2021" else "2019"
     def road_network_loader(bbox): return iter_features("/home/juju/geodata/tomtom/tomtom_"+tomtom_year+"12.gpkg", bbox=bbox, where="NOT(FOW=-1 AND FEATTYP=4130)")
 
-    accessiblity_population_parallel(
+    accessibility_population_parallel(
                         road_network_loader,
                         population_grid_loader_2021 if year == "2021" else population_grid_loader_2018,
                         'T' if year == "2021" else "TOT_P_2018",

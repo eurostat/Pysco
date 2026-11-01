@@ -71,7 +71,7 @@ def ___multi_source_k_nearest_dijkstra(graph, sources, k=1, with_paths=False):
 
 
 
-def accessiblity_grid_k_nearest_dijkstra(bbox,
+def accessibility_grid_k_nearest_dijkstra(bbox,
             extention_buffer,
             pois_loader,
             road_network_loader,
@@ -93,7 +93,7 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
             show_detailled_messages = False,
             threshold_connected_component_to_remove_node_nb = -1,
             ):
-    """ see accessiblity_grid_k_nearest_dijkstra_parallel below """
+    """ see accessibility_grid_k_nearest_dijkstra_parallel below """
 
     # make extended bbox
     (x_min, y_min, x_max, y_max) = bbox
@@ -171,7 +171,7 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
     del pois
     if show_detailled_messages: print(datetime.now(), len(sources), "source nodes found")
 
-    if show_detailled_messages: print(datetime.now(), "compute accessiblity")
+    if show_detailled_messages: print(datetime.now(), "compute accessibility")
     if k is None: k=1
     result = ___multi_source_k_nearest_dijkstra(graph=graph, k=k, sources=sources, with_paths=False)
     del graph, sources
@@ -267,7 +267,7 @@ def accessiblity_grid_k_nearest_dijkstra(bbox,
 
 
 
-def accessiblity_grid_k_nearest_dijkstra_xy(xy,
+def accessibility_grid_k_nearest_dijkstra_xy(xy,
             extention_buffer,
             file_size,
             out_folder,
@@ -291,7 +291,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
             threshold_connected_component_to_remove_node_nb,
             show_detailled_messages = False,
             ):
-    """ see accessiblity_grid_k_nearest_dijkstra_parallel below """
+    """ see accessibility_grid_k_nearest_dijkstra_parallel below """
 
     # get position
     [ x_part, y_part ] = xy
@@ -309,7 +309,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
     if show_detailled_messages: print(datetime.now(), x_part, y_part, "get source POIs")
 
     # function call
-    data = accessiblity_grid_k_nearest_dijkstra(
+    data = accessibility_grid_k_nearest_dijkstra(
         bbox = bbox,
         extention_buffer = extention_buffer,
         pois_loader = pois_loader,
@@ -348,7 +348,7 @@ def accessiblity_grid_k_nearest_dijkstra_xy(xy,
 
 
 
-def accessiblity_grid_k_nearest_dijkstra_parallel(
+def accessibility_grid_k_nearest_dijkstra_parallel(
         pois_loader,
         road_network_loader,
         bbox,
@@ -376,7 +376,7 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
         shuffle = False,
         ):
     """
-    Compute accessiblity grid using k-nearest dijkstra algorithm.
+    Compute accessibility grid using k-nearest dijkstra algorithm.
 
     Args:
         pois_loader (fun): the POIs loader.
@@ -444,5 +444,5 @@ def accessiblity_grid_k_nearest_dijkstra_parallel(
 
     # launch parallel processes
     print(datetime.now(), "launch", len(processes_params), "process(es) on", num_processors, "processor(s)")
-    Pool(num_processors).starmap(accessiblity_grid_k_nearest_dijkstra_xy, processes_params)
+    Pool(num_processors).starmap(accessibility_grid_k_nearest_dijkstra_xy, processes_params)
 

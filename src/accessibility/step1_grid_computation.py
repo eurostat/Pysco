@@ -3,7 +3,7 @@ import os
 from functools import partial
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from accessiblity_grid_k_nearest_dijkstra import accessiblity_grid_k_nearest_dijkstra_parallel
+from accessibility.accessibility_grid_k_nearest_dijkstra import accessibility_grid_k_nearest_dijkstra_parallel
 from utils.featureutils import iter_features
 from utils.tomtomutils import weight_function_CAR_S, weight_function_CAR_M, weight_function_walking_biking_distance, is_not_snappable_fun, initial_node_level_fun, final_node_level_fun, is_start_blocked, is_end_blocked
 
@@ -44,7 +44,7 @@ def compute_accessibility_grids(params, services=None, years=None, resolutions=[
                     #def pois_loader(bbox): return iter_features(pois_dataset, bbox=bbox) #, where="levels IS NULL or levels!='0'" if service=="education" else "")
 
                     # build accessibility grid
-                    accessiblity_grid_k_nearest_dijkstra_parallel(
+                    accessibility_grid_k_nearest_dijkstra_parallel(
                         pois_loader = pois_loader_,
                         road_network_loader = road_network_loader_,
                         bbox = params["bbox"],
