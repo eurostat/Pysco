@@ -53,7 +53,7 @@ def gridviz_tiling(params, services=None):
 
                 # zip and move tiles
                 if "deploy_target_folder" in params:
-                    f = folder_gridviz + service + "_" + mode
+                    f = folder_gridviz + service + "_" + mode + "_" + ai
                     if os.path.exists(f+".zip"): continue
 
                     print(datetime.now(), service, mode, "Zip tiles")
