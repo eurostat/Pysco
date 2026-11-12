@@ -8,23 +8,24 @@ from datetime import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from utils.geotiff import resample_geotiff_aligned
 
-#resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
-resolutions = [ 500, 200, 100 ]
+resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100 ]
+#resolutions = [ 500, 200, 100 ]
 
-input_file = "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m.tif"
+#input_file = "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m.tif"
+input_file = "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-ESTAT_Census_Population_2021_100m_rev0726.tif"
 
 # output folder
 folder_out = "tmp/JRC_100m/"
 os.makedirs(folder_out, exist_ok=True)
 
 
-if False:
+if True:
     for resolution in resolutions:
         print(datetime.now(), "Aggregate", resolution)
         resample_geotiff_aligned(input_file, folder_out+str(resolution)+".tif", resolution, Resampling.med)
 
 
-if False:
+if True:
     for resolution in resolutions:
 
         print(datetime.now(), "Tiling", resolution)
