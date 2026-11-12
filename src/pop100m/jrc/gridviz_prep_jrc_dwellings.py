@@ -1,6 +1,7 @@
 # prepare JRC 100m population grid for gridviz mapping
 
 from pygridmap import gridtiler_raster
+import numpy as np
 import sys
 import os
 from rasterio.enums import Resampling
@@ -20,7 +21,7 @@ os.makedirs(folder_out, exist_ok=True)
 if True:
     for resolution in resolutions:
         print(datetime.now(), "Aggregate", resolution)
-        resample_geotiff_aligned(input_file, folder_out+str(resolution)+".tif", resolution, Resampling.sum)
+        resample_geotiff_aligned(input_file, folder_out+str(resolution)+".tif", resolution, Resampling.sum, dtype=np.int64)
 
 if True:
     for resolution in resolutions:
