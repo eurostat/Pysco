@@ -20,7 +20,7 @@ if False:
     )
 
 # resample population geotiffs at different resolutions
-if True:
+if False:
     for resolution in [2000,5000,10000,20000,50000,100000]:
         print(f"Resampling to {resolution}m...")
         resample_geotiff_aligned("/home/juju/geodata/census/pop_20XX_1000m.tif",
@@ -33,11 +33,11 @@ if True:
 
 
 # crop extend - adjust geotiff bbox
-if False:
+if True:
     crop_extend_bbox(
-        "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2011/DGUR_LEVEL2_GRD_1KM_2011.tif",
+        "/home/juju/geodata/jrc/JRC-CENSUS_DWELLINGS_2021_1km./JRC-CENSUS_DWELLINGS_2021_1km.tif",
         [ 900000, 900000, 6600000, 5500000 ],
-        "/home/juju/geodata/gisco/degurba/DGURBA_LEVEL2_GRD_2011/DGUR_LEVEL2_GRD_1KM_2011_extended.tif",
-        fill_value=310
+        "/home/juju/geodata/jrc/JRC-CENSUS_DWELLINGS_2021_1km./JRC-CENSUS_DWELLINGS_2021_1km_new_bbox.tif",
+        #fill_value=310
     )
 
