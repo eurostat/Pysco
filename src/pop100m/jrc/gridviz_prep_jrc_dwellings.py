@@ -14,6 +14,7 @@ input_file = "/home/juju/geodata/jrc/JRC-CENSUS_DWELLINGS_2021_1km./JRC-CENSUS_D
 
 # output folder
 folder_out = "tmp/JRC_dwellings/"
+folder_out_pop = "tmp/JRC_100m/"
 os.makedirs(folder_out, exist_ok=True)
 
 if True:
@@ -33,7 +34,7 @@ if True:
         # prepare dict for geotiff bands
         dict = {
             "D": { "file":folder_out+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] },
-            "T": { "file":"/home/juju/geodata/census/2021/aggregated_tiff/pop_2021_"+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] }
+            "T": { "file":folder_out_pop+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] }
         }
 
         # launch tiling
