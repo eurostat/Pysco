@@ -20,7 +20,7 @@ os.makedirs(folder_out, exist_ok=True)
 if True:
     for resolution in resolutions:
         print(datetime.now(), "Aggregate", resolution)
-        resample_geotiff_aligned(input_file, folder_out+str(resolution)+".tif", resolution, Resampling.med)
+        resample_geotiff_aligned(input_file, folder_out+str(resolution)+".tif", resolution, Resampling.sum)
 
 if True:
     for resolution in resolutions:
