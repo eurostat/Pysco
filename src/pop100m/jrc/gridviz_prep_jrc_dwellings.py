@@ -10,7 +10,7 @@ from utils.geotiff import resample_geotiff_aligned
 
 resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000 ]
 
-input_file = "/home/juju/geodata/jrc/JRC-CENSUS_DWELLINGS_2021_1km./JRC-CENSUS_DWELLINGS_2021_1km.tif"
+input_file = "/home/juju/geodata/jrc/JRC-CENSUS_DWELLINGS_2021_1km./JRC-CENSUS_DWELLINGS_2021_1km_new_bbox.tif"
 
 # output folder
 folder_out = "tmp/JRC_dwellings/"
