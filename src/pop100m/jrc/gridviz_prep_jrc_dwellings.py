@@ -14,28 +14,31 @@ resolutions = [ 100000, 50000, 20000, 10000, 5000, 2000, 1000 ]
 input_file = "/home/juju/geodata/jrc/JRC-CENSUS_DWELLINGS_2021_1km./JRC-CENSUS_DWELLINGS_2021_1km_new_bbox.tif"
 
 # output folder
-folder_out = "tmp/JRC_dwellings/"
-folder_out_pop = "tmp/JRC_100m/"
-os.makedirs(folder_out, exist_ok=True)
+folder_out = "/home/juju/geodata/jrc/JRC-CENSUS_DWELLINGS_2021_1km./"
+folder_out_pop = "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/aggregates/"
+
+
 
 if True:
+    os.makedirs(folder_out+"aggregates/", exist_ok=True)
     for resolution in resolutions:
         print(datetime.now(), "Aggregate", resolution)
-        resample_geotiff_aligned(input_file, folder_out+str(resolution)+".tif", resolution, Resampling.sum, dtype=np.int64)
+        resample_geotiff_aligned(input_file, folder_out+"aggregates/"+str(resolution)+".tif", resolution, Resampling.sum, dtype=np.int64)
 
 if True:
+    os.makedirs(folder_out+"tiles/", exist_ok=True)
     for resolution in resolutions:
 
         print(datetime.now(), "Tiling", resolution)
 
         # make folder for resolution
-        folder_res = folder_out + str(resolution) + "/"
+        folder_res = folder_out + "tiles/" + str(resolution) + "/"
         os.makedirs(folder_res, exist_ok=True)
 
         # prepare dict for geotiff bands
         dict = {
-            "D": { "file":folder_out+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] },
-            "T": { "file":folder_out_pop+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] }
+            "D": { "file":folder_out+"aggregates/"+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] },
+            "T": { "file":folder_out_pop+"aggregates/"+str(resolution)+".tif", "band":1, "no_data_values": [0, None, -9999] }
         }
 
         # launch tiling
