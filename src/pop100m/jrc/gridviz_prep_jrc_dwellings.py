@@ -15,11 +15,11 @@ input_file = "/home/juju/geodata/jrc/JRC-CENSUS_DWELLINGS_2021_1km./JRC-CENSUS_D
 
 # output folder
 folder_out = "/home/juju/geodata/jrc/JRC-CENSUS_DWELLINGS_2021_1km./"
-folder_out_pop = "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/aggregates/"
+folder_out_pop = "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/"
 
 
 
-if True:
+if False:
     os.makedirs(folder_out+"aggregates/", exist_ok=True)
     for resolution in resolutions:
         print(datetime.now(), "Aggregate", resolution)
