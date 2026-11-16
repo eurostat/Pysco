@@ -18,7 +18,6 @@ folder_out = "/home/juju/geodata/jrc/JRC-CENSUS_DWELLINGS_2021_1km./"
 folder_out_pop = "/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/"
 
 
-
 if False:
     os.makedirs(folder_out+"aggregates/", exist_ok=True)
     for resolution in resolutions:
