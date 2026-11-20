@@ -722,6 +722,6 @@ def geotiff_to_cog_custom_overviews(
 #                 output_path="/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox_rev0726.tif")
 
 
-geotiff_to_cog_custom_overviews("/home/juju/gisco/accessibility/euro_access_evrp_2025_CAR_M_100m_v2026_09.tif",
-                   "/home/juju/Bureau/euro_access_evrp_2025_CAR_M_100m_v2026_09.cog.tif")
+#geotiff_to_cog_custom_overviews("/home/juju/gisco/accessibility/euro_access_evrp_2025_CAR_M_100m_v2026_09.tif",
+#                   "/home/juju/Bureau/euro_access_evrp_2025_CAR_M_100m_v2026_09.cog.tif")
 
