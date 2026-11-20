@@ -10,6 +10,8 @@ import os
 import fiona
 import geopandas as gpd
 from shapely.geometry import shape
+from rio_cogeo.cogeo import cog_translate, cog_validate
+from rio_cogeo.profiles import cog_profiles
 
 
 def rasterise_tesselation_gpkg(
@@ -647,6 +649,21 @@ def replace_tiff_value(input_path, output_path, old_value, new_value):
 
 
 
+def geotiff_to_cog_rio(src_path, dst_path, block_size=256, profile="deflate"):
+    cfg = cog_profiles.get(profile)
+    cfg.update({"blockxsize": block_size, "blockysize": block_size})
+    cog_translate(src_path, dst_path, cfg, in_memory=False, overview_resampling="average")
+    ok, errors, warnings = cog_validate(dst_path)
+    if not ok:
+        raise RuntimeError(f"Invalid COG: {errors}")
+    return dst_path
+
+
+
 #crop_extend_bbox("/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-ESTAT_Census_Population_2021_100m_rev0726.tif",
 #                 bbox=(        900000,        900000,        6600000,        5500000),
 #                 output_path="/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox_rev0726.tif")
+
+
+geotiff_to_cog_rio("/home/juju/gisco/accessibility/euro_access_evrp_2025_CAR_M_100m_v2026_09.tif",
+                   "/home/juju/Bureau/euro_access_evrp_2025_CAR_M_100m_v2026_09.cog.tif")
