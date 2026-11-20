@@ -12,6 +12,10 @@ import geopandas as gpd
 from shapely.geometry import shape
 from rio_cogeo.cogeo import cog_translate, cog_validate
 from rio_cogeo.profiles import cog_profiles
+import tempfile
+from osgeo import gdal
+
+gdal.UseExceptions()
 
 
 def rasterise_tesselation_gpkg(
@@ -649,6 +653,8 @@ def replace_tiff_value(input_path, output_path, old_value, new_value):
 
 
 
+# cogeo
+
 def geotiff_to_cog_rio(src_path, dst_path, block_size=256, profile="deflate"):
     cfg = cog_profiles.get(profile)
     cfg.update({"blockxsize": block_size, "blockysize": block_size})
@@ -656,7 +662,58 @@ def geotiff_to_cog_rio(src_path, dst_path, block_size=256, profile="deflate"):
     ok, errors, warnings = cog_validate(dst_path)
     if not ok:
         raise RuntimeError(f"Invalid COG: {errors}")
+
+
+def geotiff_to_cog_custom_overviews(
+    src_path,
+    dst_path,
+    block_size=256,
+    factors=(2, 5, 10, 20, 50, 100, 200, 500, 1000),
+    compress="DEFLATE",
+    resampling="AVERAGE",   # use NEAREST for categorical data
+    min_overview_size=None, # skip levels whose smaller side is below this (default: block_size)
+):
+    if block_size % 16 != 0:
+        raise ValueError("block_size must be a multiple of 16")
+
+    src = gdal.Open(src_path)
+    min_side = min(src.RasterXSize, src.RasterYSize)
+    min_size = min_overview_size or block_size
+    factors = [f for f in factors if min_side // f >= min_size]
+    src = None
+
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_tif = os.path.join(tmp, "tmp.tif")
+
+        # 1. Plain tiled copy that will hold the internal overviews
+        gdal.Translate(
+            tmp_tif, src_path, format="GTiff",
+            creationOptions=["TILED=YES", f"BLOCKXSIZE={block_size}",
+                             f"BLOCKYSIZE={block_size}", "BIGTIFF=IF_SAFER"],
+        )
+
+        # 2. Build the overviews with your factors
+        ds = gdal.Open(tmp_tif, gdal.GA_Update)
+        if factors:
+            ds.BuildOverviews(resampling, list(factors))
+        ds = None  # flush
+
+        # 3. Rewrite as COG, reusing the existing overviews
+        options = [
+            f"BLOCKSIZE={block_size}",
+            f"COMPRESS={compress}",
+            f"OVERVIEW_RESAMPLING={resampling}",
+            "OVERVIEWS=FORCE_USE_EXISTING" if factors else "OVERVIEWS=NONE",
+            "NUM_THREADS=ALL_CPUS",
+        ]
+        if compress.upper() in ("DEFLATE", "LZW", "ZSTD"):
+            options.append("PREDICTOR=YES")
+
+        gdal.Translate(dst_path, tmp_tif, format="COG", creationOptions=options)
+
     return dst_path
+
+
 
 
 
@@ -665,5 +722,6 @@ def geotiff_to_cog_rio(src_path, dst_path, block_size=256, profile="deflate"):
 #                 output_path="/home/juju/geodata/jrc/JRC_CENSUS_2021_100m_grid/JRC-CENSUS_2021_100m_new_bbox_rev0726.tif")
 
 
-geotiff_to_cog_rio("/home/juju/gisco/accessibility/euro_access_evrp_2025_CAR_M_100m_v2026_09.tif",
+geotiff_to_cog_custom_overviews("/home/juju/gisco/accessibility/euro_access_evrp_2025_CAR_M_100m_v2026_09.tif",
                    "/home/juju/Bureau/euro_access_evrp_2025_CAR_M_100m_v2026_09.cog.tif")
+
